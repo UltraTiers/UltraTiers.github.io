@@ -1,0 +1,821 @@
+:root {
+    --gray: #111827;
+    --gray2: #1e293b;
+    --border: rgba(255, 255, 255, 0.12);
+    --text: rgba(255, 255, 255, 0.85);
+    --accent: rgba(255, 255, 255, 0.18);
+}
+
+body {
+    margin: 0;
+    background: var(--gray2);
+    font-family: Inter, sans-serif;
+    color: var(--text);
+}
+
+.mode-btn {
+  background: rgba(255,255,255,0.06);
+  padding: 10px 12px;
+  border-radius: 10px;
+  color: var(--text);
+  font-size: 15px;
+  text-align: left;
+  cursor: pointer;
+  border: 1px solid rgba(255,255,255,0.10);
+  transition: 0.25s;
+}
+
+.mode-btn:hover {
+  background: rgba(255,255,255,0.14);
+  box-shadow: 0 0 16px rgba(255,255,255,0.16);
+}
+
+/* ============================= */
+/* MODE LEADERBOARD UI (IMAGE STYLE) */
+/* ============================= */
+
+.mode-title {
+  font-size: 26px;
+  font-weight: 800;
+  text-align: center;
+  margin: 30px 0 10px;
+}
+
+.mode-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 18px;
+  margin-top: 30px;
+}
+
+.mode-tier-card {
+  background: linear-gradient(135deg, rgba(255,255,255,0.08), rgba(255,255,255,0.02));
+  border-radius: 16px;
+  border: 1px solid var(--border);
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.mode-tier-header {
+  font-size: 18px;
+  font-weight: 800;
+}
+
+.footer {
+    text-align: center;
+    padding: 16px 0;
+    font-size: 18px;                  /* bigger text */
+    font-weight: bold;                 /* bold */
+    color: rgba(255, 255, 255, 0.5);  /* grey */
+    background: transparent;           /* no background */
+    border: none;                      /* no border */
+    margin-top: 40px;
+}
+
+
+.header-message {
+    grid-column: 1 / -1;   /* span all columns */
+    text-align: center;
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--text);
+    padding: 14px 0;
+    opacity: 0.85;
+}
+
+
+/* ============================= */
+/* MODE LEADERBOARD - IMAGE STYLE */
+/* ============================= */
+
+.mode-wrapper {
+  margin: 40px auto;
+}
+
+.mode-title {
+  text-align: center;
+  font-size: 32px;
+  font-weight: 900;
+  margin-bottom: 30px;
+}
+
+.mode-tiers {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 18px;
+}
+
+.mode-tier-column {
+  background: rgba(255,255,255,0.04);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-height: 300px;
+}
+
+.mode-tier-header {
+  text-align: center;
+  font-size: 20px;
+  font-weight: 900;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--border);
+}
+
+.mode-player {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: rgba(255,255,255,0.08);
+  padding: 8px 10px;
+  border-radius: 10px;
+  border: 1px solid rgba(255,255,255,0.12);
+}
+
+.mode-player img {
+  width: 30px;
+  height: 30px;
+  border-radius: 6px;
+}
+
+.mode-player span {
+  font-weight: 700;
+}
+
+/* Empty tier placeholder (keeps height) */
+.mode-empty {
+  opacity: 0.25;
+  font-size: 13px;
+  text-align: center;
+  padding-top: 20px;
+}
+
+
+/* NAVBAR */
+.navbar {
+    height: 70px;
+    padding: 0 30px;
+    background: rgba(17, 24, 39, 0.85);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+    box-shadow: 0 5px 25px rgba(0,0,0,0.35);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+        position: relative; /* Ensure dropdowns can position absolutely inside */
+    z-index: 100;       /* Base z-index for navbar */
+}
+
+.logo-img {
+    height: 45px;
+    filter: drop-shadow(0 0 3px rgba(0,0,0,0.5));
+}
+
+/* NAV CENTER */
+.nav-center {
+    display: flex;
+    align-items: center;
+    gap: 32px;
+}
+
+.nav-center a,
+.dropdown-trigger {
+    cursor: pointer;
+    color: var(--text);
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 14px;
+    border-radius: 10px;
+    transition: 0.25s ease;
+    background: rgba(255,255,255,0);
+}
+
+.player-card,
+.mode-player {
+  cursor: pointer;
+}
+
+.dropdown-trigger {
+  min-width: 140px;
+  justify-content: space-between;
+}
+
+.dropdown-menu {
+  pointer-events: auto;
+}
+
+.nav-center a:hover,
+.dropdown-trigger:hover {
+    background: var(--accent);
+    box-shadow: 0 0 12px rgba(255,255,255,0.08);
+}
+
+/* TIERS */
+.tiers {
+    display: flex;
+    gap: 12px; /* spacing between tiers */
+}
+
+.tier {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-size: 10px;
+    text-align: center;
+    padding: 4px 6px;
+    border-radius: 6px;
+    color: black;
+    width: 40px;       /* fixed width */
+    min-width: 40px;
+    cursor: pointer;
+}
+
+/* Tier images */
+.tier img {
+    width: 28px;       /* fixed size */
+    height: 28px;
+    object-fit: contain;
+    margin-bottom: 4px;
+}
+
+/* Background colors based on tier number */
+.tier[data-tier="1"] { background-color: #f87171; } /* red */
+.tier[data-tier="2"] { background-color: #fbbf24; } /* yellow */
+.tier[data-tier="3"] { background-color: #34d399; } /* green */
+.tier[data-tier="4"] { background-color: #60a5fa; } /* blue */
+.tier[data-tier="5"] { background-color: #a78bfa; } /* purple */
+
+/* Empty tier for Unknown */
+.tier.empty {
+    background-color: transparent;
+    border: 2px dashed rgba(255, 255, 255, 0.3);
+    width: 40px;       /* fixed width */
+    min-width: 40px;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 4px 6px;
+}
+
+/* MODAL TIERS - wrap inside modal */
+.modal-box .tiers {
+    display: flex;
+    flex-wrap: wrap;      /* ✅ allow wrapping */
+    gap: 8px;             /* spacing between tiers */
+    justify-content: center; /* center inside modal */
+    max-width: 100%;      /* never overflow modal width */
+    overflow: hidden;     /* clip any accidental overflow */
+}
+
+
+.modal-box .tier {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-size: 10px;
+    text-align: center;
+    padding: 4px 6px;
+    border-radius: 6px;
+    color: black;
+    width: 40px;
+    cursor: default;
+}
+
+.modal-box .tier img {
+    width: 28px;
+    height: 28px;
+    object-fit: contain;
+    margin-bottom: 4px;
+}
+
+.modal-box .tier.empty {
+    border: 2px dashed rgba(255,255,255,0.3);
+    background-color: transparent;
+}
+
+.modal-box .tier:hover {
+    transform: none; /* remove hover transform in modal */
+    box-shadow: none;
+}
+
+.tier.empty span {
+    display: none;    /* no text under empty tier */
+}
+
+/* Optional hover effect */
+.tier:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+}
+
+
+/* DROPDOWN */
+.dropdown-container {
+    position: relative;
+    z-index: 101;       /* Slightly higher than navbar to appear on top */
+}
+
+/* FIXED — no more gap */
+.dropdown-menu {
+    position: absolute;
+    top: calc(100% + 2px); /* 2px cushion WITHOUT creating a hover gap */
+    left: 0;
+    width: 220px;
+
+    background: rgba(17, 24, 39, 0.98);
+    backdrop-filter: blur(14px);
+    border: 1px solid var(--border);
+    padding: 14px;
+    border-radius: 14px;
+
+    display: none;
+    flex-direction: column;
+    gap: 10px;
+
+     z-index: 102; 
+
+    box-shadow: 0 10px 35px rgba(0,0,0,0.55);
+
+    /* Smooth drop animation */
+    opacity: 0;
+    transform: translateY(-6px);
+    transition: opacity .18s ease, transform .18s ease;
+}
+
+.dropdown-container.open .dropdown-menu {
+    display: flex;
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* Trigger hover effect */
+.dropdown-container .dropdown-trigger {
+    transition: 0.25s ease;
+}
+
+/* Hover effect */
+.dropdown-container:hover .dropdown-trigger {
+    background: rgba(255,255,255,0.14);
+}
+
+/* Keep hover effect when dropdown is open (clicked) */
+.dropdown-container.open .dropdown-trigger {
+    background: rgba(255,255,255,0.14); /* same as hover */
+    box-shadow: 0 0 12px rgba(255,255,255,0.08); /* optional for emphasis */
+}
+
+/* Discord Buttons */
+.discord-btn {
+    background: rgba(255,255,255,0.06) !important;
+    padding: 10px 12px;
+    border-radius: 10px;
+    text-decoration: none;
+    color: var(--text);
+    font-size: 15px;
+
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    transition: 0.25s;
+    border: 1px solid rgba(255,255,255,0.10);
+}
+
+.discord-btn:hover {
+    background: rgba(255,255,255,0.14);
+    box-shadow: 0 0 16px rgba(255,255,255,0.16);
+}
+
+/* SEARCH BAR */
+.search-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: rgba(255,255,255,0.08);
+    padding: 9px 16px;
+    border-radius: 14px;
+    border: 1px solid var(--border);
+    backdrop-filter: blur(10px);
+}
+
+.search-wrapper i {
+    opacity: 0.7;
+}
+
+.searchbar {
+    background: transparent;
+    border: none;
+    outline: none;
+    color: var(--text);
+    font-size: 15px;
+}
+
+/* LEADERBOARD BASE */
+.leaderboard {
+    margin: 40px auto;
+    width: 90%;
+    max-width: 1100px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+/* HEADER */
+.table-header {
+    display: grid;
+    grid-template-columns: 60px 1fr 120px 240px;
+    padding: 14px 20px;
+    border-bottom: 1px solid var(--border);
+    color: var(--text);
+    opacity: 0.7;
+}
+
+/* PLAYER ROW */
+.player-card {
+    display: grid;
+    grid-template-columns: 50px 50px 1fr auto; /* keep columns */
+    align-items: center;
+    padding: 12px 16px;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    gap: 10px;
+
+    justify-content: start; /* ✅ align all content to the left */
+
+    margin: 20px;
+    transition: 0.25s ease;
+}
+
+.player-card:hover {
+    background: rgba(255,255,255,0.08);
+    transform: translateY(-2px);
+}
+
+.gold   { border-left: 8px solid gold; }
+.silver { border-left: 8px solid silver; }
+.bronze { border-left: 8px solid #cd7f32; }
+
+.rank {
+    font-size: 22px;
+    font-weight: 700;
+    opacity: 0.9;
+}
+
+.avatar {
+    width: 48px;
+    height: 48px;
+    border-radius: 8px;
+}
+
+.player-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.player-name {
+    font-size: 18px;
+    font-weight: 700;
+}
+
+.player-sub {
+    font-size: 14px;
+    opacity: 0.75;
+}
+
+.region {
+    width: 48px;
+    text-align: center;
+    padding: 5px 0;
+    border-radius: 8px;
+    color: white;
+    font-weight: 600;
+}
+
+.region-na { background: #ef4444; }
+.region-eu { background: #22c55e; }
+
+/* TIERS SECTION (empty placeholder for now) */
+.tiers {
+    display: flex;
+    gap: 6px;
+}
+
+/* POPUP MODAL */
+.modal {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.55);
+    display: none;
+    align-items: center;
+    justify-content: center;
+}
+
+.modal.show {
+    display: flex;
+}
+
+.modal-box {
+    background: var(--gray);
+    padding: 30px;
+    border-radius: 16px;
+    border: 1px solid var(--border);
+    text-align: center;
+    width: 300px;
+}
+
+.modal-box button {
+    margin-top: 18px;
+    padding: 10px 20px;
+    border-radius: 10px;
+    border: none;
+    cursor: pointer;
+    font-weight: 600;
+    background: var(--accent);
+    color: var(--text);
+}
+
+/* DOCS SECTION */
+.docs-section {
+    margin: 60px auto;
+    padding: 40px;
+    width: 90%;
+    max-width: 1000px;
+    background: rgba(17,24,39,0.9);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    text-align: center;
+    color: var(--text);
+}
+
+.tier-docs {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    margin-top: 20px;
+    flex-wrap: wrap;
+}
+
+.tier-item {
+    padding: 12px 16px;
+    background: rgba(255,255,255,0.08);
+    border-radius: 10px;
+    cursor: pointer;
+    transition: 0.25s;
+    border: 1px solid var(--border);
+    font-weight: 700;
+}
+
+.tier-item:hover {
+    background: rgba(255,255,255,0.16);
+}
+
+.hidden-section { display: none; }
+.active-section { display: block; }
+
+/* ======================== */
+/* MOBILE & TABLET MEDIA CSS */
+/* ======================== */
+
+/* ======================== */
+/* MOBILE & TABLET MEDIA CSS FIXED */
+/* ======================== */
+
+/* Breakpoint: Tablets and small screens */
+@media (max-width: 1024px) {
+
+    /* Navbar adjustments */
+    .navbar {
+        flex-direction: column;
+        height: auto;
+        padding: 10px 16px;
+        gap: 10px;
+        align-items: flex-start;
+        position: relative; /* ensures dropdown aligns */
+    }
+
+    .nav-center {
+        flex-wrap: wrap;
+        gap: 10px;
+        width: 100%;
+    }
+
+    .nav-center a,
+    .dropdown-trigger {
+        font-size: 14px;
+        padding: 6px 10px;
+    }
+
+    .search-wrapper {
+        width: 100%;
+        justify-content: flex-start;
+    }
+
+    .searchbar {
+        flex: 1;
+    }
+
+    /* Leaderboard adjustments */
+    .table-header {
+        display: none; /* hide header on small screens */
+    }
+
+    .player-card {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 12px 16px;
+        margin: 12px;
+    }
+
+    .rank {
+        font-size: 18px;
+        margin-bottom: 6px;
+    }
+
+    .avatar {
+        width: 64px;
+        height: 64px;
+        margin-bottom: 6px;
+    }
+
+    .player-info {
+        margin-bottom: 6px;
+    }
+
+    .region {
+        width: auto;
+        padding: 4px 8px;
+        margin-bottom: 6px;
+    }
+
+    .tiers {
+        flex-wrap: nowrap;
+        gap: 6px;
+        overflow-x: auto;
+    }
+
+    .tiers::-webkit-scrollbar {
+        height: 6px;
+    }
+
+    .tiers::-webkit-scrollbar-thumb {
+        background: rgba(255,255,255,0.2);
+        border-radius: 3px;
+    }
+
+    /* Modal adjustments */
+    .modal {
+        display: none; /* hidden by default */
+        align-items: flex-start; /* push slightly from top */
+        justify-content: center;
+        padding-top: 8vh;
+        position: fixed;
+        inset: 0;
+        background: rgba(0,0,0,0.55);
+        z-index: 1000;
+    }
+
+    .modal.show {
+        display: flex;
+    }
+
+    .modal-box {
+        width: 90%;
+        max-width: 400px;
+        padding: 20px;
+        margin: 0 auto;
+        box-sizing: border-box;
+        border-radius: 16px;
+        border: 1px solid var(--border);
+        background: var(--gray);
+        text-align: center;
+        position: relative;
+        z-index: 1001;
+    }
+
+    .modal-box .tiers {
+        flex-wrap: nowrap;
+        gap: 6px;
+        overflow-x: auto;
+    }
+
+    .modal-box .tier img {
+        width: 24px;
+        height: 24px;
+    }
+
+    /* Docs section adjustments */
+    .docs-section {
+        width: 90%;
+        max-width: 400px;
+        padding: 16px;
+        margin: 30px auto;
+        box-sizing: border-box;
+    }
+
+    .tier-docs {
+        flex-direction: column;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .tier-item {
+        width: 100%;
+        max-width: 360px;
+        text-align: center;
+        margin-bottom: 6px;
+        box-sizing: border-box;
+    }
+
+    /* Discord dropdown adjustments */
+    .dropdown-container {
+        width: auto;
+        position: relative;
+        z-index: 1002; /* ensure dropdown is above search */
+    }
+
+    .dropdown-trigger {
+        width: 140px;
+        padding: 6px 10px;
+        font-size: 14px;
+        justify-content: space-between;
+    }
+
+    .dropdown-menu {
+        position: absolute;
+        top: calc(100% + 4px);
+        left: 0;
+        min-width: 140px;
+        max-width: 95vw;
+        width: auto;
+        padding: 8px;
+        border-radius: 10px;
+        flex-direction: column;
+        box-sizing: border-box;
+        display: none;
+        z-index: 1003;
+    }
+
+    .dropdown-container.open .dropdown-menu {
+        display: flex;
+        opacity: 1;
+    }
+
+    .discord-btn {
+        width: 100%;
+        padding: 6px 10px;
+        font-size: 14px;
+        box-sizing: border-box;
+    }
+}
+
+/* Breakpoint: Small phones */
+@media (max-width: 480px) {
+
+    .nav-center a,
+    .dropdown-trigger {
+        font-size: 13px;
+        padding: 5px 8px;
+    }
+
+    .avatar {
+        width: 56px;
+        height: 56px;
+    }
+
+    .rank {
+        font-size: 16px;
+    }
+
+    .modal-box .tier img {
+        width: 20px;
+        height: 20px;
+    }
+
+    .modal-box {
+        padding: 16px;
+    }
+
+    .dropdown-trigger {
+        width: 120px;
+        font-size: 13px;
+    }
+
+    .dropdown-menu {
+        min-width: 120px;
+        max-width: 95vw;
+    }
+
+    .discord-btn {
+        font-size: 13px;
+        padding: 5px 8px;
+    }
+}

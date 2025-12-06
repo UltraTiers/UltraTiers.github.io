@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>UltraTiers</title>
+<link href="styles.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+<body>
+
+<header>
+<nav class="navbar">
+    <div class="nav-left">
+        <img src="UltraTiers_White.png" class="logo-img">
+    </div>
+
+    <div class="nav-center">
+        <a class="rankings-btn"><i class="fas fa-trophy"></i> Rankings</a>
+
+        <div class="dropdown-container">
+            <div class="dropdown-trigger">
+                <i class="fas fa-gamepad"></i> Discords
+                <i class="fas fa-chevron-down"></i>
+            </div>
+            <div class="dropdown-menu">
+                <a href="https://discord.gg/Bvebb7RwaG" class="discord-btn"><i class="fab fa-discord"></i> Main Community</a>
+            </div>
+        </div>
+
+<div class="dropdown-container" id="modes-dropdown">
+  <div class="dropdown-trigger">
+    <i class="fas fa-layer-group"></i> Modes <i class="fas fa-chevron-down"></i>
+  </div>
+  <div class="dropdown-menu" id="modes-menu">
+    <div class="mode-btn" data-mode="Axe"> Axe</div>
+    <div class="mode-btn" data-mode="Sword"> Sword</div>
+    <div class="mode-btn" data-mode="Bow"> Bow</div>
+    <div class="mode-btn" data-mode="Crystal"> Crystal</div>
+    <div class="mode-btn" data-mode="Nethpot"> Nethpot</div>
+    <div class="mode-btn" data-mode="UHC"> UHC</div>
+    <div class="mode-btn" data-mode="SMP"> SMP</div>
+    <div class="mode-btn" data-mode="Mace"> Mace</div>
+  </div>
+</div>
+
+
+
+        <a class="docs-btn"><i class="fas fa-file-alt"></i> Docs</a>
+    </div>
+
+    <div class="nav-right">
+        <div class="search-wrapper">
+            <i class="fas fa-search"></i>
+            <input class="searchbar" placeholder="Search player..." id="search-input">
+        </div>
+    </div>
+</nav>
+</header>
+
+<!-- LEADERBOARD SECTION -->
+<div id="leaderboard-section" class="leaderboard active-section">
+<div class="table-header">
+    <div colspan="4" class="header-message">
+        Join our discord for more updates!
+    </div>
+</div>
+
+    <div id="players-container"></div>
+</div>
+
+<!-- DOCS SECTION -->
+<div id="docs-section" class="docs-section hidden-section">
+    <h1>📚 Minecraft Tiers Documentation</h1>
+    <p>This section explains all Minecraft tiers.</p>
+
+    <div id="tier-docs-container" class="tier-docs"></div>
+</div>
+
+<!-- MODAL -->
+<div id="modal" class="modal">
+    <div class="modal-box">
+        <h2 id="modal-title">Player Name</h2>
+        <p id="modal-content">Points / Tiers info</p>
+        <button id="close-modal">Close</button>
+    </div>
+</div>
+
+<footer class="footer">
+    © Copyright 2025 UltraTiers
+</footer>
+
+<!-- SCRIPT -->
+<script type="module" src="script.js"></script>
+</body>
+</html>
