@@ -783,7 +783,8 @@ body {
     border-radius: 12px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35);
     opacity: 0.95;
-    transition: 0.25s ease;          /* center content vertically */              /* center element itself horizontally */
+    transition: 0.25s ease;          /* center content vertically */       
+    text-align: center;       /* center element itself horizontally */
 }
 
 /* Optional hover effect */
