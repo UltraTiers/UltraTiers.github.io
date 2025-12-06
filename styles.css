@@ -30,36 +30,6 @@ body {
   box-shadow: 0 0 16px rgba(255,255,255,0.16);
 }
 
-.mode-player {
-  display: flex;
-  align-items: center;
-  justify-content: space-between; /* push symbol to the right */
-  gap: 10px;
-  background: rgba(255,255,255,0.08);
-  padding: 8px 14px; /* a bit wider */
-  border-radius: 10px;
-  border: 1px solid rgba(255,255,255,0.12);
-  min-width: 180px;   /* make slightly wider */
-  position: relative;
-  transition: 0.2s ease;
-}
-
-.mode-player:hover {
-  background: rgba(255,255,255,0.12);
-}
-
-.tier-symbol {
-  font-weight: 800;
-  font-size: 18px;
-  color: #fff;
-  background: rgba(255,255,255,0.15);
-  padding: 2px 6px;
-  border-radius: 6px;
-  margin-left: 6px;
-  min-width: 20px;
-  text-align: center;
-}
-
 /* ============================= */
 /* MODE LEADERBOARD UI (IMAGE STYLE) */
 /* ============================= */
@@ -119,29 +89,26 @@ body {
   margin-bottom: 30px;
 }
 
-/* MODE TIERS FLEX WRAP */
 .mode-tiers {
-    display: flex;
-    flex-wrap: wrap;             /* allow wrapping */
-    justify-content: center;     /* center the row */
-    gap: 18px;                   /* spacing between items */
-    margin: 0 auto;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 18px;
+  justify-content: center;
 }
 
-/* Tier column */
 .mode-tier-column {
-    flex: 0 0 300px;             /* fixed width of 300px */
-    background: rgba(255,255,255,0.04);
-    border: 1px solid var(--border);
-    border-radius: 16px;
-    padding: 14px;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    min-height: 300px;
-    box-sizing: border-box;
-}
+  background: rgba(255,255,255,0.04);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 14px;
 
+  flex: 1 1 260px;      /* << responsive width */
+  max-width: 320px;     /* << prevents giant columns on desktop */
+
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
 
 .mode-tier-header {
   text-align: center;
@@ -150,6 +117,17 @@ body {
   padding-bottom: 8px;
   border-bottom: 1px solid var(--border);
 }
+
+.mode-player {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: rgba(255,255,255,0.08);
+  padding: 8px 10px;
+  border-radius: 10px;
+  border: 1px solid rgba(255,255,255,0.12);
+}
+
 .mode-player img {
   width: 30px;
   height: 30px;
@@ -438,6 +416,31 @@ body {
     flex-direction: column;
     gap: 14px;
 }
+
+.tier-sign {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 22px;
+    height: 22px;
+    font-weight: 900;
+    font-size: 14px;
+    border-radius: 6px;
+    margin-left: auto;
+    border: 1px solid rgba(255,255,255,0.25);
+}
+
+/* Colors */
+.tier-sign.plus {
+    color: #4ade80;
+    border-color: #4ade80;
+}
+
+.tier-sign.minus {
+    color: #f87171;
+    border-color: #f87171;
+}
+
 
 /* HEADER */
 .table-header {
@@ -912,9 +915,15 @@ body {
 }
 
 /* MOBILE & TABLET FIXES FOR TIERS STACKING */
-@media (max-width: 1050px) {  /* tablets and smaller */
+@media (max-width: 768px) {  /* tablets and smaller */
     .modal-box {
         margin: 16px;
+    }
+
+    /* Mode leaderboard columns should also shrink */
+    .mode-tiers {
+        grid-template-columns: 1fr; /* each column full width */
+        gap: 12px;
     }
 
     .mode-tier-column {
@@ -922,19 +931,6 @@ body {
         padding: 12px;
     }
 }
-
-@media (max-width: 1024px) {
-    .mode-tiers {
-        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    }
-}
-
-@media (max-width: 768px) {
-    .mode-tiers {
-        grid-template-columns: 1fr; /* stack vertically */
-    }
-}
-
 
 /* Extra small phones */
 @media (max-width: 480px) {

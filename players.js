@@ -1,44 +1,16 @@
 export const players = [
     {
-        name: "FemboyPlazma",
-        region: "EU",
-        tiers: [
-            { tier: "LT3", gamemode: "Axe" },
-            { tier: "Unknown", gamemode: "Sword" },
-            { tier: "Unknown", gamemode: "Bow" },
-            { tier: "LT3", gamemode: "Nethpot" },
-            { tier: "LT3", gamemode: "UHC" },
-            { tier: "HT3", gamemode: "SMP" },
-            { tier: "LT3", gamemode: "Mace" },
-
-            // Extra modes
-            { tier: "Unknown", gamemode: "Pot" },
-            { tier: "Unknown", gamemode: "DeBuff" },
-            { tier: "Unknown", gamemode: "Speed" },
-            { tier: "Unknown", gamemode: "Diamond SMP" },
-            { tier: "Unknown", gamemode: "Bed" },
-            { tier: "Unknown", gamemode: "OG Vanilla" }
-        ]
-    },
-    {
         name: "AsunyaQueeny",
         region: "EU",
         tiers: [
-            { tier: "Unknown", gamemode: "Axe" },
-            { tier: "Unknown", gamemode: "Sword" },
             { tier: "LT2", gamemode: "Bow" },
-            { tier: "Unknown", gamemode: "Nethpot" },
-            { tier: "Unknown", gamemode: "UHC" },
-            { tier: "Unknown", gamemode: "SMP" },
-            { tier: "Unknown", gamemode: "Mace" },
-
-            // Extra modes
-            { tier: "Unknown", gamemode: "Pot" },
-            { tier: "Unknown", gamemode: "DeBuff" },
-            { tier: "Unknown", gamemode: "Speed" },
-            { tier: "Unknown", gamemode: "Diamond SMP" },
-            { tier: "Unknown", gamemode: "Bed" },
-            { tier: "Unknown", gamemode: "OG Vanilla" }
+            { tier: "Unknown", gamemode: "Unknown" },
+            { tier: "Unknown", gamemode: "Unknown" },
+            { tier: "Unknown", gamemode: "Unknown" },
+            { tier: "Unknown", gamemode: "Unknown" },
+            { tier: "Unknown", gamemode: "Unknown" },
+            { tier: "Unknown", gamemode: "Unknown" },
+            { tier: "Unknown", gamemode: "Unknown" },
         ]
     },
     {
@@ -46,66 +18,30 @@ export const players = [
         region: "NA",
         tiers: [
             { tier: "LT3", gamemode: "Axe" },
-            { tier: "Unknown", gamemode: "Sword" },
-            { tier: "Unknown", gamemode: "Bow" },
-            { tier: "Unknown", gamemode: "Nethpot" },
-            { tier: "Unknown", gamemode: "UHC" },
-            { tier: "Unknown", gamemode: "SMP" },
-            { tier: "Unknown", gamemode: "Mace" },
-
-            // Extra modes
-            { tier: "Unknown", gamemode: "Pot" },
-            { tier: "Unknown", gamemode: "DeBuff" },
-            { tier: "Unknown", gamemode: "Speed" },
-            { tier: "Unknown", gamemode: "Diamond SMP" },
-            { tier: "Unknown", gamemode: "Bed" },
-            { tier: "Unknown", gamemode: "OG Vanilla" }
+            { tier: "Unknown", gamemode: "Unknown" },
+            { tier: "Unknown", gamemode: "Unknown" },
+            { tier: "Unknown", gamemode: "Unknown" },
+            { tier: "Unknown", gamemode: "Unknown" },
+            { tier: "Unknown", gamemode: "Unknown" },
+            { tier: "Unknown", gamemode: "Unknown" },
+            { tier: "Unknown", gamemode: "Unknown" },
         ]
     },
     {
         name: "Trainly",
         region: "NA",
         tiers: [
-            { tier: "LT3", gamemode: "Axe" },
             { tier: "LT3", gamemode: "Sword" },
-            { tier: "Unknown", gamemode: "Bow" },
-            { tier: "Unknown", gamemode: "Nethpot" },
-            { tier: "Unknown", gamemode: "UHC" },
-            { tier: "Unknown", gamemode: "SMP" },
-            { tier: "Unknown", gamemode: "Mace" },
-
-            // Extra modes
-            { tier: "Unknown", gamemode: "Pot" },
-            { tier: "Unknown", gamemode: "DeBuff" },
-            { tier: "Unknown", gamemode: "Speed" },
-            { tier: "Unknown", gamemode: "Diamond SMP" },
-            { tier: "Unknown", gamemode: "Bed" },
-            { tier: "Unknown", gamemode: "OG Vanilla" }
+            { tier: "LT3", gamemode: "Axe" },
+            { tier: "Unknown", gamemode: "Unknown" },
+            { tier: "Unknown", gamemode: "Unknown" },
+            { tier: "Unknown", gamemode: "Unknown" },
+            { tier: "Unknown", gamemode: "Unknown" },
+            { tier: "Unknown", gamemode: "Unknown" },
+            { tier: "Unknown", gamemode: "Unknown" },
         ]
     },
-    {
-        name: "frdeluxe",
-        region: "EU",
-        tiers: [
-            { tier: "Unknown", gamemode: "Axe" },
-            { tier: "Unknown", gamemode: "Sword" },
-            { tier: "Unknown", gamemode: "Bow" },
-            { tier: "LT3", gamemode: "Nethpot" },
-            { tier: "Unknown", gamemode: "UHC" },
-            { tier: "LT3", gamemode: "SMP" },
-            { tier: "Unknown", gamemode: "Mace" },
-
-            // Their original extra modes (already known)
-            { tier: "LT3", gamemode: "Pot" },
-            { tier: "LT3", gamemode: "DeBuff" },
-            { tier: "LT3", gamemode: "Speed" },
-            { tier: "LT3", gamemode: "Diamond SMP" },
-            { tier: "LT3", gamemode: "Bed" },
-            { tier: "LT3", gamemode: "OG Vanilla" }
-        ]
-    }
 ];
-
 
 export const tiersDocs = [
     { tier: "HT1", gamemode: "High Tier 1", description: "Gives you 10 points." },

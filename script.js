@@ -109,8 +109,6 @@ document.addEventListener('click', () => {
   document.querySelectorAll('.dropdown-container').forEach(c => c.classList.remove('open'));
 });
 
-const MAX_TIERS = 8
-
 /* =============================
    NORMAL LEADERBOARD (TOP 3 BORDERS)
 ============================= */
@@ -121,28 +119,17 @@ function generatePlayers() {
   playersContainer.innerHTML = "";
 
   players.forEach((player, index) => {
-// Separate real tiers and unknown tiers
-const realTiers = player.tiers.filter(t => t.tier !== "Unknown");
+    const tiersHTML = player.tiers.map(t => {
+      if (t.tier === "Unknown") return `<div class="tier empty"></div>`;
 
-// Map real tiers to HTML
-const realTiersHTML = realTiers.map(t => {
-  const tierNumber = t.tier.match(/\d+/)[0];
-  return `
-    <div class="tier" data-gamemode="${t.gamemode}" data-tier="${tierNumber}">
-      <img src="gamemodes/${t.gamemode}.png">
-      <span>${t.tier}</span>
-    </div>
-  `;
-});
-
-// Calculate how many empty tiers are needed
-const emptyTiersCount = MAX_TIERS - realTiersHTML.length;
-
-// Generate empty tiers HTML
-const emptyTiersHTML = Array(emptyTiersCount).fill(`<div class="tier empty"></div>`);
-
-// Combine real tiers first, then empty tiers
-const finalTiersHTML = [...realTiersHTML, ...emptyTiersHTML].join("");
+      const tierNumber = t.tier.match(/\d+/)[0];
+      return `
+        <div class="tier" data-gamemode="${t.gamemode}" data-tier="${tierNumber}">
+          <img src="gamemodes/${t.gamemode}.png">
+          <span>${t.tier}</span>
+        </div>
+      `;
+    }).join("");
 
     const avatarURL = `https://render.crafty.gg/3d/bust/${player.name}`;
 
@@ -160,7 +147,7 @@ const finalTiersHTML = [...realTiersHTML, ...emptyTiersHTML].join("");
           <div class="player-sub">⭐ ${getRankTitle(player.points)} (${player.points})</div>
         </div>
         <div class="region region-${player.region.toLowerCase()}">${player.region}</div>
-        <div class="tiers">${finalTiersHTML}</div>
+        <div class="tiers">${tiersHTML}</div>
       </div>
     `;
 
@@ -174,14 +161,6 @@ const finalTiersHTML = [...realTiersHTML, ...emptyTiersHTML].join("");
    MODE LEADERBOARD
 ============================= */
 
-function getTierSymbolForMode(player, mode) {
-  const tierObj = player.tiers.find(t => t.gamemode === mode && t.tier !== "Unknown");
-  if (!tierObj) return "";
-  if (tierObj.tier.startsWith("HT")) return "+";
-  if (tierObj.tier.startsWith("LT")) return "-";
-  return "";
-}
-
 function generateModeLeaderboard(mode) {
   tableHeader.style.display = "none"; // hide header
 
@@ -192,26 +171,8 @@ function generateModeLeaderboard(mode) {
     </div>
   `;
 
-  // Map symbol to a rank value for stable sorting: "+" -> 0, "" -> 1, "-" -> 2
-  const symbolRank = s => (s === "+" ? 0 : s === "-" ? 2 : 1);
-
-  // Build an array of players with their symbol for this mode
-  const playersWithSymbol = players.map(p => ({
-    player: p,
-    symbol: getTierSymbolForMode(p, mode) // "+", "-", or ""
-  }));
-
-  // Sort so "+" first, neutrals next, "-" last; then fallback to name
-  playersWithSymbol.sort((a, b) => {
-    const ra = symbolRank(a.symbol);
-    const rb = symbolRank(b.symbol);
-    if (ra !== rb) return ra - rb;
-    return a.player.name.localeCompare(b.player.name);
-  });
-
   const tiersGrid = document.getElementById("mode-tiers");
 
-  // create 5 tier columns
   for (let i = 1; i <= 5; i++) {
     const col = document.createElement("div");
     col.className = "mode-tier-column";
@@ -219,35 +180,57 @@ function generateModeLeaderboard(mode) {
     tiersGrid.appendChild(col);
   }
 
-  // Place players into their tier columns in the sorted order
-  playersWithSymbol.forEach(({ player, symbol }) => {
+players.forEach(player => {
     const tierObj = player.tiers.find(t => t.gamemode === mode && t.tier !== "Unknown");
-    if (!tierObj) return; // player doesn't have a real tier for this mode
+    if (!tierObj) return;
 
-    const tierNumber = parseInt(tierObj.tier.match(/\d+/)[0], 10);
+    const tierNumber = parseInt(tierObj.tier.match(/\d+/)[0]);
     const targetColumn = document.querySelectorAll(".mode-tier-column")[tierNumber - 1];
-    if (!targetColumn) return;
 
     const playerDiv = document.createElement("div");
     playerDiv.className = "mode-player";
     playerDiv.dataset.player = player.name;
 
+    let sign = "";
+    let signValue = 0;  // used for sorting inside each tier
+
+    if (tierObj.tier.includes("HT")) { 
+        sign = "+";
+        signValue = 2;
+    }
+    if (tierObj.tier.includes("LT")) { 
+        sign = "-";
+        signValue = 1;
+    }
+
+    playerDiv.dataset.signvalue = signValue;
+
     playerDiv.innerHTML = `
-      <img src="https://render.crafty.gg/3d/bust/${player.name}">
-      <span class="player-name-mode">${player.name}</span>
-      ${symbol ? `<span class="tier-symbol">${symbol}</span>` : ""}
+        <img src="https://render.crafty.gg/3d/bust/${player.name}">
+        <span class="player-label">${player.name}</span>
+        <span class="tier-sign">${sign}</span>
     `;
 
     targetColumn.appendChild(playerDiv);
-  });
+});
 
-  // If column only contains header -> add placeholder
   document.querySelectorAll(".mode-tier-column").forEach(col => {
     if (col.children.length === 1) col.innerHTML += `<div class="mode-empty">No players</div>`;
   });
 
   attachPlayerClick();
 }
+
+document.querySelectorAll(".mode-tier-column").forEach(col => {
+    const players = [...col.querySelectorAll(".mode-player")];
+
+    players.sort((a, b) => {
+        return b.dataset.signvalue - a.dataset.signvalue;
+    });
+
+    players.forEach(p => col.appendChild(p));
+});
+
 
 /* =============================
    PLAYER CLICK
