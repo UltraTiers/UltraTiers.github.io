@@ -74,18 +74,6 @@ body {
     margin-top: 40px;
 }
 
-
-.header-message {
-    grid-column: 1 / -1;   /* span all columns */
-    text-align: center;
-    font-size: 18px;
-    font-weight: 700;
-    color: var(--text);
-    padding: 14px 0;
-    opacity: 0.85;
-}
-
-
 /* ============================= */
 /* MODE LEADERBOARD - IMAGE STYLE */
 /* ============================= */
@@ -584,10 +572,6 @@ body {
 /* MOBILE & TABLET MEDIA CSS */
 /* ======================== */
 
-/* ======================== */
-/* MOBILE & TABLET MEDIA CSS FIXED */
-/* ======================== */
-
 /* Breakpoint: Tablets and small screens */
 @media (max-width: 1024px) {
 
@@ -598,7 +582,7 @@ body {
         padding: 10px 16px;
         gap: 10px;
         align-items: flex-start;
-        position: relative; /* ensures dropdown aligns */
+        position: relative;
     }
 
     .nav-center {
@@ -624,7 +608,7 @@ body {
 
     /* Leaderboard adjustments */
     .table-header {
-        display: none; /* hide header on small screens */
+        display: none;
     }
 
     .player-card {
@@ -633,6 +617,7 @@ body {
         align-items: flex-start;
         padding: 12px 16px;
         margin: 12px;
+        gap: 8px;
     }
 
     .rank {
@@ -657,9 +642,10 @@ body {
     }
 
     .tiers {
-        flex-wrap: nowrap;
+        flex-wrap: wrap;
         gap: 6px;
         overflow-x: auto;
+        padding-bottom: 4px;
     }
 
     .tiers::-webkit-scrollbar {
@@ -673,8 +659,8 @@ body {
 
     /* Modal adjustments */
     .modal {
-        display: none; /* hidden by default */
-        align-items: flex-start; /* push slightly from top */
+        display: none;
+        align-items: flex-start;
         justify-content: center;
         padding-top: 8vh;
         position: fixed;
@@ -692,17 +678,15 @@ body {
         max-width: 400px;
         padding: 20px;
         margin: 0 auto;
-        box-sizing: border-box;
         border-radius: 16px;
         border: 1px solid var(--border);
         background: var(--gray);
         text-align: center;
-        position: relative;
-        z-index: 1001;
     }
 
     .modal-box .tiers {
-        flex-wrap: nowrap;
+        flex-wrap: wrap;
+        justify-content: center;
         gap: 6px;
         overflow-x: auto;
     }
@@ -712,13 +696,23 @@ body {
         height: 24px;
     }
 
+    /* Mode leaderboard adjustments */
+    .mode-tiers {
+        grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+        gap: 12px;
+    }
+
+    .mode-tier-column {
+        min-height: 200px;
+        padding: 10px;
+    }
+
     /* Docs section adjustments */
     .docs-section {
-        width: 90%;
+        width: 250px;
         max-width: 400px;
         padding: 16px;
         margin: 30px auto;
-        box-sizing: border-box;
     }
 
     .tier-docs {
@@ -728,18 +722,17 @@ body {
     }
 
     .tier-item {
-        width: 100%;
+        width: 200px;
         max-width: 360px;
         text-align: center;
         margin-bottom: 6px;
-        box-sizing: border-box;
     }
 
-    /* Discord dropdown adjustments */
+    /* Dropdown adjustments */
     .dropdown-container {
         width: auto;
         position: relative;
-        z-index: 1002; /* ensure dropdown is above search */
+        z-index: 1002;
     }
 
     .dropdown-trigger {
@@ -750,9 +743,6 @@ body {
     }
 
     .dropdown-menu {
-        position: absolute;
-        top: calc(100% + 4px);
-        left: 0;
         min-width: 140px;
         max-width: 95vw;
         width: auto;
@@ -771,11 +761,46 @@ body {
 
     .discord-btn {
         width: 100%;
-        padding: 6px 10px;
         font-size: 14px;
-        box-sizing: border-box;
+        padding: 6px 10px;
     }
 }
+
+.header-message {
+    width: 200px;                     /* fixed width */
+    font-size: 20px;
+    font-weight: 700;
+    color: rgba(255, 255, 255, 0.9);
+    background: rgba(255, 255, 255, 0.05); /* subtle overlay */
+    padding: 12px 20px;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35);
+    opacity: 0.95;
+    transition: 0.25s ease;
+
+    display: flex;                    /* use flex */
+    justify-content: center;          /* center content horizontally */
+    align-items: center;              /* center content vertically */
+    margin: 24px auto;                /* center element itself horizontally */
+}
+
+/* Optional hover effect */
+.header-message:hover {
+    background: rgba(255, 255, 255, 0.08);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.45);
+}
+
+/* Mobile adjustments */
+@media (max-width: 480px) {
+    .header-message {
+        text-align: center;          /* slightly smaller on small screens */
+        font-size: 18px;
+        padding: 10px 16px;
+        margin-bottom: 16px;
+    }
+}
+
+
 
 /* Breakpoint: Small phones */
 @media (max-width: 480px) {
@@ -817,5 +842,63 @@ body {
     .discord-btn {
         font-size: 13px;
         padding: 5px 8px;
+    }
+
+    .player-card {
+        padding: 10px 12px;
+        margin: 32px 8px;
+        gap: 6px;
+    }
+
+    .tiers {
+        gap: 4px;
+    }
+
+    /* Mode leaderboard on small phones */
+    .mode-tiers {
+        grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+        gap: 8px;
+    }
+
+    .mode-tier-column {
+        min-height: 180px;
+        padding: 8px;
+    }
+}
+
+/* MOBILE & TABLET FIXES FOR TIERS STACKING */
+@media (max-width: 768px) {  /* tablets and smaller */
+    .modal-box {
+        margin: 16px;
+    }
+
+    /* Mode leaderboard columns should also shrink */
+    .mode-tiers {
+        grid-template-columns: 1fr; /* each column full width */
+        gap: 12px;
+    }
+
+    .mode-tier-column {
+        min-height: auto;       /* allow height to adjust */
+        padding: 12px;
+    }
+}
+
+/* Extra small phones */
+@media (max-width: 480px) {
+    .tiers {
+        gap: 6px;
+    }
+
+    .modal-box .tiers {
+        gap: 4px;
+    }
+
+    .mode-tiers {
+        gap: 20px;
+    }
+
+    .mode-tier-column {
+        padding: 8px;
     }
 }
