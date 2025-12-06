@@ -119,32 +119,29 @@ body {
   margin-bottom: 30px;
 }
 
+/* MODE TIERS FLEX WRAP */
 .mode-tiers {
-    display: grid;
-    grid-template-columns: repeat(5, 1fr); /* 5 equal columns always */
-    gap: 18px;
-    width: 100%;
-    max-width: 1200px; /* optional max width */
+    display: flex;
+    flex-wrap: wrap;             /* allow wrapping */
+    justify-content: center;     /* center the row */
+    gap: 18px;                   /* spacing between items */
     margin: 0 auto;
-    justify-content: center;
 }
 
+/* Tier column */
 .mode-tier-column {
-    flex: 1; /* fallback if flexbox is used */
-    box-sizing: border-box; /* include padding/border in width */
+    flex: 0 0 300px;             /* fixed width of 300px */
+    background: rgba(255,255,255,0.04);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    min-height: 300px;
+    box-sizing: border-box;
 }
 
-.mode-tier-column {
-  background: rgba(255,255,255,0.04);
-  border: 1px solid var(--border);
-  border-radius: 16px;
-  padding: 14px;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  min-height: 300px;
-  width: 300px;
-}
 
 .mode-tier-header {
   text-align: center;
@@ -437,7 +434,6 @@ body {
 .leaderboard {
     margin: 40px auto;
     width: 90%;
-    max-width: 1100px;
     display: flex;
     flex-direction: column;
     gap: 14px;
@@ -916,15 +912,9 @@ body {
 }
 
 /* MOBILE & TABLET FIXES FOR TIERS STACKING */
-@media (max-width: 768px) {  /* tablets and smaller */
+@media (max-width: 1050px) {  /* tablets and smaller */
     .modal-box {
         margin: 16px;
-    }
-
-    /* Mode leaderboard columns should also shrink */
-    .mode-tiers {
-        grid-template-columns: 1fr; /* each column full width */
-        gap: 12px;
     }
 
     .mode-tier-column {
@@ -932,6 +922,19 @@ body {
         padding: 12px;
     }
 }
+
+@media (max-width: 1024px) {
+    .mode-tiers {
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    }
+}
+
+@media (max-width: 768px) {
+    .mode-tiers {
+        grid-template-columns: 1fr; /* stack vertically */
+    }
+}
+
 
 /* Extra small phones */
 @media (max-width: 480px) {
