@@ -118,25 +118,93 @@ body {
   border-bottom: 1px solid var(--border);
 }
 
+/* ============================= */
+/* MODE PLAYER CARDS - Right Region Box Inside Card */
+/* ============================= */
+
 .mode-player {
   display: flex;
   align-items: center;
+  justify-content: space-between;
   gap: 10px;
+  width: 100%;
   background: rgba(255,255,255,0.08);
-  padding: 8px 10px;
   border-radius: 10px;
-  border: 1px solid rgba(255,255,255,0.12);
+  position: relative;
+  cursor: pointer;
+  overflow: hidden;
 }
 
+/* Left side: avatar + name + tiers */
+.mode-player-left {
+  padding: 8px 10px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: 1;       /* take all remaining width */
+  z-index: 1;    /* keep above region box */
+}
+
+/* Player avatar */
 .mode-player img {
   width: 30px;
   height: 30px;
   border-radius: 6px;
 }
 
+/* Player name and optional sign */
 .mode-player span {
   font-weight: 700;
 }
+
+/* Tier section (optional inside left content) */
+.tiers {
+  display: flex;
+  gap: 6px;
+}
+
+/* ============================= */
+/* Right region box inside the card */
+.region-box {
+  position: relative;
+  width: 8px;                /* initial thin line */
+  height: 40px;              /* match card height */
+  border-radius: 6px;
+  overflow: hidden;
+  flex-shrink: 0;            /* keep width */
+  transition: width 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;   /* center text */
+  color: white;
+  font-weight: 900;          /* bold */
+  text-transform: uppercase;
+  padding: 0 6px;            /* horizontal padding inside box */
+  box-sizing: border-box;
+  background-color: gray;     /* fallback */
+}
+
+/* Region colors */
+.mode-player[data-region="na"] .region-box { background-color: #ef4444; }
+.mode-player[data-region="eu"] .region-box { background-color: #22c55e; }
+.mode-player[data-region="as"] .region-box { background-color: #7c22c5; }
+
+/* Text inside region box */
+.region-box span {
+  display: none;             /* hidden initially */
+  text-align: center;
+  width: 100%;
+}
+
+/* Hover: expand box and show text */
+.mode-player:hover .region-box {
+  width: 50px;              /* partially expand from right to left */
+}
+
+.mode-player:hover .region-box span {
+  display: inline;
+}
+
 
 /* Empty tier placeholder (keeps height) */
 .mode-empty {

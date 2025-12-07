@@ -190,9 +190,13 @@ players.forEach(player => {
     const playerDiv = document.createElement("div");
     playerDiv.className = "mode-player";
     playerDiv.dataset.player = player.name;
+    playerDiv.dataset.region = player.region.toLowerCase();
+
+    // Add region for hover & border
+    playerDiv.dataset.region = player.region.toLowerCase();
 
     let sign = "";
-    let signValue = 0;  // used for sorting inside each tier
+    let signValue = 0;
 
     if (tierObj.tier.includes("HT")) { 
         sign = "+";
@@ -206,13 +210,19 @@ players.forEach(player => {
     playerDiv.dataset.signvalue = signValue;
 
     playerDiv.innerHTML = `
+      <div class="mode-player-left">
         <img src="https://render.crafty.gg/3d/bust/${player.name}">
         <span class="player-label">${player.name}</span>
         <span class="tier-sign">${sign}</span>
+      </div>
+      <div class="region-box">
+        <span>${player.region.toUpperCase()}</span>
+      </div>
     `;
 
     targetColumn.appendChild(playerDiv);
 });
+
 
   document.querySelectorAll(".mode-tier-column").forEach(col => {
     if (col.children.length === 1) col.innerHTML += `<div class="mode-empty">No players</div>`;
