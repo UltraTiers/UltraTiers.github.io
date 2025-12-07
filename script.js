@@ -62,8 +62,8 @@ document.querySelectorAll(".mode-btn").forEach(btn => {
 ============================= */
 
 function getRankTitle(points) {
-  if (points >= 26) return "Master";
-  if (points >= 11) return "Advanced";
+  if (points >= 36) return "Master";
+  if (points >= 16) return "Advanced";
   return "Rookie";
 }
 
@@ -131,7 +131,7 @@ function generatePlayers() {
       `;
     }).join("");
 
-    const avatarURL = `https://render.crafty.gg/3d/bust/${player.name}`;
+    const avatarURL = `https://render.crafty.gg/3d/bust/${player.uuid}`;
 
     const borderClass =
       index === 0 ? "gold" :
@@ -231,6 +231,37 @@ document.querySelectorAll(".mode-tier-column").forEach(col => {
     players.forEach(p => col.appendChild(p));
 });
 
+/* =============================
+   FETCH NAME FROM UUID (client-side, prefers Ashcon)
+============================= */
+
+async function fetchNameFromUUID(uuid) {
+  const clean = uuid.replace(/-/g, "");
+
+  try {
+    const res = await fetch(`https://playerdb.co/api/player/minecraft/${clean}`);
+    if (res.ok) {
+      const data = await res.json();
+      if (data && data.data && data.data.player && data.data.player.username) {
+        return data.data.player.username;  // always the CURRENT name
+      }
+    }
+  } catch (err) {
+    console.warn("PlayerDB failed:", err);
+  }
+
+  return "Unknown";
+}
+
+
+async function loadPlayerNames() {
+  const promises = players.map(async (player) => {
+    // if name already present, skip
+    if (player.name && typeof player.name === 'string') return;
+    player.name = await fetchNameFromUUID(player.uuid);
+  });
+  await Promise.all(promises);
+}
 
 /* =============================
    PLAYER CLICK
@@ -334,4 +365,7 @@ closeModalBtn.addEventListener("click", () => modal.classList.remove("show"));
    INIT
 ============================= */
 
-generatePlayers();
+(async () => {
+  await loadPlayerNames();  // fetch names from UUID
+  generatePlayers();        // now build leaderboard
+})();
