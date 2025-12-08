@@ -62,28 +62,36 @@ document.querySelectorAll(".mode-btn").forEach(btn => {
 ============================= */
 
 function getRankTitle(points) {
-  if (points >= 36) return "Master";
-  if (points >= 16) return "Advanced";
+  if (points >= 400) return "Master";
+  if (points >= 200) return "Advanced";
   return "Rookie";
 }
 
-// Map tiers to points
-const tierPointsMap = {};
-tiersDocs.forEach(t => {
-  const points = parseInt(t.description.match(/\d+/)[0]);
-  tierPointsMap[t.tier] = points;
-});
+// Map tiers to points exactly as specified
+const tierPointsMap = {
+  "LT5": 1,
+  "HT5": 2,
+  "LT4": 4,
+  "HT4": 6,
+  "LT3": 9,
+  "HT3": 12,
+  "LT2": 16,
+  "HT2": 20,
+  "LT1": 25,
+  "HT1": 30
+};
 
-// Calculate total points for a player
+// Calculate total points for a player based on the fixed tierPointsMap
 function calculatePoints(player) {
   return player.tiers.reduce((sum, t) => {
-    if (t.tier === "Unknown") return sum;
+    if (!t.tier || t.tier === "Unknown") return sum;
     return sum + (tierPointsMap[t.tier] || 0);
   }, 0);
 }
 
 // Update all player points automatically
 players.forEach(p => p.points = calculatePoints(p));
+
 
 /* =============================
    DROPDOWNS

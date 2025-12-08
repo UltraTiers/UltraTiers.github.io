@@ -708,7 +708,7 @@ body {
     padding: 40px;
     width: 90%;
     max-width: 1000px;
-    background: rgba(17,24,39,0.9);
+    background: var(--gray);
     border: 1px solid var(--border);
     border-radius: 16px;
     text-align: center;
@@ -834,7 +834,6 @@ body {
         display: none;
         align-items: flex-start;
         justify-content: center;
-        padding-top: 8vh;
         position: fixed;
         inset: 0;
         background: rgba(0,0,0,0.55);
@@ -852,7 +851,7 @@ body {
         margin: 0 auto;
         border-radius: 16px;
         border: 1px solid var(--border);
-        background: var(--gray);
+        background: var(--gray2);
         text-align: center;
     }
 
