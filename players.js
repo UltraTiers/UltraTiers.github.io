@@ -17,6 +17,11 @@ export const players = [
             { tier: "Unknown", gamemode: "Unknown" },
             { tier: "Unknown", gamemode: "Unknown" },
             { tier: "Unknown", gamemode: "Unknown" },
+            { tier: "Unknown", gamemode: "Unknown" },
+            { tier: "Unknown", gamemode: "Unknown" },
+            { tier: "Unknown", gamemode: "Unknown" },
+            { tier: "Unknown", gamemode: "Unknown" },
+            { tier: "Unknown", gamemode: "Unknown" },
             { tier: "Unknown", gamemode: "Unknown" }
         ]
     },
@@ -26,6 +31,11 @@ export const players = [
         tiers: [
             { tier: "LT3", gamemode: "Axe" },
             { tier: "LT3", gamemode: "Manhunt" },
+            { tier: "Unknown", gamemode: "Unknown" },
+            { tier: "Unknown", gamemode: "Unknown" },
+            { tier: "Unknown", gamemode: "Unknown" },
+            { tier: "Unknown", gamemode: "Unknown" },
+            { tier: "Unknown", gamemode: "Unknown" },
             { tier: "Unknown", gamemode: "Unknown" },
             { tier: "Unknown", gamemode: "Unknown" },
             { tier: "Unknown", gamemode: "Unknown" },
@@ -59,6 +69,11 @@ export const players = [
             { tier: "Unknown", gamemode: "Unknown" },
             { tier: "Unknown", gamemode: "Unknown" },
             { tier: "Unknown", gamemode: "Unknown" },
+            { tier: "Unknown", gamemode: "Unknown" },
+            { tier: "Unknown", gamemode: "Unknown" },
+            { tier: "Unknown", gamemode: "Unknown" },
+            { tier: "Unknown", gamemode: "Unknown" },
+            { tier: "Unknown", gamemode: "Unknown" },
             { tier: "Unknown", gamemode: "Unknown" }
         ]
     },
@@ -74,7 +89,12 @@ export const players = [
             { tier: "LT3", gamemode: "Diamond SMP" },
             { tier: "LT3", gamemode: "Bed" },
             { tier: "LT3", gamemode: "OG Vanilla" },
-            { tier: "LT3", gamemode: "Crystal" },
+            { tier: "LT3", gamemode: "Vanilla" },
+            { tier: "Unknown", gamemode: "Unknown" },
+            { tier: "Unknown", gamemode: "Unknown" },
+            { tier: "Unknown", gamemode: "Unknown" },
+            { tier: "Unknown", gamemode: "Unknown" },
+            { tier: "Unknown", gamemode: "Unknown" },
             { tier: "Unknown", gamemode: "Unknown" },
             { tier: "Unknown", gamemode: "Unknown" },
             { tier: "Unknown", gamemode: "Unknown" },
@@ -101,6 +121,11 @@ export const players = [
             { tier: "Unknown", gamemode: "Unknown" },
             { tier: "Unknown", gamemode: "Unknown" },
             { tier: "Unknown", gamemode: "Unknown" },
+            { tier: "Unknown", gamemode: "Unknown" },
+            { tier: "Unknown", gamemode: "Unknown" },
+            { tier: "Unknown", gamemode: "Unknown" },
+            { tier: "Unknown", gamemode: "Unknown" },
+            { tier: "Unknown", gamemode: "Unknown" },
             { tier: "Unknown", gamemode: "Unknown" }
         ]
     },
@@ -109,6 +134,11 @@ export const players = [
         region: "AS",
         tiers: [
             { tier: "HT5", gamemode: "Mace" },
+            { tier: "Unknown", gamemode: "Unknown" },
+            { tier: "Unknown", gamemode: "Unknown" },
+            { tier: "Unknown", gamemode: "Unknown" },
+            { tier: "Unknown", gamemode: "Unknown" },
+            { tier: "Unknown", gamemode: "Unknown" },
             { tier: "Unknown", gamemode: "Unknown" },
             { tier: "Unknown", gamemode: "Unknown" },
             { tier: "Unknown", gamemode: "Unknown" },
@@ -143,6 +173,11 @@ export const players = [
             { tier: "Unknown", gamemode: "Unknown" },
             { tier: "Unknown", gamemode: "Unknown" },
             { tier: "Unknown", gamemode: "Unknown" },
+            { tier: "Unknown", gamemode: "Unknown" },
+            { tier: "Unknown", gamemode: "Unknown" },
+            { tier: "Unknown", gamemode: "Unknown" },
+            { tier: "Unknown", gamemode: "Unknown" },
+            { tier: "Unknown", gamemode: "Unknown" },
             { tier: "Unknown", gamemode: "Unknown" }
         ]
     },
@@ -151,6 +186,11 @@ export const players = [
         region: "AS",
         tiers: [
             { tier: "LT3", gamemode: "Nethpot" },
+            { tier: "Unknown", gamemode: "Unknown" },
+            { tier: "Unknown", gamemode: "Unknown" },
+            { tier: "Unknown", gamemode: "Unknown" },
+            { tier: "Unknown", gamemode: "Unknown" },
+            { tier: "Unknown", gamemode: "Unknown" },
             { tier: "Unknown", gamemode: "Unknown" },
             { tier: "Unknown", gamemode: "Unknown" },
             { tier: "Unknown", gamemode: "Unknown" },
