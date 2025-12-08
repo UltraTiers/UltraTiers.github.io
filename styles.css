@@ -142,7 +142,6 @@ body {
   align-items: center;
   gap: 10px;
   flex: 1;       /* take all remaining width */
-  z-index: 1;    /* keep above region box */
 }
 
 /* Player avatar */
@@ -592,7 +591,10 @@ body {
     gap: 6px;
 }
 
-/* POPUP MODAL */
+/* ========================== */
+/* POPUP MODAL - UPDATED UI   */
+/* ========================== */
+
 .modal {
     position: fixed;
     inset: 0;
@@ -600,6 +602,7 @@ body {
     display: none;
     align-items: center;
     justify-content: center;
+    z-index: 1000;
 }
 
 .modal.show {
@@ -607,16 +610,19 @@ body {
 }
 
 .modal-box {
-    background: var(--gray);
-    padding: 30px;
+    background: var(--gray2);
+    padding: 24px 28px;
     border-radius: 16px;
     border: 1px solid var(--border);
-    text-align: center;
-    width: 300px;
+    text-align: left;           /* aligns rows nicely */
+    width: 320px;
+    max-width: 90%;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.45);
 }
 
 .modal-box button {
-    margin-top: 18px;
+    display: block;          /* Make it a block element so margin auto works */
+    margin: 18px auto 0 auto; /* Top margin 18px, horizontally centered */
     padding: 10px 20px;
     border-radius: 10px;
     border: none;
@@ -624,6 +630,76 @@ body {
     font-weight: 600;
     background: var(--accent);
     color: var(--text);
+    transition: 0.25s ease;
+}
+
+.modal-box button:hover {
+    background: rgba(255,255,255,0.2);
+}
+
+/* Rows inside modal */
+.modal-section {
+    margin-bottom: 16px;
+}
+
+.modal-info-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 6px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+}
+
+.modal-label {
+    font-weight: 600;
+    color: rgba(255,255,255,0.6);
+}
+
+.modal-value {
+    font-weight: 500;
+    color: var(--text);
+}
+
+/* Subtitle before tiers */
+.modal-subtitle {
+    margin-top: 12px;
+    margin-bottom: 8px;
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--text);
+}
+
+.modal-header {
+    display: flex;
+    flex-direction: column; /* stack avatar above name */
+    align-items: center;    /* center horizontally */
+    justify-content: center;
+    gap: 8px;               /* space between avatar and name */
+    margin-bottom: 20px;
+}
+
+.modal-avatar {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    border: 2px solid var(--accent);
+    object-fit: cover;
+}
+
+.modal-name {
+    font-size: 32px;
+    font-weight: 700;
+    color: var(--text);
+}
+
+/* Tier container inside modal */
+.tiers-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    justify-content: center;
+    padding: 8px;
+    background: rgba(255,255,255,0.05);
+    border-radius: 10px;
 }
 
 /* DOCS SECTION */

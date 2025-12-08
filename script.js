@@ -283,7 +283,8 @@ function attachPlayerClick() {
       const name = el.dataset.player;
       const player = players.find(p => p.name === name);
 
-      modalTitle.textContent = player.name;
+      // Set modal title to empty because the player name is now displayed below avatar
+      modalTitle.textContent = "";
 
       const tiersHTML = player.tiers
         .filter(t => t.tier !== "Unknown") // only show known tiers in modal
@@ -298,10 +299,37 @@ function attachPlayerClick() {
         }).join("");
 
       modalContent.innerHTML = `
-        <p><b>Region:</b> ${player.region}</p>
-        <p><b>Rank:</b> ${getRankTitle(player.points)}</p>
-        <p><b>Points:</b> ${player.points}</p>
-        <div class="tiers">${tiersHTML}</div>
+        <div class="modal-header">
+          <img class="modal-avatar" src="https://render.crafty.gg/3d/bust/${player.uuid}" alt="${player.name} Avatar">
+          <div class="modal-name">${player.name || "Unknown Player"}</div>
+        </div>
+
+        <div class="modal-section">
+          <div class="modal-info-row">
+            <span class="modal-label">Placement:</span>
+            <span class="modal-value">#${players.indexOf(player) + 1}</span>
+          </div>
+
+          <div class="modal-info-row">
+            <span class="modal-label">Region:</span>
+            <span class="modal-value">${player.region || "Unknown"}</span>
+          </div>
+
+          <div class="modal-info-row">
+            <span class="modal-label">Rank:</span>
+            <span class="modal-value">${getRankTitle(player.points)}</span>
+          </div>
+
+          <div class="modal-info-row">
+            <span class="modal-label">Points:</span>
+            <span class="modal-value">${player.points.toLocaleString()}</span>
+          </div>
+        </div>
+
+        <h3 class="modal-subtitle">Tier Progress</h3>
+        <div class="tiers-container">
+          ${tiersHTML}
+        </div>
       `;
 
       modal.classList.add("show");
