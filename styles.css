@@ -102,7 +102,7 @@ body {
   border-radius: 16px;
   padding: 14px;
 
-  flex: 1 1 260px;      /* << responsive width */
+  flex: 1 1 320px;      /* << responsive width */
   max-width: 320px;     /* << prevents giant columns on desktop */
 
   display: flex;
