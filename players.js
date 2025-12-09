@@ -337,6 +337,32 @@ export const players = [
             { tier: "Unknown", gamemode: "Unknown" }
         ]
     },
+    {
+        uuid: "26fef949-603d-4c2a-aa68-3f4b2496f158",
+        region: "EU",
+        tiers: [
+            { tier: "LT3", gamemode: "Diamond SMP" },
+            { tier: "Unknown", gamemode: "Unknown" },
+            { tier: "Unknown", gamemode: "Unknown" },
+            { tier: "Unknown", gamemode: "Unknown" },
+            { tier: "Unknown", gamemode: "Unknown" },
+            { tier: "Unknown", gamemode: "Unknown" },
+            { tier: "Unknown", gamemode: "Unknown" },
+            { tier: "Unknown", gamemode: "Unknown" },
+            { tier: "Unknown", gamemode: "Unknown" },
+            { tier: "Unknown", gamemode: "Unknown" },
+            { tier: "Unknown", gamemode: "Unknown" },
+            { tier: "Unknown", gamemode: "Unknown" },
+            { tier: "Unknown", gamemode: "Unknown" },
+            { tier: "Unknown", gamemode: "Unknown" },
+            { tier: "Unknown", gamemode: "Unknown" },
+            { tier: "Unknown", gamemode: "Unknown" },
+            { tier: "Unknown", gamemode: "Unknown" },
+            { tier: "Unknown", gamemode: "Unknown" },
+            { tier: "Unknown", gamemode: "Unknown" },
+            { tier: "Unknown", gamemode: "Unknown" }
+        ]
+    },
 ];
 
 export const tiersDocs = [
