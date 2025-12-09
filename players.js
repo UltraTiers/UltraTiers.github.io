@@ -342,8 +342,8 @@ export const players = [
         region: "EU",
         tiers: [
             { tier: "LT3", gamemode: "Diamond SMP" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
+            { tier: "LT3", gamemode: "Speed" },
+            { tier: "LT3", gamemode: "OG Vanilla" },
             { tier: "Unknown", gamemode: "Unknown" },
             { tier: "Unknown", gamemode: "Unknown" },
             { tier: "Unknown", gamemode: "Unknown" },
