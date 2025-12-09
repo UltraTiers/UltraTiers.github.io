@@ -376,10 +376,11 @@ searchInput.addEventListener("keydown", function(e) {
     const player = players.find(p => p.name.toLowerCase() === searchValue);
     if (!player) return alert("Player not found!");
 
-    modalTitle.textContent = player.name;
+    // Use same modal format as clicking a player
+    modalTitle.textContent = ""; // same as click modal
 
     const tiersHTML = player.tiers
-      .filter(t => t.tier !== "Unknown") // modal hides empty tiers
+      .filter(t => t.tier !== "Unknown")
       .map(t => {
         const tierNumber = t.tier.match(/\d+/)[0];
         return `
@@ -391,15 +392,43 @@ searchInput.addEventListener("keydown", function(e) {
       }).join("");
 
     modalContent.innerHTML = `
-      <p><b>Region:</b> ${player.region}</p>
-      <p><b>Rank:</b> ${getRankTitle(player.points)}</p>
-      <p><b>Points:</b> ${player.points}</p>
-      <div class="tiers">${tiersHTML}</div>
+      <div class="modal-header">
+        <img class="modal-avatar" src="https://render.crafty.gg/3d/bust/${player.uuid}" alt="${player.name} Avatar">
+        <div class="modal-name">${player.name || "Unknown Player"}</div>
+      </div>
+
+      <div class="modal-section">
+        <div class="modal-info-row">
+          <span class="modal-label">Placement:</span>
+          <span class="modal-value">#${players.sort((a,b)=>b.points-a.points).indexOf(player) + 1}</span>
+        </div>
+
+        <div class="modal-info-row">
+          <span class="modal-label">Region:</span>
+          <span class="modal-value">${player.region || "Unknown"}</span>
+        </div>
+
+        <div class="modal-info-row">
+          <span class="modal-label">Rank:</span>
+          <span class="modal-value">${getRankTitle(player.points)}</span>
+        </div>
+
+        <div class="modal-info-row">
+          <span class="modal-label">Points:</span>
+          <span class="modal-value">${player.points.toLocaleString()}</span>
+        </div>
+      </div>
+
+      <h3 class="modal-subtitle">Tier Progress</h3>
+      <div class="tiers-container">
+        ${tiersHTML}
+      </div>
     `;
 
     modal.classList.add("show");
   }
 });
+
 
 /* =============================
    MODAL CLOSE
