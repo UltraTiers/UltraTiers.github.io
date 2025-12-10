@@ -16,6 +16,11 @@ app.use(express.static(path.join(process.cwd())));
 // -------------------
 const supabaseUrl = process.env.SUPABASE_URL;
 const supabaseKey = process.env.SUPABASE_KEY;
+
+if (!supabaseUrl || !supabaseKey) {
+  throw new Error("Missing SUPABASE_URL or SUPABASE_KEY");
+}
+
 const supabase = createClient(supabaseUrl, supabaseKey);
 
 // -------------------
@@ -33,34 +38,32 @@ async function loadPlayers() {
 }
 
 async function saveOrUpdatePlayer(player) {
-  try {
-    const { uuid, name, region, tiers, points } = player;
+  const { uuid, name, region, tiers, points } = player;
 
-    const { data: existing, error: selectError } = await supabase
+  const { data: existing, error } = await supabase
+    .from("players")
+    .select("*")
+    .eq("uuid", uuid)
+    .maybeSingle();
+
+  if (error) throw error;
+
+  if (existing) {
+    const { error: updateError } = await supabase
       .from("players")
-      .select("*")
-      .eq("uuid", uuid)
-      .single();
+      .update({ name, region, tiers, points })
+      .eq("uuid", uuid);
 
-    if (selectError && selectError.code !== "PGRST116") throw selectError;
+    if (updateError) throw updateError;
+  } else {
+    const { error: insertError } = await supabase
+      .from("players")
+      .insert([{ uuid, name, region, tiers, points }]);
 
-    if (existing) {
-      const { error } = await supabase
-        .from("players")
-        .update({ name, region, tiers, points })
-        .eq("uuid", uuid);
-      if (error) throw error;
-    } else {
-      const { error } = await supabase
-        .from("players")
-        .insert([{ uuid, name, region, tiers, points }]);
-      if (error) throw error;
-    }
-  } catch (err) {
-    console.error("Error saving/updating player:", err);
-    throw err;
+    if (insertError) throw insertError;
   }
 }
+
 
 // -------------------
 // API Endpoints
