@@ -13,7 +13,7 @@ const tiersDocs = [
 ];
 
 async function loadPlayers() {
-  const res = await fetch("https://ultratiersapi.onrender.com/players");
+  const res = await fetch("/players");
   players = await res.json();
 }
 
