@@ -50,21 +50,30 @@ async function saveOrUpdatePlayer(player) {
 
   if (existing) {
     const { error: updateError } = await supabase
-      .from("ultratiers") // ✅ FIXED
+      .from("ultratiers")
       .update({ name, region, tiers, points })
       .eq("uuid", uuid);
 
     if (updateError) throw updateError;
   } else {
     const { error: insertError } = await supabase
-      .from("ultratiers") // ✅ FIXED
+      .from("ultratiers")
       .insert([{ uuid, name, region, tiers, points }]);
 
     if (insertError) throw insertError;
   }
 }
 
+// -------------------
+// Default tiers order
+// -------------------
+const allGamemodes = [
+  "Axe","Sword","Bow","Vanilla","NethOP","Pot","UHC","SMP","Mace","Diamond SMP",
+  "OG Vanilla","Bed","DeBuff","Speed","Manhunt","Elytra","Diamond Survival","Minecart",
+  "Creeper","Trident","AxePot","Pearl","Bridge","Sumo","OP"
+];
 
+const tierPointsMap = { LT5:1, HT5:2, LT4:4, HT4:6, LT3:9, HT3:12, LT2:16, HT2:20, LT1:25, HT1:30 };
 
 // -------------------
 // API Endpoints
@@ -74,7 +83,22 @@ app.get("/health", (req, res) => res.send("API is running!"));
 app.get("/players", async (req, res) => {
   try {
     const players = await loadPlayers();
-    res.json(players);
+
+    // Ensure every player has all gamemodes and empty tiers if missing
+    const updatedPlayers = players.map(p => {
+      const tiersMap = {};
+      if (Array.isArray(p.tiers)) {
+        p.tiers.forEach(t => { tiersMap[t.gamemode] = t.tier; });
+      }
+      const fullTiers = allGamemodes.map(g => ({
+        gamemode: g,
+        tier: tiersMap[g] || "Unknown"
+      }));
+      const points = fullTiers.reduce((sum, t) => sum + (tierPointsMap[t.tier] || 0), 0);
+      return { ...p, tiers: fullTiers, points };
+    });
+
+    res.json(updatedPlayers);
   } catch (err) {
     console.error("Error in GET /players:", err);
     res.status(500).json({ error: "Internal server error" });
@@ -90,17 +114,30 @@ app.post("/", async (req, res) => {
     let player = players.find(p => p.uuid === uuid);
 
     if (!player) {
-      player = { uuid, name, region, tiers: [{ gamemode, tier: newTier }], points: 0 };
+      // Fill all gamemodes with "Unknown" first
+      const tiers = allGamemodes.map(g => ({
+        gamemode: g,
+        tier: g === gamemode ? newTier : "Unknown"
+      }));
+      player = { uuid, name, region, tiers, points: tierPointsMap[newTier] || 0 };
     } else {
+      // Update only the specified gamemode
       const tierObj = player.tiers.find(t => t.gamemode === gamemode);
       if (tierObj) tierObj.tier = newTier;
       else player.tiers.push({ gamemode, tier: newTier });
       if (name) player.name = name;
       if (region) player.region = region;
-    }
 
-    const tierPointsMap = { LT5:1, HT5:2, LT4:4, HT4:6, LT3:9, HT3:12, LT2:16, HT2:20, LT1:25, HT1:30 };
-    player.points = player.tiers.reduce((sum, t) => (!t.tier || t.tier==="Unknown")? sum : sum + (tierPointsMap[t.tier]||0), 0);
+      // Ensure all gamemodes exist
+      allGamemodes.forEach(g => {
+        if (!player.tiers.find(t => t.gamemode === g)) {
+          player.tiers.push({ gamemode: g, tier: "Unknown" });
+        }
+      });
+
+      // Recalculate points
+      player.points = player.tiers.reduce((sum, t) => sum + (tierPointsMap[t.tier] || 0), 0);
+    }
 
     await saveOrUpdatePlayer(player);
     return res.json({ message: "Player updated successfully", player });
@@ -114,7 +151,9 @@ app.get("/", (req, res) => {
   res.sendFile(path.join(process.cwd(), "index.html"));
 });
 
+// -------------------
 // Global error handling
+// -------------------
 process.on("unhandledRejection", (reason, promise) => {
   console.error("Unhandled Rejection at:", promise, "reason:", reason);
 });
