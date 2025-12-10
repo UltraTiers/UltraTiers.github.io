@@ -49,6 +49,14 @@ function showSection(sectionToShow) {
   });
 }
 
+function sortPlayerTiers(tiers) {
+  return tiers.slice().sort((a, b) => {
+    const aPoints = tierPointsMap[a.tier] || -1;
+    const bPoints = tierPointsMap[b.tier] || -1;
+    return bPoints - aPoints; // highest points first
+  });
+}
+
 /* =============================
    NAVIGATION BUTTONS
 ============================= */
@@ -144,17 +152,17 @@ function generatePlayers() {
   playersContainer.innerHTML = "";
 
   players.forEach((player, index) => {
-    const tiersHTML = player.tiers.map(t => {
-      if (t.tier === "Unknown") return `<div class="tier empty"></div>`;
-
-      const tierNumber = t.tier.match(/\d+/)[0];
-      return `
-        <div class="tier" data-gamemode="${t.gamemode}" data-tier="${tierNumber}">
-          <img src="gamemodes/${t.gamemode}.png">
-          <span>${t.tier}</span>
-        </div>
-      `;
-    }).join("");
+const sortedTiers = sortPlayerTiers(player.tiers);
+const tiersHTML = sortedTiers.map(t => {
+  if (t.tier === "Unknown") return `<div class="tier empty"></div>`;
+  const tierNumber = t.tier.match(/\d+/)[0];
+  return `
+    <div class="tier" data-gamemode="${t.gamemode}" data-tier="${tierNumber}">
+      <img src="gamemodes/${t.gamemode}.png">
+      <span>${t.tier}</span>
+    </div>
+  `;
+}).join("");
 
     const avatarURL = `https://render.crafty.gg/3d/bust/${player.uuid}`;
 
