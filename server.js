@@ -14,7 +14,7 @@ app.use(express.static(path.join(process.cwd())));
 // -------------------
 // Supabase setup
 // -------------------
-const supabaseUrl = process.env.SUPABASE_URL; // e.g., "https://wrudkpbbxmnfdpbirumh.supabase.co"
+const supabaseUrl = process.env.SUPABASE_URL; // e.g., https://wrudkpbbxmnfdpbirumh.supabase.co
 const supabaseKey = process.env.SUPABASE_KEY; // your anon key
 const supabase = createClient(supabaseUrl, supabaseKey);
 
