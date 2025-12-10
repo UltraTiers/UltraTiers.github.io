@@ -10,62 +10,53 @@ const PORT = process.env.PORT || 3000;
 app.use(cors());
 app.use(express.json());
 
-// Path to your players.js file
+// Serve frontend files
+app.use(express.static(path.join(process.cwd())));
+
+// Path to players.js
 const playersFile = path.join(process.cwd(), "players.js");
 
-// Endpoint to update players.js
+// Helper to read players
+function loadPlayers() {
+  if (!fs.existsSync(playersFile)) return [];
+  let content = fs.readFileSync(playersFile, "utf-8");
+  content = content.replace(/^export const players = /, "").replace(/;$/, "");
+  return JSON.parse(content);
+}
+
+// Helper to save players
+function savePlayers(players) {
+  fs.writeFileSync(playersFile, `export const players = ${JSON.stringify(players, null, 2)};`);
+}
+
+// Endpoint to update player
 app.post("/update-player", (req, res) => {
   const { uuid, gamemode, newTier } = req.body;
+  if (!uuid || !gamemode || !newTier) return res.status(400).json({ error: "Missing uuid, gamemode, or newTier" });
 
-  if (!uuid || !gamemode || !newTier) {
-    return res.status(400).json({
-      error: "Missing uuid, gamemode, or newTier"
-    });
-  }
+  const players = loadPlayers();
+  let player = players.find(p => p.uuid === uuid);
 
-  let players = [];
-  try {
-    if (fs.existsSync(playersFile)) {
-      let content = fs.readFileSync(playersFile, "utf-8");
-
-      // Remove "export const players = " so JSON can parse
-      content = content.replace(/^export const players = /, "");
-
-      players = JSON.parse(content);
-    }
-  } catch (err) {
-    console.error(err);
-    return res.status(500).json({ error: "Failed to read players.js" });
-  }
-
-  const player = players.find(p => p.uuid === uuid);
-  if (!player) return res.status(404).json({ error: "Player not found" });
-
-  // Update tier
-  const tierObj = player.tiers.find(t => t.gamemode === gamemode);
-  if (tierObj) {
-    tierObj.tier = newTier;
+  if (!player) {
+    // If player doesn’t exist, create it
+    player = { uuid, name: null, region: null, tiers: [{ gamemode, tier: newTier }], points: 0 };
+    players.push(player);
   } else {
-    return res.status(404).json({ error: "Gamemode not found for this player" });
+    const tierObj = player.tiers.find(t => t.gamemode === gamemode);
+    if (tierObj) tierObj.tier = newTier;
+    else player.tiers.push({ gamemode, tier: newTier });
   }
 
-  // Save updated JS back
-  try {
-    fs.writeFileSync(
-      playersFile,
-      `export const players = ${JSON.stringify(players, null, 2)};`
-    );
-  } catch (err) {
-    console.error(err);
-    return res.status(500).json({ error: "Failed to save players.js" });
-  }
-
+  savePlayers(players);
   return res.json({ message: "Player updated successfully", player });
 });
 
 // Health check
+app.get("/health", (req, res) => res.send("API is running!"));
+
+// Serve index.html by default
 app.get("/", (req, res) => {
-  res.send("API is running!");
+  res.sendFile(path.join(process.cwd(), "index.html"));
 });
 
 app.listen(PORT, () => {
