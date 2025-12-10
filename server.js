@@ -1,7 +1,7 @@
 import express from "express";
-import path from "path";
 import cors from "cors";
-import Database from "better-sqlite3";
+import path from "path";
+import { createClient } from "@supabase/supabase-js";
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -12,48 +12,39 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(process.cwd())));
 
 // -------------------
-// SQLite setup
+// Supabase setup
 // -------------------
-const db = new Database(path.join(process.cwd(), "players.db"));
-
-// Create table if not exists
-db.prepare(`
-  CREATE TABLE IF NOT EXISTS players (
-    uuid TEXT PRIMARY KEY,
-    name TEXT,
-    region TEXT,
-    tiers TEXT,
-    points INTEGER
-  )
-`).run();
+const supabaseUrl = process.env.SUPABASE_URL; // e.g., "https://wrudkpbbxmnfdpbirumh.supabase.co"
+const supabaseKey = process.env.SUPABASE_KEY; // your anon key
+const supabase = createClient(supabaseUrl, supabaseKey);
 
 // -------------------
 // Helper Functions
 // -------------------
-
-// Load all players
-function loadPlayers() {
-  const rows = db.prepare("SELECT * FROM players").all();
-  return rows.map(r => ({
-    uuid: r.uuid,
-    name: r.name,
-    region: r.region,
-    tiers: JSON.parse(r.tiers),
-    points: r.points
-  }));
+async function loadPlayers() {
+  const { data, error } = await supabase.from("players").select("*");
+  if (error) throw error;
+  return data;
 }
 
-// Save or update a player
-function saveOrUpdatePlayer({ uuid, name, region, tiers, points }) {
-  const tiersStr = JSON.stringify(tiers);
-  const existing = db.prepare("SELECT * FROM players WHERE uuid = ?").get(uuid);
+async function saveOrUpdatePlayer(player) {
+  const { uuid, name, region, tiers, points } = player;
+
+  const { data: existing } = await supabase
+    .from("players")
+    .select("*")
+    .eq("uuid", uuid)
+    .single();
 
   if (existing) {
-    db.prepare("UPDATE players SET name=?, region=?, tiers=?, points=? WHERE uuid=?")
-      .run(name, region, tiersStr, points, uuid);
+    await supabase
+      .from("players")
+      .update({ name, region, tiers, points })
+      .eq("uuid", uuid);
   } else {
-    db.prepare("INSERT INTO players (uuid, name, region, tiers, points) VALUES (?, ?, ?, ?, ?)")
-      .run(uuid, name, region, tiersStr, points);
+    await supabase
+      .from("players")
+      .insert([{ uuid, name, region, tiers, points }]);
   }
 }
 
@@ -65,32 +56,25 @@ function saveOrUpdatePlayer({ uuid, name, region, tiers, points }) {
 app.get("/health", (req, res) => res.send("API is running!"));
 
 // Get all players
-app.get("/players", (req, res) => {
-  const players = loadPlayers();
+app.get("/players", async (req, res) => {
+  const players = await loadPlayers();
   res.json(players);
 });
 
 // Update/add player (POST from Discord bot)
-app.post("/", (req, res) => {
+app.post("/", async (req, res) => {
   const { uuid, gamemode, newTier, name = null, region = null } = req.body;
 
   if (!uuid || !gamemode || !newTier) {
     return res.status(400).json({ error: "Missing uuid, gamemode, or newTier" });
   }
 
-  const players = loadPlayers();
+  let players = await loadPlayers();
   let player = players.find(p => p.uuid === uuid);
 
   if (!player) {
     // New player
-    player = {
-      uuid,
-      name,
-      region,
-      tiers: [{ gamemode, tier: newTier }],
-      points: 0
-    };
-    players.push(player);
+    player = { uuid, name, region, tiers: [{ gamemode, tier: newTier }], points: 0 };
   } else {
     // Update existing player
     const tierObj = player.tiers.find(t => t.gamemode === gamemode);
@@ -103,20 +87,17 @@ app.post("/", (req, res) => {
 
   // Recalculate points
   const tierPointsMap = {
-    "LT5": 1, "HT5": 2,
-    "LT4": 4, "HT4": 6,
-    "LT3": 9, "HT3": 12,
-    "LT2": 16, "HT2": 20,
-    "LT1": 25, "HT1": 30
+    LT5: 1, HT5: 2, LT4: 4, HT4: 6,
+    LT3: 9, HT3: 12, LT2: 16, HT2: 20,
+    LT1: 25, HT1: 30
   };
   player.points = player.tiers.reduce((sum, t) => {
     if (!t.tier || t.tier === "Unknown") return sum;
     return sum + (tierPointsMap[t.tier] || 0);
   }, 0);
 
-  // Save/update in database
-  saveOrUpdatePlayer(player);
-
+  // Save/update in Supabase
+  await saveOrUpdatePlayer(player);
   return res.json({ message: "Player updated successfully", player });
 });
 
