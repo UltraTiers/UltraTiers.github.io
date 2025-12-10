@@ -28,7 +28,7 @@ const supabase = createClient(supabaseUrl, supabaseKey);
 // -------------------
 async function loadPlayers() {
   try {
-    const { data, error } = await supabase.from("players").select("*");
+    const { data, error } = await supabase.from("ultratiers").select("*");
     if (error) throw error;
     return data;
   } catch (err) {
@@ -41,7 +41,7 @@ async function saveOrUpdatePlayer(player) {
   const { uuid, name, region, tiers, points } = player;
 
   const { data: existing, error } = await supabase
-    .from("players")
+    .from("ultratiers")
     .select("*")
     .eq("uuid", uuid)
     .maybeSingle();
@@ -50,19 +50,20 @@ async function saveOrUpdatePlayer(player) {
 
   if (existing) {
     const { error: updateError } = await supabase
-      .from("players")
+      .from("ultratiers") // ✅ FIXED
       .update({ name, region, tiers, points })
       .eq("uuid", uuid);
 
     if (updateError) throw updateError;
   } else {
     const { error: insertError } = await supabase
-      .from("players")
+      .from("ultratiers") // ✅ FIXED
       .insert([{ uuid, name, region, tiers, points }]);
 
     if (insertError) throw insertError;
   }
 }
+
 
 
 // -------------------
