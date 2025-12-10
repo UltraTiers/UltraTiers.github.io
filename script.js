@@ -1,4 +1,4 @@
-import { players, tiersDocs } from './players.js';
+import { players, tiersDocs } from '/players.js';
 
 /* =============================
    ELEMENTS

@@ -1,573 +1,66 @@
-export const players = [
-    {
-        uuid: "1c00fbe3-0564-4bfa-955e-a807d830e146",
-        region: "EU",
-        tiers: [
-            { tier: "LT2", gamemode: "Bow" },
-            { tier: "LT3", gamemode: "Bridge" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" }
-        ]
-    },
-    {
-        uuid: "ead8a3d7-bb02-4966-a39b-424813476316",
-        region: "NA",
-        tiers: [
-            { tier: "LT3", gamemode: "Axe" },
-            { tier: "LT3", gamemode: "Manhunt" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" }
-        ]
-    },
-    {
-        uuid: "0a8fd6c6-56f2-416e-b0d1-03758050f06e",
-        region: "EU",
-        tiers: [
-            { tier: "LT3", gamemode: "NethOP" },
-            { tier: "LT3", gamemode: "Pot" },
-            { tier: "LT3", gamemode: "SMP" },
-            { tier: "LT3", gamemode: "DeBuff" },
-            { tier: "LT3", gamemode: "Speed" },
-            { tier: "LT3", gamemode: "Diamond SMP" },
-            { tier: "LT3", gamemode: "Bed" },
-            { tier: "LT3", gamemode: "OG Vanilla" },
-            { tier: "LT3", gamemode: "Vanilla" },
-            { tier: "LT3", gamemode: "Sword" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" }
-        ]
-    },
-    {
-        uuid: "4f6eb74d-dc98-4fc1-a696-41c915a843fe",
-        region: "AS",
-        tiers: [
-            { tier: "LT3", gamemode: "Pot" },
-            { tier: "LT3", gamemode: "Mace" },
-            { tier: "LT3", gamemode: "SMP" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" }
-        ]
-    },
-    {
-        uuid: "b46d333f-a51b-4427-a0e2-d0a9dbdd62dc",
-        region: "AS",
-        tiers: [
-            { tier: "HT5", gamemode: "Mace" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" }
-        ]
-    },
-    {
-        uuid: "dcd57d08-c286-4853-b9b0-874882d664be",
-        region: "EU",
-        tiers: [
-            { tier: "LT4", gamemode: "Sword" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" }
-        ]
-    },
-    {
-        uuid: "6c44315d-aed7-4699-9213-ae75e5b9047b",
-        region: "EU",
-        tiers: [
-            { tier: "HT4", gamemode: "NethOP" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" }
-        ]
-    },
-    {
-        uuid: "65d5b73e-6b0b-4cb4-add3-8cd419d47340",
-        region: "EU",
-        tiers: [
-            { tier: "LT3", gamemode: "Bed" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" }
-        ]
-    },
-    {
-        uuid: "f2df64f9-238f-42d9-acdb-c1107ada5182",
-        region: "AS",
-        tiers: [
-            { tier: "HT4", gamemode: "NethOP" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" }
-        ]
-    },
-    {
-        uuid: "507afad9-36ed-4afb-8e5d-f6e6ac389683",
-        region: "AS",
-        tiers: [
-            { tier: "LT4", gamemode: "NethOP" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" }
-        ]
-    },
-    {
-        uuid: "893b32a3-a9f8-480d-a46c-7bbf2b36db2d",
-        region: "EU",
-        tiers: [
-            { tier: "LT4", gamemode: "Sword" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" }
-        ]
-    },
-    {
-        uuid: "ed79aab8-58e6-4631-ada4-584ead6ba643",
-        region: "EU",
-        tiers: [
-            { tier: "HT4", gamemode: "Diamond SMP" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" }
-        ]
-    },
-    {
-        uuid: "942c687b-8e37-4bd4-bd63-9b6c97b94cae",
-        region: "AS",
-        tiers: [
-            { tier: "LT5", gamemode: "Mace" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" }
-        ]
-    },
-    {
-        uuid: "26fef949-603d-4c2a-aa68-3f4b2496f158",
-        region: "EU",
-        tiers: [
-            { tier: "LT3", gamemode: "Diamond SMP" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" }
-        ]
-    },
-    {
-        uuid: "6200f2be-3348-4585-83e9-d259f02c0b74",
-        region: "EU",
-        tiers: [
-            { tier: "LT2", gamemode: "Trident" },
-            { tier: "LT2", gamemode: "Manhunt" },
-            { tier: "HT3", gamemode: "Pot" },
-            { tier: "HT3", gamemode: "Axe" },
-            { tier: "HT3", gamemode: "Mace" },
-            { tier: "HT3", gamemode: "SMP" },
-            { tier: "HT3", gamemode: "Diamond SMP" },
-            { tier: "LT3", gamemode: "Sword" },
-            { tier: "LT3", gamemode: "Diamond Survival" },
-            { tier: "LT3", gamemode: "Vanilla" },
-            { tier: "LT3", gamemode: "UHC" },
-            { tier: "LT3", gamemode: "NethOP" },
-            { tier: "LT3", gamemode: "OG Vanilla" },
-            { tier: "LT3", gamemode: "Creeper" },
-            { tier: "LT3", gamemode: "Speed" },
-            { tier: "LT3", gamemode: "Elytra" },
-            { tier: "LT3", gamemode: "Minecart" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" }
-        ]
-    },
-    {
-        uuid: "c8553288-badb-480a-a010-2c6d47ac36b5",
-        region: "EU",
-        tiers: [
-            { tier: "LT3", gamemode: "Diamond SMP" },
-            { tier: "LT3", gamemode: "NethOP" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" }
-        ]
-    },
-    {
-        uuid: "7e74941a-bf2e-4a22-9284-a99dbf214421",
-        region: "EU",
-        tiers: [
-            { tier: "HT5", gamemode: "Sword" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" }
-        ]
-    },
-    {
-        uuid: "c03fb6ec-287c-4de3-880c-7610ad285baa",
-        region: "EU",
-        tiers: [
-            { tier: "HT5", gamemode: "Axe" },
-            { tier: "HT5", gamemode: "Vanilla" },
-            { tier: "HT5", gamemode: "NethOP" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" },
-            { tier: "Unknown", gamemode: "Unknown" }
-        ]
-    },
-];
+import fs from "fs";
+import path from "path";
+import express from "express";
 
-export const tiersDocs = [
-    { tier: "HT1", gamemode: "High Tier 1", description: "Gives you 30 points." },
-    { tier: "LT1", gamemode: "Low Tier 1", description: "Gives you 25 points." },
-    { tier: "HT2", gamemode: "High Tier 2", description: "Gives you 20 points." },
-    { tier: "LT2", gamemode: "Low Tier 2", description: "Gives you 16 points." },
-    { tier: "HT3", gamemode: "High Tier 3", description: "Gives you 12 points." },
-    { tier: "LT3", gamemode: "Low Tier 3", description: "Gives you 9 points." },
-    { tier: "HT4", gamemode: "High Tier 4", description: "Gives you 6 points." },
-    { tier: "LT4", gamemode: "Low Tier 4", description: "Gives you 4 points." },
-    { tier: "HT5", gamemode: "High Tier 5", description: "Gives you 2 points." },
-    { tier: "LT5", gamemode: "Low Tier 5", description: "Gives you 1 point." }
-];
+const app = express();
+app.use(express.json());
+
+const playersFileJS = path.join(process.cwd(), "players.js");
+
+app.post("/update-player", (req, res) => {
+  const { uuid, gamemode, newTier } = req.body;
+
+  if (!uuid || !gamemode || !newTier) {
+    return res.status(400).json({ error: "Missing uuid, gamemode, or newTier" });
+  }
+
+  let players = [];
+  try {
+    if (fs.existsSync(playersFileJS)) {
+      const content = fs.readFileSync(playersFileJS, "utf-8");
+      // Remove "export const players = " to parse JSON
+      players = JSON.parse(content.replace(/^export const players = /, ""));
+    }
+  } catch (err) {
+    return res.status(500).json({ error: "Failed to read players data" });
+  }
+
+  // Find player by UUID or create if not exists
+  let player = players.find(p => p.uuid === uuid);
+  if (!player) {
+    player = {
+      uuid,
+      tiers: [
+        {
+          gamemode,
+          tier: newTier
+        }
+      ]
+    };
+    players.push(player);
+  } else {
+    // Find the gamemode in tiers or add it
+    const tierObj = player.tiers.find(t => t.gamemode === gamemode);
+    if (tierObj) {
+      tierObj.tier = newTier;
+    } else {
+      player.tiers.push({ gamemode, tier: newTier });
+    }
+  }
+
+  // Save back to JS file
+  try {
+    fs.writeFileSync(playersFileJS, `export const players = ${JSON.stringify(players, null, 2)};`);
+  } catch (err) {
+    return res.status(500).json({ error: "Failed to write players data" });
+  }
+
+  return res.json({ message: "Player updated successfully", player });
+});
+
+// Simple health check
+app.get("/", (req, res) => {
+  res.send("Player API is running!");
+});
+
+export default app;
