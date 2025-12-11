@@ -592,6 +592,7 @@ grid-template-columns: 50px 50px 1fr 1fr 6fr; /* last column is now flexible */
 .region-na { background: #ef4444; }
 .region-eu { background: #22c55e; }
 .region-as { background: #7c22c5; }
+.region-me { background: #da9515; }
 
 /* ========================== */
 /* POPUP MODAL - UPDATED UI   */
