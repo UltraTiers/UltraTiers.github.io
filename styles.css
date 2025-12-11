@@ -630,7 +630,7 @@ grid-template-columns: 50px 50px 1fr 1fr 6fr; /* last column is now flexible */
     border-radius: 16px;
     border: 1px solid var(--border);
     text-align: left;           /* aligns rows nicely */
-    width: 320px;
+    width: 350px;
     max-width: 90%;
     box-shadow: 0 8px 32px rgba(0,0,0,0.45);
 }
