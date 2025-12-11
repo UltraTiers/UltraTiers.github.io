@@ -182,6 +182,7 @@ body {
 .mode-player[data-region="na"] .region-box { background-color: #ef4444; }
 .mode-player[data-region="eu"] .region-box { background-color: #22c55e; }
 .mode-player[data-region="as"] .region-box { background-color: #7c22c5; }
+.mode-player[data-region="me"] .region-box { background-color: #da9515; }
 
 /* Match empty-tier size + add rarity-colored border */
 .tier[data-tier="1"] { border: 2px solid #f87171; } /* red */
