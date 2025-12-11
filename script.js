@@ -87,9 +87,13 @@ document.querySelectorAll(".mode-btn").forEach(btn => {
 ============================= */
 
 function getRankTitle(points) {
-  if (points >= 400) return "Master";
-  if (points >= 200) return "Advanced";
-  return "Rookie";
+  if (points >= 400) return "Legend";
+  if (points >= 300) return "Master";
+  if (points >= 225) return "Professional";
+  if (points >= 150) return "Expert";
+  if (points >= 100) return "Advanced";
+  if (points >= 50) return "Rookie";
+  return "Starter";
 }
 
 // Map tiers to points exactly as specified
