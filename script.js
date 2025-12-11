@@ -210,6 +210,7 @@ function generateModeLeaderboard(mode) {
 
   const tiersGrid = document.getElementById("mode-tiers");
 
+  // Create Tier 1–5 columns
   for (let i = 1; i <= 5; i++) {
     const col = document.createElement("div");
     col.className = "mode-tier-column";
@@ -217,7 +218,8 @@ function generateModeLeaderboard(mode) {
     tiersGrid.appendChild(col);
   }
 
-players.forEach(player => {
+  // Add players into columns
+  players.forEach(player => {
     const tierObj = player.tiers.find(t => t.gamemode === mode && t.tier !== "Unknown");
     if (!tierObj) return;
 
@@ -229,28 +231,15 @@ players.forEach(player => {
     playerDiv.dataset.player = player.name;
     playerDiv.dataset.region = player.region.toLowerCase();
 
-    // Add region for hover & border
-    playerDiv.dataset.region = player.region.toLowerCase();
-
-    let sign = "";
-    let signValue = 0;
-
-    if (tierObj.tier.includes("HT")) { 
-        sign = "+";
-        signValue = 2;
-    }
-    if (tierObj.tier.includes("LT")) { 
-        sign = "-";
-        signValue = 1;
-    }
-
-    playerDiv.dataset.signvalue = signValue;
+    // Assign + or - rank
+    const isHT = tierObj.tier.includes("HT");
+    playerDiv.dataset.signvalue = isHT ? 2 : 1;
 
     playerDiv.innerHTML = `
       <div class="mode-player-left">
         <img src="https://render.crafty.gg/3d/bust/${player.name}">
         <span class="player-label">${player.name}</span>
-        <span class="tier-sign">${sign}</span>
+        <span class="tier-sign">${isHT ? "+" : "-"}</span>
       </div>
       <div class="region-box">
         <span>${player.region.toUpperCase()}</span>
@@ -258,25 +247,25 @@ players.forEach(player => {
     `;
 
     targetColumn.appendChild(playerDiv);
-});
+  });
 
-
+  // ⭐ Sort players inside each column so HT (+) is always above LT (–)
   document.querySelectorAll(".mode-tier-column").forEach(col => {
-    if (col.children.length === 1) col.innerHTML += `<div class="mode-empty">No players</div>`;
+    const playerList = [...col.querySelectorAll(".mode-player")];
+
+    playerList
+      .sort((a, b) => b.dataset.signvalue - a.dataset.signvalue)
+      .forEach(p => col.appendChild(p));
+
+    // If column only has the header, show "No players"
+    if (playerList.length === 0) {
+      col.innerHTML += `<div class="mode-empty">No players</div>`;
+    }
   });
 
   attachPlayerClick();
 }
 
-document.querySelectorAll(".mode-tier-column").forEach(col => {
-    const players = [...col.querySelectorAll(".mode-player")];
-
-    players.sort((a, b) => {
-        return b.dataset.signvalue - a.dataset.signvalue;
-    });
-
-    players.forEach(p => col.appendChild(p));
-});
 
 /* =============================
    FETCH NAME FROM UUID (client-side, prefers Ashcon)
