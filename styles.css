@@ -598,6 +598,7 @@ grid-template-columns: 50px 50px 1fr 1fr 6fr; /* last column is now flexible */
     border-radius: 8px;
     color: white;
     font-weight: 600;
+    margin: 20px;
 }
 
 .region-na { background: #ef4444; }
