@@ -312,9 +312,9 @@ function attachPlayerClick() {
       // Set modal title to empty because the player name is now displayed below avatar
       modalTitle.textContent = "";
 
-      const tiersHTML = player.tiers
-        .filter(t => t.tier !== "Unknown") // only show known tiers in modal
-        .map(t => {
+const sortedTiers = sortPlayerTiers(player.tiers.filter(t => t.tier !== "Unknown"));
+const tiersHTML = sortedTiers
+  .map(t => {
           const tierNumber = t.tier.match(/\d+/)[0];
           return `
             <div class="tier" data-gamemode="${t.gamemode}" data-tier="${tierNumber}">
@@ -397,9 +397,9 @@ searchInput.addEventListener("keydown", function(e) {
     // Use same modal format as clicking a player
     modalTitle.textContent = ""; // same as click modal
 
-    const tiersHTML = player.tiers
-      .filter(t => t.tier !== "Unknown")
-      .map(t => {
+const sortedTiers = sortPlayerTiers(player.tiers.filter(t => t.tier !== "Unknown"));
+const tiersHTML = sortedTiers
+  .map(t => {
         const tierNumber = t.tier.match(/\d+/)[0];
         return `
           <div class="tier" data-gamemode="${t.gamemode}" data-tier="${tierNumber}">
