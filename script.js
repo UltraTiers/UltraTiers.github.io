@@ -196,6 +196,12 @@ const card = `
   attachPlayerClick();
 }
 
+const player = players.find(p => p.name === ign);
+if (player) {
+    player.nitro = true;  // <-- update JS object
+    generatePlayers();     // re-render leaderboard
+}
+
 /* =============================
    MODE LEADERBOARD
 ============================= */

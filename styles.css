@@ -42,7 +42,7 @@ body {
 }
 
 /* Nitro gradient styling */
-.nitro {
+.player-name.nitro {
     background: linear-gradient(
         to right,
         #7953cd 20%,
@@ -51,8 +51,9 @@ body {
         #764ada 80%
     );
     -webkit-background-clip: text;
-    background-clip: text;
     -webkit-text-fill-color: transparent;
+    background-clip: text;
+    color: transparent !important; /* ensure no other color overrides */
     background-size: 500% auto;
     animation: textShine 5s ease-in-out infinite alternate;
 }
