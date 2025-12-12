@@ -63,17 +63,6 @@ body {
 
 /* Nitro gradient border for avatars */
 .modal-avatar.nitro {
-    position: relative;
-    border-radius: 50%;
-    overflow: hidden; /* ensure the gradient stays circular */
-}
-
-.modal-avatar.nitro::before {
-    content: "";
-    position: absolute;
-    inset: 0;
-    padding: 4px; /* thickness of the gradient border */
-    border-radius: 50%;
     background: linear-gradient(
         to right,
         #7953cd 20%,
@@ -81,14 +70,11 @@ body {
         #0190cd 70%,
         #764ada 80%
     );
-    -webkit-mask: 
-        linear-gradient(#fff 0 0) content-box, 
-        linear-gradient(#fff 0 0);
-    -webkit-mask-composite: destination-out;
-    mask-composite: exclude;
-    pointer-events: none;
-    animation: borderShine 5s linear infinite alternate;
-    box-sizing: border-box;
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-size: 500% auto;
+    animation: textShine 5s ease-in-out infinite alternate;
 }
 
 /* Animations */
