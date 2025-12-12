@@ -175,18 +175,20 @@ const tiersHTML = sortedTiers.map(t => {
       index === 1 ? "silver" :
       index === 2 ? "bronze" : "";
 
-    const card = `
-      <div class="player-card ${borderClass}" data-player="${player.name}">
-        <div class="rank">${index + 1}.</div>
-        <img class="avatar" src="${avatarURL}">
-        <div class="player-info">
-          <div class="player-name">${player.name}</div>
-          <div class="player-sub">⭐ ${getRankTitle(player.points)} (${player.points})</div>
-        </div>
-        <div class="region region-${player.region.toLowerCase()}">${player.region}</div>
-        <div class="tiers">${tiersHTML}</div>
-      </div>
-    `;
+const nitroClass = player.nitro ? "nitro" : ""; // <-- NEW
+
+const card = `
+  <div class="player-card ${borderClass} ${nitroClass}" data-player="${player.name}">
+    <div class="rank">${index + 1}.</div>
+    <img class="avatar" src="${avatarURL}">
+    <div class="player-info">
+      <div class="player-name">${player.name}</div>
+      <div class="player-sub">⭐ ${getRankTitle(player.points)} (${player.points})</div>
+    </div>
+    <div class="region region-${player.region.toLowerCase()}">${player.region}</div>
+    <div class="tiers">${tiersHTML}</div>
+  </div>
+`;
 
     playersContainer.insertAdjacentHTML("beforeend", card);
   });
