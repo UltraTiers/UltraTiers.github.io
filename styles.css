@@ -42,11 +42,13 @@ body {
 }
 
 /* Nitro gradient styling for text */
+/* ======================
+   Gradient Text
+====================== */
 .player-name.nitro,
 .modal-name.nitro,
 .modal-info-row.nitro,
 .modal-subtitle.nitro,
-.modal-avatar.nitro,
 .close-modal-text.nitro {
     background: linear-gradient(
         to right,
@@ -62,24 +64,58 @@ body {
     animation: textShine 5s ease-in-out infinite alternate;
 }
 
-/* Animation for the gradient border */
-@keyframes rotateBorder {
-    0% {
-        transform: rotate(0deg);
-    }
-    100% {
-        transform: rotate(360deg);
-    }
+/* ======================
+   Animated Gradient Avatar Border
+====================== */
+.modal-avatar.nitro {
+    position: relative;
+    width: 100px;  /* avatar size */
+    height: 100px;
+    border-radius: 50%;
+    overflow: hidden;
 }
 
-/* Animations */
+.modal-avatar.nitro img {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    display: block;
+}
+
+/* Gradient border using pseudo-element */
+.modal-avatar.nitro::before {
+    content: '';
+    position: absolute;
+    top: -3px; left: -3px; right: -3px; bottom: -3px; /* border thickness */
+    border-radius: 50%;
+    background: linear-gradient(
+        45deg,
+        #7953cd 20%,
+        #00affa 30%,
+        #0190cd 70%,
+        #764ada 80%
+    );
+    background-size: 500% auto;
+    animation: textShine 5s ease-in-out infinite alternate;
+    z-index: 1;
+}
+
+/* Masking the inner avatar so only border shows */
+.modal-avatar.nitro::after {
+    content: '';
+    position: absolute;
+    top: 3px; left: 3px; right: 3px; bottom: 3px; /* border thickness */
+    border-radius: 50%;
+    background: #000; /* matches parent background */
+    z-index: 2;
+}
+
+/* ======================
+   Animation
+====================== */
 @keyframes textShine {
-    0% {
-        background-position: 0% 50%;
-    }
-    100% {
-        background-position: 100% 50%;
-    }
+    0% { background-position: 0% 50%; }
+    100% { background-position: 100% 50%; }
 }
 
 /* ============================= */
