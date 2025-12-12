@@ -178,11 +178,11 @@ const tiersHTML = sortedTiers.map(t => {
 const nitroClass = player.nitro ? "nitro" : ""; // <-- NEW
 
 const card = `
-  <div class="player-card ${borderClass} ${nitroClass}" data-player="${player.name}">
+  <div class="player-card ${borderClass}" data-player="${player.name}">
     <div class="rank">${index + 1}.</div>
     <img class="avatar" src="${avatarURL}">
     <div class="player-info">
-      <div class="player-name">${player.name}</div>
+      <div class="player-name ${nitroClass}">${player.name}</div>
       <div class="player-sub">⭐ ${getRankTitle(player.points)} (${player.points})</div>
     </div>
     <div class="region region-${player.region.toLowerCase()}">${player.region}</div>
@@ -194,29 +194,6 @@ const card = `
   });
 
   attachPlayerClick();
-}
-
-// Example: front-end call to /nitro
-async function grantNitro(uuid, name) {
-  const res = await fetch("/nitro", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ uuid, name, nitro: true })
-  });
-  const data = await res.json();
-
-  if (data.player) {
-    // Update the local players array
-    const existing = players.find(p => p.uuid === uuid);
-    if (existing) {
-      existing.nitro = true;
-    } else {
-      players.push(data.player);
-    }
-
-    // Regenerate the leaderboard to show Nitro styling
-    generatePlayers();
-  }
 }
 
 /* =============================
