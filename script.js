@@ -196,6 +196,29 @@ const card = `
   attachPlayerClick();
 }
 
+// Example: front-end call to /nitro
+async function grantNitro(uuid, name) {
+  const res = await fetch("/nitro", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ uuid, name, nitro: true })
+  });
+  const data = await res.json();
+
+  if (data.player) {
+    // Update the local players array
+    const existing = players.find(p => p.uuid === uuid);
+    if (existing) {
+      existing.nitro = true;
+    } else {
+      players.push(data.player);
+    }
+
+    // Regenerate the leaderboard to show Nitro styling
+    generatePlayers();
+  }
+}
+
 /* =============================
    MODE LEADERBOARD
 ============================= */
