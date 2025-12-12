@@ -38,7 +38,7 @@ async function loadPlayers() {
 }
 
 async function saveOrUpdatePlayer(player) {
-  const { uuid, name, region, tiers, points } = player;
+  const { uuid, name, region, tiers, points, nitro } = player;
 
   const { data: existing, error } = await supabase
     .from("ultratiers")
@@ -51,14 +51,14 @@ async function saveOrUpdatePlayer(player) {
   if (existing) {
     const { error: updateError } = await supabase
       .from("ultratiers")
-      .update({ name, region, tiers, points })
+      .update({ name, region, tiers, points, nitro: nitro || false })
       .eq("uuid", uuid);
 
     if (updateError) throw updateError;
   } else {
     const { error: insertError } = await supabase
       .from("ultratiers")
-      .insert([{ uuid, name, region, tiers, points }]);
+      .insert([{ uuid, name, region, tiers, points, nitro: nitro || false }]);
 
     if (insertError) throw insertError;
   }
@@ -84,7 +84,6 @@ app.get("/players", async (req, res) => {
   try {
     const players = await loadPlayers();
 
-    // Ensure every player has all gamemodes and empty tiers if missing
     const updatedPlayers = players.map(p => {
       const tiersMap = {};
       if (Array.isArray(p.tiers)) {
@@ -95,7 +94,7 @@ app.get("/players", async (req, res) => {
         tier: tiersMap[g] || "Unknown"
       }));
       const points = fullTiers.reduce((sum, t) => sum + (tierPointsMap[t.tier] || 0), 0);
-      return { ...p, tiers: fullTiers, points };
+      return { ...p, tiers: fullTiers, points, nitro: p.nitro || false };
     });
 
     res.json(updatedPlayers);
@@ -105,6 +104,9 @@ app.get("/players", async (req, res) => {
   }
 });
 
+// -------------------
+// Update or add player tiers
+// -------------------
 app.post("/", async (req, res) => {
   try {
     const { uuid, gamemode, newTier, name = null, region = null } = req.body;
@@ -114,28 +116,25 @@ app.post("/", async (req, res) => {
     let player = players.find(p => p.uuid === uuid);
 
     if (!player) {
-      // Fill all gamemodes with "Unknown" first
       const tiers = allGamemodes.map(g => ({
         gamemode: g,
         tier: g === gamemode ? newTier : "Unknown"
       }));
-      player = { uuid, name, region, tiers, points: tierPointsMap[newTier] || 0 };
+      player = { uuid, name, region, tiers, points: tierPointsMap[newTier] || 0, nitro: false };
     } else {
-      // Update only the specified gamemode
       const tierObj = player.tiers.find(t => t.gamemode === gamemode);
       if (tierObj) tierObj.tier = newTier;
       else player.tiers.push({ gamemode, tier: newTier });
+
       if (name) player.name = name;
       if (region) player.region = region;
 
-      // Ensure all gamemodes exist
       allGamemodes.forEach(g => {
         if (!player.tiers.find(t => t.gamemode === g)) {
           player.tiers.push({ gamemode: g, tier: "Unknown" });
         }
       });
 
-      // Recalculate points
       player.points = player.tiers.reduce((sum, t) => sum + (tierPointsMap[t.tier] || 0), 0);
     }
 
@@ -143,6 +142,40 @@ app.post("/", async (req, res) => {
     return res.json({ message: "Player updated successfully", player });
   } catch (err) {
     console.error("Error in POST /:", err);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+// -------------------
+// Grant Nitro styling
+// -------------------
+app.post("/nitro", async (req, res) => {
+  try {
+    const { uuid, name, nitro } = req.body;
+    if (!uuid || !name || nitro !== true) 
+      return res.status(400).json({ error: "Missing uuid, name, or nitro flag" });
+
+    let players = await loadPlayers();
+    let player = players.find(p => p.uuid === uuid);
+
+    if (!player) {
+      player = {
+        uuid,
+        name,
+        region: null,
+        tiers: allGamemodes.map(g => ({ gamemode: g, tier: "Unknown" })),
+        points: 0,
+        nitro: true
+      };
+    } else {
+      player.nitro = true;
+      if (name) player.name = name;
+    }
+
+    await saveOrUpdatePlayer(player);
+    return res.json({ message: `${name} has been granted Nitro styling!`, player });
+  } catch (err) {
+    console.error("Error in POST /nitro:", err);
     res.status(500).json({ error: "Internal server error" });
   }
 });
