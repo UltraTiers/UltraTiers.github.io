@@ -196,10 +196,10 @@ const card = `
   attachPlayerClick();
 }
 
-const player = players.find(p => p.name === ign);
+const player = players.find(p => p.name.toLowerCase() === ign.toLowerCase());
 if (player) {
-    player.nitro = true;  // <-- update JS object
-    generatePlayers();     // re-render leaderboard
+    player.nitro = true;  // mark player as Nitro
+    generatePlayers();    // re-render leaderboard
 }
 
 /* =============================
