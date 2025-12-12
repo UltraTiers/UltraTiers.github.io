@@ -332,39 +332,41 @@ const tiersHTML = sortedTiers
           `;
         }).join("");
 
-      modalContent.innerHTML = `
-        <div class="modal-header">
-          <img class="modal-avatar" src="https://render.crafty.gg/3d/bust/${player.uuid}" alt="${player.name} Avatar">
-          <div class="modal-name">${player.name || "Unknown Player"}</div>
-        </div>
+const nitroClass = player.nitro ? "nitro" : "";
 
-        <div class="modal-section">
-          <div class="modal-info-row">
-            <span class="modal-label">Placement:</span>
-            <span class="modal-value">#${players.indexOf(player) + 1}</span>
-          </div>
+modalContent.innerHTML = `
+  <div class="modal-header">
+    <img class="modal-avatar ${nitroClass}" src="https://render.crafty.gg/3d/bust/${player.uuid}" alt="${player.name} Avatar">
+    <div class="modal-name ${nitroClass}">${player.name || "Unknown Player"}</div>
+  </div>
 
-          <div class="modal-info-row">
-            <span class="modal-label">Region:</span>
-            <span class="modal-value">${player.region || "Unknown"}</span>
-          </div>
+  <div class="modal-section">
+    <div class="modal-info-row ${nitroClass}">
+      <span class="modal-label">Placement:</span>
+      <span class="modal-value">#${players.indexOf(player) + 1}</span>
+    </div>
 
-          <div class="modal-info-row">
-            <span class="modal-label">Rank:</span>
-            <span class="modal-value">${getRankTitle(player.points)}</span>
-          </div>
+    <div class="modal-info-row ${nitroClass}">
+      <span class="modal-label">Region:</span>
+      <span class="modal-value">${player.region || "Unknown"}</span>
+    </div>
 
-          <div class="modal-info-row">
-            <span class="modal-label">Points:</span>
-            <span class="modal-value">${player.points.toLocaleString()}</span>
-          </div>
-        </div>
+    <div class="modal-info-row ${nitroClass}">
+      <span class="modal-label">Rank:</span>
+      <span class="modal-value">${getRankTitle(player.points)}</span>
+    </div>
 
-        <h3 class="modal-subtitle">Tier Progress</h3>
-        <div class="tiers-container">
-          ${tiersHTML}
-        </div>
-      `;
+    <div class="modal-info-row ${nitroClass}">
+      <span class="modal-label">Points:</span>
+      <span class="modal-value">${player.points.toLocaleString()}</span>
+    </div>
+  </div>
+
+  <h3 class="modal-subtitle ${nitroClass}">Tier Progress</h3>
+  <div class="tiers-container">
+    ${tiersHTML}
+  </div>
+`;
 
       modal.classList.add("show");
     });
@@ -417,39 +419,41 @@ const tiersHTML = sortedTiers
         `;
       }).join("");
 
-    modalContent.innerHTML = `
-      <div class="modal-header">
-        <img class="modal-avatar" src="https://render.crafty.gg/3d/bust/${player.uuid}" alt="${player.name} Avatar">
-        <div class="modal-name">${player.name || "Unknown Player"}</div>
-      </div>
+const nitroClass = player.nitro ? "nitro" : "";
 
-      <div class="modal-section">
-        <div class="modal-info-row">
-          <span class="modal-label">Placement:</span>
-          <span class="modal-value">#${players.sort((a,b)=>b.points-a.points).indexOf(player) + 1}</span>
-        </div>
+modalContent.innerHTML = `
+  <div class="modal-header">
+    <img class="modal-avatar ${nitroClass}" src="https://render.crafty.gg/3d/bust/${player.uuid}" alt="${player.name} Avatar">
+    <div class="modal-name ${nitroClass}">${player.name || "Unknown Player"}</div>
+  </div>
 
-        <div class="modal-info-row">
-          <span class="modal-label">Region:</span>
-          <span class="modal-value">${player.region || "Unknown"}</span>
-        </div>
+  <div class="modal-section">
+    <div class="modal-info-row ${nitroClass}">
+      <span class="modal-label">Placement:</span>
+      <span class="modal-value">#${players.indexOf(player) + 1}</span>
+    </div>
 
-        <div class="modal-info-row">
-          <span class="modal-label">Rank:</span>
-          <span class="modal-value">${getRankTitle(player.points)}</span>
-        </div>
+    <div class="modal-info-row ${nitroClass}">
+      <span class="modal-label">Region:</span>
+      <span class="modal-value">${player.region || "Unknown"}</span>
+    </div>
 
-        <div class="modal-info-row">
-          <span class="modal-label">Points:</span>
-          <span class="modal-value">${player.points.toLocaleString()}</span>
-        </div>
-      </div>
+    <div class="modal-info-row ${nitroClass}">
+      <span class="modal-label">Rank:</span>
+      <span class="modal-value">${getRankTitle(player.points)}</span>
+    </div>
 
-      <h3 class="modal-subtitle">Tier Progress</h3>
-      <div class="tiers-container">
-        ${tiersHTML}
-      </div>
-    `;
+    <div class="modal-info-row ${nitroClass}">
+      <span class="modal-label">Points:</span>
+      <span class="modal-value">${player.points.toLocaleString()}</span>
+    </div>
+  </div>
+
+  <h3 class="modal-subtitle ${nitroClass}">Tier Progress</h3>
+  <div class="tiers-container">
+    ${tiersHTML}
+  </div>
+`;
 
     modal.classList.add("show");
   }
