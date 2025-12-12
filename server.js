@@ -162,7 +162,7 @@ app.post("/nitro", async (req, res) => {
       player = {
         uuid,
         name,
-        region: null,
+        region: "Unknown", // avoid null
         tiers: allGamemodes.map(g => ({ gamemode: g, tier: "Unknown" })),
         points: 0,
         nitro: true
@@ -170,6 +170,14 @@ app.post("/nitro", async (req, res) => {
     } else {
       player.nitro = true;
       if (name) player.name = name;
+
+      // Ensure tiers exist
+      if (!Array.isArray(player.tiers) || player.tiers.length === 0) {
+        player.tiers = allGamemodes.map(g => ({ gamemode: g, tier: "Unknown" }));
+      }
+
+      // Ensure points are calculated
+      player.points = player.tiers.reduce((sum, t) => sum + (tierPointsMap[t.tier] || 0), 0);
     }
 
     await saveOrUpdatePlayer(player);
