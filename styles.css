@@ -603,6 +603,11 @@ body {
   transform: translateX(-50%) translateY(0);
 }
 
+.tier.empty::after,
+.tier.empty::before {
+    display: none;  /* hides the tooltip */
+}
+
 .tier-sign {
     display: flex;
     align-items: center;
