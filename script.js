@@ -160,12 +160,15 @@ const sortedTiers = sortPlayerTiers(player.tiers);
 const tiersHTML = sortedTiers.map(t => {
   if (t.tier === "Unknown") return `<div class="tier empty"></div>`;
   const tierNumber = t.tier.match(/\d+/)[0];
-  return `
-    <div class="tier" data-gamemode="${t.gamemode}" data-tier="${tierNumber}">
-      <img src="gamemodes/${t.gamemode}.png">
-      <span>${t.tier}</span>
-    </div>
-  `;
+return `
+  <div class="tier"
+       data-gamemode="${t.gamemode}"
+       data-tier="${tierNumber}"
+       data-tooltip="${t.gamemode} — ${t.tier}">
+    <img src="gamemodes/${t.gamemode}.png">
+    <span>${t.tier}</span>
+  </div>
+`;
 }).join("");
 
     const avatarURL = `https://render.crafty.gg/3d/bust/${player.uuid}`;
@@ -324,12 +327,15 @@ const sortedTiers = sortPlayerTiers(player.tiers.filter(t => t.tier !== "Unknown
 const tiersHTML = sortedTiers
   .map(t => {
           const tierNumber = t.tier.match(/\d+/)[0];
-          return `
-            <div class="tier" data-gamemode="${t.gamemode}" data-tier="${tierNumber}">
-              <img src="gamemodes/${t.gamemode}.png">
-              <span>${t.tier}</span>
-            </div>
-          `;
+return `
+  <div class="tier"
+       data-gamemode="${t.gamemode}"
+       data-tier="${tierNumber}"
+       data-tooltip="${t.gamemode} — ${t.tier}">
+    <img src="gamemodes/${t.gamemode}.png">
+    <span>${t.tier}</span>
+  </div>
+`;
         }).join("");
 
 const nitroClass = player.nitro ? "nitro" : "";
@@ -411,12 +417,16 @@ const sortedTiers = sortPlayerTiers(player.tiers.filter(t => t.tier !== "Unknown
 const tiersHTML = sortedTiers
   .map(t => {
         const tierNumber = t.tier.match(/\d+/)[0];
-        return `
-          <div class="tier" data-gamemode="${t.gamemode}" data-tier="${tierNumber}">
-            <img src="gamemodes/${t.gamemode}.png">
-            <span>${t.tier}</span>
-          </div>
-        `;
+return `
+  <div class="tier"
+       data-gamemode="${t.gamemode}"
+       data-tier="${tierNumber}"
+       data-tooltip="${t.gamemode} — ${t.tier}">
+    <img src="gamemodes/${t.gamemode}.png">
+    <span>${t.tier}</span>
+  </div>
+`;
+
       }).join("");
 
 const nitroClass = player.nitro ? "nitro" : "";
