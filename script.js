@@ -206,16 +206,21 @@ function generatePlayers() {
   players.forEach((player, index) => {
 const sortedTiers = sortPlayerTiers(player.tiers);
 const tiersHTML = sortedTiers.map(t => {
-  if (!t.tier || t.tier === "Unknown") return `<div class="tier empty"></div>`;
+  // Skip empty or unknown tiers
+  if (!t.tier || t.tier === "Unknown") {
+    return `<div class="tier empty"></div>`;
+  }
+
+  // Extract the tier number safely
   const tierNumberMatch = t.tier.match(/\d+/);
-  if (!tierNumberMatch) return `<div class="tier empty"></div>`;
-  const tierNumber = tierNumberMatch[0];
+  const tierNumber = tierNumberMatch ? tierNumberMatch[0] : "";
+
   return `
     <div class="tier"
-         data-gamemode="${t.gamemode}"
+         data-gamemode="${t.gamemode || ''}"
          data-tier="${tierNumber}"
-         data-tooltip="${t.gamemode} — ${t.tier}">
-      <img src="gamemodes/${t.gamemode}.png">
+         data-tooltip="${t.gamemode || 'Unknown'} — ${t.tier}">
+      <img src="gamemodes/${t.gamemode || 'unknown'}.png" alt="${t.gamemode || 'Unknown'}">
       <span>${t.tier}</span>
     </div>
   `;
