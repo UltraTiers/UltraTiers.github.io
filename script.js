@@ -231,7 +231,7 @@ const tiersHTML = sortedTiers.map(t => {
 const nitroClass = player.nitro ? "nitro" : ""; // <-- NEW
 
 const card = `
-  <div class="player-card ${borderClass}" data-player-uuid="${player.uuid}">
+  <div class="player-card ${borderClass}" data-player="${player.name.toLowerCase()}">
     <div class="rank">${index + 1}.</div>
     <img class="avatar" src="${avatarURL}">
     <div class="player-info">
@@ -361,8 +361,8 @@ async function loadPlayerNames() {
 function attachPlayerClick() {
   document.querySelectorAll("[data-player]").forEach(el => {
     el.addEventListener("click", () => {
-      const name = el.dataset.player;
-      const player = players.find(p => p.name === name);
+const name = el.dataset.player.toLowerCase();
+const player = players.find(p => p.name.toLowerCase() === name);
 
       // Set modal title to empty because the player name is now displayed below avatar
       modalTitle.textContent = "";
@@ -450,8 +450,8 @@ generateDocs();
 
 searchInput.addEventListener("keydown", function(e) {
   if (e.key === "Enter") {
-    const searchValue = searchInput.value.trim().toLowerCase();
-    const player = players.find(p => p.name.toLowerCase() === searchValue);
+      const searchValue = searchInput.value.trim().toLowerCase().replace(/\s/g, "_");
+      const player = players.find(p => p.name.toLowerCase() === searchValue);
     if (!player) return alert("Player not found!");
 
     // Use same modal format as clicking a player
