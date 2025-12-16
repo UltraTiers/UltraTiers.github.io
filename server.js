@@ -82,11 +82,11 @@ app.post("/apply", async (req, res) => {
       title: "📝 New Tester Application",
       color: 0x5865f2,
       fields: [
-        { name: "Discord", value: discord, inline: true },
-        { name: "Minecraft IGN", value: ign, inline: true },
-        { name: "Region", value: region, inline: true },
-        { name: "Modes", value: modes },
-        { name: "Why they want to test", value: reason }
+        { name: "Discord", value: discord, inline: false },
+        { name: "Minecraft IGN", value: ign, inline: false },
+        { name: "Region", value: region, inline: false },
+        { name: "Modes", value: modes, inline: false },
+        { name: "Why they want to test", value: reason, inline: false }
       ],
       timestamp: new Date().toISOString()
     };
