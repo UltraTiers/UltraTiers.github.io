@@ -189,8 +189,7 @@ body {
 @media (max-width: 600px) {
 
   .application-section {
-    margin: 30px 12px;
-    padding: 22px 18px;
+    padding: 12px 6px;
     width: calc(100% - 24px);
     border-radius: 14px;
   }
