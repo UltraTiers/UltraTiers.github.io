@@ -206,21 +206,16 @@ function generatePlayers() {
   players.forEach((player, index) => {
 const sortedTiers = sortPlayerTiers(player.tiers);
 const tiersHTML = sortedTiers.map(t => {
-  // Skip empty or unknown tiers
-  if (!t.tier || t.tier === "Unknown") {
-    return `<div class="tier empty"></div>`;
-  }
-
-  // Extract the tier number safely
+  if (!t.tier || t.tier === "Unknown") return `<div class="tier empty"></div>`;
   const tierNumberMatch = t.tier.match(/\d+/);
-  const tierNumber = tierNumberMatch ? tierNumberMatch[0] : "";
-
+  if (!tierNumberMatch) return `<div class="tier empty"></div>`;
+  const tierNumber = tierNumberMatch[0];
   return `
     <div class="tier"
-         data-gamemode="${t.gamemode || ''}"
+         data-gamemode="${t.gamemode}"
          data-tier="${tierNumber}"
-         data-tooltip="${t.gamemode || 'Unknown'} — ${t.tier}">
-      <img src="gamemodes/${t.gamemode || 'unknown'}.png" alt="${t.gamemode || 'Unknown'}">
+         data-tooltip="${t.gamemode} — ${t.tier}">
+      <img src="gamemodes/${t.gamemode}.png">
       <span>${t.tier}</span>
     </div>
   `;
@@ -236,7 +231,7 @@ const tiersHTML = sortedTiers.map(t => {
 const nitroClass = player.nitro ? "nitro" : ""; // <-- NEW
 
 const card = `
-  <div class="player-card ${borderClass}" data-player="${player.name}">
+  <div class="player-card ${borderClass}" data-player-uuid="${player.uuid}">
     <div class="rank">${index + 1}.</div>
     <img class="avatar" src="${avatarURL}">
     <div class="player-info">
