@@ -15,11 +15,6 @@ const tiersDocs = [
 async function loadPlayers() {
   const res = await fetch("/players");
   players = await res.json();
-
-  // assign points to each player
-  players.forEach(player => {
-    player.points = calculatePoints(player);
-  });
 }
 
 /* =============================
@@ -211,17 +206,19 @@ function generatePlayers() {
   players.forEach((player, index) => {
 const sortedTiers = sortPlayerTiers(player.tiers);
 const tiersHTML = sortedTiers.map(t => {
-  if (t.tier === "Unknown") return `<div class="tier empty"></div>`;
-  const tierNumber = t.tier.match(/\d+/)[0];
-return `
-  <div class="tier"
-       data-gamemode="${t.gamemode}"
-       data-tier="${tierNumber}"
-       data-tooltip="${t.gamemode} — ${t.tier}">
-    <img src="gamemodes/${t.gamemode}.png">
-    <span>${t.tier}</span>
-  </div>
-`;
+  if (!t.tier || t.tier === "Unknown") return `<div class="tier empty"></div>`;
+  const tierNumberMatch = t.tier.match(/\d+/);
+  if (!tierNumberMatch) return `<div class="tier empty"></div>`;
+  const tierNumber = tierNumberMatch[0];
+  return `
+    <div class="tier"
+         data-gamemode="${t.gamemode}"
+         data-tier="${tierNumber}"
+         data-tooltip="${t.gamemode} — ${t.tier}">
+      <img src="gamemodes/${t.gamemode}.png">
+      <span>${t.tier}</span>
+    </div>
+  `;
 }).join("");
 
     const avatarURL = `https://render.crafty.gg/3d/bust/${player.uuid}`;
