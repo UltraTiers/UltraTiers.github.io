@@ -183,6 +183,57 @@ body {
     box-shadow: 0 0 16px rgba(255,255,255,0.2);
 }
 
+/* ========================= */
+/* Mobile Optimizations */
+/* ========================= */
+@media (max-width: 600px) {
+
+  .application-section {
+    margin: 30px 12px;
+    padding: 22px 18px;
+    width: calc(100% - 24px);
+    border-radius: 14px;
+  }
+
+  .application-section h1 {
+    font-size: 24px;
+    line-height: 1.2;
+  }
+
+  .application-section p {
+    font-size: 14px;
+    margin-bottom: 22px;
+  }
+
+  .application-form {
+    gap: 14px;
+  }
+
+  .form-group label {
+    font-size: 13px;
+  }
+
+  .form-group input,
+  .form-group textarea,
+  .form-group > select {
+    font-size: 16px; /* prevents iOS zoom */
+    padding: 12px 14px;
+    border-radius: 10px;
+  }
+
+  .form-group textarea {
+    min-height: 90px;
+  }
+
+  .application-submit {
+    margin-top: 16px;
+    padding: 14px;
+    font-size: 16px;
+    width: 100%;
+    border-radius: 14px;
+  }
+}
+
 
 /* ============================= */
 /* MODE LEADERBOARD UI (IMAGE STYLE) */
