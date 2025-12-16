@@ -22,6 +22,7 @@ async function loadPlayers() {
 ============================= */
 
 const leaderboardSection = document.getElementById("leaderboard-section");
+const applicationSection = document.getElementById("application-section");
 const docsSection = document.getElementById("docs-section");
 const playersContainer = document.getElementById("players-container");
 const tierDocsContainer = document.getElementById("tier-docs-container");
@@ -37,7 +38,12 @@ const tableHeader = document.querySelector(".table-header");
 ============================= */
 
 function showSection(sectionToShow) {
-  const sections = [leaderboardSection, docsSection];
+  const sections = [
+    leaderboardSection,
+    docsSection,
+    applicationSection
+  ];
+
   sections.forEach(section => {
     if (section === sectionToShow) {
       section.classList.add("active-section");
@@ -47,6 +53,20 @@ function showSection(sectionToShow) {
       section.classList.add("hidden-section");
     }
   });
+
+  // navbar active state
+  document.querySelectorAll(".nav-center a").forEach(a =>
+    a.classList.remove("active-tab")
+  );
+
+  if (sectionToShow === leaderboardSection)
+    document.querySelector(".rankings-btn")?.classList.add("active-tab");
+
+  if (sectionToShow === docsSection)
+    document.querySelector(".docs-btn")?.classList.add("active-tab");
+
+  if (sectionToShow === applicationSection)
+    document.querySelector(".application-btn")?.classList.add("active-tab");
 }
 
 function sortPlayerTiers(tiers) {
@@ -69,6 +89,12 @@ document.querySelector(".rankings-btn").addEventListener("click", () => {
 
 document.querySelector(".docs-btn").addEventListener("click", () => {
   showSection(docsSection);
+  tableHeader.style.display = "none";
+});
+
+document.querySelector(".application-btn").addEventListener("click", () => {
+  showSection(applicationSection);
+  tableHeader.style.display = "none";
 });
 
 /* =============================
@@ -118,9 +144,6 @@ function calculatePoints(player) {
   }, 0);
 }
 
-// Update all player points automatically
-players.forEach(p => p.points = calculatePoints(p));
-
 
 /* =============================
    DROPDOWNS
@@ -144,6 +167,31 @@ document.querySelectorAll('.dropdown-menu').forEach(menu => menu.addEventListene
 
 document.addEventListener('click', () => {
   document.querySelectorAll('.dropdown-container').forEach(c => c.classList.remove('open'));
+});
+
+document.querySelector(".application-form").addEventListener("submit", async (e) => {
+  e.preventDefault();
+
+  const payload = {
+    discord: document.getElementById("discord").value,
+    ign: document.getElementById("ign").value,
+    modes: document.getElementById("modes").value,
+    reason: document.getElementById("reason").value,
+    region: document.getElementById("region").value
+  };
+
+  const res = await fetch("/apply", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload)
+  });
+
+  if (res.ok) {
+    alert("✅ Application submitted successfully!");
+    e.target.reset();
+  } else {
+    alert("❌ Failed to submit application.");
+  }
 });
 
 /* =============================
@@ -197,12 +245,6 @@ const card = `
   });
 
   attachPlayerClick();
-}
-
-const player = players.find(p => p.name.toLowerCase() === ign.toLowerCase());
-if (player) {
-    player.nitro = true;  // mark player as Nitro
-    generatePlayers();    // re-render leaderboard
 }
 
 /* =============================
@@ -483,5 +525,6 @@ closeModalBtn.addEventListener("click", () => modal.classList.remove("show"));
 (async () => {
   await loadPlayers();    // fetch players from JSON
   await loadPlayerNames(); 
-  generatePlayers();
+showSection(leaderboardSection);
+generatePlayers();
 })();

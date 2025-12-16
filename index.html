@@ -85,6 +85,7 @@
 
 
         <a class="docs-btn"><i class="fas fa-file-alt"></i> Docs</a>
+        <a class="application-btn"><i class="fas fa-clipboard-list"></i> Application</a>
     </div>
 
     <div class="nav-right">
@@ -116,6 +117,57 @@
     <p>This section explains all Minecraft tiers.</p>
 
     <div id="tier-docs-container" class="tier-docs"></div>
+</div>
+
+<!-- APPLICATION SECTION -->
+<div id="application-section" class="application-section hidden-section">
+    <h1>📝 Tester Application</h1>
+    <p>Apply to become an UltraTiers tester by filling out the form below.</p>
+
+    <form class="application-form">
+        <!-- Discord Username -->
+        <div class="form-group">
+            <label for="discord">Discord Username</label>
+            <input type="text" id="discord" placeholder="username#0000" required>
+        </div>
+
+        <!-- Minecraft IGN -->
+        <div class="form-group">
+            <label for="ign">Minecraft IGN</label>
+            <input type="text" id="ign" placeholder="PlayerName" required>
+        </div>
+
+        <!-- Modes -->
+        <div class="form-group">
+            <label for="modes">Modes You Want to Test</label>
+            <input type="text" id="modes" placeholder="Axe, Sword, UHC, etc" required>
+        </div>
+
+        <!-- Explanation -->
+        <div class="form-group">
+            <label for="reason">Why do you want to be a tester?</label>
+            <textarea id="reason" rows="5" placeholder="Explain why you'd be a good tester..." required></textarea>
+        </div>
+
+        <!-- Region -->
+        <div class="form-group">
+            <label for="region">Your Region</label>
+            <select id="region" required>
+                <option value="">Select your region</option>
+                <option value="NA">North America</option>
+                <option value="EU">Europe</option>
+                <option value="AS">Asia</option>
+                <option value="ME">Middle East</option>
+                <option value="OCE">Oceania</option>
+                <option value="SA">South America</option>
+            </select>
+        </div>
+
+        <!-- Submit -->
+        <button type="submit" class="application-submit">
+            Submit Application
+        </button>
+    </form>
 </div>
 
 <!-- MODAL -->

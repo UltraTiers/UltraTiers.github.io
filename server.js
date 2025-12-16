@@ -1,6 +1,7 @@
 import express from "express";
 import cors from "cors";
 import path from "path";
+import fetch from "node-fetch";
 import { createClient } from "@supabase/supabase-js";
 
 const app = express();
@@ -63,6 +64,48 @@ async function saveOrUpdatePlayer(player) {
     if (insertError) throw insertError;
   }
 }
+
+app.post("/apply", async (req, res) => {
+  try {
+    const { discord, ign, modes, reason, region } = req.body;
+
+    if (!discord || !ign || !modes || !reason || !region) {
+      return res.status(400).json({ error: "Missing fields" });
+    }
+
+    const webhook = process.env.DISCORD_APPLICATION_WEBHOOK;
+    if (!webhook) {
+      throw new Error("Webhook not configured");
+    }
+
+    const embed = {
+      title: "📝 New Tester Application",
+      color: 0x5865f2,
+      fields: [
+        { name: "Discord", value: discord, inline: true },
+        { name: "Minecraft IGN", value: ign, inline: true },
+        { name: "Region", value: region, inline: true },
+        { name: "Modes", value: modes },
+        { name: "Why they want to test", value: reason }
+      ],
+      timestamp: new Date().toISOString()
+    };
+
+    await fetch(webhook, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        username: "UltraTiers Applications",
+        embeds: [embed]
+      })
+    });
+
+    return res.json({ success: true });
+  } catch (err) {
+    console.error("Application submit failed:", err);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
 
 // -------------------
 // Default tiers order
