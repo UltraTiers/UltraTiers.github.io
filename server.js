@@ -78,16 +78,16 @@ app.post("/apply", async (req, res) => {
       throw new Error("Webhook not configured");
     }
 
+    // Combine all info into a single vertical column using description
     const embed = {
       title: "📝 New Tester Application",
       color: 0x5865f2,
-      fields: [
-        { name: "Discord", value: discord, inline: false },
-        { name: "Minecraft IGN", value: ign, inline: false },
-        { name: "Region", value: region, inline: false },
-        { name: "Modes", value: modes, inline: false },
-        { name: "Why they want to test", value: reason, inline: false }
-      ],
+      description: 
+        `**Discord:** ${discord}\n` +
+        `**Minecraft IGN:** ${ign}\n` +
+        `**Region:** ${region}\n` +
+        `**Modes:** ${modes}\n` +
+        `**Reason:** ${reason}`,
       timestamp: new Date().toISOString()
     };
 
