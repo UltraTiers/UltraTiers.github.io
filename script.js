@@ -207,8 +207,10 @@ function generatePlayers() {
 const sortedTiers = sortPlayerTiers(player.tiers);
 const tiersHTML = sortedTiers.map(t => {
   if (!t.tier || t.tier === "Unknown") return `<div class="tier empty"></div>`;
+
   const tierNumberMatch = t.tier.match(/\d+/);
-  if (!tierNumberMatch) return `<div class="tier empty"></div>`;
+  if (!tierNumberMatch) return `<div class="tier empty"></div>`; // <-- safety check
+
   const tierNumber = tierNumberMatch[0];
   return `
     <div class="tier"
