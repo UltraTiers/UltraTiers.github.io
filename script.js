@@ -362,70 +362,70 @@ async function loadPlayerNames() {
 
 function attachPlayerClick() {
   document.querySelectorAll("[data-player]").forEach(el => {
-    el.addEventListener("click", () => {
+    el.addEventListener("click", async () => {
       const name = el.dataset.player;
-      const player = players.find(p => p.name === name);
 
-      // Set modal title to empty because the player name is now displayed below avatar
+      // Fetch fresh player data to get banner/nitro updates
+      const res = await fetch("/players");
+      const freshPlayers = await res.json();
+      const player = freshPlayers.find(p => p.name === name);
+      if (!player) return;
+
       modalTitle.textContent = "";
 
-const sortedTiers = sortPlayerTiers(player.tiers.filter(t => t.tier !== "Unknown"));
-const tiersHTML = sortedTiers
-  .map(t => {
+      const sortedTiers = sortPlayerTiers(player.tiers.filter(t => t.tier !== "Unknown"));
+      const tiersHTML = sortedTiers
+        .map(t => {
           const tierMatch = t.tier.match(/\d+/);
-if (!tierMatch) return `<div class="tier empty"></div>`; // fallback for invalid tier
-const tierNumber = tierMatch[0];
-return `
-  <div class="tier"
-       data-gamemode="${t.gamemode}"
-       data-tier="${tierNumber}"
-       data-tooltip="${t.gamemode} — ${t.tier}">
-    <img src="gamemodes/${t.gamemode}.png">
-    <span>${t.tier}</span>
-  </div>
-`;
+          if (!tierMatch) return `<div class="tier empty"></div>`;
+          const tierNumber = tierMatch[0];
+          return `
+            <div class="tier"
+                 data-gamemode="${t.gamemode}"
+                 data-tier="${tierNumber}"
+                 data-tooltip="${t.gamemode} — ${t.tier}">
+              <img src="gamemodes/${t.gamemode}.png">
+              <span>${t.tier}</span>
+            </div>
+          `;
         }).join("");
 
-const nitroClass = player.nitro ? "nitro" : "";
+      const nitroClass = player.nitro ? "nitro" : "";
+      const bannerHTML = player.banner
+        ? `<div class="modal-banner" style="background-image: url('anime-style-clouds.jpg');"></div>`
+        : "";
 
-const bannerHTML = player.banner
-  ? `<div class="modal-banner" style="background-image: url('anime-style-clouds.jpg');"></div>`
-  : "";
+      modalContent.innerHTML = `
+        ${bannerHTML}
+        <div class="modal-header">
+          <img class="modal-avatar ${nitroClass}" src="https://render.crafty.gg/3d/bust/${player.uuid}" alt="${player.name} Avatar">
+          <div class="modal-name ${nitroClass}">${player.name || "Unknown Player"}</div>
+        </div>
 
-modalContent.innerHTML = `
-  ${bannerHTML}
-  <div class="modal-header">
-    <img class="modal-avatar ${nitroClass}" src="https://render.crafty.gg/3d/bust/${player.uuid}" alt="${player.name} Avatar">
-    <div class="modal-name ${nitroClass}">${player.name || "Unknown Player"}</div>
-  </div>
+        <div class="modal-section">
+          <div class="modal-info-row ${nitroClass}">
+            <span class="modal-label">Placement:</span>
+            <span class="modal-value">#${freshPlayers.indexOf(player) + 1}</span>
+          </div>
+          <div class="modal-info-row ${nitroClass}">
+            <span class="modal-label">Region:</span>
+            <span class="modal-value">${player.region || "Unknown"}</span>
+          </div>
+          <div class="modal-info-row ${nitroClass}">
+            <span class="modal-label">Rank:</span>
+            <span class="modal-value">${getRankTitle(player.points)}</span>
+          </div>
+          <div class="modal-info-row ${nitroClass}">
+            <span class="modal-label">Points:</span>
+            <span class="modal-value">${player.points.toLocaleString()}</span>
+          </div>
+        </div>
 
-  <div class="modal-section">
-    <div class="modal-info-row ${nitroClass}">
-      <span class="modal-label">Placement:</span>
-      <span class="modal-value">#${players.indexOf(player) + 1}</span>
-    </div>
-
-    <div class="modal-info-row ${nitroClass}">
-      <span class="modal-label">Region:</span>
-      <span class="modal-value">${player.region || "Unknown"}</span>
-    </div>
-
-    <div class="modal-info-row ${nitroClass}">
-      <span class="modal-label">Rank:</span>
-      <span class="modal-value">${getRankTitle(player.points)}</span>
-    </div>
-
-    <div class="modal-info-row ${nitroClass}">
-      <span class="modal-label">Points:</span>
-      <span class="modal-value">${player.points.toLocaleString()}</span>
-    </div>
-  </div>
-
-  <h3 class="modal-subtitle ${nitroClass}">Tier Progress</h3>
-  <div class="tiers-container">
-    ${tiersHTML}
-  </div>
-`;
+        <h3 class="modal-subtitle ${nitroClass}">Tier Progress</h3>
+        <div class="tiers-container">
+          ${tiersHTML}
+        </div>
+      `;
 
       modal.classList.add("show");
     });
@@ -457,73 +457,72 @@ generateDocs();
    SEARCH
 ============================= */
 
-searchInput.addEventListener("keydown", function(e) {
+searchInput.addEventListener("keydown", async function(e) {
   if (e.key === "Enter") {
     const searchValue = searchInput.value.trim().toLowerCase();
-    const player = players.find(p => p.name.toLowerCase() === searchValue);
+
+    // Fetch fresh players
+    const res = await fetch("/players");
+    const freshPlayers = await res.json();
+    const player = freshPlayers.find(p => p.name.toLowerCase() === searchValue);
+
     if (!player) return alert("Player not found!");
 
-    // Use same modal format as clicking a player
-    modalTitle.textContent = ""; // same as click modal
+    modalTitle.textContent = "";
 
-const sortedTiers = sortPlayerTiers(player.tiers.filter(t => t.tier !== "Unknown"));
-const tiersHTML = sortedTiers
-  .map(t => {
+    const sortedTiers = sortPlayerTiers(player.tiers.filter(t => t.tier !== "Unknown"));
+    const tiersHTML = sortedTiers
+      .map(t => {
         const tierMatch = t.tier.match(/\d+/);
-if (!tierMatch) return `<div class="tier empty"></div>`; // fallback for invalid tier
-const tierNumber = tierMatch[0];
-return `
-  <div class="tier"
-       data-gamemode="${t.gamemode}"
-       data-tier="${tierNumber}"
-       data-tooltip="${t.gamemode} — ${t.tier}">
-    <img src="gamemodes/${t.gamemode}.png">
-    <span>${t.tier}</span>
-  </div>
-`;
-
+        if (!tierMatch) return `<div class="tier empty"></div>`;
+        const tierNumber = tierMatch[0];
+        return `
+          <div class="tier"
+               data-gamemode="${t.gamemode}"
+               data-tier="${tierNumber}"
+               data-tooltip="${t.gamemode} — ${t.tier}">
+            <img src="gamemodes/${t.gamemode}.png">
+            <span>${t.tier}</span>
+          </div>
+        `;
       }).join("");
 
-const nitroClass = player.nitro ? "nitro" : "";
+    const nitroClass = player.nitro ? "nitro" : "";
+    const bannerHTML = player.banner
+      ? `<div class="modal-banner" style="background-image: url('anime-style-clouds.jpg');"></div>`
+      : "";
 
-const bannerHTML = player.banner
-  ? `<div class="modal-banner" style="background-image: url('anime-style-clouds.jpg');"></div>`
-  : "";
+    modalContent.innerHTML = `
+      ${bannerHTML}
+      <div class="modal-header">
+        <img class="modal-avatar ${nitroClass}" src="https://render.crafty.gg/3d/bust/${player.uuid}" alt="${player.name} Avatar">
+        <div class="modal-name ${nitroClass}">${player.name || "Unknown Player"}</div>
+      </div>
 
-modalContent.innerHTML = `
-  ${bannerHTML}
-  <div class="modal-header">
-    <img class="modal-avatar ${nitroClass}" src="https://render.crafty.gg/3d/bust/${player.uuid}" alt="${player.name} Avatar">
-    <div class="modal-name ${nitroClass}">${player.name || "Unknown Player"}</div>
-  </div>
+      <div class="modal-section">
+        <div class="modal-info-row ${nitroClass}">
+          <span class="modal-label">Placement:</span>
+          <span class="modal-value">#${freshPlayers.indexOf(player) + 1}</span>
+        </div>
+        <div class="modal-info-row ${nitroClass}">
+          <span class="modal-label">Region:</span>
+          <span class="modal-value">${player.region || "Unknown"}</span>
+        </div>
+        <div class="modal-info-row ${nitroClass}">
+          <span class="modal-label">Rank:</span>
+          <span class="modal-value">${getRankTitle(player.points)}</span>
+        </div>
+        <div class="modal-info-row ${nitroClass}">
+          <span class="modal-label">Points:</span>
+          <span class="modal-value">${player.points.toLocaleString()}</span>
+        </div>
+      </div>
 
-  <div class="modal-section">
-    <div class="modal-info-row ${nitroClass}">
-      <span class="modal-label">Placement:</span>
-      <span class="modal-value">#${players.indexOf(player) + 1}</span>
-    </div>
-
-    <div class="modal-info-row ${nitroClass}">
-      <span class="modal-label">Region:</span>
-      <span class="modal-value">${player.region || "Unknown"}</span>
-    </div>
-
-    <div class="modal-info-row ${nitroClass}">
-      <span class="modal-label">Rank:</span>
-      <span class="modal-value">${getRankTitle(player.points)}</span>
-    </div>
-
-    <div class="modal-info-row ${nitroClass}">
-      <span class="modal-label">Points:</span>
-      <span class="modal-value">${player.points.toLocaleString()}</span>
-    </div>
-  </div>
-
-  <h3 class="modal-subtitle ${nitroClass}">Tier Progress</h3>
-  <div class="tiers-container">
-    ${tiersHTML}
-  </div>
-`;
+      <h3 class="modal-subtitle ${nitroClass}">Tier Progress</h3>
+      <div class="tiers-container">
+        ${tiersHTML}
+      </div>
+    `;
 
     modal.classList.add("show");
   }
