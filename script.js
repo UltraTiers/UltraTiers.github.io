@@ -37,6 +37,18 @@ const tableHeader = document.querySelector(".table-header");
    SECTION SWITCHING HELPER
 ============================= */
 
+// Close PLAYER modal with X button
+closeModalBtn.addEventListener("click", () => {
+  modal.classList.remove("show");
+});
+
+// Close PLAYER modal when clicking backdrop
+modal.addEventListener("click", (e) => {
+  if (e.target === modal) {
+    modal.classList.remove("show");
+  }
+});
+
 function showSection(sectionToShow) {
   const sections = [
     leaderboardSection,
