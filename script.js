@@ -595,11 +595,13 @@ authModal.addEventListener("click", (e) => {
 window.openAuth = openAuth;
 window.closeAuth = closeAuth;
 
-// Submit handler
-document.addEventListener("DOMContentLoaded", () => {
-  const authForm = document.querySelector(".auth-form");
-  if (!authForm) return;
+// ----------------------------
+// AUTH FORM SUBMIT
+// ----------------------------
 
+const authForm = document.querySelector(".auth-form");
+
+if (authForm) {
   authForm.addEventListener("submit", async (e) => {
     e.preventDefault();
 
@@ -637,10 +639,7 @@ document.addEventListener("DOMContentLoaded", () => {
       alert("❌ Network error.");
     }
   });
-});
-
-
-
+}
 /* =============================
    INIT
 ============================= */
