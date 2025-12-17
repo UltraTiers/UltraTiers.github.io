@@ -54,6 +54,53 @@ body {
   color: #fff;
 }
 
+.user-profile-dropdown {
+  position: relative;
+  cursor: pointer;
+  margin-right: 10px;
+}
+
+.user-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 2px solid var(--accent);
+  object-fit: cover;
+}
+
+.profile-menu {
+  position: absolute;
+  top: 50px;
+  right: 0;
+  background: var(--gray2);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 10px 0;
+  width: 120px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.profile-menu div {
+  padding: 8px 12px;
+  font-size: 14px;
+  color: var(--text);
+  text-align: center;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.profile-menu div:hover {
+  background: rgba(255,255,255,0.08);
+}
+
+.hidden {
+  display: none;
+}
+
+
 .mode-btn {
   background: rgba(255,255,255,0.06);
   padding: 10px 12px;

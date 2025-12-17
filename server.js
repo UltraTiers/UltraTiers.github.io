@@ -120,6 +120,10 @@ const allGamemodes = [
 
 const tierPointsMap = { LT5:1, HT5:2, LT4:4, HT4:6, LT3:9, HT3:12, LT2:16, HT2:20, LT1:25, HT1:30 };
 
+function generateLoginCode() {
+  return Math.floor(10000 + Math.random() * 90000).toString();
+}
+
 // -------------------
 // API Endpoints
 // -------------------
@@ -215,6 +219,42 @@ app.post("/auth/signup", async (req, res) => {
   res.json({ success: true });
 });
 
+app.post("/code", async (req, res) => {
+  try {
+    const { ign } = req.body;
+    if (!ign) return res.status(400).json({ error: "Missing IGN" });
+
+    // Fetch player
+    const { data: player, error } = await supabase
+      .from("ultratiers")
+      .select("login")
+      .eq("name", ign)
+      .maybeSingle();
+
+    if (error) throw error;
+    if (!player) return res.status(404).json({ error: "Player not found" });
+
+    // If login code already exists, return it
+    if (player.login) {
+      return res.json({ login: player.login });
+    }
+
+    // Generate new code
+    const code = generateLoginCode();
+
+    const { error: updateError } = await supabase
+      .from("ultratiers")
+      .update({ login: code })
+      .eq("name", ign);
+
+    if (updateError) throw updateError;
+
+    return res.json({ login: code });
+  } catch (err) {
+    console.error("Error in /code:", err);
+    return res.status(500).json({ error: "Internal server error" });
+  }
+});
 
 app.post("/auth/login", async (req, res) => {
   const { ign, password } = req.body;

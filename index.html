@@ -88,16 +88,24 @@
         <a class="application-btn"><i class="fas fa-clipboard-list"></i> Application</a>
     </div>
 
-    <div class="nav-right">
-        <div class="auth-buttons" id="auth-buttons">
-  <button id="login-btn">Login</button>
-  <button id="signup-btn">Sign Up</button>
-</div>
-        <div class="search-wrapper">
-            <i class="fas fa-search"></i>
-            <input class="searchbar" placeholder="Search player..." id="search-input">
-        </div>
+<div class="nav-right">
+  <div class="auth-buttons" id="auth-buttons">
+    <button id="login-btn">Login</button>
+    <button id="signup-btn">Sign Up</button>
+  </div>
+
+  <div class="user-profile-dropdown hidden" id="user-profile-dropdown">
+    <img id="user-avatar" src="" alt="Avatar" class="user-avatar">
+    <div class="profile-menu hidden" id="profile-menu">
+      <div id="logout-btn">Logout</div>
     </div>
+  </div>
+
+  <div class="search-wrapper">
+    <i class="fas fa-search"></i>
+    <input class="searchbar" placeholder="Search player..." id="search-input">
+  </div>
+</div>
 </nav>
 </header>
 

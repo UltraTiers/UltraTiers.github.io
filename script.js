@@ -89,6 +89,33 @@ function sortPlayerTiers(tiers) {
   });
 }
 
+const authButtons = document.getElementById("auth-buttons");
+const userDropdown = document.getElementById("user-profile-dropdown");
+const userAvatar = document.getElementById("user-avatar");
+const profileMenu = document.getElementById("profile-menu");
+const logoutBtn = document.getElementById("logout-btn");
+
+// Example: fake login function
+function loginUser(user) {
+  authButtons.classList.add("hidden"); // hide login/signup
+  userDropdown.classList.remove("hidden"); // show avatar dropdown
+  userAvatar.src = `https://render.crafty.gg/3d/bust/${user.ign}`; // Minecraft profile avatar
+}
+
+// Toggle dropdown
+userDropdown.addEventListener("click", (e) => {
+  profileMenu.classList.toggle("hidden");
+});
+
+// Logout
+logoutBtn.addEventListener("click", () => {
+  authButtons.classList.remove("hidden"); // show login/signup
+  userDropdown.classList.add("hidden"); // hide avatar
+  profileMenu.classList.add("hidden");
+  console.log("User logged out");
+});
+
+
 /* =============================
    NAVIGATION BUTTONS
 ============================= */
