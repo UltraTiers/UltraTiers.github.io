@@ -474,6 +474,7 @@ body {
 .mode-player[data-region="na"] .region-box { background-color: #ef4444; }
 .mode-player[data-region="eu"] .region-box { background-color: #22c55e; }
 .mode-player[data-region="as"] .region-box { background-color: #7c22c5; }
+.mode-player[data-region="sa"] .region-box { background-color: #FFC0CB; }
 .mode-player[data-region="me"] .region-box { background-color: #da9515; }
 
 /* Match empty-tier size + add rarity-colored border */
@@ -944,6 +945,7 @@ grid-template-columns: 50px 50px 1fr 1fr 6fr; /* last column is now flexible */
 .region-na { background: #ef4444; }
 .region-eu { background: #22c55e; }
 .region-as { background: #7c22c5; }
+.region-sa { background: #FFC0CB; }
 .region-me { background: #da9515; }
 
 /* ========================== */

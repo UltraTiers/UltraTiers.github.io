@@ -233,19 +233,18 @@ app.post("/code", async (req, res) => {
 });
 
 app.post("/auth/login", async (req, res) => {
-  const { ign, password } = req.body;
+  const { ign, code } = req.body; // only IGN and code
 
-  const { data: player } = await supabase
+  if (!ign || !code) return res.status(400).json({ error: "Missing IGN or code" });
+
+  const { data: player, error } = await supabase
     .from("ultratiers")
     .select("*")
     .eq("name", ign)
     .maybeSingle();
 
-  if (!player || !player.password)
-    return res.status(401).json({ error: "Invalid login" });
-
-  const valid = await bcrypt.compare(password, player.password);
-  if (!valid) return res.status(401).json({ error: "Wrong password" });
+  if (error) return res.status(500).json({ error: "Database error" });
+  if (!player || player.login !== code) return res.status(401).json({ error: "Invalid login code" });
 
   const token = jwt.sign(
     { ign: player.name, uuid: player.uuid },
