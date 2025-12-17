@@ -39,7 +39,7 @@ async function loadPlayers() {
 }
 
 async function saveOrUpdatePlayer(player) {
-  const { uuid, name, region, tiers, points, nitro } = player;
+  const { uuid, name, region, tiers, points, nitro, banner } = player;
 
   const { data: existing, error } = await supabase
     .from("ultratiers")
@@ -52,14 +52,29 @@ async function saveOrUpdatePlayer(player) {
   if (existing) {
     const { error: updateError } = await supabase
       .from("ultratiers")
-      .update({ name, region, tiers, points, nitro: nitro || false })
+      .update({
+        name,
+        region,
+        tiers,
+        points,
+        nitro: nitro || false,
+        banner: banner || false,   // <-- include banner
+      })
       .eq("uuid", uuid);
 
     if (updateError) throw updateError;
   } else {
     const { error: insertError } = await supabase
       .from("ultratiers")
-      .insert([{ uuid, name, region, tiers, points, nitro: nitro || false }]);
+      .insert([{
+        uuid,
+        name,
+        region,
+        tiers,
+        points,
+        nitro: nitro || false,
+        banner: banner || false,  // <-- include banner
+      }]);
 
     if (insertError) throw insertError;
   }
