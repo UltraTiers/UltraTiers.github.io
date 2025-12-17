@@ -596,50 +596,54 @@ window.openAuth = openAuth;
 window.closeAuth = closeAuth;
 
 // ----------------------------
-// AUTH FORM SUBMIT
+// AUTH FORM SUBMIT HANDLER
 // ----------------------------
 
-const authForm = document.querySelector(".auth-form");
+async function handleAuthSubmit(event) {
+  event.preventDefault();
 
-if (authForm) {
-  authForm.addEventListener("submit", async (e) => {
-    e.preventDefault();
+  const ign = authIgn.value.trim();
+  const code = authCode.value.trim();
 
-    const ign = authIgn.value.trim();
-    const code = authCode.value.trim();
+  if (!ign || !code) {
+    alert("Please fill in all required fields.");
+    return;
+  }
 
-    if (!ign || !code) {
-      alert("Please fill in all required fields.");
+  try {
+    const res = await fetch("/auth/login", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ ign, code })
+    });
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      alert(data.error || "Something went wrong.");
       return;
     }
 
-    try {
-      const res = await fetch("/auth/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ign, code })
-      });
-
-      const data = await res.json();
-
-      if (!res.ok) {
-        alert(data.error || "Something went wrong.");
-        return;
-      }
-
-      if (data.token) {
-        localStorage.setItem("token", data.token);
-        loginUser({ ign });
-        alert("✅ Logged in!");
-      }
-
-      closeAuth();
-    } catch (err) {
-      console.error(err);
-      alert("❌ Network error.");
+    if (data.token) {
+      localStorage.setItem("token", data.token);
+      loginUser({ ign });
+      alert("✅ Logged in!");
     }
-  });
+
+    closeAuth();
+  } catch (err) {
+    console.error(err);
+    alert("❌ Network error.");
+  }
 }
+
+// Attach submit handler to the form
+const authForm = document.querySelector(".auth-form");
+if (authForm) {
+  authForm.addEventListener("submit", handleAuthSubmit);
+}
+
+
 /* =============================
    INIT
 ============================= */
