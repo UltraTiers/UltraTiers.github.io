@@ -569,16 +569,11 @@ const authTitle = document.getElementById("auth-title");
 const authCode = document.getElementById("auth-code");
 const authIgn = document.getElementById("auth-ign");
 
-// State
-let authMode = "login";
-
 // Open login modal
-document.getElementById("login-btn").addEventListener("click", () => openAuth());
+document.getElementById("login-btn").addEventListener("click", openAuth);
 
-// Open modal
 function openAuth() {
   authTitle.textContent = "Login";
-  authCode.style.display = "block"; // code required for login only
 
   // Clear inputs every time modal opens
   authIgn.value = "";
@@ -587,7 +582,6 @@ function openAuth() {
   authModal.classList.add("show");
 }
 
-// Close modal
 function closeAuth() {
   authModal.classList.remove("show");
 }
@@ -611,14 +605,11 @@ document.getElementById("auth-submit").addEventListener("click", async () => {
     return;
   }
 
-  const endpoint = "/auth/login"; // login only
-  const payload = { ign, code };  // only IGN and code
-
   try {
-    const res = await fetch(endpoint, {
+    const res = await fetch("/auth/login", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload)
+      body: JSON.stringify({ ign, code }) // only IGN and code
     });
 
     const data = await res.json();
