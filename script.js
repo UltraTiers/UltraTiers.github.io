@@ -568,25 +568,20 @@ const authModal = document.getElementById("auth-modal");
 const authTitle = document.getElementById("auth-title");
 const authCode = document.getElementById("auth-code");
 const authIgn = document.getElementById("auth-ign");
-const authPassword = document.getElementById("auth-password");
 
 // State
 let authMode = "login";
 
-// Open buttons
-document.getElementById("login-btn").addEventListener("click", () => openAuth("login"));
-document.getElementById("signup-btn").addEventListener("click", () => openAuth("signup"));
+// Open login modal
+document.getElementById("login-btn").addEventListener("click", () => openAuth());
 
 // Open modal
-function openAuth(mode) {
-  authMode = mode;
-
-  authTitle.textContent = mode === "login" ? "Login" : "Sign Up";
-  authCode.style.display = mode === "signup" ? "block" : "none";
+function openAuth() {
+  authTitle.textContent = "Login";
+  authCode.style.display = "block"; // code required for login only
 
   // Clear inputs every time modal opens
   authIgn.value = "";
-  authPassword.value = "";
   authCode.value = "";
 
   authModal.classList.add("show");
@@ -609,19 +604,15 @@ window.closeAuth = closeAuth;
 // Submit handler
 document.getElementById("auth-submit").addEventListener("click", async () => {
   const ign = authIgn.value.trim();
-  const password = authPassword.value;
   const code = authCode.value.trim();
 
-  if (!ign || !password || (authMode === "signup" && !code)) {
+  if (!ign || !code) {
     alert("Please fill in all required fields.");
     return;
   }
 
-  const endpoint = authMode === "login" ? "/auth/login" : "/auth/signup";
-  const payload =
-    authMode === "login"
-      ? { ign, password }
-      : { ign, login: code, password };
+  const endpoint = "/auth/login"; // login only
+  const payload = { ign, code };  // only IGN and code
 
   try {
     const res = await fetch(endpoint, {
@@ -639,9 +630,8 @@ document.getElementById("auth-submit").addEventListener("click", async () => {
 
     if (data.token) {
       localStorage.setItem("token", data.token);
+      loginUser({ ign }); // show avatar and dropdown
       alert("✅ Logged in!");
-    } else {
-      alert("✅ Account created!");
     }
 
     closeAuth();

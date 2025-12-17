@@ -195,30 +195,6 @@ app.post("/", async (req, res) => {
   }
 });
 
-app.post("/auth/signup", async (req, res) => {
-  const { ign, login, password } = req.body;
-  if (!ign || !login || !password) return res.status(400).json({ error: "Missing fields" });
-
-  const { data: player } = await supabase
-    .from("ultratiers")
-    .select("*")
-    .eq("name", ign)
-    .eq("login", login)
-    .maybeSingle();
-
-  if (!player) return res.status(401).json({ error: "Invalid IGN or code" });
-  if (player.password) return res.status(400).json({ error: "Account already created" });
-
-  const hash = await bcrypt.hash(password, 10);
-
-  await supabase
-    .from("ultratiers")
-    .update({ password: hash })
-    .eq("name", ign);
-
-  res.json({ success: true });
-});
-
 app.post("/code", async (req, res) => {
   try {
     const { ign } = req.body;
