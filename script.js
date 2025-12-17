@@ -524,32 +524,59 @@ modalContent.innerHTML = `
    MODAL CLOSE
 ============================= */
 
-closeModalBtn.addEventListener("click", () => modal.classList.remove("show"));
-
+// Modal elements
 const authModal = document.getElementById("auth-modal");
 const authTitle = document.getElementById("auth-title");
 const authCode = document.getElementById("auth-code");
+const authIgn = document.getElementById("auth-ign");
+const authPassword = document.getElementById("auth-password");
 
+// State
 let authMode = "login";
 
-document.getElementById("login-btn").onclick = () => openAuth("login");
-document.getElementById("signup-btn").onclick = () => openAuth("signup");
+// Open buttons
+document.getElementById("login-btn").addEventListener("click", () => openAuth("login"));
+document.getElementById("signup-btn").addEventListener("click", () => openAuth("signup"));
 
+// Open modal
 function openAuth(mode) {
   authMode = mode;
+
   authTitle.textContent = mode === "login" ? "Login" : "Sign Up";
   authCode.style.display = mode === "signup" ? "block" : "none";
+
+  // Clear inputs every time modal opens
+  authIgn.value = "";
+  authPassword.value = "";
+  authCode.value = "";
+
   authModal.classList.add("show");
 }
 
+// Close modal
 function closeAuth() {
   authModal.classList.remove("show");
 }
 
-document.getElementById("auth-submit").onclick = async () => {
-  const ign = document.getElementById("auth-ign").value;
-  const password = document.getElementById("auth-password").value;
-  const code = document.getElementById("auth-code").value;
+// Close when clicking outside modal box
+authModal.addEventListener("click", (e) => {
+  if (e.target === authModal) closeAuth();
+});
+
+// Make functions available to inline HTML (Cancel button)
+window.openAuth = openAuth;
+window.closeAuth = closeAuth;
+
+// Submit handler
+document.getElementById("auth-submit").addEventListener("click", async () => {
+  const ign = authIgn.value.trim();
+  const password = authPassword.value;
+  const code = authCode.value.trim();
+
+  if (!ign || !password || (authMode === "signup" && !code)) {
+    alert("Please fill in all required fields.");
+    return;
+  }
 
   const endpoint = authMode === "login" ? "/auth/login" : "/auth/signup";
   const payload =
@@ -557,24 +584,33 @@ document.getElementById("auth-submit").onclick = async () => {
       ? { ign, password }
       : { ign, login: code, password };
 
-  const res = await fetch(endpoint, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(payload)
-  });
+  try {
+    const res = await fetch(endpoint, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload)
+    });
 
-  const data = await res.json();
-  if (!res.ok) return alert(data.error);
+    const data = await res.json();
 
-  if (data.token) {
-    localStorage.setItem("token", data.token);
-    alert("✅ Logged in!");
-  } else {
-    alert("✅ Account created!");
+    if (!res.ok) {
+      alert(data.error || "Something went wrong.");
+      return;
+    }
+
+    if (data.token) {
+      localStorage.setItem("token", data.token);
+      alert("✅ Logged in!");
+    } else {
+      alert("✅ Account created!");
+    }
+
+    closeAuth();
+  } catch (err) {
+    console.error(err);
+    alert("❌ Network error.");
   }
-
-  closeAuth();
-};
+});
 
 
 /* =============================
