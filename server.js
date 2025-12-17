@@ -2,6 +2,8 @@ import express from "express";
 import cors from "cors";
 import path from "path";
 import fetch from "node-fetch";
+import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
 import { createClient } from "@supabase/supabase-js";
 
 const app = express();
@@ -187,6 +189,55 @@ app.post("/", async (req, res) => {
     console.error("Error in POST /:", err);
     res.status(500).json({ error: "Internal server error" });
   }
+});
+
+app.post("/auth/signup", async (req, res) => {
+  const { ign, login, password } = req.body;
+  if (!ign || !login || !password) return res.status(400).json({ error: "Missing fields" });
+
+  const { data: player } = await supabase
+    .from("ultratiers")
+    .select("*")
+    .eq("name", ign)
+    .eq("login", login)
+    .maybeSingle();
+
+  if (!player) return res.status(401).json({ error: "Invalid IGN or code" });
+  if (player.password) return res.status(400).json({ error: "Account already created" });
+
+  const hash = await bcrypt.hash(password, 10);
+
+  await supabase
+    .from("ultratiers")
+    .update({ password: hash })
+    .eq("name", ign);
+
+  res.json({ success: true });
+});
+
+
+app.post("/auth/login", async (req, res) => {
+  const { ign, password } = req.body;
+
+  const { data: player } = await supabase
+    .from("ultratiers")
+    .select("*")
+    .eq("name", ign)
+    .maybeSingle();
+
+  if (!player || !player.password)
+    return res.status(401).json({ error: "Invalid login" });
+
+  const valid = await bcrypt.compare(password, player.password);
+  if (!valid) return res.status(401).json({ error: "Wrong password" });
+
+  const token = jwt.sign(
+    { ign: player.name, uuid: player.uuid },
+    process.env.JWT_SECRET,
+    { expiresIn: "7d" }
+  );
+
+  res.json({ token, ign: player.name });
 });
 
 // -------------------

@@ -526,6 +526,57 @@ modalContent.innerHTML = `
 
 closeModalBtn.addEventListener("click", () => modal.classList.remove("show"));
 
+const authModal = document.getElementById("auth-modal");
+const authTitle = document.getElementById("auth-title");
+const authCode = document.getElementById("auth-code");
+
+let authMode = "login";
+
+document.getElementById("login-btn").onclick = () => openAuth("login");
+document.getElementById("signup-btn").onclick = () => openAuth("signup");
+
+function openAuth(mode) {
+  authMode = mode;
+  authTitle.textContent = mode === "login" ? "Login" : "Sign Up";
+  authCode.style.display = mode === "signup" ? "block" : "none";
+  authModal.classList.add("show");
+}
+
+function closeAuth() {
+  authModal.classList.remove("show");
+}
+
+document.getElementById("auth-submit").onclick = async () => {
+  const ign = document.getElementById("auth-ign").value;
+  const password = document.getElementById("auth-password").value;
+  const code = document.getElementById("auth-code").value;
+
+  const endpoint = authMode === "login" ? "/auth/login" : "/auth/signup";
+  const payload =
+    authMode === "login"
+      ? { ign, password }
+      : { ign, login: code, password };
+
+  const res = await fetch(endpoint, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload)
+  });
+
+  const data = await res.json();
+  if (!res.ok) return alert(data.error);
+
+  if (data.token) {
+    localStorage.setItem("token", data.token);
+    alert("✅ Logged in!");
+  } else {
+    alert("✅ Account created!");
+  }
+
+  closeAuth();
+};
+
+
 /* =============================
    INIT
 ============================= */

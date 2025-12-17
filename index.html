@@ -89,6 +89,10 @@
     </div>
 
     <div class="nav-right">
+        <div class="auth-buttons" id="auth-buttons">
+  <button id="login-btn">Login</button>
+  <button id="signup-btn">Sign Up</button>
+</div>
         <div class="search-wrapper">
             <i class="fas fa-search"></i>
             <input class="searchbar" placeholder="Search player..." id="search-input">
@@ -168,6 +172,19 @@
             Submit Application
         </button>
     </form>
+</div>
+
+<div id="auth-modal" class="modal">
+  <div class="modal-box">
+    <h2 id="auth-title">Login</h2>
+
+    <input id="auth-ign" placeholder="Minecraft IGN">
+    <input id="auth-code" placeholder="Login Code (signup only)">
+    <input id="auth-password" type="password" placeholder="Password">
+
+    <button id="auth-submit">Submit</button>
+    <button onclick="closeAuth()">Cancel</button>
+  </div>
 </div>
 
 <!-- MODAL -->
