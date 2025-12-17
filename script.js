@@ -596,7 +596,9 @@ window.openAuth = openAuth;
 window.closeAuth = closeAuth;
 
 // Submit handler
-document.getElementById("auth-submit").addEventListener("click", async () => {
+document.querySelector(".auth-form").addEventListener("submit", async (e) => {
+  e.preventDefault(); // <-- prevent page reload
+
   const ign = authIgn.value.trim();
   const code = authCode.value.trim();
 
@@ -609,7 +611,7 @@ document.getElementById("auth-submit").addEventListener("click", async () => {
     const res = await fetch("/auth/login", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ ign, code }) // only IGN and code
+      body: JSON.stringify({ ign, code })
     });
 
     const data = await res.json();
