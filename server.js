@@ -189,6 +189,51 @@ app.post("/", async (req, res) => {
   }
 });
 
+app.post("/banner", async (req, res) => {
+  try {
+    const { uuid, name } = req.body;
+    if (!uuid || !name) 
+      return res.status(400).json({ error: "Missing uuid or name" });
+
+    // Load all players from Supabase
+    let players = await loadPlayers();
+    let player = players.find(p => p.uuid === uuid);
+
+    if (!player) {
+      // Player doesn't exist yet, create a new one
+      player = {
+        uuid,
+        name,
+        region: "Unknown",
+        tiers: allGamemodes.map(g => ({ gamemode: g, tier: "Unknown" })),
+        points: 0,
+        nitro: false,
+        banner: true, // Banner applied
+      };
+    } else {
+      // Player exists, just apply banner
+      player.banner = true;
+      if (name) player.name = name;
+
+      // Ensure tiers exist
+      if (!Array.isArray(player.tiers) || player.tiers.length === 0) {
+        player.tiers = allGamemodes.map(g => ({ gamemode: g, tier: "Unknown" }));
+      }
+
+      // Recalculate points
+      player.points = player.tiers.reduce((sum, t) => sum + (tierPointsMap[t.tier] || 0), 0);
+    }
+
+    // Save or update player in Supabase
+    await saveOrUpdatePlayer(player);
+
+    return res.json({ message: `✅ Banner successfully applied to ${name}!`, player });
+  } catch (err) {
+    console.error("Error in POST /banner:", err);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
 // -------------------
 // Grant Nitro styling
 // -------------------
