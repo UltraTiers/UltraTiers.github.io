@@ -181,15 +181,18 @@
     </form>
 </div>
 
+<!-- AUTH MODAL -->
 <div id="auth-modal" class="modal">
   <div class="modal-box">
     <h2 id="auth-title">Login</h2>
 
-<input id="auth-ign" placeholder="Minecraft IGN">
-<input id="auth-code" placeholder="Login Code">
+    <form class="auth-form">
+      <input id="auth-ign" placeholder="Minecraft IGN" required>
+      <input id="auth-code" placeholder="Login Code" required>
 
-    <button id="auth-submit">Submit</button>
-    <button onclick="closeAuth()">Cancel</button>
+      <button type="submit">Submit</button>
+      <button type="button" onclick="closeAuth()">Cancel</button>
+    </form>
   </div>
 </div>
 

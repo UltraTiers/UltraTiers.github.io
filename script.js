@@ -596,43 +596,49 @@ window.openAuth = openAuth;
 window.closeAuth = closeAuth;
 
 // Submit handler
-document.querySelector(".auth-form").addEventListener("submit", async (e) => {
-  e.preventDefault(); // <-- prevent page reload
+document.addEventListener("DOMContentLoaded", () => {
+  const authForm = document.querySelector(".auth-form");
+  if (!authForm) return;
 
-  const ign = authIgn.value.trim();
-  const code = authCode.value.trim();
+  authForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
 
-  if (!ign || !code) {
-    alert("Please fill in all required fields.");
-    return;
-  }
+    const ign = authIgn.value.trim();
+    const code = authCode.value.trim();
 
-  try {
-    const res = await fetch("/auth/login", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ ign, code })
-    });
-
-    const data = await res.json();
-
-    if (!res.ok) {
-      alert(data.error || "Something went wrong.");
+    if (!ign || !code) {
+      alert("Please fill in all required fields.");
       return;
     }
 
-    if (data.token) {
-      localStorage.setItem("token", data.token);
-      loginUser({ ign }); // show avatar and dropdown
-      alert("✅ Logged in!");
-    }
+    try {
+      const res = await fetch("/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ign, code })
+      });
 
-    closeAuth();
-  } catch (err) {
-    console.error(err);
-    alert("❌ Network error.");
-  }
+      const data = await res.json();
+
+      if (!res.ok) {
+        alert(data.error || "Something went wrong.");
+        return;
+      }
+
+      if (data.token) {
+        localStorage.setItem("token", data.token);
+        loginUser({ ign });
+        alert("✅ Logged in!");
+      }
+
+      closeAuth();
+    } catch (err) {
+      console.error(err);
+      alert("❌ Network error.");
+    }
+  });
 });
+
 
 
 /* =============================
