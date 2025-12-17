@@ -127,18 +127,18 @@ app.get("/players", async (req, res) => {
   try {
     const players = await loadPlayers();
 
-    const updatedPlayers = players.map(p => {
-      const tiersMap = {};
-      if (Array.isArray(p.tiers)) {
-        p.tiers.forEach(t => { tiersMap[t.gamemode] = t.tier; });
-      }
-      const fullTiers = allGamemodes.map(g => ({
-        gamemode: g,
-        tier: tiersMap[g] || "Unknown"
-      }));
-      const points = fullTiers.reduce((sum, t) => sum + (tierPointsMap[t.tier] || 0), 0);
-      return { ...p, tiers: fullTiers, points, nitro: p.nitro || false };
-    });
+const updatedPlayers = players.map(p => {
+  const tiersMap = {};
+  if (Array.isArray(p.tiers)) {
+    p.tiers.forEach(t => { tiersMap[t.gamemode] = t.tier; });
+  }
+  const fullTiers = allGamemodes.map(g => ({
+    gamemode: g,
+    tier: tiersMap[g] || "Unknown"
+  }));
+  const points = fullTiers.reduce((sum, t) => sum + (tierPointsMap[t.tier] || 0), 0);
+  return { ...p, tiers: fullTiers, points, nitro: p.nitro || false, banner: p.banner || false };
+});
 
     res.json(updatedPlayers);
   } catch (err) {

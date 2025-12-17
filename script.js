@@ -388,7 +388,12 @@ return `
 
 const nitroClass = player.nitro ? "nitro" : "";
 
+const bannerHTML = player.banner
+  ? `<div class="modal-banner" style="background-image: url('anime-style-clouds.jpg');"></div>`
+  : "";
+
 modalContent.innerHTML = `
+  ${bannerHTML}
   <div class="modal-header">
     <img class="modal-avatar ${nitroClass}" src="https://render.crafty.gg/3d/bust/${player.uuid}" alt="${player.name} Avatar">
     <div class="modal-name ${nitroClass}">${player.name || "Unknown Player"}</div>
@@ -481,7 +486,12 @@ return `
 
 const nitroClass = player.nitro ? "nitro" : "";
 
+const bannerHTML = player.banner
+  ? `<div class="modal-banner" style="background-image: url('anime-style-clouds.jpg');"></div>`
+  : "";
+
 modalContent.innerHTML = `
+  ${bannerHTML}
   <div class="modal-header">
     <img class="modal-avatar ${nitroClass}" src="https://render.crafty.gg/3d/bust/${player.uuid}" alt="${player.name} Avatar">
     <div class="modal-name ${nitroClass}">${player.name || "Unknown Player"}</div>
