@@ -1187,7 +1187,7 @@ grid-template-columns: 50px 50px 1fr 1fr 6fr; /* last column is now flexible */
     }
 
     .search-wrapper {
-        width: 100%;
+        width: 200px;
         justify-content: flex-start;
     }
 
