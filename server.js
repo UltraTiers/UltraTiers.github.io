@@ -39,7 +39,7 @@ async function loadPlayers() {
 }
 
 async function saveOrUpdatePlayer(player) {
-  const { uuid, name, region, tiers, points, nitro } = player;
+  const { uuid, name, region, tiers, points, nitro, banner } = player;
 
   const { data: existing, error } = await supabase
     .from("ultratiers")
@@ -52,18 +52,53 @@ async function saveOrUpdatePlayer(player) {
   if (existing) {
     const { error: updateError } = await supabase
       .from("ultratiers")
-      .update({ name, region, tiers, points, nitro: nitro || false })
+      .update({
+        name,
+        region,
+        tiers,
+        points,
+        nitro: nitro || false,
+        banner: banner || existing.banner || "anime-style-clouds.jpg"
+      })
       .eq("uuid", uuid);
 
     if (updateError) throw updateError;
   } else {
     const { error: insertError } = await supabase
       .from("ultratiers")
-      .insert([{ uuid, name, region, tiers, points, nitro: nitro || false }]);
+      .insert([{
+        uuid,
+        name,
+        region,
+        tiers,
+        points,
+        nitro: nitro || false,
+        banner: banner || "anime-style-clouds.jpg"
+      }]);
 
     if (insertError) throw insertError;
   }
 }
+
+app.post("/profile/banner", async (req, res) => {
+  try {
+    const { uuid, banner } = req.body;
+    if (!uuid || !banner)
+      return res.status(400).json({ error: "Missing uuid or banner" });
+
+    const { error } = await supabase
+      .from("ultratiers")
+      .update({ banner })
+      .eq("uuid", uuid);
+
+    if (error) throw error;
+
+    res.json({ success: true, banner });
+  } catch (err) {
+    console.error("Banner update failed:", err);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
 
 app.post("/apply", async (req, res) => {
   try {
@@ -141,7 +176,13 @@ app.get("/players", async (req, res) => {
         tier: tiersMap[g] || "Unknown"
       }));
       const points = fullTiers.reduce((sum, t) => sum + (tierPointsMap[t.tier] || 0), 0);
-      return { ...p, tiers: fullTiers, points, nitro: p.nitro || false };
+      return {
+  ...p,
+  tiers: fullTiers,
+  points,
+  nitro: p.nitro || false,
+  banner: p.banner || "anime-style-clouds.jpg"
+};
     });
 
     res.json(updatedPlayers);

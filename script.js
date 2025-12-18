@@ -34,6 +34,24 @@ const searchInput = document.getElementById("search-input");
 const tableHeader = document.querySelector(".table-header");
 
 /* =============================
+   PROFILE DESIGNER ELEMENTS
+============================= */
+
+const settingsBtn = document.getElementById("settings-btn");
+const profileDesignerModal = document.getElementById("profile-designer-modal");
+const closeDesignerBtn = document.getElementById("close-designer");
+
+const profileBanner = document.getElementById("profile-banner");
+const bannerSelector = document.getElementById("banner-selector");
+const editBannerBtn = document.getElementById("edit-banner-btn");
+
+const bannerOptions = document.querySelectorAll(".banner-options img");
+const designerName = document.getElementById("designer-name");
+const designerAvatar = document.getElementById("designer-avatar");
+
+let currentUser = null;
+
+/* =============================
    SECTION SWITCHING HELPER
 ============================= */
 
@@ -104,11 +122,22 @@ authForm.addEventListener("submit", async (e) => {
 });
 
 function setLoggedInUser(user) {
+  currentUser = user;
+
   authButtons.classList.add("hidden");
   userDropdown.classList.remove("hidden");
 
-  // Use Minecraft avatar
+  // Avatar
   userAvatar.src = `https://render.crafty.gg/3d/bust/${user.uuid}`;
+
+  // Designer info
+  designerName.textContent = user.ign || user.name || "Player";
+  designerAvatar.src = `https://render.crafty.gg/3d/bust/${user.uuid}`;
+
+  // Load banner
+const player = players.find(p => p.uuid === user.uuid);
+profileBanner.style.backgroundImage =
+  `url(${player?.banner || "anime-style-clouds.jpg"})`;
 }
 
 
@@ -176,14 +205,74 @@ document.addEventListener("click", (e) => {
 logoutBtn.addEventListener("click", () => {
   localStorage.removeItem("ultratiers_user");
 
+  currentUser = null;
+
   authButtons.classList.remove("hidden");
   userDropdown.classList.add("hidden");
-  userDropdown.classList.remove("active"); // <-- hide menu
+  userDropdown.classList.remove("active");
+
+  profileDesignerModal.classList.remove("show");
 
   console.log("User logged out");
 });
 
+/* =============================
+   PROFILE DESIGNER LOGIC
+============================= */
 
+// Open settings
+settingsBtn?.addEventListener("click", () => {
+  if (!currentUser) return;
+  profileDesignerModal.classList.add("show");
+});
+
+// Close modal
+closeDesignerBtn.addEventListener("click", () => {
+  profileDesignerModal.classList.remove("show");
+  bannerSelector.classList.add("hidden");
+});
+
+// Close by backdrop
+profileDesignerModal.addEventListener("click", e => {
+  if (e.target === profileDesignerModal) {
+    profileDesignerModal.classList.remove("show");
+    bannerSelector.classList.add("hidden");
+  }
+});
+
+// Pencil icon
+editBannerBtn.addEventListener("click", () => {
+  bannerSelector.classList.toggle("hidden");
+});
+
+// Banner selection
+bannerOptions.forEach(img => {
+  img.addEventListener("click", async () => {
+    if (!currentUser) return;
+
+    const banner = img.dataset.banner;
+
+    // Update designer preview
+    profileBanner.style.backgroundImage = `url(${banner})`;
+
+    // Save to backend
+    await fetch("/profile/banner", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        uuid: currentUser.uuid,
+        banner
+      })
+    });
+
+    // Update local player cache
+    const player = players.find(p => p.uuid === currentUser.uuid);
+    if (player) player.banner = banner;
+
+    // Re-render leaderboard
+    generatePlayers();
+  });
+});
 
 
 /* =============================
@@ -342,7 +431,9 @@ const tiersHTML = sortedTiers.map(t => {
 const nitroClass = player.nitro ? "nitro" : ""; // <-- NEW
 
 const card = `
-  <div class="player-card ${borderClass}" data-player="${player.name}">
+  <div class="player-card ${borderClass}"
+     data-player="${player.name}"
+     style="background-image: url(${player.banner || 'anime-style-clouds.jpg'})">
     <div class="rank">${index + 1}.</div>
     <img class="avatar" src="${avatarURL}">
     <div class="player-info">
@@ -498,7 +589,8 @@ return `
 const nitroClass = player.nitro ? "nitro" : "";
 
 modalContent.innerHTML = `
-  <div class="modal-header">
+  <div class="modal-header"
+     style="background-image: url(${player.banner || 'anime-style-clouds.jpg'})">
     <img class="modal-avatar ${nitroClass}" src="https://render.crafty.gg/3d/bust/${player.uuid}" alt="${player.name} Avatar">
     <div class="modal-name ${nitroClass}">${player.name || "Unknown Player"}</div>
   </div>
@@ -591,7 +683,8 @@ return `
 const nitroClass = player.nitro ? "nitro" : "";
 
 modalContent.innerHTML = `
-  <div class="modal-header">
+  <div class="modal-header"
+     style="background-image: url(${player.banner || 'anime-style-clouds.jpg'})">
     <img class="modal-avatar ${nitroClass}" src="https://render.crafty.gg/3d/bust/${player.uuid}" alt="${player.name} Avatar">
     <div class="modal-name ${nitroClass}">${player.name || "Unknown Player"}</div>
   </div>
@@ -639,9 +732,9 @@ modalContent.innerHTML = `
   generatePlayers();
 
   // ✅ Restore login
-  const savedUser = localStorage.getItem("ultratiers_user");
-  if (savedUser) {
-    setLoggedInUser(JSON.parse(savedUser));
-  }
+const savedUser = localStorage.getItem("ultratiers_user");
+if (savedUser) {
+  setLoggedInUser(JSON.parse(savedUser));
+}
 })();
 
