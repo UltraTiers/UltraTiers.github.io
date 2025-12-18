@@ -644,7 +644,7 @@ body {
 .mode-player[data-region="sa"] .region-box { background-color: #ba6a78; }
 .mode-player[data-region="me"] .region-box { background-color: #da9515; }
 .mode-player[data-region="au"] .region-box { background-color: #6ab5ba; }
-.mode-player[data-region="af"] .region-box { background-color: #6a7fba; }
+.mode-player[data-region="af"] .region-box { background-color: #4169E1; }
 
 /* Match empty-tier size + add rarity-colored border */
 .tier[data-tier="1"] { border: 2px solid #f87171; } /* red */
@@ -1117,7 +1117,7 @@ grid-template-columns: 50px 50px 1fr 1fr 6fr; /* last column is now flexible */
 .region-sa { background: #ba6a78; }
 .region-me { background: #da9515; }
 .region-au { background: #6ab5ba; }
-.region-af { background: #6a7fba; }
+.region-af { background: #4169E1; }
 
 /* ========================== */
 /* POPUP MODAL - UPDATED UI   */
