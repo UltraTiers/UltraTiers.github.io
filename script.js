@@ -269,8 +269,7 @@ bannerOptions.forEach(img => {
     const player = players.find(p => p.uuid === currentUser.uuid);
     if (player) player.banner = banner;
 
-    // Re-render leaderboard
-    generatePlayers();
+    // ✅ leaderboard is untouched
   });
 });
 
@@ -432,8 +431,7 @@ const nitroClass = player.nitro ? "nitro" : ""; // <-- NEW
 
 const card = `
   <div class="player-card ${borderClass}"
-     data-player="${player.name}"
-     style="background-image: url(${player.banner || 'anime-style-clouds.jpg'})">
+       data-player="${player.name}">
     <div class="rank">${index + 1}.</div>
     <img class="avatar" src="${avatarURL}">
     <div class="player-info">

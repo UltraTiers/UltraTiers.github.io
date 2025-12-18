@@ -1049,47 +1049,23 @@ body {
     display: grid;
     align-items: center;
     padding: 12px 16px;
-    grid-template-columns: 50px 50px 1fr 1fr 6fr; /* last column is flexible */
-    gap: 10px;
-
-    /* Banner background */
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
-    background-color: #020617; /* fallback while loading */
-
+    background: rgba(255,255,255,0.04);
+grid-template-columns: 50px 50px 1fr 1fr 6fr; /* last column is now flexible */
     border: 1px solid var(--border);
     border-radius: 14px;
     box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    gap: 10px;
 
-    justify-content: start; /* align content left */
-    position: relative;     /* for overlay */
-    overflow: hidden;
+    justify-content: start; /* ✅ align all content to the left */
 
     margin: 20px;
     transition: 0.25s ease;
 }
 
-/* Dark overlay for readability */
-.player-card::before {
-    content: "";
-    position: absolute;
-    inset: 0;
-    background: rgba(0, 0, 0, 0.55);
-    z-index: 0;
-}
-
-/* Keep inner content above overlay */
-.player-card > * {
-    position: relative;
-    z-index: 1;
-}
-
 .player-card:hover {
-    background-blend-mode: overlay;
+    background: rgba(255,255,255,0.08);
     transform: translateY(-2px);
 }
-
 
 .gold   { border-left: 8px solid gold; }
 .silver { border-left: 8px solid silver; }
