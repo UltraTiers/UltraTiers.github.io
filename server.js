@@ -2,8 +2,6 @@ import express from "express";
 import cors from "cors";
 import path from "path";
 import fetch from "node-fetch";
-import bcrypt from "bcrypt";
-import jwt from "jsonwebtoken";
 import { createClient } from "@supabase/supabase-js";
 
 const app = express();
@@ -121,7 +119,7 @@ const allGamemodes = [
 const tierPointsMap = { LT5:1, HT5:2, LT4:4, HT4:6, LT3:9, HT3:12, LT2:16, HT2:20, LT1:25, HT1:30 };
 
 function generateLoginCode() {
-  return Math.floor(10000 + Math.random() * 90000).toString();
+  return Math.floor(100000 + Math.random() * 900000).toString();
 }
 
 // -------------------
