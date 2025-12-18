@@ -147,6 +147,7 @@ body {
   gap: 10px;
   justify-items: center; /* centers items horizontally in each cell */
   align-items: center;   /* optional: centers items vertically */
+  flex-wrap: wrap;
 }
 
 .banner-options img {
