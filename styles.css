@@ -14,7 +14,7 @@ body {
 }
 
 .modal-box input {
-  width: 100%;
+  width: 300px;
   margin-top: 12px;
   padding: 10px 12px;
   border-radius: 8px;
@@ -22,6 +22,8 @@ body {
   background: #020617;
   color: #e5e7eb;
   font-size: 14px;
+  justify-content: center;
+  display: flex;
 }
 
 .nav-right {
