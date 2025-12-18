@@ -143,8 +143,7 @@ body {
 }
 
 .banner-options {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr); /* 2 items per row */
+  display: flex;
   gap: 10px;
   justify-items: center; /* centers items horizontally in each cell */
   align-items: center;   /* optional: centers items vertically */
