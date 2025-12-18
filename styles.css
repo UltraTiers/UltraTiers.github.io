@@ -123,13 +123,12 @@ body {
   transform: translateY(0);
 }
 
-/* Centered arrow above menu pointing up */
+/* Arrow pointing up, aligned to the right */
 .profile-menu::before {
   content: '';
   position: absolute;
   top: -8px; /* above menu */
-  left: 50%; /* center horizontally */
-  transform: translateX(-50%);
+  right: 16px; /* distance from right edge */
   width: 0;
   height: 0;
   border-left: 8px solid transparent;
@@ -161,7 +160,6 @@ body {
 .hidden {
   display: none;
 }
-
 
 .mode-btn {
   background: rgba(255,255,255,0.06);
