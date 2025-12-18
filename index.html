@@ -93,12 +93,15 @@
     <button id="login-btn">Login</button>
   </div>
 
-  <div class="user-profile-dropdown hidden" id="user-profile-dropdown">
-    <img id="user-avatar" src="" alt="Avatar" class="user-avatar">
-    <div class="profile-menu" id="profile-menu">
-      <div id="logout-btn">Logout</div>
-    </div>
+<div class="user-profile-dropdown hidden" id="user-profile-dropdown">
+  <img id="user-avatar" src="" alt="Avatar" class="user-avatar">
+  <i class="fas fa-chevron-down dropdown-icon"></i> <!-- added icon -->
+  
+  <div class="profile-menu" id="profile-menu">
+    <div class="profile-arrow"></div> <!-- arrow pointing up -->
+    <div id="logout-btn"><i class="fas fa-sign-out-alt"></i> Logout</div>
   </div>
+</div>
 
   <div class="search-wrapper">
     <i class="fas fa-search"></i>
