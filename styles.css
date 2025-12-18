@@ -15,7 +15,7 @@ body {
 
 .modal-box input {
   width: 300px;
-  margin-top: 12px;
+  margin: 8px auto;
   padding: 10px 12px;
   border-radius: 8px;
   border: 1px solid #334155;
@@ -28,7 +28,6 @@ body {
 
 .auth-button-container {
     display: flex;
-    gap: 14px;
 }
 
 .modal-box h2 {
