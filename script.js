@@ -160,8 +160,17 @@ const logoutBtn = document.getElementById("logout-btn");
 
 // Toggle dropdown
 userDropdown.addEventListener("click", (e) => {
-  profileMenu.classList.toggle("hidden");
+  e.stopPropagation(); // prevent immediate closing
+  userDropdown.classList.toggle("active");
 });
+
+// Close dropdown if clicking outside
+document.addEventListener("click", (e) => {
+  if (!userDropdown.contains(e.target)) {
+    userDropdown.classList.remove("active");
+  }
+});
+
 
 // Logout
 logoutBtn.addEventListener("click", () => {
@@ -169,10 +178,11 @@ logoutBtn.addEventListener("click", () => {
 
   authButtons.classList.remove("hidden");
   userDropdown.classList.add("hidden");
-  profileMenu.classList.add("hidden");
+  userDropdown.classList.remove("active"); // <-- hide menu
 
   console.log("User logged out");
 });
+
 
 
 
