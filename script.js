@@ -136,7 +136,8 @@ function setLoggedInUser(user) {
 
   // Load banner
 const player = players.find(p => p.uuid === user.uuid);
-profileBanner.style.backgroundImage = player?.banner ? `url(${player.banner})` : "none";
+profileBanner.style.backgroundImage =
+  `url(${player?.banner || "anime-style-clouds.jpg"})`;
 }
 
 
@@ -586,7 +587,8 @@ return `
 const nitroClass = player.nitro ? "nitro" : "";
 
 modalContent.innerHTML = `
-  <div class="modal-header" style="background-image: ${player.banner ? `url(${player.banner})` : 'none'}">
+  <div class="modal-header"
+     style="background-image: url(${player.banner || 'anime-style-clouds.jpg'})">
     <img class="modal-avatar ${nitroClass}" src="https://render.crafty.gg/3d/bust/${player.uuid}" alt="${player.name} Avatar">
     <div class="modal-name ${nitroClass}">${player.name || "Unknown Player"}</div>
   </div>
@@ -679,7 +681,8 @@ return `
 const nitroClass = player.nitro ? "nitro" : "";
 
 modalContent.innerHTML = `
-<div class="modal-header" style="background-image: ${player.banner ? `url(${player.banner})` : 'none'}">
+  <div class="modal-header"
+     style="background-image: url(${player.banner || 'anime-style-clouds.jpg'})">
     <img class="modal-avatar ${nitroClass}" src="https://render.crafty.gg/3d/bust/${player.uuid}" alt="${player.name} Avatar">
     <div class="modal-name ${nitroClass}">${player.name || "Unknown Player"}</div>
   </div>
