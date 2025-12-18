@@ -119,19 +119,19 @@ body {
 /* Card body */
 .profile-card-body {
   padding: 16px;
+  display: flex;
 }
 
 .designer-avatar {
   width: 64px;
   height: 64px;
   border-radius: 12px;
-  margin-top: -32px;
   border: 3px solid var(--gray2);
   background: var(--gray);
 }
 
 #designer-name {
-  margin-top: 8px;
+  margin-left: 15px;
   font-size: 20px;
   font-weight: 800;
 }
