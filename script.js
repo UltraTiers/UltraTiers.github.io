@@ -44,6 +44,9 @@ closeModalBtn.addEventListener("click", () => {
 
 const loginBtn = document.getElementById("login-btn");
 const authModal = document.getElementById("auth-modal");
+const authCancelBtn = document.getElementById("auth-cancel");
+
+authCancelBtn.addEventListener("click", closeAuth);
 
 loginBtn.addEventListener("click", () => {
   authModal.classList.add("show");
