@@ -95,13 +95,6 @@ const userAvatar = document.getElementById("user-avatar");
 const profileMenu = document.getElementById("profile-menu");
 const logoutBtn = document.getElementById("logout-btn");
 
-// Example: fake login function
-function loginUser(user) {
-  authButtons.classList.add("hidden"); // hide login/signup
-  userDropdown.classList.remove("hidden"); // show avatar dropdown
-  userAvatar.src = `https://render.crafty.gg/3d/bust/${user.ign}`; // Minecraft profile avatar
-}
-
 // Toggle dropdown
 userDropdown.addEventListener("click", (e) => {
   profileMenu.classList.toggle("hidden");
@@ -109,10 +102,10 @@ userDropdown.addEventListener("click", (e) => {
 
 // Logout
 logoutBtn.addEventListener("click", () => {
-  authButtons.classList.remove("hidden"); // show login/signup
-  userDropdown.classList.add("hidden"); // hide avatar
-  profileMenu.classList.add("hidden");
-  console.log("User logged out");
+    authButtons.classList.remove("hidden");
+    userDropdown.classList.add("hidden");
+    profileMenu.classList.add("hidden");
+    console.log("User logged out");
 });
 
 
@@ -560,88 +553,110 @@ modalContent.innerHTML = `
 
 
 /* =============================
-   MODAL CLOSE
+   MODAL & LOGIN HANDLER
 ============================= */
 
-// Modal elements
+/* ============================= LOGIN / CODE FLOW ============================= */
+
+// Elements
 const authModal = document.getElementById("auth-modal");
 const authTitle = document.getElementById("auth-title");
-const authCode = document.getElementById("auth-code");
 const authIgn = document.getElementById("auth-ign");
+const authCode = document.getElementById("auth-code");
+const authSubmitBtn = document.getElementById("auth-submit-btn");
+const requestCodeBtn = document.getElementById("request-code-btn");
 
 // Open login modal
-document.getElementById("login-btn").addEventListener("click", openAuth);
-
 function openAuth() {
-  authTitle.textContent = "Login";
-
-  // Clear inputs every time modal opens
-  authIgn.value = "";
-  authCode.value = "";
-
-  authModal.classList.add("show");
+    authTitle.textContent = "Login";
+    authIgn.value = "";
+    authCode.value = "";
+    authModal.classList.add("show");
 }
 
+// Close modal
 function closeAuth() {
-  authModal.classList.remove("show");
+    authModal.classList.remove("show");
 }
 
-// Close when clicking outside modal box
+// Click outside modal to close
 authModal.addEventListener("click", (e) => {
-  if (e.target === authModal) closeAuth();
+    if (e.target === authModal) closeAuth();
 });
 
-// Make functions available to inline HTML (Cancel button)
+// Expose for inline HTML
 window.openAuth = openAuth;
 window.closeAuth = closeAuth;
 
-// ----------------------------
-// AUTH FORM SUBMIT HANDLER
-// ----------------------------
+// ------------------------
+// Request Login Code
+// ------------------------
+requestCodeBtn.addEventListener("click", async () => {
+    const ign = authIgn.value.trim();
+    if (!ign) return alert("Please enter your IGN to request a login code.");
 
-async function handleAuthSubmit(event) {
-  event.preventDefault();
-
-  const ign = authIgn.value.trim();
-  const code = authCode.value.trim();
-
-  if (!ign || !code) {
-    alert("Please fill in all required fields.");
-    return;
-  }
-
-  try {
-    const res = await fetch("/auth/login", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ ign, code })
-    });
-
-    const data = await res.json();
-
-    if (!res.ok) {
-      alert(data.error || "Something went wrong.");
-      return;
+    try {
+        const res = await fetch("/code", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ ign })
+        });
+        const data = await res.json();
+        if (res.ok && data.login) {
+            alert(`Your login code: ${data.login}`);
+        } else {
+            alert(data.error || "Failed to request login code");
+        }
+    } catch (err) {
+        console.error(err);
+        alert("Error requesting login code");
     }
+});
 
-    if (data.token) {
-      localStorage.setItem("token", data.token);
-      loginUser({ ign });
-      alert("✅ Logged in!");
+// ------------------------
+// Submit Login
+// ------------------------
+authSubmitBtn.addEventListener("click", async () => {
+    const ign = authIgn.value.trim();
+    const code = authCode.value.trim();
+    if (!ign || !code) return alert("Please enter both IGN and login code.");
+
+    try {
+        const res = await fetch("/auth/login", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ ign, code })
+        });
+        const data = await res.json();
+        if (res.ok && data.success) {
+            alert(`Logged in as ${data.ign}`);
+            closeAuth();
+
+            // Update UI: show avatar, hide login buttons
+            authButtons.classList.add("hidden");
+            userDropdown.classList.remove("hidden");
+            userAvatar.src = `https://render.crafty.gg/3d/bust/${data.uuid}`;
+
+        } else {
+            alert(data.error || "Invalid login code");
+        }
+    } catch (err) {
+        console.error(err);
+        alert("Error logging in");
     }
+});
 
-    closeAuth();
-  } catch (err) {
-    console.error(err);
-    alert("❌ Network error.");
-  }
-}
+// ------------------------
+// Logout
+// ------------------------
+logoutBtn.addEventListener("click", () => {
+    authButtons.classList.remove("hidden");
+    userDropdown.classList.add("hidden");
+    profileMenu.classList.add("hidden");
+    console.log("User logged out");
+});
 
-// Attach submit handler to the form
-const authForm = document.querySelector(".auth-form");
-if (authForm) {
-  authForm.addEventListener("submit", handleAuthSubmit);
-}
+
 
 
 /* =============================

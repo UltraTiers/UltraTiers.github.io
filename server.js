@@ -246,14 +246,10 @@ app.post("/auth/login", async (req, res) => {
   if (error) return res.status(500).json({ error: "Database error" });
   if (!player || player.login !== code) return res.status(401).json({ error: "Invalid login code" });
 
-  const token = jwt.sign(
-    { ign: player.name, uuid: player.uuid },
-    process.env.JWT_SECRET,
-    { expiresIn: "7d" }
-  );
-
-  res.json({ token, ign: player.name });
+  // No JWT, just return player info
+  res.json({ success: true, ign: player.name, uuid: player.uuid });
 });
+
 
 // -------------------
 // Grant Nitro styling
