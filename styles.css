@@ -62,9 +62,9 @@ body {
   background: transparent;
   border: 1px solid var(--gray);
   color: var(--text);
-  padding: 12px 18px;
+  padding: 6px 12px;
   border-radius: 12px;
-  font-size: 14px;
+  font-size: 24px;
   cursor: pointer;
   transition: all 0.2s ease;
 }
