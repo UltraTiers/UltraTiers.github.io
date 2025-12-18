@@ -145,7 +145,7 @@ body {
 .banner-options {
   display: flex;
   gap: 10px;
-  justify-items: center; /* centers items horizontally in each cell */
+  justify-content: center; /* centers items horizontally in each cell */
   align-items: center;   /* optional: centers items vertically */
   flex-wrap: wrap;
 }
