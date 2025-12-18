@@ -80,7 +80,6 @@ body {
   cursor: pointer;
   display: flex;
   align-items: center; /* Vertically center avatar */
-  gap: 5px;
 }
 
 /* Avatar styling */
@@ -95,18 +94,6 @@ body {
 
 .user-profile-dropdown:hover .user-avatar {
   transform: scale(1.05); /* Slight pop on hover */
-}
-
-/* Dropdown arrow icon next to avatar */
-.dropdown-icon {
-  font-size: 12px;
-  color: var(--text);
-  transition: transform 0.25s ease;
-}
-
-/* Rotate icon when active */
-.user-profile-dropdown.active .dropdown-icon {
-  transform: rotate(180deg);
 }
 
 /* Profile menu dropdown */
@@ -140,13 +127,14 @@ body {
 /* Arrow pointing up toward avatar */
 .profile-arrow {
   position: absolute;
-  top: -6px;
-  right: 16px;
+  top: -6px; /* above menu */
+  right: 16px; /* align with avatar */
   width: 0;
   height: 0;
   border-left: 6px solid transparent;
   border-right: 6px solid transparent;
   border-bottom: 6px solid var(--gray2);
+  z-index: 1001; /* above menu */
 }
 
 /* Menu items */
