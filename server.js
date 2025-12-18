@@ -58,7 +58,7 @@ async function saveOrUpdatePlayer(player) {
         tiers,
         points,
         nitro: nitro || false,
-        banner: banner || existing.banner || "anime-style-clouds.jpg"
+        banner: banner || existing.banner || "anime-style-stone.jpg"
       })
       .eq("uuid", uuid);
 
@@ -73,7 +73,7 @@ async function saveOrUpdatePlayer(player) {
         tiers,
         points,
         nitro: nitro || false,
-        banner: banner || "anime-style-clouds.jpg"
+        banner: banner || "anime-style-stone.jpg"
       }]);
 
     if (insertError) throw insertError;
@@ -181,7 +181,7 @@ app.get("/players", async (req, res) => {
   tiers: fullTiers,
   points,
   nitro: p.nitro || false,
-  banner: p.banner || "anime-style-clouds.jpg"
+  banner: p.banner || "anime-style-stone.jpg"
 };
     });
 
