@@ -139,6 +139,7 @@ body {
 /* Banner selector */
 .banner-selector h4 {
   margin-bottom: 10px;
+  text-align: center;
 }
 
 .banner-options {
