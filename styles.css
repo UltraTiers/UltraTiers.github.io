@@ -59,8 +59,8 @@ body {
 
 .auth-buttons button {
   background: transparent;
-  border: 1px solid var(--gray2);
-  color: var(--accent);
+  border: 1px solid var(--gray);
+  color: var(--text);
   padding: 6px 14px;
   border-radius: 8px;
   font-size: 14px;
