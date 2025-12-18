@@ -26,6 +26,20 @@ body {
   display: flex;
 }
 
+.auth-button-container {
+    display: flex;
+    gap: 14px;
+}
+
+.modal-box h2 {
+    text-align: center;
+}
+
+.auth-form {
+    justify-content: center;
+    display: flex;
+}
+
 .nav-right {
     display: flex;
     gap: 20px;
