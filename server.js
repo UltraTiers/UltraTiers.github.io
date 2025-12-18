@@ -200,7 +200,6 @@ app.post("/code", async (req, res) => {
     const { ign } = req.body;
     if (!ign) return res.status(400).json({ error: "Missing IGN" });
 
-    // Fetch player
     const { data: player, error } = await supabase
       .from("ultratiers")
       .select("login")
@@ -210,32 +209,39 @@ app.post("/code", async (req, res) => {
     if (error) throw error;
     if (!player) return res.status(404).json({ error: "Player not found" });
 
-    // If login code already exists, return it
+    // ✅ If code already exists, DO NOT change it
     if (player.login) {
-      return res.json({ login: player.login });
+      return res.json({ message: "Login code already set" });
     }
 
-    // Generate new code
+    // Generate permanent code
     const code = generateLoginCode();
+
+    // 🔐 Hash it
+    const hashed = await bcrypt.hash(code, 10);
 
     const { error: updateError } = await supabase
       .from("ultratiers")
-      .update({ login: code })
+      .update({ login: hashed })
       .eq("name", ign);
 
     if (updateError) throw updateError;
 
-    return res.json({ login: code });
+    // ⚠️ Only show code ONCE
+    return res.json({ code });
   } catch (err) {
     console.error("Error in /code:", err);
-    return res.status(500).json({ error: "Internal server error" });
+    res.status(500).json({ error: "Internal server error" });
   }
 });
 
-app.post("/auth/login", async (req, res) => {
-  const { ign, code } = req.body; // only IGN and code
 
-  if (!ign || !code) return res.status(400).json({ error: "Missing IGN or code" });
+app.post("/auth/login", async (req, res) => {
+  const { ign, code } = req.body;
+
+  if (!ign || !code) {
+    return res.status(400).json({ error: "Missing IGN or code" });
+  }
 
   const { data: player, error } = await supabase
     .from("ultratiers")
@@ -243,12 +249,30 @@ app.post("/auth/login", async (req, res) => {
     .eq("name", ign)
     .maybeSingle();
 
-  if (error) return res.status(500).json({ error: "Database error" });
-  if (!player || player.login !== code) return res.status(401).json({ error: "Invalid login code" });
+  if (error) {
+    console.error(error);
+    return res.status(500).json({ error: "Database error" });
+  }
 
-  // No JWT, just return player info
-  res.json({ success: true, ign: player.name, uuid: player.uuid });
+  if (!player || !player.login) {
+    return res.status(401).json({ error: "Invalid login code" });
+  }
+
+  // 🔐 Correct bcrypt comparison
+  const valid = await bcrypt.compare(code, player.login);
+
+  if (!valid) {
+    return res.status(401).json({ error: "Invalid login code" });
+  }
+
+  // ✅ Permanent login success
+  res.json({
+    success: true,
+    ign: player.name,
+    uuid: player.uuid
+  });
 });
+
 
 
 // -------------------

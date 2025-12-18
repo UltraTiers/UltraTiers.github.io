@@ -42,12 +42,72 @@ closeModalBtn.addEventListener("click", () => {
   modal.classList.remove("show");
 });
 
+const loginBtn = document.getElementById("login-btn");
+const authModal = document.getElementById("auth-modal");
+
+loginBtn.addEventListener("click", () => {
+  authModal.classList.add("show");
+});
+
+function closeAuth() {
+  authModal.classList.remove("show");
+}
+
 // Close PLAYER modal when clicking backdrop
 modal.addEventListener("click", (e) => {
   if (e.target === modal) {
     modal.classList.remove("show");
   }
 });
+
+const authForm = document.querySelector(".auth-form");
+
+authForm.addEventListener("submit", async (e) => {
+  e.preventDefault();
+
+  const ign = document.getElementById("auth-ign").value.trim();
+  const code = document.getElementById("auth-code").value.trim();
+
+  if (!ign || !code) {
+    alert("Please enter IGN and login code");
+    return;
+  }
+
+  try {
+    const res = await fetch("/auth/login", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ ign, code })
+    });
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      alert(data.error || "Login failed");
+      return;
+    }
+
+    // ✅ Save login state
+    localStorage.setItem("ultratiers_user", JSON.stringify(data));
+
+    // ✅ Update UI
+    setLoggedInUser(data);
+
+    closeAuth();
+  } catch (err) {
+    console.error(err);
+    alert("Server error during login");
+  }
+});
+
+function setLoggedInUser(user) {
+  authButtons.classList.add("hidden");
+  userDropdown.classList.remove("hidden");
+
+  // Use Minecraft avatar
+  userAvatar.src = `https://render.crafty.gg/3d/bust/${user.uuid}`;
+}
+
 
 function showSection(sectionToShow) {
   const sections = [
@@ -102,11 +162,15 @@ userDropdown.addEventListener("click", (e) => {
 
 // Logout
 logoutBtn.addEventListener("click", () => {
-  authButtons.classList.remove("hidden"); // show login/signup
-  userDropdown.classList.add("hidden"); // hide avatar
+  localStorage.removeItem("ultratiers_user");
+
+  authButtons.classList.remove("hidden");
+  userDropdown.classList.add("hidden");
   profileMenu.classList.add("hidden");
+
   console.log("User logged out");
 });
+
 
 
 /* =============================
@@ -556,8 +620,15 @@ modalContent.innerHTML = `
 ============================= */
 
 (async () => {
-  await loadPlayers();    // fetch players from JSON
-  await loadPlayerNames(); 
-showSection(leaderboardSection);
-generatePlayers();
+  await loadPlayers();
+  await loadPlayerNames();
+  showSection(leaderboardSection);
+  generatePlayers();
+
+  // ✅ Restore login
+  const savedUser = localStorage.getItem("ultratiers_user");
+  if (savedUser) {
+    setLoggedInUser(JSON.parse(savedUser));
+  }
 })();
+
