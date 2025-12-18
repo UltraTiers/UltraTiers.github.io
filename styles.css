@@ -40,6 +40,7 @@ body {
 
 .nav-right {
     display: flex;
+    align-items: center;
     gap: 20px;
 }
 
@@ -73,46 +74,82 @@ body {
   color: #fff;
 }
 
+/* User profile dropdown container */
 .user-profile-dropdown {
   position: relative;
   cursor: pointer;
-  margin-right: 10px;
+  display: flex;
+  align-items: center; /* Vertically center avatar */
+  gap: 8px;
 }
 
+/* Avatar styling */
 .user-avatar {
-  width: 40px;
-  height: 40px;
+  width: 36px;
+  height: 36px;
   border-radius: 50%;
   border: 2px solid var(--accent);
   object-fit: cover;
+  transition: transform 0.2s;
 }
 
+.user-profile-dropdown:hover .user-avatar {
+  transform: scale(1.05); /* Slight pop on hover */
+}
+
+/* Profile menu dropdown */
 .profile-menu {
   position: absolute;
   top: 50px;
   right: 0;
   background: var(--gray2);
   border: 1px solid var(--border);
-  border-radius: 10px;
-  padding: 10px 0;
-  width: 120px;
-  box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+  border-radius: 12px;
+  padding: 5px 0;
+  width: 150px; /* Slightly wider */
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
   display: flex;
   flex-direction: column;
   gap: 0;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-10px);
+  transition: all 0.25s ease;
+  z-index: 1000;
 }
 
+/* Show dropdown on click */
+.user-profile-dropdown.active .profile-menu {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+
+/* Menu items */
 .profile-menu div {
-  padding: 8px 12px;
+  padding: 10px 16px;
   font-size: 14px;
   color: var(--text);
-  text-align: center;
+  text-align: left;
   cursor: pointer;
-  transition: 0.2s;
+  transition: background 0.2s, color 0.2s;
 }
 
 .profile-menu div:hover {
-  background: rgba(255,255,255,0.08);
+  background: var(--accent);
+  color: #fff;
+  border-radius: 8px;
+}
+
+/* Optional: add a small arrow to the menu */
+.profile-menu::before {
+  content: '';
+  position: absolute;
+  top: -6px;
+  right: 16px;
+  border-width: 6px;
+  border-style: solid;
+  border-color: transparent transparent var(--gray2) transparent;
 }
 
 .hidden {
