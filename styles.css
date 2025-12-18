@@ -165,7 +165,6 @@ body {
 @media (max-width: 768px) {
   /* Move dropdown to the right of avatar */
   .profile-menu {
-    left: 100%; /* position to the right of avatar */
     right: auto;
   }
 
