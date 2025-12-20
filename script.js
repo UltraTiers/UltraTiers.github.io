@@ -16,7 +16,6 @@ async function loadPlayers() {
   const res = await fetch("/players");
   players = await res.json();
 }
-
 /* =============================
    ELEMENTS
 ============================= */
@@ -32,6 +31,10 @@ const modalContent = document.getElementById("modal-content");
 const closeModalBtn = document.getElementById("close-modal");
 const searchInput = document.getElementById("search-input");
 const tableHeader = document.querySelector(".table-header");
+const testersSection = document.getElementById("testers-section");
+const testersContainer = document.getElementById("testers-container");
+const testerModeFilter = document.getElementById("tester-mode-filter");
+const testerRegionFilter = document.getElementById("tester-region-filter");
 
 /* =============================
    PROFILE DESIGNER ELEMENTS
@@ -50,6 +53,12 @@ const designerName = document.getElementById("designer-name");
 const designerAvatar = document.getElementById("designer-avatar");
 
 let currentUser = null;
+let testers = [];
+
+async function loadTesters() {
+  const res = await fetch("/testers");
+  testers = await res.json();
+}
 
 /* =============================
    SECTION SWITCHING HELPER
@@ -142,11 +151,12 @@ profileBanner.style.backgroundImage =
 
 
 function showSection(sectionToShow) {
-  const sections = [
-    leaderboardSection,
-    docsSection,
-    applicationSection
-  ];
+const sections = [
+  leaderboardSection,
+  docsSection,
+  applicationSection,
+  testersSection
+];
 
   sections.forEach(section => {
     if (section === sectionToShow) {
@@ -292,6 +302,17 @@ document.querySelector(".docs-btn").addEventListener("click", () => {
 document.querySelector(".application-btn").addEventListener("click", () => {
   showSection(applicationSection);
   tableHeader.style.display = "none";
+});
+
+document.querySelector(".testers-btn")?.addEventListener("click", async () => {
+  showSection(testersSection);
+  tableHeader.style.display = "none";
+
+  if (!testers.length) {
+    await loadTesters();
+    populateTesterModes();
+    renderTesters();
+  }
 });
 
 /* =============================
@@ -521,6 +542,51 @@ function generateModeLeaderboard(mode) {
   attachPlayerClick();
 }
 
+function renderTesters() {
+  testersContainer.innerHTML = "";
+
+  const modeFilter = testerModeFilter.value;
+  const regionFilter = testerRegionFilter.value.toLowerCase();
+
+  const filtered = testers.filter(t =>
+    (!modeFilter || t.mode === modeFilter) &&
+    (!regionFilter || t.region.toLowerCase() === regionFilter)
+  );
+
+  filtered.forEach(t => {
+    const card = `
+      <div class="tester-card"
+           data-mode="${t.mode}"
+           data-region="${t.region.toLowerCase()}">
+
+        <img class="tester-avatar"
+             src="https://render.crafty.gg/3d/bust/${t.uuid}">
+
+        <div class="tester-info">
+          <div class="tester-name">${t.name}</div>
+          <div class="tester-meta">${t.mode} Tester</div>
+        </div>
+
+        <div class="tester-region ${t.region.toLowerCase()}">
+          ${t.region}
+        </div>
+      </div>
+    `;
+
+    testersContainer.insertAdjacentHTML("beforeend", card);
+  });
+}
+
+function populateTesterModes() {
+  const modes = [...new Set(testers.map(t => t.mode))];
+
+  testerModeFilter.innerHTML =
+    `<option value="">All Modes</option>` +
+    modes.map(m => `<option value="${m}">${m}</option>`).join("");
+}
+
+testerModeFilter.addEventListener("change", renderTesters);
+testerRegionFilter.addEventListener("change", renderTesters);
 
 /* =============================
    FETCH NAME FROM UUID (client-side, prefers Ashcon)
@@ -726,13 +792,15 @@ modalContent.innerHTML = `
 (async () => {
   await loadPlayers();
   await loadPlayerNames();
+  await loadTesters();
+
   showSection(leaderboardSection);
   generatePlayers();
 
-  // ✅ Restore login
-const savedUser = localStorage.getItem("ultratiers_user");
-if (savedUser) {
-  setLoggedInUser(JSON.parse(savedUser));
-}
+  populateTesterModes();
+  renderTesters();
+
+  const savedUser = localStorage.getItem("ultratiers_user");
+  if (savedUser) setLoggedInUser(JSON.parse(savedUser));
 })();
 

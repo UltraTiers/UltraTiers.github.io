@@ -669,6 +669,129 @@ body {
   display: inline;
 }
 
+/* ============================= */
+/* TESTERS SECTION */
+/* ============================= */
+
+.testers-section {
+  margin: 60px auto;
+  padding: 40px;
+  width: 90%;
+  max-width: 1200px;
+  background: var(--gray);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  text-align: center;
+}
+
+.testers-title {
+  font-size: 36px;
+  font-weight: 900;
+  margin-bottom: 6px;
+}
+
+.testers-subtitle {
+  opacity: 0.75;
+  margin-bottom: 30px;
+  font-size: 16px;
+}
+
+/* Filters */
+.testers-filters {
+  display: flex;
+  gap: 14px;
+  justify-content: center;
+  margin-bottom: 30px;
+  flex-wrap: wrap;
+}
+
+.testers-filters select {
+  background: rgba(255,255,255,0.08);
+  border: 1px solid var(--border);
+  color: var(--text);
+  padding: 10px 14px;
+  border-radius: 10px;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+/* Grid */
+.testers-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 18px;
+}
+
+/* Tester Card */
+.tester-card {
+  background: rgba(255,255,255,0.06);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  transition: 0.25s ease;
+  cursor: pointer;
+}
+
+.tester-card:hover {
+  background: rgba(255,255,255,0.12);
+  transform: translateY(-3px);
+}
+
+/* Avatar */
+.tester-avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 10px;
+}
+
+/* Info */
+.tester-info {
+  text-align: left;
+  flex: 1;
+}
+
+.tester-name {
+  font-size: 17px;
+  font-weight: 800;
+}
+
+.tester-meta {
+  font-size: 13px;
+  opacity: 0.7;
+}
+
+/* Region badge */
+.tester-region {
+  font-size: 12px;
+  font-weight: 900;
+  padding: 6px 10px;
+  border-radius: 8px;
+  color: white;
+  text-transform: uppercase;
+}
+
+/* Region colors */
+.tester-region.na { background: #ef4444; }
+.tester-region.eu { background: #22c55e; }
+.tester-region.as { background: #7c22c5; }
+.tester-region.sa { background: #ba6a78; }
+.tester-region.me { background: #da9515; }
+.tester-region.au { background: #6ab5ba; }
+.tester-region.af { background: #4169E1; }
+
+/* Mobile */
+@media (max-width: 600px) {
+  .testers-section {
+    padding: 20px;
+  }
+
+  .testers-title {
+    font-size: 26px;
+  }
+}
 
 /* Empty tier placeholder (keeps height) */
 .mode-empty {

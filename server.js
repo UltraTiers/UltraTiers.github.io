@@ -38,6 +38,51 @@ async function loadPlayers() {
   }
 }
 
+async function loadTesters() {
+  const { data, error } = await supabase
+    .from("testers")
+    .select("*")
+    .order("added_at", { ascending: false });
+
+  if (error) throw error;
+  return data;
+}
+
+async function addTester({ uuid, name, mode, region }) {
+  const { error } = await supabase
+    .from("testers")
+    .insert([{ uuid, name, mode, region }]);
+
+  if (error) throw error;
+}
+
+// -------------------
+// TESTERS API
+// -------------------
+app.get("/testers", async (req, res) => {
+  try {
+    const testers = await loadTesters();
+    res.json(testers);
+  } catch (err) {
+    console.error("Error loading testers:", err);
+    res.status(500).json({ error: "Failed to load testers" });
+  }
+});
+
+app.post("/testers", async (req, res) => {
+  try {
+    const { uuid, name, mode, region } = req.body;
+    if (!uuid || !name || !mode || !region)
+      return res.status(400).json({ error: "Missing fields" });
+
+    await addTester({ uuid, name, mode, region });
+    res.json({ success: true });
+  } catch (err) {
+    console.error("Error adding tester:", err);
+    res.status(500).json({ error: "Failed to add tester" });
+  }
+});
+
 async function saveOrUpdatePlayer(player) {
   const { uuid, name, region, tiers, points, nitro, banner } = player;
 
