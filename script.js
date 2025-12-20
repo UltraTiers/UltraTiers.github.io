@@ -549,40 +549,44 @@ function generateModeLeaderboard(mode) {
 }
 
 function renderTesters() {
-  testersContainer.innerHTML = "";
+    const modeFilter = testerModeFilter.value;
+    const regionFilter = testerRegionFilter.value.toLowerCase();
 
-  const modeFilter = testerModeFilter.value;
-  const regionFilter = testerRegionFilter.value.toLowerCase();
+    const filtered = testers.filter(t =>
+        (!modeFilter || t.mode === modeFilter) &&
+        (!regionFilter || t.region.toLowerCase() === regionFilter)
+    );
 
-  const filtered = testers.filter(t =>
-    (!modeFilter || t.mode === modeFilter) &&
-    (!regionFilter || t.region.toLowerCase() === regionFilter)
-  );
-
-  filtered.forEach(t => {
-    const card = `
-      <div class="tester-card"
-           data-mode="${t.mode}"
-           data-region="${t.region.toLowerCase()}">
-
-        <img class="tester-avatar"
-             src="https://render.crafty.gg/3d/bust/${t.uuid}">
-
+    filtered.forEach(t => {
+        // Check if a card already exists for this tester
+        let existingCard = testersContainer.querySelector(`.tester-card[data-uuid="${t.uuid}"]`);
+        const cardHTML = `
+        <div class="tester-avatar-container">
+            <img class="tester-avatar" src="https://render.crafty.gg/3d/bust/${t.uuid}">
+        </div>
         <div class="tester-info">
-          <div class="tester-name">${t.name}</div>
-        <div class="tester-modes">
-          <span class="tester-mode-badge">${Array.isArray(t.modes) ? t.modes.join('</span><span class="tester-mode-badge">') : t.mode}</span>
+            <div class="tester-name">${t.name}</div>
+            <div class="tester-modes">
+                <span class="tester-mode-badge">${Array.isArray(t.modes) ? t.modes.join('</span><span class="tester-mode-badge">') : t.mode}</span>
+            </div>
         </div>
-        </div>
+        <div class="tester-region ${t.region.toLowerCase()}">${t.region}</div>
+        `;
 
-        <div class="tester-region ${t.region.toLowerCase()}">
-          ${t.region}
-        </div>
-      </div>
-    `;
-
-    testersContainer.insertAdjacentHTML("beforeend", card);
-  });
+        if (existingCard) {
+            existingCard.innerHTML = cardHTML; // update existing card
+            existingCard.dataset.mode = t.mode;
+            existingCard.dataset.region = t.region.toLowerCase();
+        } else {
+            const card = document.createElement("div");
+            card.className = "tester-card";
+            card.dataset.uuid = t.uuid; // unique identifier
+            card.dataset.mode = t.mode;
+            card.dataset.region = t.region.toLowerCase();
+            card.innerHTML = cardHTML;
+            testersContainer.appendChild(card);
+        }
+    });
 }
 
 function populateTesterModes() {
