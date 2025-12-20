@@ -552,6 +552,7 @@ function renderTesters() {
     const modeFilter = testerModeFilter.value;
     const regionFilter = testerRegionFilter.value.toLowerCase();
 
+    // Filter testers first
     const filtered = testers.filter(t =>
         (!modeFilter || t.mode === modeFilter) &&
         (!regionFilter || t.region.toLowerCase() === regionFilter)
@@ -560,28 +561,31 @@ function renderTesters() {
     filtered.forEach(t => {
         // Check if a card already exists for this tester
         let existingCard = testersContainer.querySelector(`.tester-card[data-uuid="${t.uuid}"]`);
+
+        // Compute all mode badges for this tester
+        let allModes = Array.isArray(t.modes) ? t.modes : [t.mode];
+
+        // Build HTML for multiple mode badges
+        const modeBadgesHTML = allModes.map(m => `<span class="tester-mode-badge">${m}</span>`).join("");
+
         const cardHTML = `
-        <div class="tester-avatar-container">
             <img class="tester-avatar" src="https://render.crafty.gg/3d/bust/${t.uuid}">
-        </div>
-        <div class="tester-info">
-            <div class="tester-name">${t.name}</div>
-            <div class="tester-modes">
-                <span class="tester-mode-badge">${Array.isArray(t.modes) ? t.modes.join('</span><span class="tester-mode-badge">') : t.mode}</span>
+            <div class="tester-info">
+                <div class="tester-name">${t.name}</div>
+                <div class="tester-modes">${modeBadgesHTML}</div>
             </div>
-        </div>
-        <div class="tester-region ${t.region.toLowerCase()}">${t.region}</div>
+            <div class="tester-region ${t.region.toLowerCase()}">${t.region}</div>
         `;
 
         if (existingCard) {
-            existingCard.innerHTML = cardHTML; // update existing card
-            existingCard.dataset.mode = t.mode;
+            // Update existing card
+            existingCard.innerHTML = cardHTML;
             existingCard.dataset.region = t.region.toLowerCase();
         } else {
+            // Create new card
             const card = document.createElement("div");
             card.className = "tester-card";
             card.dataset.uuid = t.uuid; // unique identifier
-            card.dataset.mode = t.mode;
             card.dataset.region = t.region.toLowerCase();
             card.innerHTML = cardHTML;
             testersContainer.appendChild(card);
