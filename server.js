@@ -51,24 +51,52 @@ async function loadTesters() {
   return data || [];
 }
 
-async function addTester({ uuid, name, mode, region }) {
-  const { error } = await supabase
+async function addOrUpdateTester({ uuid, name, mode, region }) {
+  // First, fetch the existing row
+  const { data: existing, error: fetchError } = await supabase
     .from("testers")
-    .insert([{ uuid, name, mode, region }]);
+    .select("*")
+    .eq("uuid", uuid)
+    .maybeSingle();
 
-  if (error) throw error;
+  if (fetchError) throw fetchError;
+
+  if (existing) {
+    // Merge modes into array (existing + new)
+    const existingModes = Array.isArray(existing.modes) ? existing.modes : [existing.mode];
+    const newModes = Array.isArray(mode) ? mode : [mode];
+    const mergedModes = Array.from(new Set([...existingModes, ...newModes]));
+
+    const { error: updateError } = await supabase
+      .from("testers")
+      .update({ modes: mergedModes, name, region })
+      .eq("uuid", uuid);
+
+    if (updateError) throw updateError;
+  } else {
+    // Insert new row
+    const { error: insertError } = await supabase
+      .from("testers")
+      .insert([{ uuid, name, modes: Array.isArray(mode) ? mode : [mode], region }]);
+
+    if (insertError) throw insertError;
+  }
 }
 
 // -------------------
 // TESTERS API
 // -------------------
-app.get("/testers", async (req, res) => {
+app.post("/testers", async (req, res) => {
   try {
-    const testers = await loadTesters();
-    res.json(testers);
+    const { uuid, name, mode, region } = req.body;
+    if (!uuid || !name || !mode || !region)
+      return res.status(400).json({ error: "Missing fields" });
+
+    await addOrUpdateTester({ uuid, name, mode, region });
+    res.json({ success: true });
   } catch (err) {
-    console.error("Error loading testers:", err);
-    res.json([]); // always array
+    console.error("Error adding/updating tester:", err);
+    res.status(500).json({ error: "Failed to add/update tester" });
   }
 });
 
