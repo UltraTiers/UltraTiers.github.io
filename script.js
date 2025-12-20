@@ -571,7 +571,7 @@ function renderTesters() {
         <div class="tester-info">
           <div class="tester-name">${t.name}</div>
           <div class="tester-modes">
-  ${t.mode.map(m => `<span class="tester-mode-badge">${m}</span>`).join("")}
+  ${t.modes.map(m => `<span class="tester-mode-badge">${m}</span>`).join("")}
 </div>
         </div>
 
