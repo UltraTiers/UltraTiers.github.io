@@ -39,13 +39,23 @@ async function loadPlayers() {
 }
 
 async function loadTesters() {
-  const { data, error } = await supabase
-    .from("testers")
-    .select("*")
-    .order("added_at", { ascending: false });
+  const res = await fetch("/testers");
 
-  if (error) throw error;
-  return data;
+  if (!res.ok) {
+    console.error("Failed to load testers:", await res.text());
+    testers = [];
+    return;
+  }
+
+  const data = await res.json();
+
+  if (!Array.isArray(data)) {
+    console.error("Testers response is not an array:", data);
+    testers = [];
+    return;
+  }
+
+  testers = data;
 }
 
 async function addTester({ uuid, name, mode, region }) {

@@ -578,7 +578,9 @@ function renderTesters() {
 }
 
 function populateTesterModes() {
-  const modes = [...new Set(testers.map(t => t.mode))];
+  if (!Array.isArray(testers)) return;
+
+  const modes = [...new Set(testers.map(t => t.mode).filter(Boolean))];
 
   testerModeFilter.innerHTML =
     `<option value="">All Modes</option>` +
