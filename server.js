@@ -51,35 +51,40 @@ async function loadTesters() {
   return data || [];
 }
 
+// -------------------
+// Add or update tester (merge modes if tester exists)
+// -------------------
 async function addOrUpdateTester({ uuid, name, mode, region }) {
-  // First, fetch the existing row
-  const { data: existing, error: fetchError } = await supabase
-    .from("testers")
-    .select("*")
-    .eq("uuid", uuid)
-    .maybeSingle();
+  try {
+    const { data: existing, error: fetchError } = await supabase
+      .from("testers")
+      .select("*")
+      .eq("uuid", uuid)
+      .maybeSingle();
+    if (fetchError) throw fetchError;
 
-  if (fetchError) throw fetchError;
-
-  if (existing) {
-    // Merge modes into array (existing + new)
-    const existingModes = Array.isArray(existing.modes) ? existing.modes : [existing.mode];
     const newModes = Array.isArray(mode) ? mode : [mode];
-    const mergedModes = Array.from(new Set([...existingModes, ...newModes]));
 
-    const { error: updateError } = await supabase
-      .from("testers")
-      .update({ modes: mergedModes, name, region })
-      .eq("uuid", uuid);
+    if (existing) {
+      const existingModes = Array.isArray(existing.modes) ? existing.modes : [];
+      const mergedModes = Array.from(new Set([...existingModes, ...newModes]));
 
-    if (updateError) throw updateError;
-  } else {
-    // Insert new row
-    const { error: insertError } = await supabase
-      .from("testers")
-      .insert([{ uuid, name, modes: Array.isArray(mode) ? mode : [mode], region }]);
+      const { error: updateError } = await supabase
+        .from("testers")
+        .update({ name, region, modes: mergedModes })
+        .eq("uuid", uuid);
 
-    if (insertError) throw insertError;
+      if (updateError) throw updateError;
+    } else {
+      const { error: insertError } = await supabase
+        .from("testers")
+        .insert([{ uuid, name, region, modes: newModes }]);
+
+      if (insertError) throw insertError;
+    }
+  } catch (err) {
+    console.error("addOrUpdateTester failed:", err);
+    throw new Error("Failed to add/update tester");
   }
 }
 
@@ -100,19 +105,6 @@ app.post("/testers", async (req, res) => {
   }
 });
 
-app.post("/testers", async (req, res) => {
-  try {
-    const { uuid, name, mode, region } = req.body;
-    if (!uuid || !name || !mode || !region)
-      return res.status(400).json({ error: "Missing fields" });
-
-    await addTester({ uuid, name, mode, region });
-    res.json({ success: true });
-  } catch (err) {
-    console.error("Error adding tester:", err);
-    res.status(500).json({ error: "Failed to add tester" });
-  }
-});
 
 async function saveOrUpdatePlayer(player) {
   const { uuid, name, region, tiers, points, nitro, banner } = player;
