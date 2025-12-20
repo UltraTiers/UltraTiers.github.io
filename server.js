@@ -38,19 +38,6 @@ async function loadPlayers() {
   }
 }
 
-async function loadTesters() {
-  const { data, error } = await supabase
-    .from("testers")
-    .select("*");
-
-  if (error) {
-    console.error("Supabase testers SELECT error:", error);
-    return [];
-  }
-
-  return data || [];
-}
-
 // -------------------
 // Add or update tester
 // -------------------
@@ -127,6 +114,16 @@ app.post("/testers", async (req, res) => {
   }
 });
 
+app.get("/testers", async (req, res) => {
+  try {
+    const { data, error } = await supabase.from("testers").select("*");
+    if (error) throw error;
+    res.json(data);
+  } catch (err) {
+    console.error("Failed to load testers:", err);
+    res.status(500).json({ error: "Failed to load testers" });
+  }
+});
 
 async function saveOrUpdatePlayer(player) {
   const { uuid, name, region, tiers, points, nitro, banner } = player;
