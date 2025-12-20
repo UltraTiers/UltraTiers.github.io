@@ -52,10 +52,11 @@ async function loadTesters() {
 }
 
 // -------------------
-// Add or update tester (merge modes if tester exists)
+// Add or update tester
 // -------------------
 async function addOrUpdateTester({ uuid, name, mode, region }) {
   try {
+    // Fetch existing tester
     const { data: existing, error: fetchError } = await supabase
       .from("testers")
       .select("*")
@@ -63,9 +64,11 @@ async function addOrUpdateTester({ uuid, name, mode, region }) {
       .maybeSingle();
     if (fetchError) throw fetchError;
 
+    // Ensure mode is array
     const newModes = Array.isArray(mode) ? mode : [mode];
 
     if (existing) {
+      // Merge existing modes with new ones
       const existingModes = Array.isArray(existing.modes) ? existing.modes : [];
       const mergedModes = Array.from(new Set([...existingModes, ...newModes]));
 
@@ -94,8 +97,10 @@ async function addOrUpdateTester({ uuid, name, mode, region }) {
 app.post("/testers", async (req, res) => {
   try {
     const { uuid, name, mode, region } = req.body;
-    if (!uuid || !name || !mode || !region)
+
+    if (!uuid || !name || !mode || !region) {
       return res.status(400).json({ error: "Missing fields" });
+    }
 
     await addOrUpdateTester({ uuid, name, mode, region });
     res.json({ success: true });
