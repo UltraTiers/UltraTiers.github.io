@@ -554,8 +554,8 @@ function renderTesters() {
 
     // Filter testers first
     const filtered = testers.filter(t =>
-        (!modeFilter || t.mode === modeFilter) &&
-        (!regionFilter || t.region.toLowerCase() === regionFilter)
+      (!modeFilter || (Array.isArray(t.modes) && t.modes.includes(modeFilter))) &&
+      (!regionFilter || t.region.toLowerCase() === regionFilter)
     );
 
     filtered.forEach(t => {
@@ -596,7 +596,11 @@ function renderTesters() {
 function populateTesterModes() {
   if (!Array.isArray(testers)) return;
 
-  const modes = [...new Set(testers.map(t => t.mode).filter(Boolean))];
+  const modes = [
+    ...new Set(
+      testers.flatMap(t => Array.isArray(t.modes) ? t.modes : [])
+    )
+  ];
 
   testerModeFilter.innerHTML =
     `<option value="">All Modes</option>` +
