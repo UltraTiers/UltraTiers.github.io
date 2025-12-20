@@ -62,26 +62,43 @@ async function addOrUpdateTester({ uuid, name, mode, region }) {
       .select("*")
       .eq("uuid", uuid)
       .maybeSingle();
+
     if (fetchError) throw fetchError;
 
-    // Ensure mode is array
+    // Ensure mode is always an array
     const newModes = Array.isArray(mode) ? mode : [mode];
 
     if (existing) {
       // Merge existing modes with new ones
-      const existingModes = Array.isArray(existing.modes) ? existing.modes : [];
-      const mergedModes = Array.from(new Set([...existingModes, ...newModes]));
+      const existingModes = Array.isArray(existing.mode)
+        ? existing.mode
+        : [];
+
+      const mergedModes = Array.from(
+        new Set([...existingModes, ...newModes])
+      );
 
       const { error: updateError } = await supabase
         .from("testers")
-        .update({ name, region, modes: mergedModes })
+        .update({
+          name,
+          region,
+          mode: mergedModes   // ✅ FIXED
+        })
         .eq("uuid", uuid);
 
       if (updateError) throw updateError;
     } else {
       const { error: insertError } = await supabase
         .from("testers")
-        .insert([{ uuid, name, region, modes: newModes }]);
+        .insert([
+          {
+            uuid,
+            name,
+            region,
+            mode: newModes     // ✅ FIXED
+          }
+        ]);
 
       if (insertError) throw insertError;
     }
