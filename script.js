@@ -56,8 +56,14 @@ let currentUser = null;
 let testers = [];
 
 async function loadTesters() {
-  const res = await fetch("/testers");
-  testers = await res.json();
+  try {
+    const res = await fetch("/testers");
+    const data = await res.json();
+    testers = Array.isArray(data) ? data : [];
+  } catch (err) {
+    console.error("Failed to fetch testers:", err);
+    testers = [];
+  }
 }
 
 /* =============================

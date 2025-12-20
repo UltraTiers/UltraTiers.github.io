@@ -39,23 +39,16 @@ async function loadPlayers() {
 }
 
 async function loadTesters() {
-  const res = await fetch("/testers");
+  const { data, error } = await supabase
+    .from("testers")
+    .select("*");
 
-  if (!res.ok) {
-    console.error("Failed to load testers:", await res.text());
-    testers = [];
-    return;
+  if (error) {
+    console.error("Supabase testers SELECT error:", error);
+    return [];
   }
 
-  const data = await res.json();
-
-  if (!Array.isArray(data)) {
-    console.error("Testers response is not an array:", data);
-    testers = [];
-    return;
-  }
-
-  testers = data;
+  return data || [];
 }
 
 async function addTester({ uuid, name, mode, region }) {
@@ -75,7 +68,7 @@ app.get("/testers", async (req, res) => {
     res.json(testers);
   } catch (err) {
     console.error("Error loading testers:", err);
-    res.status(500).json({ error: "Failed to load testers" });
+    res.json([]); // always array
   }
 });
 
