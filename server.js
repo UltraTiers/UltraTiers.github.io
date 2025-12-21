@@ -125,6 +125,26 @@ app.get("/testers", async (req, res) => {
   }
 });
 
+app.get("/testers/:uuid", async (req, res) => {
+  try {
+    const { uuid } = req.params;
+
+    const { data, error } = await supabase
+      .from("testers")
+      .select("*")
+      .eq("uuid", uuid)
+      .maybeSingle();
+
+    if (error) throw error;
+    if (!data) return res.status(404).json({ error: "Tester not found" });
+
+    res.json(data);
+  } catch (err) {
+    console.error("Failed to fetch tester:", err);
+    res.status(500).json({ error: "Failed to fetch tester" });
+  }
+});
+
 async function saveOrUpdatePlayer(player) {
   const { uuid, name, region, tiers, points, nitro, banner } = player;
 
