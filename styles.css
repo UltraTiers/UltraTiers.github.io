@@ -810,7 +810,7 @@ body {
 .tester-region.eu { background: #22c55e; }
 .tester-region.as { background: #7c22c5; }
 .tester-region.sa { background: #FF8AC4; }
-.tester-region.me { background: #FFC000; }
+.tester-region.me { background: #FFBF00; }
 .tester-region.au { background: #4169E1; }
 .tester-region.af { background: #FF7518; }
 
@@ -1270,7 +1270,7 @@ grid-template-columns: 50px 50px 1fr 1fr 6fr; /* last column is now flexible */
 .region-eu { background: #22c55e; }
 .region-as { background: #7c22c5; }
 .region-sa { background: #FF8AC4; }
-.region-me { background: #FFC000; }
+.region-me { background: #FFBF00; }
 .region-au { background: #4169E1; }
 .region-af { background: #FF7518; }
 
