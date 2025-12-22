@@ -641,10 +641,10 @@ body {
 .mode-player[data-region="na"] .region-box { background-color: #ef4444; }
 .mode-player[data-region="eu"] .region-box { background-color: #22c55e; }
 .mode-player[data-region="as"] .region-box { background-color: #7c22c5; }
-.mode-player[data-region="sa"] .region-box { background-color: #ba6a78; }
-.mode-player[data-region="me"] .region-box { background-color: #da9515; }
-.mode-player[data-region="au"] .region-box { background-color: #6ab5ba; }
-.mode-player[data-region="af"] .region-box { background-color: #4169E1; }
+.mode-player[data-region="sa"] .region-box { background-color: #FF8AC4; }
+.mode-player[data-region="me"] .region-box { background-color: #FFBF00; }
+.mode-player[data-region="au"] .region-box { background-color: #4169E1; }
+.mode-player[data-region="af"] .region-box { background-color: #FF7518; }
 
 /* Match empty-tier size + add rarity-colored border */
 .tier[data-tier="1"] { border: 2px solid #f87171; } /* red */
