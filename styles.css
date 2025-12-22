@@ -809,10 +809,10 @@ body {
 .tester-region.na { background: #ef4444; }
 .tester-region.eu { background: #22c55e; }
 .tester-region.as { background: #7c22c5; }
-.tester-region.sa { background: #ba6a78; }
+.tester-region.sa { background: #FF8AC4; }
 .tester-region.me { background: #da9515; }
-.tester-region.au { background: #6ab5ba; }
-.tester-region.af { background: #4169E1; }
+.tester-region.au { background: #4169E1; }
+.tester-region.af { background: #8B4513; }
 
 /* Mobile */
 @media (max-width: 600px) {
@@ -1269,10 +1269,10 @@ grid-template-columns: 50px 50px 1fr 1fr 6fr; /* last column is now flexible */
 .region-na { background: #ef4444; }
 .region-eu { background: #22c55e; }
 .region-as { background: #7c22c5; }
-.region-sa { background: #ba6a78; }
+.region-sa { background: #FF8AC4; }
 .region-me { background: #da9515; }
-.region-au { background: #6ab5ba; }
-.region-af { background: #4169E1; }
+.region-au { background: #4169E1; }
+.region-af { background: #8B4513; }
 
 /* ========================== */
 /* POPUP MODAL - UPDATED UI   */
