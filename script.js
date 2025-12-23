@@ -305,7 +305,6 @@ bannerOptions.forEach(img => {
 document.querySelector(".rankings-btn").addEventListener("click", () => {
   showSection(leaderboardSection);
   tableHeader.style.display = "grid";
-  generatePlayers();
 });
 
 document.querySelector(".docs-btn").addEventListener("click", () => {
