@@ -216,6 +216,14 @@ document.addEventListener("click", (e) => {
   }
 });
 
+document.querySelectorAll(".ranking-option").forEach(opt => {
+  opt.addEventListener("click", () => {
+    const region = opt.dataset.region;
+    showSection(leaderboardSection);
+    generatePlayers(region);
+  });
+});
+
 
 // Logout
 logoutBtn.addEventListener("click", () => {
@@ -422,55 +430,60 @@ document.querySelector(".application-form").addEventListener("submit", async (e)
    NORMAL LEADERBOARD (TOP 3 BORDERS)
 ============================= */
 
-function generatePlayers() {
-  tableHeader.style.display = "grid"; // show header
-  players.sort((a, b) => b.points - a.points);
+function generatePlayers(region = "global") {
+  tableHeader.style.display = "grid";
   playersContainer.innerHTML = "";
 
-  players.forEach((player, index) => {
-const sortedTiers = sortPlayerTiers(player.tiers);
-const tiersHTML = sortedTiers.map(t => {
-  if (!t.tier || t.tier === "Unknown") return `<div class="tier empty"></div>`;
+  // Sort by points (global order)
+  const sorted = [...players].sort((a, b) => b.points - a.points);
 
-  const tierNumberMatch = t.tier.match(/\d+/);
-  if (!tierNumberMatch) return `<div class="tier empty"></div>`; // <-- safety check
+  // Apply region filter
+  const filtered =
+    region === "global"
+      ? sorted
+      : sorted.filter(p => p.region === region);
 
-  const tierNumber = tierNumberMatch[0];
-  return `
-    <div class="tier"
-         data-gamemode="${t.gamemode}"
-         data-tier="${tierNumber}"
-         data-tooltip="${t.gamemode} — ${t.tier}">
-      <img src="gamemodes/${t.gamemode}.png">
-      <span>${t.tier}</span>
-    </div>
-  `;
-}).join("");
+  // ✅ HARD LIMIT TO TOP 100
+  const top100 = filtered.slice(0, 100);
 
-    const avatarURL = `https://render.crafty.gg/3d/bust/${player.uuid}`;
+  top100.forEach((player, index) => {
+    const sortedTiers = sortPlayerTiers(player.tiers);
+
+    const tiersHTML = sortedTiers.map(t => {
+      if (!t.tier || t.tier === "Unknown") return `<div class="tier empty"></div>`;
+      const tierNum = t.tier.match(/\d+/)?.[0];
+      if (!tierNum) return `<div class="tier empty"></div>`;
+
+      return `
+        <div class="tier"
+          data-gamemode="${t.gamemode}"
+          data-tier="${tierNum}"
+          data-tooltip="${t.gamemode} — ${t.tier}">
+          <img src="gamemodes/${t.gamemode}.png">
+          <span>${t.tier}</span>
+        </div>
+      `;
+    }).join("");
 
     const borderClass =
       index === 0 ? "gold" :
       index === 1 ? "silver" :
       index === 2 ? "bronze" : "";
 
-const nitroClass = player.nitro ? "nitro" : ""; // <-- NEW
+    const nitroClass = player.nitro ? "nitro" : "";
 
-const card = `
-  <div class="player-card ${borderClass}"
-       data-player="${player.name}">
-    <div class="rank">${index + 1}.</div>
-    <img class="avatar" src="${avatarURL}">
-    <div class="player-info">
-      <div class="player-name ${nitroClass}">${player.name}</div>
-      <div class="player-sub">⭐ ${getRankTitle(player.points)} (${player.points})</div>
-    </div>
-    <div class="region region-${player.region.toLowerCase()}">${player.region}</div>
-    <div class="tiers">${tiersHTML}</div>
-  </div>
-`;
-
-    playersContainer.insertAdjacentHTML("beforeend", card);
+    playersContainer.insertAdjacentHTML("beforeend", `
+      <div class="player-card ${borderClass}" data-player="${player.name}">
+        <div class="rank">${index + 1}.</div>
+        <img class="avatar" src="https://render.crafty.gg/3d/bust/${player.uuid}">
+        <div class="player-info">
+          <div class="player-name ${nitroClass}">${player.name}</div>
+          <div class="player-sub">⭐ ${getRankTitle(player.points)} (${player.points})</div>
+        </div>
+        <div class="region region-${player.region.toLowerCase()}">${player.region}</div>
+        <div class="tiers">${tiersHTML}</div>
+      </div>
+    `);
   });
 
   attachPlayerClick();
