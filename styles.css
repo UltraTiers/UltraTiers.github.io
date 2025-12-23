@@ -296,6 +296,52 @@ body {
   box-shadow: 0 0 16px rgba(255,255,255,0.16);
 }
 
+.mode-btn {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Info icon */
+.mode-info {
+  margin-left: auto;
+  font-size: 14px;
+  opacity: 0.7;
+  cursor: pointer;
+}
+
+.mode-info:hover {
+  opacity: 1;
+}
+
+/* Popup container */
+.mode-info-popup {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  margin-top: 6px;
+  background: rgba(20, 20, 30, 0.95);
+  border: 1px solid rgba(255,255,255,0.15);
+  border-radius: 10px;
+  padding: 8px;
+  display: none;
+  z-index: 50;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.4);
+}
+
+/* Popup image */
+.mode-info-popup img {
+  width: 120px;
+  height: auto;
+  border-radius: 8px;
+}
+
+/* Visible state */
+.mode-btn.show-info .mode-info-popup {
+  display: block;
+}
+
 .ranking-option {
   background: rgba(255,255,255,0.06);
   padding: 10px 12px;

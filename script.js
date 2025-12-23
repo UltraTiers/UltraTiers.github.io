@@ -339,6 +339,36 @@ document.querySelectorAll(".mode-btn").forEach(btn => {
   });
 });
 
+// Toggle info popup
+document.querySelectorAll(".mode-info").forEach(icon => {
+  icon.addEventListener("click", e => {
+    e.stopPropagation(); // prevent mode leaderboard click
+
+    const modeBtn = icon.closest(".mode-btn");
+
+    // Close other popups
+    document.querySelectorAll(".mode-btn").forEach(btn => {
+      if (btn !== modeBtn) btn.classList.remove("show-info");
+    });
+
+    // Toggle current popup
+    modeBtn.classList.toggle("show-info");
+  });
+});
+
+// Close popups when clicking outside
+document.addEventListener("click", () => {
+  document.querySelectorAll(".mode-btn").forEach(btn => btn.classList.remove("show-info"));
+});
+
+// Optional: auto-set kit image src based on mode name (dynamic)
+document.querySelectorAll(".mode-btn").forEach(btn => {
+  const mode = btn.dataset.mode;
+  const img = btn.querySelector(".mode-info-popup img");
+  if (img) img.src = `kits/${mode}Kit.png`;
+});
+
+
 /* =============================
    RANK TITLE
 ============================= */
