@@ -365,7 +365,7 @@ document.addEventListener("click", () => {
 document.querySelectorAll(".mode-btn").forEach(btn => {
   const mode = btn.dataset.mode;
   const img = btn.querySelector(".mode-info-popup img");
-  if (img) img.src = `kits/${mode}Kit.png`;
+  if (img) img.src = `kitsmodes/${mode}Kit.png`;
 });
 
 
