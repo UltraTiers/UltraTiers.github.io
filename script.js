@@ -18,7 +18,7 @@ async function loadPlayers() {
 
   // Update the footer with the number of players
   const playerCountEl = document.getElementById("player-count");
-  playerCountEl.textContent = `Players online: ${players.length}`;
+  playerCountEl.textContent = `Players Tested: ${players.length}`;
 }
 /* =============================
    ELEMENTS
