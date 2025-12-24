@@ -1286,6 +1286,10 @@ grid-template-columns: 50px 50px 1fr 1fr 6fr; /* last column is now flexible */
     transform: translateY(-2px);
 }
 
+.margin-top-playercount {
+  margin-top: 20px;
+}
+
 .gold   { border-left: 8px solid gold; }
 .silver { border-left: 8px solid silver; }
 .bronze { border-left: 8px solid #cd7f32; }
