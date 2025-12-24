@@ -74,6 +74,22 @@ async function loadTesters() {
    SECTION SWITCHING HELPER
 ============================= */
 
+function getPlayerPlacement(player, region = "global") {
+  // Sort players by points descending
+  const sorted = [...players].sort((a, b) => b.points - a.points);
+
+  // Apply region filter
+  const filtered =
+    region === "global"
+      ? sorted
+      : sorted.filter(p => p.region === region);
+
+  // Find placement
+  const index = filtered.findIndex(p => p.uuid === player.uuid);
+
+  return index >= 0 ? index + 1 : null;
+}
+
 // Close PLAYER modal with X button
 closeModalBtn.addEventListener("click", () => {
   modal.classList.remove("show");
@@ -758,7 +774,7 @@ modalContent.innerHTML = `
   <div class="modal-section">
     <div class="modal-info-row ${nitroClass}">
       <span class="modal-label">Placement:</span>
-      <span class="modal-value">#${players.indexOf(player) + 1}</span>
+      <span class="modal-value">#${getPlayerPlacement(player)}</span>
     </div>
 
     <div class="modal-info-row ${nitroClass}">
@@ -852,7 +868,7 @@ modalContent.innerHTML = `
   <div class="modal-section">
     <div class="modal-info-row ${nitroClass}">
       <span class="modal-label">Placement:</span>
-      <span class="modal-value">#${players.indexOf(player) + 1}</span>
+      <span class="modal-value">#${getPlayerPlacement(player)}</span>
     </div>
 
     <div class="modal-info-row ${nitroClass}">
