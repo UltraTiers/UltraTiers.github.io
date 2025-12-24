@@ -1077,7 +1077,7 @@ body {
 /* DROPDOWN */
 .dropdown-container {
     position: relative;
-    z-index: 101;       /* Slightly higher than navbar to appear on top */
+    z-index: 9999;       /* Slightly higher than navbar to appear on top */
 }
 
 /* FIXED — no more gap */
@@ -1097,7 +1097,7 @@ body {
     flex-direction: column;
     gap: 10px;
 
-     z-index: 102; 
+     z-index: 10000; 
 
     box-shadow: 0 10px 35px rgba(0,0,0,0.55);
 
