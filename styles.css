@@ -1287,7 +1287,8 @@ grid-template-columns: 50px 50px 1fr 1fr 6fr; /* last column is now flexible */
 }
 
 .margin-top-playercount {
-  margin-top: 20px;
+  margin: 10px;
+  display: block;
 }
 
 .gold   { border-left: 8px solid gold; }
