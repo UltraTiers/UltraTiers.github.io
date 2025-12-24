@@ -15,6 +15,10 @@ const tiersDocs = [
 async function loadPlayers() {
   const res = await fetch("/players");
   players = await res.json();
+
+  // Update the footer with the number of players
+  const playerCountEl = document.getElementById("player-count");
+  playerCountEl.textContent = `Players online: ${players.length}`;
 }
 /* =============================
    ELEMENTS
