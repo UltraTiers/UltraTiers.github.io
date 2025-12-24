@@ -361,6 +361,34 @@ document.addEventListener("click", () => {
   document.querySelectorAll(".mode-btn").forEach(btn => btn.classList.remove("show-info"));
 });
 
+const mode = [
+  "Axe",
+  "Sword",
+  "Bow",
+  "Vanilla",
+  "NethOP",
+  "Pot",
+  "UHC",
+  "SMP",
+  "Mace",
+  "Diamond SMP",
+  "OG Vanilla",
+  "Bed",
+  "DeBuff",
+  "Speed",
+  "Manhunt",
+  "Elytra",
+  "Diamond Survival",
+  "Minecart",
+  "Creeper",
+  "Trident",
+  "AxePot",
+  "Pearl",
+  "Bridge",
+  "Sumo",
+  "OP"
+];
+
 // Optional: auto-set kit image src based on mode name (dynamic)
 document.querySelectorAll(".mode-btn").forEach(btn => {
   const mode = btn.dataset.mode;
