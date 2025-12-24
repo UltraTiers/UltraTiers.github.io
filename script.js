@@ -396,17 +396,6 @@ document.querySelectorAll(".mode-btn").forEach(btn => {
   if (img) img.src = `kitsmodes/${mode}Kit.png`;
 });
 
-document.addEventListener("click", (e) => {
-  document.querySelectorAll(".mode-btn").forEach(btn => {
-    const popup = btn.querySelector(".mode-info-popup");
-    if (popup) {
-      // If the click is NOT inside the popup or the button itself, close it
-      if (!btn.contains(e.target)) {
-        btn.classList.remove("show-info");
-      }
-    }
-  });
-});
 
 /* =============================
    RANK TITLE
