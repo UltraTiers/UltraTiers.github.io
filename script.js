@@ -39,6 +39,7 @@ const testersSection = document.getElementById("testers-section");
 const testersContainer = document.getElementById("testers-container");
 const testerModeFilter = document.getElementById("tester-mode-filter");
 const testerRegionFilter = document.getElementById("tester-region-filter");
+const buildingSection = document.getElementById("building-section");
 
 /* =============================
    PROFILE DESIGNER ELEMENTS
@@ -70,6 +71,14 @@ async function loadTesters() {
   }
 }
 
+const buildRanks = [
+  "Ruby",
+  "Emerald",
+  "Diamond",
+  "Gold",
+  "Silver",
+  "Bronze"
+];
 /* =============================
    SECTION SWITCHING HELPER
 ============================= */
@@ -115,6 +124,43 @@ modal.addEventListener("click", (e) => {
     modal.classList.remove("show");
   }
 });
+
+function generateBuildingLeaderboard() {
+  tableHeader.style.display = "grid";
+  tableHeader.classList.add("building-header");
+
+  const container = document.getElementById("builders-container");
+  container.innerHTML = "";
+
+  const builders = players
+    .filter(p => buildRanks.includes(p.buildRank))
+    .sort(
+      (a, b) =>
+        buildRanks.indexOf(a.buildRank) -
+        buildRanks.indexOf(b.buildRank)
+    );
+
+  builders.forEach((player, index) => {
+    container.insertAdjacentHTML("beforeend", `
+      <div class="player-card building-card">
+        <div class="rank">${index + 1}.</div>
+        <img class="avatar" src="https://render.crafty.gg/3d/bust/${player.uuid}">
+        <div class="player-info">
+          <div class="player-name">${player.name}</div>
+          <div class="player-sub">🏗 Builder</div>
+        </div>
+        <div class="build-rank ${player.buildRank.toLowerCase()}">
+          ${player.buildRank}
+        </div>
+        <div class="region region-${player.region.toLowerCase()}">
+          ${player.region}
+        </div>
+      </div>
+    `);
+  });
+
+  attachPlayerClick();
+}
 
 const authForm = document.querySelector(".auth-form");
 
@@ -181,7 +227,8 @@ const sections = [
   leaderboardSection,
   docsSection,
   applicationSection,
-  testersSection
+  testersSection,
+  buildingSection
 ];
 
   sections.forEach(section => {
@@ -263,6 +310,11 @@ logoutBtn.addEventListener("click", () => {
 /* =============================
    PROFILE DESIGNER LOGIC
 ============================= */
+
+document.querySelector(".building-btn").addEventListener("click", () => {
+  showSection(buildingSection);
+  generateBuildingLeaderboard();
+});
 
 // Open settings
 settingsBtn?.addEventListener("click", () => {

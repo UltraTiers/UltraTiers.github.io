@@ -58,6 +58,54 @@ body {
   gap: 10px;
 }
 
+/* Container for header and rows */
+.building-header,
+.building-row {
+  display: grid;
+  grid-template-columns: 1fr 2fr 1fr 1fr; /* adjust widths as needed */
+  gap: 10px;
+  padding: 8px 12px;
+  align-items: center;
+}
+
+/* Header styles */
+.building-header {
+  font-weight: 700;
+  background-color: #1e293b; /* dark background */
+  color: #f1f5f9; /* light text */
+  border-radius: 6px;
+  margin-bottom: 6px;
+}
+
+/* Row styles */
+.building-row {
+  background-color: #334155;
+  color: #f1f5f9;
+  border-radius: 6px;
+  margin-bottom: 4px;
+  padding: 6px 12px;
+}
+
+/* Optional: rank badges */
+.build-rank {
+  font-weight: 700;
+  padding: 6px 12px;
+  border-radius: 6px;
+  text-align: center;
+}
+
+.build-rank.ruby { color: #ff4d6d; }
+.build-rank.emerald { color: #34d399; }
+.build-rank.diamond { color: #38bdf8; }
+.build-rank.gold { color: #facc15; }
+.build-rank.silver { color: #e5e7eb; }
+.build-rank.bronze { color: #c08457; }
+
+/* Optional: colored accent for the card */
+.building-card {
+  border-left: 4px solid var(--accent);
+}
+
 .auth-buttons button {
   background: transparent;
   border: 1px solid var(--gray);
