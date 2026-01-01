@@ -165,9 +165,9 @@ app.post("/buildplayer", async (req, res) => {
     };
 
     // Save or update in Supabase in the building_players table
-    const { data, error } = await supabase
-      .from("building_players")
-      .upsert(playerObj, { onConflict: ["uuid"] }); // update if UUID exists
+const { data, error } = await supabase
+  .from("building_players")
+  .upsert(playerObj, { onConflict: "uuid" });
 
 if (error) {
   console.error("Supabase error saving build player:", {
