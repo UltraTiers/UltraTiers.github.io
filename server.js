@@ -145,6 +145,42 @@ app.get("/testers/:uuid", async (req, res) => {
   }
 });
 
+// -------------------
+// Add or update a build player
+// -------------------
+app.post("/buildplayer", async (req, res) => {
+  try {
+    const { uuid, name, region, buildRank } = req.body;
+
+    if (!uuid || !name || !buildRank) {
+      return res.status(400).json({ error: "Missing uuid, name, or buildRank" });
+    }
+
+    // Build player object with only the required fields
+    const playerObj = {
+      uuid,
+      name,
+      region: region || "Unknown",
+      buildRank
+    };
+
+    // Save or update in Supabase in the building_players table
+    const { data, error } = await supabase
+      .from("building_players")
+      .upsert(playerObj, { onConflict: ["uuid"] }); // update if UUID exists
+
+    if (error) {
+      console.error("Failed to save player:", error);
+      return res.status(500).json({ error: "Failed to save player" });
+    }
+
+    res.json({ success: true, player: data[0] });
+  } catch (err) {
+    console.error("Error in /buildplayer:", err);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
 async function saveOrUpdatePlayer(player) {
   const { uuid, name, region, tiers, points, nitro, banner } = player;
 
