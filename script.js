@@ -14,36 +14,46 @@ const tiersDocs = [
 
 async function loadPlayers() {
   try {
-    // Load regular players
-    const res = await fetch("/players");
-    players = await res.json();
+    const playerCountEl = document.getElementById("player-count");
 
-    // Load building tab players and merge into players array
+    // 1️⃣ Load regular players
+    const res = await fetch("/players");
+    if (!res.ok) throw new Error(`Failed to fetch /players: ${res.status}`);
+    const regularPlayers = await res.json();
+    players = Array.isArray(regularPlayers) ? regularPlayers : [];
+
+    // 2️⃣ Load building-only players
     const buildRes = await fetch("/building_players");
+    if (!buildRes.ok) throw new Error(`Failed to fetch /building_players: ${buildRes.status}`);
     const builders = await buildRes.json();
 
-    // Add or update players with buildRank
-    builders.forEach(b => {
-      const existing = players.find(p => p.uuid === b.uuid);
-      if (existing) {
-        existing.buildRank = b.buildRank;
-      } else {
-        players.push({
-          uuid: b.uuid,
-          name: b.name,
-          region: b.region,
-          buildRank: b.buildRank,
-          tiers: [],    // default empty for new builder-only players
-          points: 0
-        });
-      }
-    });
+    if (Array.isArray(builders)) {
+      builders.forEach(b => {
+        const existing = players.find(p => p.uuid === b.uuid);
+        if (existing) {
+          // If the player already exists, just add/update buildRank
+          existing.buildRank = b.buildRank || existing.buildRank;
+        } else {
+          // Builder-only players get added with empty tiers
+          players.push({
+            uuid: b.uuid,
+            name: b.name || "Unknown",
+            region: b.region || "Unknown",
+            buildRank: b.buildRank || "Unknown",
+            tiers: [], // no tiers for builder-only players
+            points: 0
+          });
+        }
+      });
+    }
 
-    // Update footer
+    // 3️⃣ Count only players with tiers (i.e., tested players)
     const testedCount = players.filter(p => Array.isArray(p.tiers) && p.tiers.length > 0).length;
     playerCountEl.textContent = `Players Tested: ${testedCount}`;
   } catch (err) {
     console.error("Failed to load players:", err);
+    const playerCountEl = document.getElementById("player-count");
+    if (playerCountEl) playerCountEl.textContent = "Players Tested: 0";
   }
 }
 /* =============================
