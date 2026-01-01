@@ -153,10 +153,9 @@ app.post("/buildplayer", async (req, res) => {
     const { uuid, name, region, buildRank } = req.body;
 
     if (!uuid || !name || !buildRank) {
-      return res.status(400).json({ error: "Missing uuid, name, or buildRank" });
+      return res.status(400).json({ success: false, error: "Missing fields" });
     }
 
-    // Build player object with only the required fields
     const playerObj = {
       uuid,
       name,
@@ -164,31 +163,19 @@ app.post("/buildplayer", async (req, res) => {
       buildRank
     };
 
-    // Save or update in Supabase in the building_players table
-const { data, error } = await supabase
-  .from("building_players")
-  .upsert(playerObj, { onConflict: "uuid" });
+    const { error } = await supabase
+      .from("building_players")
+      .upsert(playerObj, { onConflict: "uuid" });
 
-if (error) {
-  console.error("Supabase error saving build player:", {
-    message: error.message,
-    details: error.details,
-    hint: error.hint,
-    code: error.code
-  });
+    if (error) {
+      console.error("Failed to save build player:", error);
+      return res.status(500).json({ success: false });
+    }
 
-  return res.status(500).json({
-    error: error.message,
-    details: error.details,
-    hint: error.hint,
-    code: error.code
-  });
-}
-
-    res.json({ success: true, player: data[0] });
+    return res.json({ success: true });
   } catch (err) {
     console.error("Error in /buildplayer:", err);
-    res.status(500).json({ error: "Internal server error" });
+    return res.status(500).json({ success: false });
   }
 });
 
@@ -199,9 +186,10 @@ app.get("/building_players", async (req, res) => {
       .select("*");
 
     if (error) throw error;
+
     res.json(data);
   } catch (err) {
-    console.error("Failed to fetch building players:", err);
+    console.error("Failed to load building players:", err);
     res.status(500).json({ error: "Failed to load building players" });
   }
 });
