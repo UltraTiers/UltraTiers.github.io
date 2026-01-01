@@ -40,8 +40,8 @@ async function loadPlayers() {
     });
 
     // Update footer
-    const playerCountEl = document.getElementById("player-count");
-    playerCountEl.textContent = `Players Tested: ${players.length}`;
+    const testedCount = players.filter(p => Array.isArray(p.tiers) && p.tiers.length > 0).length;
+    playerCountEl.textContent = `Players Tested: ${testedCount}`;
   } catch (err) {
     console.error("Failed to load players:", err);
   }
