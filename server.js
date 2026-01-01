@@ -169,15 +169,40 @@ app.post("/buildplayer", async (req, res) => {
       .from("building_players")
       .upsert(playerObj, { onConflict: ["uuid"] }); // update if UUID exists
 
-    if (error) {
-      console.error("Failed to save player:", error);
-      return res.status(500).json({ error: "Failed to save player" });
-    }
+if (error) {
+  console.error("Supabase error saving build player:", {
+    message: error.message,
+    details: error.details,
+    hint: error.hint,
+    code: error.code
+  });
+
+  return res.status(500).json({
+    error: error.message,
+    details: error.details,
+    hint: error.hint,
+    code: error.code
+  });
+}
 
     res.json({ success: true, player: data[0] });
   } catch (err) {
     console.error("Error in /buildplayer:", err);
     res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+app.get("/building_players", async (req, res) => {
+  try {
+    const { data, error } = await supabase
+      .from("building_players")
+      .select("*");
+
+    if (error) throw error;
+    res.json(data);
+  } catch (err) {
+    console.error("Failed to fetch building players:", err);
+    res.status(500).json({ error: "Failed to load building players" });
   }
 });
 
