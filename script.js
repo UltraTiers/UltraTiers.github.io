@@ -330,6 +330,7 @@ document.querySelector(".rankings-btn").addEventListener("click", () => {
 document.querySelector(".docs-btn").addEventListener("click", () => {
   showSection(docsSection);
   tableHeader.style.display = "none";
+  renderLatestPlayers(); // ✅ ADD THIS
 });
 
 document.querySelector(".application-btn").addEventListener("click", () => {
@@ -824,6 +825,25 @@ function generateDocs() {
 }
 
 generateDocs();
+
+function renderLatestPlayers() {
+  const container = document.getElementById("latest-players");
+  if (!container || !players.length) return;
+
+  // newest players last → reverse and take 10
+  const latest = [...players].slice(-10).reverse();
+
+  container.innerHTML = latest.map(p => `
+    <div class="latest-player-card">
+      <img src="https://render.crafty.gg/3d/bust/${p.uuid}" />
+      <div class="latest-player-info">
+        <strong>${p.name || "Unknown"}</strong>
+        <span>${p.region || "Unknown"} • ${getRankTitle(p.points)}</span>
+      </div>
+    </div>
+  `).join("");
+}
+
 
 /* =============================
    SEARCH
