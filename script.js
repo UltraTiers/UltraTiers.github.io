@@ -330,7 +330,6 @@ document.querySelector(".rankings-btn").addEventListener("click", () => {
 document.querySelector(".docs-btn").addEventListener("click", () => {
   showSection(docsSection);
   tableHeader.style.display = "none";
-  renderLatestPlayers(); // ✅ ADD THIS
 });
 
 document.querySelector(".application-btn").addEventListener("click", () => {
@@ -825,48 +824,6 @@ function generateDocs() {
 }
 
 generateDocs();
-
-function renderLatestPlayers() {
-  const container = document.getElementById("latest-players");
-  if (!container || !players.length) return;
-
-  const latest = [...players].slice(-10).reverse();
-
-  container.innerHTML = latest.map(p => {
-    const bestTier = sortPlayerTiers(p.tiers || [])
-      .find(t => t.tier && t.tier !== "Unknown");
-
-    return `
-      <div class="recent-player-row" data-player="${p.name}">
-        <div class="recent-left">
-          <img src="https://render.crafty.gg/3d/bust/${p.uuid}" />
-          <div class="recent-info">
-            <div class="recent-name">${p.name || "Unknown"}</div>
-            <div class="recent-sub">
-              ${getRankTitle(p.points)} • ${p.points} pts
-            </div>
-          </div>
-        </div>
-
-        <div class="recent-right">
-          ${bestTier ? `
-            <span class="recent-badge mode">
-              <img src="gamemodes/${bestTier.gamemode}.png">
-              ${bestTier.gamemode}
-            </span>
-            <span class="recent-badge tier">${bestTier.tier}</span>
-          ` : ""}
-          <span class="recent-badge region ${p.region.toLowerCase()}">
-            ${p.region}
-          </span>
-        </div>
-      </div>
-    `;
-  }).join("");
-
-  attachPlayerClick(); // clickable like leaderboard
-}
-
 
 /* =============================
    SEARCH
