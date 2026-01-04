@@ -100,20 +100,49 @@ function attachBuilderClick() {
     el.addEventListener("click", () => {
       const name = el.dataset.builder;
       const builder = builders.find(b => b.name === name);
+      if (!builder) return;
 
-      modalTitle.textContent = builder.name;
+      const tiersHTML = generateBuilderTiersHTML(builder);
+      const nitroClass = builder.nitro ? "nitro" : "";
+
+      modalTitle.textContent = "";
+
       modalContent.innerHTML = `
-        <div class="modal-header">
-          <img class="modal-avatar" src="https://render.crafty.gg/3d/bust/${builder.uuid}">
+        <div class="modal-header"
+             style="background-image: url('anime-style-stone.jpg')">
+          <img class="modal-avatar ${nitroClass}" src="https://render.crafty.gg/3d/bust/${builder.uuid}" alt="${builder.name} Avatar">
+          <div class="modal-name ${nitroClass}">${builder.name || "Unknown Builder"}</div>
         </div>
+
         <div class="modal-section">
-          <div>Region: ${builder.region}</div>
-          <div>Creativity: ${builder.tiers.Creativity}</div>
-          <div>Sectioning: ${builder.tiers.Sectioning}</div>
-          <div>Details: ${builder.tiers.Details}</div>
-          <div>Total Points: ${builder.points}</div>
+          <div class="modal-info-row ${nitroClass}">
+            <span class="modal-label">Region:</span>
+            <span class="modal-value">${builder.region || "Unknown"}</span>
+          </div>
+          <div class="modal-info-row ${nitroClass}">
+            <span class="modal-label">Creativity:</span>
+            <span class="modal-value">${builder.tiers?.Creativity || "N/A"}</span>
+          </div>
+          <div class="modal-info-row ${nitroClass}">
+            <span class="modal-label">Sectioning:</span>
+            <span class="modal-value">${builder.tiers?.Sectioning || "N/A"}</span>
+          </div>
+          <div class="modal-info-row ${nitroClass}">
+            <span class="modal-label">Details:</span>
+            <span class="modal-value">${builder.tiers?.Details || "N/A"}</span>
+          </div>
+          <div class="modal-info-row ${nitroClass}">
+            <span class="modal-label">Total Points:</span>
+            <span class="modal-value">${builder.points || 0}</span>
+          </div>
+        </div>
+
+        <h3 class="modal-subtitle ${nitroClass}">Tier Progress</h3>
+        <div class="tiers-container">
+          ${tiersHTML}
         </div>
       `;
+
       modal.classList.add("show");
     });
   });
