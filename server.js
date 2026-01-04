@@ -523,7 +523,31 @@ app.get("/builders", async (req, res) => {
   try {
     const { data, error } = await supabase.from("builders").select("*");
     if (error) throw error;
-    res.json(data);
+
+    const normalized = data.map(b => {
+      let tiersObj = {};
+
+      // Case 1: array format
+      if (Array.isArray(b.tiers)) {
+        b.tiers.forEach(t => {
+          if (t.subject && t.tier) {
+            tiersObj[t.subject] = t.tier;
+          }
+        });
+      }
+
+      // Case 2: already object
+      else if (b.tiers && typeof b.tiers === "object") {
+        tiersObj = b.tiers;
+      }
+
+      return {
+        ...b,
+        tiers: tiersObj
+      };
+    });
+
+    res.json(normalized);
   } catch (err) {
     console.error("Failed to load builders:", err);
     res.status(500).json({ error: "Failed to load builders" });
