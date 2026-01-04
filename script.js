@@ -75,14 +75,13 @@ async function loadTesters() {
 }
 
 document.querySelectorAll(".builder-option").forEach(opt => {
-  opt.addEventListener("click", async () => {
-    const region = opt.dataset.region;
-    showSection(buildersSection);
-    tableHeader.style.display = "grid"; // same as rankings tab
-
-    await loadBuilders(); // fetch builders
-    renderBuilders(region); // pass region
-  });
+    opt.addEventListener("click", async () => {
+        const region = opt.dataset.region;
+        showSection(buildersSection);       // show builders
+        tableHeader.style.display = "grid"; // keep header visible like leaderboard
+        if (!builders.length) await loadBuilders();
+        renderBuilders(region);             // render filtered builders
+    });
 });
 
 async function loadBuilders() {
@@ -148,10 +147,10 @@ function generateBuilderTiersHTML(builder) {
 document.querySelectorAll(".subject-btn").forEach(btn => {
     btn.addEventListener("click", async () => {
         const subject = btn.dataset.subject;
-        showSection(buildersSection);
-        tableHeader.style.display = "none";
+        showSection(buildersSection);       // show builders
+        tableHeader.style.display = "none"; // hide header for subject view
         if (!builders.length) await loadBuilders();
-        generateSubjectLeaderboard(subject);
+        generateSubjectLeaderboard(subject); // render subject leaderboard
     });
 });
 
@@ -391,37 +390,37 @@ profileBanner.style.backgroundImage =
 }
 
 
+/* ============================= SECTION SWITCHING HELPER ============================= */
 function showSection(sectionToShow) {
-const sections = [
-  leaderboardSection,
-  docsSection,
-  applicationSection,
-  testersSection
-];
+    const sections = [
+        leaderboardSection,
+        docsSection,
+        applicationSection,
+        testersSection,
+        buildersSection // ✅ include builders
+    ];
 
-  sections.forEach(section => {
-    if (section === sectionToShow) {
-      section.classList.add("active-section");
-      section.classList.remove("hidden-section");
-    } else {
-      section.classList.remove("active-section");
-      section.classList.add("hidden-section");
-    }
-  });
+    sections.forEach(section => {
+        if (section === sectionToShow) {
+            section.classList.add("active-section");
+            section.classList.remove("hidden-section");
+        } else {
+            section.classList.remove("active-section");
+            section.classList.add("hidden-section");
+        }
+    });
 
-  // navbar active state
-  document.querySelectorAll(".nav-center a").forEach(a =>
-    a.classList.remove("active-tab")
-  );
+    // Remove active-tab from all navbar buttons
+    document.querySelectorAll(".nav-center a, .dropdown-trigger").forEach(a =>
+        a.classList.remove("active-tab")
+    );
 
-  if (sectionToShow === leaderboardSection)
-    document.querySelector(".rankings-btn")?.classList.add("active-tab");
-
-  if (sectionToShow === docsSection)
-    document.querySelector(".docs-btn")?.classList.add("active-tab");
-
-  if (sectionToShow === applicationSection)
-    document.querySelector(".application-btn")?.classList.add("active-tab");
+    // Set active-tab based on section
+    if (sectionToShow === leaderboardSection) document.querySelector(".rankings-btn")?.classList.add("active-tab");
+    if (sectionToShow === docsSection) document.querySelector(".docs-btn")?.classList.add("active-tab");
+    if (sectionToShow === applicationSection) document.querySelector(".application-btn")?.classList.add("active-tab");
+    if (sectionToShow === testersSection) document.querySelector(".testers-btn")?.classList.add("active-tab");
+    if (sectionToShow === buildersSection) document.querySelector(".builders-btn")?.classList.add("active-tab"); // ✅ builders
 }
 
 function sortPlayerTiers(tiers) {

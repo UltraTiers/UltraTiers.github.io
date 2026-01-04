@@ -1715,7 +1715,6 @@ grid-template-columns: 50px 50px 1fr 1fr 6fr; /* last column is now flexible */
   display: flex;
   flex-direction: column;
   margin: 40px auto;
-  gap: 14px;
 }
 
 /* ======================== */
