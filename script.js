@@ -74,6 +74,13 @@ async function loadTesters() {
   }
 }
 
+console.log("SUBJECT LEADERBOARD", {
+  subject,
+  buildersLength: builders.length,
+  sampleBuilder: builders[0],
+  tiersType: builders[0]?.tiers,
+});
+
 document.querySelectorAll(".builder-option").forEach(opt => {
   opt.addEventListener("click", async () => {
     const region = opt.dataset.region;
