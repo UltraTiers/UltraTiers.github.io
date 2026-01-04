@@ -178,47 +178,51 @@ function generateSubjectLeaderboard(subject) {
     }
 
     // Add builders into columns
-    builders.forEach(builder => {
-        const tier = builder.tiers?.[subject];
-        if (!tier || tier === "Unknown") return;
+builders.forEach(builder => {
+    const tier = builder.tiers?.[subject];
+    if (!tier || tier === "Unknown") return;
 
-        const tierMatch = tier.match(/\d+/);
-        if (!tierMatch) return;
-        const tierNumber = parseInt(tierMatch[0]);
+    const tierMatch = tier.match(/\d+/);
+    if (!tierMatch) return;
 
-        const targetColumn = document.querySelectorAll(".mode-tier-column")[tierNumber - 1];
-        const isHT = tier.includes("HT");
+    const tierNumber = parseInt(tierMatch[0]);
+    const targetColumn = document.querySelectorAll(".mode-tier-column")[tierNumber - 1];
 
-        const builderDiv = document.createElement("div");
-        builderDiv.className = "mode-player";
-        builderDiv.dataset.builder = builder.name;
-        builderDiv.dataset.region = builder.region.toLowerCase();
-        builderDiv.dataset.signvalue = isHT ? 2 : 1;
-        builderDiv.innerHTML = `
-            <div class="mode-player-left">
-                <img src="https://render.crafty.gg/3d/bust/${builder.uuid}">
-                <span class="player-label">${builder.name}</span>
-                <span class="tier-sign">${isHT ? "+" : "-"}</span>
-            </div>
-            <div class="region-box">
-                <span>${builder.region.toUpperCase()}</span>
-            </div>
-        `;
-        targetColumn.appendChild(builderDiv);
-    });
+    const isHT = tier.includes("HT");
 
-    // Sort HT (+) above LT (–) inside each column
-    document.querySelectorAll(".mode-tier-column").forEach(col => {
-        const list = [...col.querySelectorAll(".mode-player")];
-        list
-            .sort((a, b) => b.dataset.signvalue - a.dataset.signvalue)
-            .forEach(el => col.appendChild(el));
-        if (list.length === 0) {
-            col.innerHTML += `<div class="mode-empty">No builders</div>`;
-        }
-    });
+    const builderDiv = document.createElement("div");
+    builderDiv.className = "mode-player";
+    builderDiv.dataset.builder = builder.name; // important!
+    builderDiv.dataset.region = builder.region.toLowerCase();
+    builderDiv.dataset.signvalue = isHT ? 2 : 1;
 
-    attachBuilderModeClick();
+    builderDiv.innerHTML = `
+      <div class="mode-player-left">
+        <img src="https://render.crafty.gg/3d/bust/${builder.uuid}">
+        <span class="player-label">${builder.name}</span>
+        <span class="tier-sign">${isHT ? "+" : "-"}</span>
+      </div>
+      <div class="region-box">
+        <span>${builder.region.toUpperCase()}</span>
+      </div>
+    `;
+
+    targetColumn.appendChild(builderDiv);
+});
+
+// Sort HT (+) above LT (–)
+document.querySelectorAll(".mode-tier-column").forEach(col => {
+    const list = [...col.querySelectorAll(".mode-player")];
+    list.sort((a, b) => b.dataset.signvalue - a.dataset.signvalue)
+        .forEach(el => col.appendChild(el));
+
+    if (list.length === 0) {
+        col.innerHTML += `<div class="mode-empty">No builders</div>`;
+    }
+});
+
+// ATTACH CLICK HANDLERS
+attachBuilderClick();
 }
 
 function renderBuilders(region = "global") {
