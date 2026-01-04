@@ -56,8 +56,11 @@ const bannerOptions = document.querySelectorAll(".banner-options img");
 const designerName = document.getElementById("designer-name");
 const designerAvatar = document.getElementById("designer-avatar");
 
+const buildersSection = document.getElementById("builders-section");
+
 let currentUser = null;
 let testers = [];
+let builders = [];
 
 async function loadTesters() {
   try {
@@ -68,6 +71,100 @@ async function loadTesters() {
     console.error("Failed to fetch testers:", err);
     testers = [];
   }
+}
+
+document.querySelector(".builders-btn").addEventListener("click", async () => {
+  showSection(buildersSection);
+  tableHeader.style.display = "none";
+  await loadBuilders();
+  renderBuilders();
+});
+
+async function loadBuilders() {
+  try {
+    const res = await fetch("/builders");
+    builders = await res.json();
+  } catch (err) {
+    console.error("Failed to load builders:", err);
+    builders = [];
+  }
+}
+
+function attachBuilderClick() {
+  document.querySelectorAll("[data-builder]").forEach(el => {
+    el.addEventListener("click", () => {
+      const name = el.dataset.builder;
+      const builder = builders.find(b => b.name === name);
+
+      modalTitle.textContent = builder.name;
+      modalContent.innerHTML = `
+        <div class="modal-header">
+          <img class="modal-avatar" src="https://render.crafty.gg/3d/bust/${builder.uuid}">
+        </div>
+        <div class="modal-section">
+          <div>Region: ${builder.region}</div>
+          <div>Creativity: ${builder.tiers.Creativity}</div>
+          <div>Sectioning: ${builder.tiers.Sectioning}</div>
+          <div>Details: ${builder.tiers.Details}</div>
+          <div>Total Points: ${builder.points}</div>
+        </div>
+      `;
+      modal.classList.add("show");
+    });
+  });
+}
+
+document.querySelectorAll(".subject-btn").forEach(btn => {
+  btn.addEventListener("click", () => {
+    const subject = btn.dataset.subject;
+    renderBuildersBySubject(subject);
+  });
+});
+
+function renderBuildersBySubject(subject) {
+  buildersContainer.innerHTML = "";
+  const sorted = [...builders].sort((a, b) => (b.tiers[subject] ? tierPointsMap[b.tiers[subject]] : 0) - (a.tiers[subject] ? tierPointsMap[a.tiers[subject]] : 0));
+
+  sorted.forEach((builder, index) => {
+    buildersContainer.insertAdjacentHTML("beforeend", `
+      <div class="builder-card" data-builder="${builder.name}">
+        <div class="rank">${index + 1}.</div>
+        <div class="builder-name">${builder.name}</div>
+        <div>${subject}: ${builder.tiers[subject]}</div>
+      </div>
+    `);
+  });
+
+  attachBuilderClick();
+}
+
+function renderBuilders(region = "global") {
+  buildersContainer.innerHTML = "";
+  const filtered = region === "global" ? builders : builders.filter(b => b.region === region);
+
+  // Sort by points descending
+  filtered.sort((a, b) => b.points - a.points);
+
+  filtered.forEach((builder, index) => {
+    const borderClass = index === 0 ? "gold" : index === 1 ? "silver" : index === 2 ? "bronze" : "";
+    buildersContainer.insertAdjacentHTML("beforeend", `
+      <div class="builder-card ${borderClass}" data-builder="${builder.name}">
+        <div class="rank">${index + 1}.</div>
+        <img class="avatar" src="https://render.crafty.gg/3d/bust/${builder.uuid}">
+        <div class="builder-info">
+          <div class="builder-name">${builder.name}</div>
+          <div class="builder-region">${builder.region}</div>
+        </div>
+        <div class="builder-ratings">
+          <div>Creativity: ${builder.tiers.Creativity || "N/A"}</div>
+          <div>Sectioning: ${builder.tiers.Sectioning || "N/A"}</div>
+          <div>Details: ${builder.tiers.Details || "N/A"}</div>
+        </div>
+      </div>
+    `);
+  });
+
+  attachBuilderClick();
 }
 
 /* =============================

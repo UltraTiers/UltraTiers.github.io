@@ -518,6 +518,17 @@ async function saveOrUpdateBuilderRatings({ uuid, name, region, ratings }) {
   }
 }
 
+app.get("/builders", async (req, res) => {
+  try {
+    const { data, error } = await supabase.from("builders").select("*");
+    if (error) throw error;
+    res.json(data);
+  } catch (err) {
+    console.error("Failed to load builders:", err);
+    res.status(500).json({ error: "Failed to load builders" });
+  }
+});
+
 // -------------------
 // Grant Nitro styling
 // -------------------
