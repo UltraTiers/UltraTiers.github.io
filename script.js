@@ -123,34 +123,87 @@ document.querySelectorAll(".subject-btn").forEach(btn => {
 });
 
 function renderBuildersBySubject(subject) {
-    const builderCards = document.querySelectorAll('.builder-card');
-    builderCards.forEach(card => {
-        const builderRegion = card.querySelector('.builder-region'); // ✅ correct for builders
-        if (!builderRegion) return; // safety check
-        if (builderRegion.textContent === subject || subject === "All") {
-            card.style.display = 'flex';
-        } else {
-            card.style.display = 'none';
-        }
-    });
+  const builderCards = [...document.querySelectorAll('.builder-card')];
+
+  builderCards.forEach(card => {
+    const builderRegionEl = card.querySelector('.builder-region');
+    if (!builderRegionEl) return;
+
+    const builderName = card.querySelector('.builder-name').textContent;
+    const builder = builders.find(b => b.name === builderName);
+    if (!builder) return;
+
+    const tierValue = builder.tiers.find(t => t.gamemode === subject)?.tier;
+
+    // Show if builder has the subject or "All"
+    if (subject === "All" || tierValue) {
+      card.style.display = "flex";
+    } else {
+      card.style.display = "none";
+    }
+  });
+
+  // Optional: sort visible builders by total points
+  const visibleCards = builderCards.filter(c => c.style.display !== "none");
+  visibleCards.sort((a, b) => {
+    const nameA = a.querySelector('.builder-name').textContent;
+    const nameB = b.querySelector('.builder-name').textContent;
+    const pointsA = builders.find(b => b.name === nameA).points;
+    const pointsB = builders.find(b => b.name === nameB).points;
+    return pointsB - pointsA;
+  });
+
+  visibleCards.forEach(card => buildersContainer.appendChild(card));
 }
 
 function renderBuilders() {
-    buildersContainer.innerHTML = "";
+  buildersContainer.innerHTML = "";
 
-    builders.forEach(builder => {
-        const card = document.createElement("div");
-        card.className = "builder-card";
-        card.innerHTML = `
-            <span class="builder-name">${builder.name}</span>
-            <button class="builder-region">${builder.region}</button>
-            <button class="builder-points">Points: ${builder.points}</button>
-        `;
-        buildersContainer.appendChild(card);
-    });
+  // Sort builders by total points descending
+  const sortedBuilders = [...builders].sort((a, b) => b.points - a.points);
 
-    attachBuilderClick(); // ensures clicking opens the modal
+  sortedBuilders.forEach((builder, index) => {
+    const card = document.createElement("div");
+    card.className = "builder-card";
+
+    // Calculate tiers HTML (similar to players)
+    const sortedTiers = sortPlayerTiers(builder.tiers.filter(t => t.tier !== "Unknown"));
+    const tiersHTML = sortedTiers.map(t => {
+      const tierMatch = t.tier.match(/\d+/);
+      if (!tierMatch) return `<div class="tier empty"></div>`;
+      const tierNumber = tierMatch[0];
+      return `
+        <div class="tier"
+             data-gamemode="${t.gamemode}"
+             data-tier="${tierNumber}"
+             data-tooltip="${t.gamemode} — ${t.tier}">
+          <img src="gamemodes/${t.gamemode}.png">
+          <span>${t.tier}</span>
+        </div>
+      `;
+    }).join("");
+
+    // Optional: add border for top 3 builders
+    const borderClass =
+      index === 0 ? "gold" :
+      index === 1 ? "silver" :
+      index === 2 ? "bronze" : "";
+
+    card.innerHTML = `
+      <div class="builder-header ${borderClass}">
+        <span class="builder-name">${builder.name}</span>
+        <button class="builder-region" data-region="${builder.region}">${builder.region}</button>
+        <button class="builder-points">Points: ${builder.points}</button>
+      </div>
+      <div class="builder-tiers">${tiersHTML}</div>
+    `;
+
+    buildersContainer.appendChild(card);
+  });
+
+  attachBuilderClick(); // click modal works
 }
+
 
 /* =============================
    SECTION SWITCHING HELPER
