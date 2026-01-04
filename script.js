@@ -123,11 +123,11 @@ document.querySelectorAll(".subject-btn").forEach(btn => {
 });
 
 function renderBuildersBySubject(subject) {
-    // Filter builders that match the selected subject
-    const cards = Array.from(buildersContainer.children);
-    cards.forEach(card => {
-        const cardSubject = card.querySelector('.subject-name').textContent;
-        if (subject === 'All' || cardSubject === subject) {
+    const builderCards = document.querySelectorAll('.builder-card');
+    builderCards.forEach(card => {
+        const builderRegion = card.querySelector('.builder-region'); // ✅ correct for builders
+        if (!builderRegion) return; // safety check
+        if (builderRegion.textContent === subject || subject === "All") {
             card.style.display = 'flex';
         } else {
             card.style.display = 'none';
