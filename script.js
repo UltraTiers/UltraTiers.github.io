@@ -75,13 +75,18 @@ async function loadTesters() {
 }
 
 document.querySelectorAll(".builder-option").forEach(opt => {
-    opt.addEventListener("click", async () => {
-        const region = opt.dataset.region;
-        showSection(buildersSection);       // show builders
-        tableHeader.style.display = "grid"; // keep header visible like leaderboard
-        if (!builders.length) await loadBuilders();
-        renderBuilders(region);             // render filtered builders
-    });
+  opt.addEventListener("click", async () => {
+    const region = opt.dataset.region;
+    showSection(buildersSection);
+    tableHeader.style.display = "grid"; // keep header visible like leaderboard
+
+    // ✅ Remove active-tab from all navbar buttons
+    document.querySelectorAll(".nav-center a, .dropdown-trigger").forEach(a => a.classList.remove("active-tab"));
+    document.querySelector(".builders-btn")?.classList.add("active-tab"); // highlight Builders tab
+
+    if (!builders.length) await loadBuilders();
+    renderBuilders(region); // render filtered builders
+  });
 });
 
 async function loadBuilders() {
@@ -422,6 +427,19 @@ function showSection(sectionToShow) {
     if (sectionToShow === testersSection) document.querySelector(".testers-btn")?.classList.add("active-tab");
     if (sectionToShow === buildersSection) document.querySelector(".builders-btn")?.classList.add("active-tab"); // ✅ builders
 }
+
+document.querySelector(".builders-btn")?.addEventListener("click", async () => {
+  showSection(buildersSection);
+  tableHeader.style.display = "grid";
+
+  // ✅ Highlight the Builders tab
+  document.querySelectorAll(".nav-center a, .dropdown-trigger").forEach(a => a.classList.remove("active-tab"));
+  document.querySelector(".builders-btn")?.classList.add("active-tab");
+
+  // Load all builders globally
+  if (!builders.length) await loadBuilders();
+  renderBuilders("global");
+});
 
 function sortPlayerTiers(tiers) {
   return tiers.slice().sort((a, b) => {
