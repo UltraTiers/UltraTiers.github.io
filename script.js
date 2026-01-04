@@ -63,6 +63,11 @@ let currentUser = null;
 let testers = [];
 let builders = [];
 
+// ===== UI STATE (FIXES SUBJECT/MODE BREAKAGE) =====
+let activeView = null;        // "players" | "builders"
+let activeSubject = null;     // Creativity, Spacing, etc
+let buildersLoaded = false;
+
 async function loadTesters() {
   try {
     const res = await fetch("/testers");
@@ -120,6 +125,7 @@ async function loadBuilders() {
     console.error("Failed to load builders:", err);
     builders = [];
   }
+  buildersLoaded = true;
 }
 
 function attachBuilderClick() {
@@ -211,24 +217,35 @@ function generateBuilderTiersHTML(builder) {
 
 document.querySelectorAll(".subject-btn").forEach(btn => {
   btn.addEventListener("click", async () => {
-    const subject = btn.dataset.subject;
+    activeView = "builders";
+    activeSubject = btn.dataset.subject;
 
     showSection(buildersSection);
     tableHeader.style.display = "none";
 
-    if (!builders.length) {
+    if (!buildersLoaded) {
       await loadBuilders();
+      normalizeBuilderTiers();
+      buildersLoaded = true;
     }
 
-    normalizeBuilderTiers(); // ✅ FIX
-
     buildersContainer.innerHTML = "";
-    generateBuilderModeLeaderboard(subject);
+    generateBuilderModeLeaderboard(activeSubject);
   });
 });
 
 function generateBuilderModeLeaderboard(subject) {
-  tableHeader.style.display = "none"; // hide the normal table header
+  if (!subject) {
+    console.warn("No subject provided — skipping builder render");
+    return;
+  }
+
+  if (!builders || builders.length === 0) {
+    buildersContainer.innerHTML = "<p>No builders found.</p>";
+    return;
+  }
+
+  tableHeader.style.display = "none";
 
   buildersContainer.innerHTML = `
     <div class="mode-wrapper">
@@ -650,7 +667,12 @@ document.querySelector(".testers-btn")?.addEventListener("click", async () => {
 
 document.querySelectorAll(".mode-btn").forEach(btn => {
   btn.addEventListener("click", () => {
+    activeView = "players";
+    activeSubject = null; // 🔥 reset subject state
+
     showSection(leaderboardSection);
+    tableHeader.style.display = "none";
+
     generateModeLeaderboard(btn.dataset.mode);
   });
 });
