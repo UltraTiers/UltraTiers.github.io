@@ -774,6 +774,21 @@ body {
   box-shadow: 0 0 16px rgba(255,255,255,0.16);
 }
 
+/* ============================= */
+/* BUILDER TOP 3 COLORS */
+/* ============================= */
+
+.builder-card.gold {
+  border-left: 8px solid gold;
+}
+
+.builder-card.silver {
+  border-left: 8px solid silver;
+}
+
+.builder-card.bronze {
+  border-left: 8px solid #cd7f32;
+}
 
 /* ============================= */
 /* RESPONSIVE STYLES */

@@ -119,13 +119,51 @@ function attachBuilderClick() {
   });
 }
 
+function generateBuilderTiersHTML(builder) {
+  const subjects = ["Creativity", "Sectioning", "Details"];
+
+  return subjects.map(subject => {
+    const tier = builder.tiers?.[subject];
+
+    if (!tier || tier === "Unknown") {
+      return `<div class="tier empty" data-tooltip="${subject} — Unrated"></div>`;
+    }
+
+    const tierNum = tier.match(/\d+/)?.[0];
+    if (!tierNum) {
+      return `<div class="tier empty"></div>`;
+    }
+
+    return `
+      <div class="tier"
+        data-subject="${subject}"
+        data-tier="${tierNum}"
+        data-tooltip="${subject} — ${tier}">
+        <span>${tier}</span>
+      </div>
+    `;
+  }).join("");
+}
+
 document.querySelectorAll(".subject-btn").forEach(btn => {
-  btn.addEventListener("click", () => {
+  btn.addEventListener("click", async () => {
     const subject = btn.dataset.subject;
+
     showSection(buildersSection);
-    generateModeLeaderboard(subject); // same as modes tab
+    tableHeader.style.display = "grid";
+
+    if (!builders.length) await loadBuilders();
+    renderBuilders("global");
+    filterBuildersBySubject(subject);
   });
 });
+
+function filterBuildersBySubject(subject) {
+  document.querySelectorAll(".builder-card").forEach(card => {
+    const value = card.dataset[subject.toLowerCase()];
+    card.style.display = value && value !== "Unknown" ? "" : "none";
+  });
+}
 
 function renderBuildersBySubject(subject) {
     const builderCards = document.querySelectorAll('.builder-card');
@@ -141,37 +179,46 @@ function renderBuildersBySubject(subject) {
 }
 
 function renderBuilders(region = "global") {
-    buildersContainer.innerHTML = "";
+  buildersContainer.innerHTML = "";
 
-    // Filter by region
-    const filtered = region === "global" ? builders : builders.filter(b => b.region === region);
+  const filtered =
+    region === "global"
+      ? builders
+      : builders.filter(b => b.region === region);
 
-    filtered.forEach((builder, index) => {
-        const card = document.createElement("div");
-        card.className = "builder-card";
+  filtered.forEach((builder, index) => {
+    const borderClass =
+      index === 0 ? "gold" :
+      index === 1 ? "silver" :
+      index === 2 ? "bronze" : "";
 
-        // Use same structure as player-card
-        const borderClass =
-          index === 0 ? "gold" :
-          index === 1 ? "silver" :
-          index === 2 ? "bronze" : "";
+    const card = document.createElement("div");
+    card.className = `builder-card ${borderClass}`;
+    card.dataset.builder = builder.name;
 
-        card.innerHTML = `
-            <div class="rank">${index + 1}.</div>
-            <img class="avatar" src="https://render.crafty.gg/3d/bust/${builder.uuid}">
-            <div class="player-info">
-              <div class="player-name">${builder.name}</div>
-              <div class="player-sub">Points: ${builder.points}</div>
-            </div>
-            <div class="region region-${builder.region.toLowerCase()}">${builder.region}</div>
-        `;
+    // store subjects on the card
+    card.dataset.creativity = builder.tiers?.Creativity || "Unknown";
+    card.dataset.sectioning = builder.tiers?.Sectioning || "Unknown";
+    card.dataset.details = builder.tiers?.Details || "Unknown";
 
-        buildersContainer.appendChild(card);
-    });
+    card.innerHTML = `
+      <div class="rank">${index + 1}.</div>
+      <img class="avatar" src="https://render.crafty.gg/3d/bust/${builder.uuid}">
+      <div class="player-info">
+        <div class="player-name">${builder.name}</div>
+        <div class="player-sub">⭐ Builder (${builder.points})</div>
+      </div>
+      <div class="region region-${builder.region.toLowerCase()}">${builder.region}</div>
+      <div class="tiers">
+        ${generateBuilderTiersHTML(builder)}
+      </div>
+    `;
 
-    attachBuilderClick();
+    buildersContainer.appendChild(card);
+  });
+
+  attachBuilderClick();
 }
-
 
 /* =============================
    SECTION SWITCHING HELPER
