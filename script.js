@@ -92,12 +92,11 @@ async function loadBuilders() {
     const res = await fetch("/builders");
     builders = await res.json();
 
-    // ===== Normalize tiers to object keyed by subject =====
+    // Normalize tiers to object keyed by subject
     builders.forEach(b => {
       if (Array.isArray(b.tiers)) {
         const tiersObj = {};
         b.tiers.forEach(t => {
-          // t.subject should match "Creativity", "Sectioning", "Details"
           if (t.subject && t.tier) {
             tiersObj[t.subject] = t.tier;
           }
@@ -105,7 +104,6 @@ async function loadBuilders() {
         b.tiers = tiersObj;
       }
     });
-    // =====================================================
   } catch (err) {
     console.error("Failed to load builders:", err);
     builders = [];
@@ -198,15 +196,19 @@ function generateBuilderTiersHTML(builder) {
 document.querySelectorAll(".subject-btn").forEach(btn => {
   btn.addEventListener("click", async () => {
     const subject = btn.dataset.subject;
+
     showSection(buildersSection);
     tableHeader.style.display = "none";
 
-    // Always load builders and wait
+    // Always load builders if not loaded
     if (!builders.length) {
-      await loadBuilders(); // wait for builders to finish loading
+      await loadBuilders();
     }
 
-    // Now safely render
+    // Clear container before rendering
+    buildersContainer.innerHTML = "";
+
+    // Generate the subject layout
     generateBuilderModeLeaderboard(subject);
   });
 });
