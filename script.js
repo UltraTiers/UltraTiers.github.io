@@ -139,12 +139,16 @@ function attachBuilderClick() {
             <span class="modal-value">${builder.tiers?.Creativity || "N/A"}</span>
           </div>
           <div class="modal-info-row ${nitroClass}">
-            <span class="modal-label">Sectioning:</span>
-            <span class="modal-value">${builder.tiers?.Sectioning || "N/A"}</span>
+            <span class="modal-label">Spacing:</span>
+            <span class="modal-value">${builder.tiers?.Spacing || "N/A"}</span>
           </div>
           <div class="modal-info-row ${nitroClass}">
             <span class="modal-label">Details:</span>
             <span class="modal-value">${builder.tiers?.Details || "N/A"}</span>
+          </div>
+          <div class="modal-info-row ${nitroClass}">
+            <span class="modal-label">Execution:</span>
+            <span class="modal-value">${builder.tiers?.Execution || "N/A"}</span>
           </div>
           <div class="modal-info-row ${nitroClass}">
             <span class="modal-label">Total Points:</span>
@@ -164,7 +168,7 @@ function attachBuilderClick() {
 }
 
 function generateBuilderTiersHTML(builder) {
-  const subjects = ["Creativity", "Sectioning", "Details"];
+  const subjects = ["Creativity", "Spacing", "Execution", "Details"];
 
   return subjects.map(subject => {
     const tier = builder.tiers?.[subject];
@@ -179,7 +183,7 @@ function generateBuilderTiersHTML(builder) {
     }
 
     // Add subject image
-    const subjectImage = `${subject}.png`; // assuming your images are named Creativity.png, Sectioning.png, Details.png
+    const subjectImage = `${subject}.png`; // assuming your images are named Creativity.png, Spacing.png, Details.png
 
     return `
       <div class="tier"
@@ -345,8 +349,9 @@ function attachBuilderModeClick() {
         <div class="modal-section">
           <div>Region: ${builder.region}</div>
           <div>Creativity: ${builder.tiers.Creativity}</div>
-          <div>Sectioning: ${builder.tiers.Sectioning}</div>
+          <div>Spacing: ${builder.tiers.Spacing}</div>
           <div>Details: ${builder.tiers.Details}</div>
+          <div>Execution: ${builder.tiers.Execution}</div>
           <div>Total Points: ${builder.points}</div>
         </div>
       `;

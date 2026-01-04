@@ -450,15 +450,16 @@ app.post("/auth/login", async (req, res) => {
 // -------------------
 app.post("/builders/rate", async (req, res) => {
   try {
-    const { uuid, name, region, details, sectioning, creativity } = req.body;
+    const { uuid, name, region, details, spacing, execution, creativity } = req.body;
 
-    if (!uuid || !details || !sectioning || !creativity) {
+    if (!uuid || !details || !spacing || !execution || !creativity) {
       return res.status(400).json({ error: "Missing rating fields" });
     }
 
     const ratings = {
       Details: details,
-      Sectioning: sectioning,
+      Spacing: spacing,
+      Execution: execution,
       Creativity: creativity
     };
 
