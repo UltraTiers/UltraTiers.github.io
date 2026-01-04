@@ -134,11 +134,15 @@ function generateBuilderTiersHTML(builder) {
       return `<div class="tier empty"></div>`;
     }
 
+    // Add subject image
+    const subjectImage = `${subject}.png`; // assuming your images are named Creativity.png, Sectioning.png, Details.png
+
     return `
       <div class="tier"
         data-subject="${subject}"
         data-tier="${tierNum}"
         data-tooltip="${subject} — ${tier}">
+        <img src="${subjectImage}" alt="${subject}" class="tier-subject-icon">
         <span>${tier}</span>
       </div>
     `;
@@ -392,36 +396,32 @@ profileBanner.style.backgroundImage =
 
 
 function showSection(sectionToShow) {
-const sections = [
-  leaderboardSection,
-  docsSection,
-  applicationSection,
-  testersSection
-];
+    const sections = [
+        leaderboardSection,
+        docsSection,
+        applicationSection,
+        testersSection,
+        buildersSection
+    ];
 
-  sections.forEach(section => {
-    if (section === sectionToShow) {
-      section.classList.add("active-section");
-      section.classList.remove("hidden-section");
-    } else {
-      section.classList.remove("active-section");
-      section.classList.add("hidden-section");
-    }
-  });
+    sections.forEach(section => {
+        if (section === sectionToShow) {
+            section.classList.add("active-section");
+            section.classList.remove("hidden-section");
+        } else {
+            section.classList.remove("active-section");
+            section.classList.add("hidden-section");
+        }
+    });
 
-  // navbar active state
-  document.querySelectorAll(".nav-center a").forEach(a =>
-    a.classList.remove("active-tab")
-  );
+    // navbar active state
+    document.querySelectorAll(".nav-center a, .nav-center .dropdown-trigger").forEach(el => el.classList.remove("active-tab"));
 
-  if (sectionToShow === leaderboardSection)
-    document.querySelector(".rankings-btn")?.classList.add("active-tab");
-
-  if (sectionToShow === docsSection)
-    document.querySelector(".docs-btn")?.classList.add("active-tab");
-
-  if (sectionToShow === applicationSection)
-    document.querySelector(".application-btn")?.classList.add("active-tab");
+    if (sectionToShow === leaderboardSection) document.querySelector(".rankings-btn")?.classList.add("active-tab");
+    if (sectionToShow === docsSection) document.querySelector(".docs-btn")?.classList.add("active-tab");
+    if (sectionToShow === applicationSection) document.querySelector(".application-btn")?.classList.add("active-tab");
+    if (sectionToShow === testersSection) document.querySelector(".testers-btn")?.classList.add("active-tab");
+    if (sectionToShow === buildersSection) document.querySelector(".builders-btn")?.classList.add("active-tab");
 }
 
 function sortPlayerTiers(tiers) {

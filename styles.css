@@ -1712,7 +1712,6 @@ grid-template-columns: 50px 50px 1fr 1fr 6fr; /* last column is now flexible */
 
 /* Builders container spacing identical to leaderboard */
 #builders-container {
-  display: flex;
   flex-direction: column;
   margin: 40px auto;
 }
