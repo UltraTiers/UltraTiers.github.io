@@ -302,7 +302,6 @@ document.querySelectorAll(".subject-btn").forEach(btn => {
       buildersLoaded = true;
     }
 
-    buildersContainer.innerHTML = "";
     generateBuilderModeLeaderboard(activeSubject);
   });
 });
