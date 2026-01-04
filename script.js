@@ -57,6 +57,7 @@ const designerName = document.getElementById("designer-name");
 const designerAvatar = document.getElementById("designer-avatar");
 
 const buildersSection = document.getElementById("builders-section");
+const buildersContainer = document.getElementById("buildersContainer");
 
 let currentUser = null;
 let testers = [];
@@ -122,49 +123,45 @@ document.querySelectorAll(".subject-btn").forEach(btn => {
 });
 
 function renderBuildersBySubject(subject) {
-  buildersContainer.innerHTML = "";
-  const sorted = [...builders].sort((a, b) => (b.tiers[subject] ? tierPointsMap[b.tiers[subject]] : 0) - (a.tiers[subject] ? tierPointsMap[a.tiers[subject]] : 0));
-
-  sorted.forEach((builder, index) => {
-    buildersContainer.insertAdjacentHTML("beforeend", `
-      <div class="builder-card" data-builder="${builder.name}">
-        <div class="rank">${index + 1}.</div>
-        <div class="builder-name">${builder.name}</div>
-        <div>${subject}: ${builder.tiers[subject]}</div>
-      </div>
-    `);
-  });
-
-  attachBuilderClick();
+    // Filter builders that match the selected subject
+    const cards = Array.from(buildersContainer.children);
+    cards.forEach(card => {
+        const cardSubject = card.querySelector('.subject-name').textContent;
+        if (subject === 'All' || cardSubject === subject) {
+            card.style.display = 'flex';
+        } else {
+            card.style.display = 'none';
+        }
+    });
 }
 
-function renderBuilders(region = "global") {
-  buildersContainer.innerHTML = "";
-  const filtered = region === "global" ? builders : builders.filter(b => b.region === region);
+async function renderBuilders() {
+    try {
+        const { data, error } = await supabase.from('builders').select('*');
+        if (error) { console.error(error); return; }
 
-  // Sort by points descending
-  filtered.sort((a, b) => b.points - a.points);
+        builders = data; // update global array
 
-  filtered.forEach((builder, index) => {
-    const borderClass = index === 0 ? "gold" : index === 1 ? "silver" : index === 2 ? "bronze" : "";
-    buildersContainer.insertAdjacentHTML("beforeend", `
-      <div class="builder-card ${borderClass}" data-builder="${builder.name}">
-        <div class="rank">${index + 1}.</div>
-        <img class="avatar" src="https://render.crafty.gg/3d/bust/${builder.uuid}">
-        <div class="builder-info">
-          <div class="builder-name">${builder.name}</div>
-          <div class="builder-region">${builder.region}</div>
-        </div>
-        <div class="builder-ratings">
-          <div>Creativity: ${builder.tiers.Creativity || "N/A"}</div>
-          <div>Sectioning: ${builder.tiers.Sectioning || "N/A"}</div>
-          <div>Details: ${builder.tiers.Details || "N/A"}</div>
-        </div>
-      </div>
-    `);
-  });
+        buildersContainer.innerHTML = '';
+        builders.forEach(builder => {
+            const card = document.createElement('div');
+            card.className = 'builder-card';
+            card.innerHTML = `
+                <img src="${builder.avatar_url}" class="builder-avatar" />
+                <span class="builder-name">${builder.name}</span>
+                <button class="builder-region">${builder.region}</button>
+                <button class="subject-name">${builder.subject}</button>
+            `;
+            buildersContainer.appendChild(card);
 
-  attachBuilderClick();
+            // Add click for subject button
+            card.querySelector('.subject-name').addEventListener('click', () => {
+                renderBuildersBySubject(builder.subject);
+            });
+        });
+    } catch (err) {
+        console.error(err);
+    }
 }
 
 /* =============================

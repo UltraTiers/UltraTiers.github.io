@@ -969,6 +969,31 @@ body {
     }
 }
 
+/* Subjects & builder region buttons */
+.subject-name,
+.builder-region,
+.builder-tag {
+    background: rgba(255,255,255,0.06);
+    padding: 8px 12px;
+    border-radius: 10px;
+    cursor: pointer;
+    border: 1px solid rgba(255,255,255,0.12);
+    transition: 0.25s ease;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    text-transform: uppercase;
+}
+
+.subject-name:hover,
+.builder-region:hover,
+.builder-tag:hover {
+    background: rgba(255,255,255,0.14);
+    box-shadow: 0 0 16px rgba(255,255,255,0.16);
+}
+
+
 
 .testers-section {
   margin: 60px auto;
