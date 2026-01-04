@@ -91,6 +91,21 @@ async function loadBuilders() {
   try {
     const res = await fetch("/builders");
     builders = await res.json();
+
+    // ===== Normalize tiers to object keyed by subject =====
+    builders.forEach(b => {
+      if (Array.isArray(b.tiers)) {
+        const tiersObj = {};
+        b.tiers.forEach(t => {
+          // t.subject should match "Creativity", "Sectioning", "Details"
+          if (t.subject && t.tier) {
+            tiersObj[t.subject] = t.tier;
+          }
+        });
+        b.tiers = tiersObj;
+      }
+    });
+    // =====================================================
   } catch (err) {
     console.error("Failed to load builders:", err);
     builders = [];
@@ -186,10 +201,12 @@ document.querySelectorAll(".subject-btn").forEach(btn => {
     showSection(buildersSection);
     tableHeader.style.display = "none";
 
-    // Load builders only if not already loaded
-    if (!builders.length) await loadBuilders();
+    // Always load builders and wait
+    if (!builders.length) {
+      await loadBuilders(); // wait for builders to finish loading
+    }
 
-    // Render the subject leaderboard using the existing builders
+    // Now safely render
     generateBuilderModeLeaderboard(subject);
   });
 });
