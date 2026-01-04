@@ -146,19 +146,32 @@ function renderBuilders(region = "global") {
     // Filter by region
     const filtered = region === "global" ? builders : builders.filter(b => b.region === region);
 
-    filtered.forEach(builder => {
+    filtered.forEach((builder, index) => {
         const card = document.createElement("div");
         card.className = "builder-card";
+
+        // Use same structure as player-card
+        const borderClass =
+          index === 0 ? "gold" :
+          index === 1 ? "silver" :
+          index === 2 ? "bronze" : "";
+
         card.innerHTML = `
-            <span class="builder-name">${builder.name}</span>
-            <button class="builder-region">${builder.region}</button>
-            <button class="builder-points">Points: ${builder.points}</button>
+            <div class="rank">${index + 1}.</div>
+            <img class="avatar" src="https://render.crafty.gg/3d/bust/${builder.uuid}">
+            <div class="player-info">
+              <div class="player-name">${builder.name}</div>
+              <div class="player-sub">Points: ${builder.points}</div>
+            </div>
+            <div class="region region-${builder.region.toLowerCase()}">${builder.region}</div>
         `;
+
         buildersContainer.appendChild(card);
     });
 
     attachBuilderClick();
 }
+
 
 /* =============================
    SECTION SWITCHING HELPER
