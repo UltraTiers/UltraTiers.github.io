@@ -1022,6 +1022,45 @@ body {
     background: rgba(255,255,255,0);
 }
 
+/* ============================= */
+/* SUBJECT BUTTONS (BUILDERS) */
+/* ============================= */
+
+/* Make subject buttons match mode/button styling */
+.subject-btn {
+  background: rgba(255, 255, 255, 0.06);
+  padding: 10px 12px;
+  border-radius: 10px;
+  color: var(--text);
+  font-size: 15px;
+  cursor: pointer;
+  border: 1px solid rgba(255, 255, 255, 0.10);
+  transition: 0.25s;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  position: relative; /* same as mode-btn for any popup positioning */
+}
+
+.subject-btn img {
+  width: 18px;
+  height: 18px;
+  object-fit: contain;
+  pointer-events: none;
+}
+
+.subject-btn:hover {
+  background: rgba(255, 255, 255, 0.14);
+  box-shadow: 0 0 16px rgba(255, 255, 255, 0.16);
+}
+
+/* Optional: active state when clicked (matches mode-btn) */
+.subject-btn.active {
+  background: rgba(255, 255, 255, 0.18);
+  box-shadow: 0 0 20px rgba(255, 255, 255, 0.25);
+}
+
+
 .player-card,
 .mode-player {
   cursor: pointer;
