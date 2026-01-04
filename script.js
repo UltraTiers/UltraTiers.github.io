@@ -266,36 +266,30 @@ function generateBuilderModeLeaderboard(subject) {
 
   // Add builders into the appropriate tier column
   builders.forEach(builder => {
-    const tierObj = builder.tiers?.[subject];
-    if (!tierObj || tierObj === "Unknown") return;
-
-    const tierNumberMatch = tierObj.match(/\d+/);
-    if (!tierNumberMatch) return;
-
-    const tierNumber = parseInt(tierNumberMatch[0]);
-    const targetColumn = document.querySelectorAll(".mode-tier-column")[tierNumber - 1];
-    if (!targetColumn) return;
-
-    const isHT = tierObj.includes("HT");
-
-    const builderDiv = document.createElement("div");
-    builderDiv.className = "mode-player"; // can reuse same styling
-    builderDiv.dataset.builder = builder.name;
-    builderDiv.dataset.region = builder.region.toLowerCase();
-    builderDiv.dataset.signvalue = isHT ? 2 : 1;
-
-    builderDiv.innerHTML = `
-      <div class="mode-player-left">
-        <img src="https://render.crafty.gg/3d/bust/${builder.uuid}">
-        <span class="player-label">${builder.name}</span>
-        <span class="tier-sign">${isHT ? "+" : "-"}</span>
-      </div>
-      <div class="region-box">
-        <span>${builder.region.toUpperCase()}</span>
-      </div>
-    `;
-
-    targetColumn.appendChild(builderDiv);
+const tierStr = builder.tiers?.[subject]; // get the string like "HT1"
+if (!tierStr || tierStr === "Unknown") return;
+const tierNumberMatch = tierStr.match(/\d+/);
+if (!tierNumberMatch) return;
+const tierNumber = parseInt(tierNumberMatch[0]);
+const targetColumn = document.querySelectorAll(".mode-tier-column")[tierNumber - 1];
+if (!targetColumn) return;
+const isHT = tierStr.includes("HT");
+const builderDiv = document.createElement("div");
+builderDiv.className = "mode-player"; 
+builderDiv.dataset.builder = builder.name;
+builderDiv.dataset.region = builder.region.toLowerCase();
+builderDiv.dataset.signvalue = isHT ? 2 : 1;
+builderDiv.innerHTML = `
+  <div class="mode-player-left">
+    <img src="https://render.crafty.gg/3d/bust/${builder.uuid}">
+    <span class="player-label">${builder.name}</span>
+    <span class="tier-sign">${isHT ? "+" : "-"}</span>
+  </div>
+  <div class="region-box">
+    <span>${builder.region.toUpperCase()}</span>
+  </div>
+`;
+targetColumn.appendChild(builderDiv);
   });
 
   // Sort builders in each tier column so HT (+) is above LT (–)
