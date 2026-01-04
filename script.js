@@ -215,6 +215,79 @@ function generateBuilderTiersHTML(builder) {
   }).join("");
 }
 
+function generateBuilderModeLeaderboard(subject) {
+  if (!subject) return;
+  if (!builders || builders.length === 0) {
+    buildersContainer.innerHTML = "<p>No builders found.</p>";
+    return;
+  }
+
+  tableHeader.style.display = "none";
+
+  // Only create wrapper and columns if they don't exist
+  let tiersGrid = document.getElementById("builder-mode-tiers");
+  if (!tiersGrid) {
+    buildersContainer.innerHTML = `
+      <div class="mode-wrapper">
+        <div class="mode-title">${subject} Builders</div>
+        <div class="mode-tiers" id="builder-mode-tiers"></div>
+      </div>
+    `;
+    tiersGrid = document.getElementById("builder-mode-tiers");
+
+    for (let i = 1; i <= 5; i++) {
+      const col = document.createElement("div");
+      col.className = "mode-tier-column";
+      col.innerHTML = `<div class="mode-tier-header">Tier ${i}</div>`;
+      tiersGrid.appendChild(col);
+    }
+  } else {
+    // If already exists, just clear previous builders in columns
+    document.querySelectorAll(".mode-tier-column").forEach(col => {
+      col.querySelectorAll(".mode-player").forEach(el => el.remove());
+    });
+  }
+
+  // Append builders to the proper columns
+  builders.forEach(builder => {
+    const tierStr = builder.tiers?.[subject];
+    if (!tierStr || tierStr === "Unknown") return;
+
+    const tierNumber = parseInt(tierStr.match(/\d+/)[0]);
+    const isHT = tierStr.includes("HT");
+    const targetColumn = document.querySelectorAll(".mode-tier-column")[tierNumber - 1];
+    if (!targetColumn) return;
+
+    const builderDiv = document.createElement("div");
+    builderDiv.className = "mode-player";
+    builderDiv.dataset.builder = builder.name;
+    builderDiv.dataset.region = builder.region.toLowerCase();
+    builderDiv.dataset.signvalue = isHT ? 2 : 1;
+    builderDiv.innerHTML = `
+      <div class="mode-player-left">
+        <img src="https://render.crafty.gg/3d/bust/${builder.uuid}">
+        <span class="player-label">${builder.name}</span>
+        <span class="tier-sign">${isHT ? "+" : "-"}</span>
+      </div>
+      <div class="region-box">
+        <span>${builder.region.toUpperCase()}</span>
+      </div>
+    `;
+
+    targetColumn.appendChild(builderDiv);
+  });
+
+  // Sort builders in each column so HT (+) is above LT (-)
+  document.querySelectorAll(".mode-tier-column").forEach(col => {
+    const playerList = [...col.querySelectorAll(".mode-player")];
+    playerList
+      .sort((a, b) => b.dataset.signvalue - a.dataset.signvalue)
+      .forEach(el => col.appendChild(el));
+  });
+
+  attachBuilderClick();
+}
+
 document.querySelectorAll(".subject-btn").forEach(btn => {
   btn.addEventListener("click", async () => {
     activeView = "builders";
@@ -233,84 +306,6 @@ document.querySelectorAll(".subject-btn").forEach(btn => {
     generateBuilderModeLeaderboard(activeSubject);
   });
 });
-
-function generateBuilderModeLeaderboard(subject) {
-  if (!subject) {
-    console.warn("No subject provided — skipping builder render");
-    return;
-  }
-
-  if (!builders || builders.length === 0) {
-    buildersContainer.innerHTML = "<p>No builders found.</p>";
-    return;
-  }
-
-  tableHeader.style.display = "none";
-
-  buildersContainer.innerHTML = `
-    <div class="mode-wrapper">
-      <div class="mode-title">${subject} Builders</div>
-      <div class="mode-tiers" id="builder-mode-tiers"></div>
-    </div>
-  `;
-
-  const tiersGrid = document.getElementById("builder-mode-tiers");
-
-  // Create Tier 1–5 columns
-  for (let i = 1; i <= 5; i++) {
-    const col = document.createElement("div");
-    col.className = "mode-tier-column";
-    col.innerHTML = `<div class="mode-tier-header">Tier ${i}</div>`;
-    tiersGrid.appendChild(col);
-  }
-
-  // Add builders into the appropriate tier column
-  builders.forEach(builder => {
-const tierStr = builder.tiers?.[subject]; // get the string like "HT1"
-if (!tierStr || tierStr === "Unknown") return;
-const tierNumberMatch = tierStr.match(/\d+/);
-if (!tierNumberMatch) return;
-const tierNumber = parseInt(tierNumberMatch[0]);
-const targetColumn = document.querySelectorAll(".mode-tier-column")[tierNumber - 1];
-if (!targetColumn) return;
-const isHT = tierStr.includes("HT");
-const builderDiv = document.createElement("div");
-builderDiv.className = "mode-player"; 
-builderDiv.dataset.builder = builder.name;
-builderDiv.dataset.region = builder.region.toLowerCase();
-builderDiv.dataset.signvalue = isHT ? 2 : 1;
-builderDiv.innerHTML = `
-  <div class="mode-player-left">
-    <img src="https://render.crafty.gg/3d/bust/${builder.uuid}">
-    <span class="player-label">${builder.name}</span>
-    <span class="tier-sign">${isHT ? "+" : "-"}</span>
-  </div>
-  <div class="region-box">
-    <span>${builder.region.toUpperCase()}</span>
-  </div>
-`;
-targetColumn.appendChild(builderDiv);
-  });
-
-  // Sort builders in each tier column so HT (+) is above LT (–)
-  document.querySelectorAll(".mode-tier-column").forEach(col => {
-    const builderList = [...col.querySelectorAll(".mode-player")];
-    builderList
-      .sort((a, b) => b.dataset.signvalue - a.dataset.signvalue)
-      .forEach(el => col.appendChild(el));
-
-    // If column only has the header, show "No builders"
-const hasOnlyHeader = col.querySelectorAll(".mode-player").length === 0;
-if (hasOnlyHeader) {
-  const emptyDiv = document.createElement("div");
-  emptyDiv.className = "mode-empty";
-  emptyDiv.textContent = "No builders";
-  col.appendChild(emptyDiv);
-}
-  });
-
-  attachBuilderClick(); // attach modal click for builder cards
-}
 
 function renderBuilders(region = "global") {
   buildersContainer.innerHTML = "";
