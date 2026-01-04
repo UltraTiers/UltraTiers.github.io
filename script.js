@@ -78,14 +78,10 @@ document.querySelectorAll(".builder-option").forEach(opt => {
   opt.addEventListener("click", async () => {
     const region = opt.dataset.region;
     showSection(buildersSection);
-    tableHeader.style.display = "grid"; // keep header visible like leaderboard
+    tableHeader.style.display = "grid"; // same as rankings tab
 
-    // ✅ Remove active-tab from all navbar buttons
-    document.querySelectorAll(".nav-center a, .dropdown-trigger").forEach(a => a.classList.remove("active-tab"));
-    document.querySelector(".builders-btn")?.classList.add("active-tab"); // highlight Builders tab
-
-    if (!builders.length) await loadBuilders();
-    renderBuilders(region); // render filtered builders
+    await loadBuilders(); // fetch builders
+    renderBuilders(region); // pass region
   });
 });
 
@@ -152,10 +148,10 @@ function generateBuilderTiersHTML(builder) {
 document.querySelectorAll(".subject-btn").forEach(btn => {
     btn.addEventListener("click", async () => {
         const subject = btn.dataset.subject;
-        showSection(buildersSection);       // show builders
-        tableHeader.style.display = "none"; // hide header for subject view
+        showSection(buildersSection);
+        tableHeader.style.display = "none";
         if (!builders.length) await loadBuilders();
-        generateSubjectLeaderboard(subject); // render subject leaderboard
+        generateSubjectLeaderboard(subject);
     });
 });
 
@@ -395,51 +391,38 @@ profileBanner.style.backgroundImage =
 }
 
 
-/* ============================= SECTION SWITCHING HELPER ============================= */
 function showSection(sectionToShow) {
-    const sections = [
-        leaderboardSection,
-        docsSection,
-        applicationSection,
-        testersSection,
-        buildersSection // ✅ include builders
-    ];
+const sections = [
+  leaderboardSection,
+  docsSection,
+  applicationSection,
+  testersSection
+];
 
-    sections.forEach(section => {
-        if (section === sectionToShow) {
-            section.classList.add("active-section");
-            section.classList.remove("hidden-section");
-        } else {
-            section.classList.remove("active-section");
-            section.classList.add("hidden-section");
-        }
-    });
+  sections.forEach(section => {
+    if (section === sectionToShow) {
+      section.classList.add("active-section");
+      section.classList.remove("hidden-section");
+    } else {
+      section.classList.remove("active-section");
+      section.classList.add("hidden-section");
+    }
+  });
 
-    // Remove active-tab from all navbar buttons
-    document.querySelectorAll(".nav-center a, .dropdown-trigger").forEach(a =>
-        a.classList.remove("active-tab")
-    );
+  // navbar active state
+  document.querySelectorAll(".nav-center a").forEach(a =>
+    a.classList.remove("active-tab")
+  );
 
-    // Set active-tab based on section
-    if (sectionToShow === leaderboardSection) document.querySelector(".rankings-btn")?.classList.add("active-tab");
-    if (sectionToShow === docsSection) document.querySelector(".docs-btn")?.classList.add("active-tab");
-    if (sectionToShow === applicationSection) document.querySelector(".application-btn")?.classList.add("active-tab");
-    if (sectionToShow === testersSection) document.querySelector(".testers-btn")?.classList.add("active-tab");
-    if (sectionToShow === buildersSection) document.querySelector(".builders-btn")?.classList.add("active-tab"); // ✅ builders
+  if (sectionToShow === leaderboardSection)
+    document.querySelector(".rankings-btn")?.classList.add("active-tab");
+
+  if (sectionToShow === docsSection)
+    document.querySelector(".docs-btn")?.classList.add("active-tab");
+
+  if (sectionToShow === applicationSection)
+    document.querySelector(".application-btn")?.classList.add("active-tab");
 }
-
-document.querySelector(".builders-btn")?.addEventListener("click", async () => {
-  showSection(buildersSection);
-  tableHeader.style.display = "grid";
-
-  // ✅ Highlight the Builders tab
-  document.querySelectorAll(".nav-center a, .dropdown-trigger").forEach(a => a.classList.remove("active-tab"));
-  document.querySelector(".builders-btn")?.classList.add("active-tab");
-
-  // Load all builders globally
-  if (!builders.length) await loadBuilders();
-  renderBuilders("global");
-});
 
 function sortPlayerTiers(tiers) {
   return tiers.slice().sort((a, b) => {
