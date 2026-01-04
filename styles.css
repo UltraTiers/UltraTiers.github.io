@@ -750,7 +750,6 @@ body {
 /* ============================= */
 /* SUBJECTS SECTION */
 /* ============================= */
-
 .subjects-section {
     margin: 60px auto;
     padding: 40px;
@@ -781,7 +780,7 @@ body {
 }
 
 .subject-card {
-    background: rgba(255,255,255,0.06);
+    background: rgba(255, 255, 255, 0.06);
     border: 1px solid var(--border);
     border-radius: 16px;
     padding: 20px;
@@ -789,12 +788,12 @@ body {
     flex-direction: column;
     align-items: center;
     gap: 12px;
-    transition: 0.25s ease;
     cursor: pointer;
+    transition: 0.25s ease, transform 0.2s ease;
 }
 
 .subject-card:hover {
-    background: rgba(255,255,255,0.12);
+    background: rgba(255, 255, 255, 0.12);
     transform: translateY(-3px);
 }
 
@@ -810,6 +809,20 @@ body {
     font-size: 18px;
     font-weight: 700;
     color: var(--text);
+    background: rgba(255, 255, 255, 0.06);
+    padding: 10px 12px;
+    border-radius: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.10);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    transition: 0.25s;
+}
+
+.subject-name:hover {
+    background: rgba(255, 255, 255, 0.14);
+    box-shadow: 0 0 16px rgba(255, 255, 255, 0.16);
 }
 
 .subject-meta {
@@ -820,7 +833,6 @@ body {
 /* ============================= */
 /* BUILDERS SECTION */
 /* ============================= */
-
 .builders-section {
     margin: 60px auto;
     padding: 40px;
@@ -876,7 +888,7 @@ body {
 }
 
 .builder-card {
-    background: rgba(255,255,255,0.06);
+    background: rgba(255, 255, 255, 0.06);
     border: 1px solid var(--border);
     border-radius: 16px;
     padding: 16px;
@@ -884,12 +896,12 @@ body {
     flex-direction: column;
     align-items: center;
     gap: 12px;
-    transition: 0.25s ease;
     cursor: pointer;
+    transition: 0.25s ease, transform 0.2s ease;
 }
 
 .builder-card:hover {
-    background: rgba(255,255,255,0.12);
+    background: rgba(255, 255, 255, 0.12);
     transform: translateY(-3px);
 }
 
@@ -920,17 +932,46 @@ body {
 }
 
 .builder-tag {
-    background: rgba(255,255,255,0.12);
-    border-radius: 999px;
-    padding: 4px 10px;
-    font-size: 11px;
+    background: rgba(255, 255, 255, 0.06);
+    padding: 8px 12px;
+    border-radius: 10px;
+    cursor: pointer;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
     font-weight: 700;
     text-transform: uppercase;
-    letter-spacing: 0.5px;
+    transition: 0.25s ease;
+}
+
+.builder-tag:hover {
+    background: rgba(255, 255, 255, 0.14);
+    box-shadow: 0 0 16px rgba(255, 255, 255, 0.16);
+}
+
+.builder-region {
+    background: rgba(255, 255, 255, 0.06);
+    padding: 10px 12px;
+    border-radius: 10px;
+    color: var(--text);
+    font-weight: 700;
+    text-transform: uppercase;
+    cursor: pointer;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    transition: 0.25s ease;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.builder-region:hover {
+    background: rgba(255, 255, 255, 0.14);
+    box-shadow: 0 0 16px rgba(255, 255, 255, 0.16);
 }
 
 /* ============================= */
-/* RESPONSIVE FOR SUBJECTS & BUILDERS */
+/* RESPONSIVE STYLES */
 /* ============================= */
 @media (max-width: 768px) {
     .subjects-grid,
@@ -947,11 +988,6 @@ body {
 }
 
 @media (max-width: 480px) {
-    .subject-card,
-    .builder-card {
-        padding: 12px;
-    }
-
     .subject-icon,
     .builder-avatar {
         width: 50px;
@@ -968,31 +1004,6 @@ body {
         font-size: 12px;
     }
 }
-
-/* Subjects & builder region buttons */
-.subject-name,
-.builder-region,
-.builder-tag {
-    background: rgba(255,255,255,0.06);
-    padding: 8px 12px;
-    border-radius: 10px;
-    cursor: pointer;
-    border: 1px solid rgba(255,255,255,0.12);
-    transition: 0.25s ease;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: 700;
-    text-transform: uppercase;
-}
-
-.subject-name:hover,
-.builder-region:hover,
-.builder-tag:hover {
-    background: rgba(255,255,255,0.14);
-    box-shadow: 0 0 16px rgba(255,255,255,0.16);
-}
-
 
 
 .testers-section {
