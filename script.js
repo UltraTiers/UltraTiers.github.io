@@ -208,7 +208,8 @@ function generateSubjectLeaderboard(subject) {
 
     // Add builders into columns
 builders.forEach(builder => {
-    const tier = builder.tiers?.[subject];
+    const key = Object.keys(builder.tiers || {}).find(k => k.toLowerCase() === subject.toLowerCase());
+    const tier = key ? builder.tiers[key] : null;
     if (!tier || tier === "Unknown") return;
 
     const tierMatch = tier.match(/\d+/);
@@ -221,7 +222,7 @@ builders.forEach(builder => {
 
     const builderDiv = document.createElement("div");
     builderDiv.className = "mode-player";
-    builderDiv.dataset.builder = builder.name; // important!
+    builderDiv.dataset.builder = builder.name;
     builderDiv.dataset.region = builder.region.toLowerCase();
     builderDiv.dataset.signvalue = isHT ? 2 : 1;
 
