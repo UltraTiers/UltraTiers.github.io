@@ -611,10 +611,6 @@ body {
 /* MODE LEADERBOARD - IMAGE STYLE */
 /* ============================= */
 
-.mode-wrapper {
-  margin: 40px auto;
-}
-
 .mode-title {
   text-align: center;
   font-size: 32px;
