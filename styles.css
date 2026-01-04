@@ -1842,6 +1842,95 @@ grid-template-columns: 50px 50px 1fr 1fr 6fr; /* last column is now flexible */
 .hidden-section { display: none; }
 .active-section { display: block; }
 
+/* ===================================== */
+/* BUILDERS = PLAYER CARD STYLE OVERRIDE */
+/* ===================================== */
+
+/* Make builder cards behave exactly like player cards */
+.builder-card {
+  display: grid;
+  grid-template-columns: 50px 50px 1fr 1fr 6fr;
+  align-items: center;
+  padding: 12px 16px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+  gap: 10px;
+  margin: 20px;
+  transition: 0.25s ease;
+  cursor: pointer;
+}
+
+.builder-card:hover {
+  background: rgba(255,255,255,0.08);
+  transform: translateY(-2px);
+}
+
+/* Rank */
+.builder-card .builder-rank {
+  font-size: 22px;
+  font-weight: 700;
+  opacity: 0.9;
+}
+
+/* Avatar */
+.builder-card .builder-avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 8px;
+  border: none;
+}
+
+/* Info column */
+.builder-card .builder-info {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Name */
+.builder-card .builder-name {
+  font-size: 18px;
+  font-weight: 700;
+}
+
+/* Subtitle */
+.builder-card .builder-role,
+.builder-card .builder-points {
+  font-size: 14px;
+  opacity: 0.75;
+  background: none;
+  padding: 0;
+  border: none;
+}
+
+/* Region pill */
+.builder-card .builder-region {
+  width: 48px;
+  text-align: center;
+  padding: 5px 0;
+  border-radius: 8px;
+  color: white;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+/* Region colors */
+.builder-region.na { background: #ef4444; }
+.builder-region.eu { background: #22c55e; }
+.builder-region.as { background: #7c22c5; }
+.builder-region.sa { background: #FF8AC4; }
+.builder-region.me { background: #FFBF00; }
+.builder-region.au { background: #4169E1; }
+.builder-region.af { background: #FF7518; }
+
+/* Builders container spacing identical to leaderboard */
+#builders-container {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
 /* ======================== */
 /* MOBILE & TABLET MEDIA CSS */
 /* ======================== */
