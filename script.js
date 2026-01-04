@@ -13,48 +13,12 @@ const tiersDocs = [
 ];
 
 async function loadPlayers() {
-  try {
-    const playerCountEl = document.getElementById("player-count");
+  const res = await fetch("/players");
+  players = await res.json();
 
-    // 1️⃣ Load regular players
-    const res = await fetch("/players");
-    if (!res.ok) throw new Error(`Failed to fetch /players: ${res.status}`);
-    const regularPlayers = await res.json();
-    players = Array.isArray(regularPlayers) ? regularPlayers : [];
-
-    // 2️⃣ Load building-only players
-    const buildRes = await fetch("/building_players");
-    if (!buildRes.ok) throw new Error(`Failed to fetch /building_players: ${buildRes.status}`);
-    const builders = await buildRes.json();
-
-    if (Array.isArray(builders)) {
-      builders.forEach(b => {
-        const existing = players.find(p => p.uuid === b.uuid);
-        if (existing) {
-          // If the player already exists, just add/update buildRank
-          existing.buildRank = b.buildRank || existing.buildRank;
-        } else {
-          // Builder-only players get added with empty tiers
-          players.push({
-            uuid: b.uuid,
-            name: b.name || "Unknown",
-            region: b.region || "Unknown",
-            buildRank: b.buildRank || "Unknown",
-            tiers: [], // no tiers for builder-only players
-            points: 0
-          });
-        }
-      });
-    }
-
-    // 3️⃣ Count only players with tiers (i.e., tested players)
-    const testedCount = players.filter(p => Array.isArray(p.tiers) && p.tiers.length > 0).length;
-    playerCountEl.textContent = `Players Tested: ${testedCount}`;
-  } catch (err) {
-    console.error("Failed to load players:", err);
-    const playerCountEl = document.getElementById("player-count");
-    if (playerCountEl) playerCountEl.textContent = "Players Tested: 0";
-  }
+  // Update the footer with the number of players
+  const playerCountEl = document.getElementById("player-count");
+  playerCountEl.textContent = `Players Tested: ${players.length}`;
 }
 /* =============================
    ELEMENTS
@@ -719,49 +683,6 @@ function renderTesters() {
   });
 }
 
-const buildingSection = document.getElementById("building-section");
-const buildRanks = ["ruby","emerald","diamond","gold","silver","bronze"];
-
-function generateBuildingLeaderboard() {
-  const container = document.getElementById("builders-container");
-  container.innerHTML = "";
-
-  const builders = players
-    .filter(p => p.buildRank && buildRanks.includes(p.buildRank?.trim()?.toLowerCase()))
-    .sort(
-      (a, b) =>
-        buildRanks.indexOf(a.buildRank?.trim()?.toLowerCase()) -
-        buildRanks.indexOf(b.buildRank?.trim()?.toLowerCase())
-    );
-
-  builders.forEach((player, index) => {
-    container.insertAdjacentHTML("beforeend", `
-      <div class="player-card building-card">
-        <div class="rank">${index + 1}.</div>
-        <img class="avatar" src="https://render.crafty.gg/3d/bust/${player.uuid}">
-        <div class="player-info">
-          <div class="player-name">${player.name || "Unknown"}</div>
-          <div class="player-sub">🏗 Builder</div>
-        </div>
-        <div class="build-rank ${player.buildRank?.toLowerCase() || ""}">
-          ${player.buildRank || "Unknown"}
-        </div>
-        <div class="region region-${player.region?.toLowerCase() || "unknown"}">
-          ${player.region || "Unknown"}
-        </div>
-      </div>
-    `);
-  });
-
-  attachPlayerClick();
-}
-
-// Navbar button
-document.querySelector(".building-btn").addEventListener("click", () => {
-  showSection(buildingSection); // reuse your existing section switcher
-  generateBuildingLeaderboard();
-});
-
 function populateTesterModes() {
   if (!Array.isArray(testers)) return;
 
@@ -811,80 +732,6 @@ async function loadPlayerNames() {
   await Promise.all(promises);
 }
 
-
-function generateBuildersLeaderboard(region = "global") {
-  const container = document.getElementById("builders-container");
-  container.innerHTML = "";
-
-  const builders = players
-    .filter(p => Array.isArray(p.tiers) && Object.keys(p.tiers || {}).length > 0)
-    .filter(p => region === "global" || p.region === region)
-    .sort((a, b) => b.points - a.points);
-
-  builders.forEach((player, index) => {
-    const tiersHTML = Object.entries(player.tiers || {}).map(([subject, tier]) => {
-      return `<div class="tier" data-subject="${subject}">${tier}</div>`;
-    }).join("");
-
-    container.insertAdjacentHTML("beforeend", `
-      <div class="player-card building-card">
-        <div class="rank">${index + 1}.</div>
-        <img class="avatar" src="https://render.crafty.gg/3d/bust/${player.uuid}">
-        <div class="player-info">
-          <div class="player-name">${player.name || "Unknown"}</div>
-          <div class="player-sub">🏗 Builder</div>
-        </div>
-        <div class="tiers">${tiersHTML}</div>
-        <div class="region region-${player.region?.toLowerCase() || "unknown"}">${player.region || "Unknown"}</div>
-      </div>
-    `);
-  });
-
-  attachPlayerClick();
-}
-
-// Builder region dropdown events
-document.querySelectorAll(".builder-option").forEach(btn => {
-  btn.addEventListener("click", () => {
-    showSection(document.getElementById("builders-section"));
-    generateBuildersLeaderboard(btn.dataset.region);
-  });
-});
-
-function generateSubjectsLeaderboard(subject) {
-  const container = document.getElementById("subjects-container");
-  container.innerHTML = "";
-
-  // Sort by subject points (tierPointsMap)
-  const sorted = [...players].filter(p => p.tiers && p.tiers[subject])
-    .sort((a, b) => (tierPointsMap[b.tiers[subject]] || 0) - (tierPointsMap[a.tiers[subject]] || 0));
-
-  sorted.forEach((player, index) => {
-    const tier = player.tiers[subject] || "Unknown";
-
-    container.insertAdjacentHTML("beforeend", `
-      <div class="player-card subject-card">
-        <div class="rank">${index + 1}.</div>
-        <img class="avatar" src="https://render.crafty.gg/3d/bust/${player.uuid}">
-        <div class="player-info">
-          <div class="player-name">${player.name || "Unknown"}</div>
-          <div class="player-sub">${subject}: ${tier} (${tierPointsMap[tier] || 0} pts)</div>
-        </div>
-        <div class="region region-${player.region?.toLowerCase() || "unknown"}">${player.region || "Unknown"}</div>
-      </div>
-    `);
-  });
-
-  attachPlayerClick();
-}
-
-// Subject dropdown buttons
-document.querySelectorAll(".subject-btn").forEach(btn => {
-  btn.addEventListener("click", () => {
-    showSection(document.getElementById("subjects-section"));
-    generateSubjectsLeaderboard(btn.dataset.subject);
-  });
-});
 /* =============================
    PLAYER CLICK
 ============================= */

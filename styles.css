@@ -58,23 +58,6 @@ body {
   gap: 10px;
 }
 
-#building-section .players-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-  gap: 1rem;
-}
-
-.building-card {
-  border: 2px solid #ccc;
-  border-radius: 8px;
-  padding: 0.5rem;
-  text-align: center;
-}
-.build-rank {
-  font-weight: bold;
-  margin-top: 0.25rem;
-}
-
 .auth-buttons button {
   background: transparent;
   border: 1px solid var(--gray);
