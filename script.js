@@ -256,9 +256,13 @@ function generateBuilderModeLeaderboard(subject) {
       .forEach(el => col.appendChild(el));
 
     // If column only has the header, show "No builders"
-    if (builderList.length === 0) {
-      col.innerHTML += `<div class="mode-empty">No builders</div>`;
-    }
+const hasOnlyHeader = col.querySelectorAll(".mode-player").length === 0;
+if (hasOnlyHeader) {
+  const emptyDiv = document.createElement("div");
+  emptyDiv.className = "mode-empty";
+  emptyDiv.textContent = "No builders";
+  col.appendChild(emptyDiv);
+}
   });
 
   attachBuilderClick(); // attach modal click for builder cards
@@ -880,18 +884,24 @@ function generateModeLeaderboard(mode) {
   });
 
   // ⭐ Sort players inside each column so HT (+) is always above LT (–)
-  document.querySelectorAll(".mode-tier-column").forEach(col => {
-    const playerList = [...col.querySelectorAll(".mode-player")];
+document.querySelectorAll(".mode-tier-column").forEach(col => {
+  // Get only actual player cards
+  const playerList = [...col.querySelectorAll(".mode-player")];
 
-    playerList
-      .sort((a, b) => b.dataset.signvalue - a.dataset.signvalue)
-      .forEach(p => col.appendChild(p));
+  // Sort HT (+) above LT (-)
+  playerList
+    .sort((a, b) => b.dataset.signvalue - a.dataset.signvalue)
+    .forEach(p => col.appendChild(p));
 
-    // If column only has the header, show "No players"
-    if (playerList.length === 0) {
-      col.innerHTML += `<div class="mode-empty">No players</div>`;
-    }
-  });
+  // ✅ Only append “No players” if truly empty (ignore header)
+  const hasOnlyHeader = col.querySelectorAll(".mode-player").length === 0;
+  if (hasOnlyHeader) {
+    const emptyDiv = document.createElement("div");
+    emptyDiv.className = "mode-empty";
+    emptyDiv.textContent = "No players";
+    col.appendChild(emptyDiv);
+  }
+});
 
   attachPlayerClick();
 }
