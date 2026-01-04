@@ -747,6 +747,33 @@ body {
 /* TESTERS SECTION */
 /* ============================= */
 
+/* Make builders dropdown options look exactly like rankings options */
+.builder-option {
+  background: rgba(255,255,255,0.06);
+  padding: 10px 12px;
+  border-radius: 10px;
+  color: var(--text);
+  font-size: 15px;
+  cursor: pointer;
+  border: 1px solid rgba(255,255,255,0.10);
+  transition: 0.25s;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.builder-option img.mode-icon {
+  width: 18px;
+  height: 18px;
+  object-fit: contain;
+  pointer-events: none;
+}
+
+.builder-option:hover {
+  background: rgba(255,255,255,0.14);
+  box-shadow: 0 0 16px rgba(255,255,255,0.16);
+}
+
 
 /* ============================= */
 /* RESPONSIVE STYLES */
