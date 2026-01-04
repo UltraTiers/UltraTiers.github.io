@@ -253,35 +253,36 @@ function renderBuilders(region = "global") {
       ? builders
       : builders.filter(b => b.region === region);
 
-  filtered.forEach((builder, index) => {
+  // Sort by points descending
+  filtered.sort((a, b) => b.points - a.points);
+
+  // HARD LIMIT TO TOP 100
+  const top100 = filtered.slice(0, 100);
+
+  top100.forEach((builder, index) => {
     const borderClass =
       index === 0 ? "gold" :
       index === 1 ? "silver" :
       index === 2 ? "bronze" : "";
 
-    const card = document.createElement("div");
-    card.className = `builder-card ${borderClass}`;
-    card.dataset.builder = builder.name;
+    const nitroClass = builder.nitro ? "nitro" : "";
 
-    // store subjects on the card
-    card.dataset.creativity = builder.tiers?.Creativity || "Unknown";
-    card.dataset.sectioning = builder.tiers?.Sectioning || "Unknown";
-    card.dataset.details = builder.tiers?.Details || "Unknown";
+    const tiersHTML = generateBuilderTiersHTML(builder);
 
-    card.innerHTML = `
-      <div class="rank">${index + 1}.</div>
-      <img class="avatar" src="https://render.crafty.gg/3d/bust/${builder.uuid}">
-      <div class="player-info">
-        <div class="player-name">${builder.name}</div>
-        <div class="player-sub">⭐ Builder (${builder.points})</div>
-      </div>
-      <div class="region region-${builder.region.toLowerCase()}">${builder.region}</div>
-      <div class="tiers">
-        ${generateBuilderTiersHTML(builder)}
+    const cardHTML = `
+      <div class="builder-card ${borderClass}" data-builder="${builder.name}">
+        <div class="rank">${index + 1}.</div>
+        <img class="avatar" src="https://render.crafty.gg/3d/bust/${builder.uuid}">
+        <div class="player-info">
+          <div class="player-name ${nitroClass}">${builder.name}</div>
+          <div class="player-sub ${nitroClass}">⭐ ${getRankTitle(builder.points)} (${builder.points})</div>
+        </div>
+        <div class="region region-${builder.region.toLowerCase()}">${builder.region}</div>
+        <div class="tiers">${tiersHTML}</div>
       </div>
     `;
 
-    buildersContainer.appendChild(card);
+    buildersContainer.insertAdjacentHTML("beforeend", cardHTML);
   });
 
   attachBuilderClick();
