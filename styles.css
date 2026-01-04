@@ -793,38 +793,32 @@ body {
 /* ============================= */
 /* RESPONSIVE STYLES */
 /* ============================= */
-@media (max-width: 768px) {
-    .subjects-grid,
-    .builders-grid {
-        grid-template-columns: 1fr;
-        gap: 16px;
-    }
-
-    .subjects-section,
-    .builders-section {
-        padding: 20px;
-        margin: 20px auto;
-    }
+/* Subjects dropdown options: make them match Rankings/Builders */
+.subject-btn {
+  background: rgba(255,255,255,0.06);
+  padding: 10px 12px;
+  border-radius: 10px;
+  color: var(--text);
+  font-size: 15px;
+  cursor: pointer;
+  border: 1px solid rgba(255,255,255,0.10);
+  transition: 0.25s;
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
-@media (max-width: 480px) {
-    .subject-icon,
-    .builder-avatar {
-        width: 50px;
-        height: 50px;
-    }
-
-    .subject-name,
-    .builder-name {
-        font-size: 16px;
-    }
-
-    .subject-meta,
-    .builder-role {
-        font-size: 12px;
-    }
+.subject-btn:hover {
+  background: rgba(255,255,255,0.14);
+  box-shadow: 0 0 16px rgba(255,255,255,0.16);
 }
 
+.subject-btn img {
+  width: 18px;
+  height: 18px;
+  object-fit: contain;
+  pointer-events: none;
+}
 
 .testers-section {
   margin: 60px auto;
@@ -1680,6 +1674,7 @@ grid-template-columns: 50px 50px 1fr 1fr 6fr; /* last column is now flexible */
 #builders-container {
   display: flex;
   flex-direction: column;
+  margin: 40px auto;
   gap: 14px;
 }
 
