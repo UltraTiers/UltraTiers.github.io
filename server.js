@@ -145,6 +145,55 @@ app.get("/testers/:uuid", async (req, res) => {
   }
 });
 
+// -------------------
+// Add or update a build player
+// -------------------
+app.post("/buildplayer", async (req, res) => {
+  try {
+    const { uuid, name, region, buildRank } = req.body;
+
+    if (!uuid || !name || !buildRank) {
+      return res.status(400).json({ success: false, error: "Missing fields" });
+    }
+
+    const playerObj = {
+      uuid,
+      name,
+      region: region || "Unknown",
+      buildRank
+    };
+
+    const { error } = await supabase
+      .from("building_players")
+      .upsert(playerObj, { onConflict: "uuid" });
+
+    if (error) {
+      console.error("Failed to save build player:", error);
+      return res.status(500).json({ success: false });
+    }
+
+    return res.json({ success: true });
+  } catch (err) {
+    console.error("Error in /buildplayer:", err);
+    return res.status(500).json({ success: false });
+  }
+});
+
+app.get("/building_players", async (req, res) => {
+  try {
+    const { data, error } = await supabase
+      .from("building_players")
+      .select("*");
+
+    if (error) throw error;
+
+    res.json(data);
+  } catch (err) {
+    console.error("Failed to load building players:", err);
+    res.status(500).json({ error: "Failed to load building players" });
+  }
+});
+
 async function saveOrUpdatePlayer(player) {
   const { uuid, name, region, tiers, points, nitro, banner } = player;
 
@@ -396,6 +445,78 @@ app.post("/auth/login", async (req, res) => {
   res.json({ success: true, ign: player.name, uuid: player.uuid });
 });
 
+// -------------------
+// Rate a builder
+// -------------------
+app.post("/builders/rate", async (req, res) => {
+  try {
+    const { uuid, name, region, details, sectioning, creativity } = req.body;
+
+    if (!uuid || !details || !sectioning || !creativity) {
+      return res.status(400).json({ error: "Missing rating fields" });
+    }
+
+    const ratings = {
+      Details: details,
+      Sectioning: sectioning,
+      Creativity: creativity
+    };
+
+    await saveOrUpdateBuilderRatings({ uuid, name, region, ratings });
+
+    res.json({ success: true, ratings });
+  } catch (err) {
+    console.error("Builder rating failed:", err);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+// -------------------
+// Save or update builder ratings
+// -------------------
+async function saveOrUpdateBuilderRatings({ uuid, name, region, ratings }) {
+  const tierPointsMap = { LT5:1, HT5:2, LT4:4, HT4:6, LT3:9, HT3:12, LT2:16, HT2:20, LT1:25, HT1:30 };
+
+  // Calculate points from all 3 ratings
+  const points = Object.values(ratings).reduce(
+    (sum, tier) => sum + (tierPointsMap[tier] || 0),
+    0
+  );
+
+  const { data: existing, error } = await supabase
+    .from("builders")
+    .select("*")
+    .eq("uuid", uuid)
+    .maybeSingle();
+
+  if (error) throw error;
+
+  if (existing) {
+    const { error: updateError } = await supabase
+      .from("builders")
+      .update({
+        name,
+        region,
+        tiers: ratings,
+        points
+      })
+      .eq("uuid", uuid);
+
+    if (updateError) throw updateError;
+  } else {
+    const { error: insertError } = await supabase
+      .from("builders")
+      .insert([{
+        uuid,
+        name,
+        region,
+        tiers: ratings,
+        points
+      }]);
+
+    if (insertError) throw insertError;
+  }
+}
 
 // -------------------
 // Grant Nitro styling
