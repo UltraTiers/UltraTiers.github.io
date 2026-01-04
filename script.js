@@ -78,10 +78,12 @@ document.querySelectorAll(".builder-option").forEach(opt => {
   opt.addEventListener("click", async () => {
     const region = opt.dataset.region;
     showSection(buildersSection);
-    tableHeader.style.display = "grid"; // same as rankings tab
+    tableHeader.style.display = "grid";
 
-    await loadBuilders(); // fetch builders
-    renderBuilders(region); // pass region
+    if (!builders.length) await loadBuilders();
+
+    // Render builders for that region
+    renderBuilders(region);
   });
 });
 
@@ -179,45 +181,50 @@ function generateBuilderTiersHTML(builder) {
 }
 
 document.querySelectorAll(".subject-btn").forEach(btn => {
-    btn.addEventListener("click", async () => {
-        const subject = btn.dataset.subject;
-        showSection(buildersSection);
-        tableHeader.style.display = "none";
-        if (!builders.length) await loadBuilders();
-        generateSubjectLeaderboard(subject);
-    });
+  btn.addEventListener("click", async () => {
+    const subject = btn.dataset.subject;
+    showSection(buildersSection);
+    tableHeader.style.display = "none";
+
+    // Load builders only if not already loaded
+    if (!builders.length) await loadBuilders();
+
+    // Render the subject leaderboard using the existing builders
+    generateSubjectLeaderboard(subject);
+  });
 });
 
 function generateSubjectLeaderboard(subject) {
-    buildersContainer.innerHTML = `
-        <div class="mode-wrapper">
-            <div class="mode-title">${subject} Builders</div>
-            <div class="mode-tiers" id="subject-tiers"></div>
-        </div>
-    `;
+  // Clear only subject wrapper, not whole buildersContainer
+  let subjectWrapper = document.getElementById("subject-wrapper");
+  if (!subjectWrapper) {
+    subjectWrapper = document.createElement("div");
+    subjectWrapper.id = "subject-wrapper";
+    buildersContainer.appendChild(subjectWrapper);
+  }
+  subjectWrapper.innerHTML = `
+    <div class="mode-wrapper">
+      <div class="mode-title">${subject} Builders</div>
+      <div class="mode-tiers" id="subject-tiers"></div>
+    </div>
+  `;
 
-    const tiersGrid = document.getElementById("subject-tiers");
+  const tiersGrid = document.getElementById("subject-tiers");
+  for (let i = 1; i <= 5; i++) {
+    const col = document.createElement("div");
+    col.className = "mode-tier-column";
+    col.innerHTML = `<div class="mode-tier-header">Tier ${i}</div>`;
+    tiersGrid.appendChild(col);
+  }
 
-    // Create Tier 1–5 columns
-    for (let i = 1; i <= 5; i++) {
-        const col = document.createElement("div");
-        col.className = "mode-tier-column";
-        col.innerHTML = `<div class="mode-tier-header">Tier ${i}</div>`;
-        tiersGrid.appendChild(col);
-    }
-
-    // Add builders into columns
-builders.forEach(builder => {
+  // Add builders
+  builders.forEach(builder => {
     const key = Object.keys(builder.tiers || {}).find(k => k.toLowerCase() === subject.toLowerCase());
     const tier = key ? builder.tiers[key] : null;
     if (!tier || tier === "Unknown") return;
 
-    const tierMatch = tier.match(/\d+/);
-    if (!tierMatch) return;
-
-    const tierNumber = parseInt(tierMatch[0]);
+    const tierNumber = parseInt(tier.match(/\d+/)[0]);
     const targetColumn = document.querySelectorAll(".mode-tier-column")[tierNumber - 1];
-
     const isHT = tier.includes("HT");
 
     const builderDiv = document.createElement("div");
@@ -225,34 +232,26 @@ builders.forEach(builder => {
     builderDiv.dataset.builder = builder.name;
     builderDiv.dataset.region = builder.region.toLowerCase();
     builderDiv.dataset.signvalue = isHT ? 2 : 1;
-
     builderDiv.innerHTML = `
       <div class="mode-player-left">
         <img src="https://render.crafty.gg/3d/bust/${builder.uuid}">
         <span class="player-label">${builder.name}</span>
         <span class="tier-sign">${isHT ? "+" : "-"}</span>
       </div>
-      <div class="region-box">
-        <span>${builder.region.toUpperCase()}</span>
-      </div>
+      <div class="region-box"><span>${builder.region.toUpperCase()}</span></div>
     `;
-
     targetColumn.appendChild(builderDiv);
-});
+  });
 
-// Sort HT (+) above LT (–)
-document.querySelectorAll(".mode-tier-column").forEach(col => {
+  // Sort inside columns
+  document.querySelectorAll(".mode-tier-column").forEach(col => {
     const list = [...col.querySelectorAll(".mode-player")];
     list.sort((a, b) => b.dataset.signvalue - a.dataset.signvalue)
         .forEach(el => col.appendChild(el));
+    if (list.length === 0) col.innerHTML += `<div class="mode-empty">No builders</div>`;
+  });
 
-    if (list.length === 0) {
-        col.innerHTML += `<div class="mode-empty">No builders</div>`;
-    }
-});
-
-// ATTACH CLICK HANDLERS
-attachBuilderClick();
+  attachBuilderClick();
 }
 
 function renderBuilders(region = "global") {
