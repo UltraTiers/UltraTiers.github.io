@@ -87,6 +87,18 @@ document.querySelectorAll(".builder-option").forEach(opt => {
   });
 });
 
+function normalizeBuilderTiers() {
+  builders.forEach(b => {
+    if (Array.isArray(b.tiers)) {
+      const obj = {};
+      b.tiers.forEach(t => {
+        if (t.subject && t.tier) obj[t.subject] = t.tier;
+      });
+      b.tiers = obj;
+    }
+  });
+}
+
 async function loadBuilders() {
   try {
     const res = await fetch("/builders");
@@ -204,15 +216,13 @@ document.querySelectorAll(".subject-btn").forEach(btn => {
     showSection(buildersSection);
     tableHeader.style.display = "none";
 
-    // Always load builders if not loaded
     if (!builders.length) {
       await loadBuilders();
     }
 
-    // Clear container before rendering
-    buildersContainer.innerHTML = "";
+    normalizeBuilderTiers(); // ✅ FIX
 
-    // Generate the subject layout
+    buildersContainer.innerHTML = "";
     generateBuilderModeLeaderboard(subject);
   });
 });
