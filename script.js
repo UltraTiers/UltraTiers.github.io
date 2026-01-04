@@ -57,7 +57,7 @@ const designerName = document.getElementById("designer-name");
 const designerAvatar = document.getElementById("designer-avatar");
 
 const buildersSection = document.getElementById("builders-section");
-const buildersContainer = document.getElementById("buildersContainer");
+const buildersContainer = document.getElementById("builders-container");
 
 let currentUser = null;
 let testers = [];
@@ -135,33 +135,21 @@ function renderBuildersBySubject(subject) {
     });
 }
 
-async function renderBuilders() {
-    try {
-        const { data, error } = await supabase.from('builders').select('*');
-        if (error) { console.error(error); return; }
+function renderBuilders() {
+    buildersContainer.innerHTML = "";
 
-        builders = data; // update global array
+    builders.forEach(builder => {
+        const card = document.createElement("div");
+        card.className = "builder-card";
+        card.innerHTML = `
+            <span class="builder-name">${builder.name}</span>
+            <button class="builder-region">${builder.region}</button>
+            <button class="builder-points">Points: ${builder.points}</button>
+        `;
+        buildersContainer.appendChild(card);
+    });
 
-        buildersContainer.innerHTML = '';
-        builders.forEach(builder => {
-            const card = document.createElement('div');
-            card.className = 'builder-card';
-            card.innerHTML = `
-                <img src="${builder.avatar_url}" class="builder-avatar" />
-                <span class="builder-name">${builder.name}</span>
-                <button class="builder-region">${builder.region}</button>
-                <button class="subject-name">${builder.subject}</button>
-            `;
-            buildersContainer.appendChild(card);
-
-            // Add click for subject button
-            card.querySelector('.subject-name').addEventListener('click', () => {
-                renderBuildersBySubject(builder.subject);
-            });
-        });
-    } catch (err) {
-        console.error(err);
-    }
+    attachBuilderClick(); // ensures clicking opens the modal
 }
 
 /* =============================
