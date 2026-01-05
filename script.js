@@ -63,6 +63,8 @@ let currentUser = null;
 let testers = [];
 let builders = [];
 
+let buildersLoaded = false;
+
 async function loadTesters() {
   try {
     const res = await fetch("/testers");
@@ -87,24 +89,14 @@ document.querySelectorAll(".builder-option").forEach(opt => {
   });
 });
 
-function normalizeBuilderTiers() {
-  builders.forEach(b => {
-    if (Array.isArray(b.tiers)) {
-      const obj = {};
-      b.tiers.forEach(t => {
-        if (t.subject && t.tier) obj[t.subject] = t.tier;
-      });
-      b.tiers = obj;
-    }
-  });
-}
 
 async function loadBuilders() {
+  if (buildersLoaded) return;
+
   try {
     const res = await fetch("/builders");
     builders = await res.json();
 
-    // Normalize tiers to object keyed by subject
     builders.forEach(b => {
       if (Array.isArray(b.tiers)) {
         const tiersObj = {};
@@ -116,6 +108,8 @@ async function loadBuilders() {
         b.tiers = tiersObj;
       }
     });
+
+    buildersLoaded = true;
   } catch (err) {
     console.error("Failed to load builders:", err);
     builders = [];
@@ -272,18 +266,6 @@ function generateBuilderModeLeaderboard(subject) {
   attachBuilderClick();
 }
 
-document.querySelectorAll(".subject-btn").forEach(btn => {
-  btn.addEventListener("click", async () => {
-
-    showSection(buildersSection);
-    tableHeader.style.display = "none";
-
-    await loadBuilders();
-  normalizeBuilderTiers();
-  generateBuilderModeLeaderboard(btn.dataset.subject);
-  });
-});
-
 function renderBuilders(region = "global") {
   buildersContainer.innerHTML = "";
 
@@ -352,6 +334,16 @@ function attachBuilderModeClick() {
     });
   });
 }
+
+document.querySelectorAll(".subject-btn").forEach(btn => {
+  btn.addEventListener("click", async () => {
+    showSection(buildersSection);
+    tableHeader.style.display = "none";
+
+    await loadBuilders();
+    generateBuilderModeLeaderboard(btn.dataset.subject);
+  });
+});
 
 /* =============================
    SECTION SWITCHING HELPER
