@@ -1,15 +1,15 @@
 let players = [];
 const tiersDocs = [
-    { tier: "HT1", gamemode: "High Tier 1", description: "Gives you 30 points." },
-    { tier: "LT1", gamemode: "Low Tier 1", description: "Gives you 25 points." },
-    { tier: "HT2", gamemode: "High Tier 2", description: "Gives you 20 points." },
-    { tier: "LT2", gamemode: "Low Tier 2", description: "Gives you 16 points." },
-    { tier: "HT3", gamemode: "High Tier 3", description: "Gives you 12 points." },
-    { tier: "LT3", gamemode: "Low Tier 3", description: "Gives you 9 points." },
-    { tier: "HT4", gamemode: "High Tier 4", description: "Gives you 6 points." },
-    { tier: "LT4", gamemode: "Low Tier 4", description: "Gives you 4 points." },
-    { tier: "HT5", gamemode: "High Tier 5", description: "Gives you 2 points." },
-    { tier: "LT5", gamemode: "Low Tier 5", description: "Gives you 1 point." }
+    { tier: "HT1", gamemode: "Fighter Tier", description: "Gives you 30 points." },
+    { tier: "LT1", gamemode: "Fighter Tier", description: "Gives you 25 points." },
+    { tier: "HT2", gamemode: "Fighter Tier", description: "Gives you 20 points." },
+    { tier: "LT2", gamemode: "Fighter Tier", description: "Gives you 16 points." },
+    { tier: "HT3", gamemode: "Fighter Tier", description: "Gives you 12 points." },
+    { tier: "LT3", gamemode: "Fighter Tier", description: "Gives you 9 points." },
+    { tier: "HT4", gamemode: "Fighter Tier", description: "Gives you 6 points." },
+    { tier: "LT4", gamemode: "Fighter Tier", description: "Gives you 4 points." },
+    { tier: "HT5", gamemode: "Fighter Tier", description: "Gives you 2 points." },
+    { tier: "LT5", gamemode: "Fighter Tier", description: "Gives you 1 point." }
 ];
 
 async function loadPlayers() {
@@ -1150,16 +1150,16 @@ function generateDocs() {
 
   // Add builder tiers
   const builderTiers = [
-    { tier: "LT5", subject: "Builder Tier 5", points: 1 },
-    { tier: "HT5", subject: "Builder Tier 5", points: 3 },
-    { tier: "LT4", subject: "Builder Tier 4", points: 6 },
-    { tier: "HT4", subject: "Builder Tier 4", points: 12 },
-    { tier: "LT3", subject: "Builder Tier 3", points: 18 },
-    { tier: "HT3", subject: "Builder Tier 3", points: 26 },
-    { tier: "LT2", subject: "Builder Tier 2", points: 36 },
-    { tier: "HT2", subject: "Builder Tier 2", points: 48 },
-    { tier: "LT1", subject: "Builder Tier 1", points: 60 },
-    { tier: "HT1", subject: "Builder Tier 1", points: 80 }
+        { tier: "HT1", subject: "Builder Tier", points: 80 },
+        { tier: "LT1", subject: "Builder Tier", points: 60 },
+        { tier: "HT2", subject: "Builder Tier", points: 48 },
+        { tier: "LT2", subject: "Builder Tier", points: 36 },
+        { tier: "HT3", subject: "Builder Tier", points: 26 },
+        { tier: "LT3", subject: "Builder Tier", points: 18 },
+        { tier: "HT4", subject: "Builder Tier", points: 12 },
+        { tier: "LT4", subject: "Builder Tier", points: 6 },
+        { tier: "HT5", subject: "Builder Tier", points: 3 },
+        { tier: "LT5", subject: "Builder Tier", points: 1 },
   ];
 
   builderTiers.forEach(b => {
