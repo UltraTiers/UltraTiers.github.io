@@ -17,8 +17,7 @@ async function loadPlayers() {
   players = await res.json();
 
   // Update the footer with the number of players
-  const playerCountEl = document.getElementById("player-count");
-  playerCountEl.textContent = `Players Tested: ${players.length}`;
+  updateTestedCount();
 }
 /* =============================
    ELEMENTS
@@ -72,6 +71,11 @@ async function loadTesters() {
     console.error("Failed to fetch testers:", err);
     testers = [];
   }
+}
+
+function updateTestedCount() {
+  const playerCountEl = document.getElementById("player-count");
+  playerCountEl.textContent = `Fighters Tested: ${players.length} | Builders Tested: ${builders.length}`;
 }
 
 document.querySelectorAll(".builder-option").forEach(opt => {
@@ -212,7 +216,7 @@ function generateBuilderModeLeaderboard(subject) {
   // Reset builder container
   buildersContainer.innerHTML = `
     <div class="mode-wrapper">
-      <div class="mode-title">${subject} Builders</div>
+      <div class="mode-title">${subject} Leaderboard</div>
       <div class="mode-tiers" id="builder-mode-tiers"></div>
     </div>
   `;
