@@ -635,12 +635,17 @@ document.querySelector(".testers-btn")?.addEventListener("click", async () => {
 ============================= */
 
 document.querySelectorAll(".mode-btn").forEach(btn => {
-  btn.addEventListener("click", () => {
+  btn.addEventListener("click", async () => {
+    const mode = btn.dataset.mode;
+
+    // Save mode to URL hash
+    window.location.hash = `mode=${mode}`;
 
     showSection(leaderboardSection);
     tableHeader.style.display = "none";
 
-    generateModeLeaderboard(btn.dataset.mode);
+    // Fully rebuild leaderboard
+    generateModeLeaderboard(mode);
   });
 });
 
@@ -1208,21 +1213,35 @@ modalContent.innerHTML = `
   await loadTesters();
 
   const hash = window.location.hash;
+
   if (hash.startsWith("#subject=")) {
+    // Restore builder subject leaderboard
     const subject = hash.split("=")[1];
     await loadBuilders();
     normalizeBuilderTiers();
     showBuildersSection("global");
     generateBuilderModeLeaderboard(subject);
+
+  } else if (hash.startsWith("#mode=")) {
+    // Restore player mode leaderboard
+    const mode = hash.split("=")[1];
+    showSection(leaderboardSection);
+    tableHeader.style.display = "none";
+    generateModeLeaderboard(mode);
+
   } else {
+    // Default: show global player leaderboard
     showSection(leaderboardSection);
     generatePlayers();
   }
 
+  // Load testers
   populateTesterModes();
   renderTesters();
 
+  // Restore logged-in user
   const savedUser = localStorage.getItem("ultratiers_user");
   if (savedUser) setLoggedInUser(JSON.parse(savedUser));
 })();
+
 
