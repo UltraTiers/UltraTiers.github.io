@@ -333,6 +333,7 @@ function renderBuilders(region = "global") {
   });
 
   attachBuilderClick();
+  updateTestedCount();
 }
 
 function attachBuilderModeClick() {
@@ -1214,6 +1215,8 @@ modalContent.innerHTML = `
   await loadPlayerNames();
   await loadTesters();
   await loadBuilders(); // builders loaded here, updateTestedCount() is called inside loadBuilders
+
+  updateTestedCount();
 
   const hash = window.location.hash;
 
