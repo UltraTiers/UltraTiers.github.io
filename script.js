@@ -635,17 +635,14 @@ document.querySelector(".testers-btn")?.addEventListener("click", async () => {
 ============================= */
 
 document.querySelectorAll(".mode-btn").forEach(btn => {
-  btn.addEventListener("click", async () => {
+  btn.addEventListener("click", () => {
     const mode = btn.dataset.mode;
 
     // Save mode to URL hash
     window.location.hash = `mode=${mode}`;
 
-    showSection(leaderboardSection);
-    tableHeader.style.display = "none";
-
-    // Fully rebuild leaderboard
-    generateModeLeaderboard(mode);
+    // Reload the page so the init code restores this mode
+    window.location.reload();
   });
 });
 
