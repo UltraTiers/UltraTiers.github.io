@@ -853,8 +853,6 @@ function generatePlayers(region = "global") {
 ============================= */
 
 function generateModeLeaderboard(mode) {
-  if (!leaderboardSection.classList.contains("active-section")) return;
-  if (buildersSection.classList.contains("active-section")) return;
   tableHeader.style.display = "none"; // hide header
 
   playersContainer.innerHTML = `
