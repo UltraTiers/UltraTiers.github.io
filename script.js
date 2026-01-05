@@ -115,10 +115,15 @@ async function loadBuilders() {
         b.tiers = tiersObj;
       }
     });
+
+    // ✅ Recalculate builder points after normalization
+    builders.forEach(b => b.points = calculatePoints(b, "builder"));
+
   } catch (err) {
     console.error("Failed to load builders:", err);
     builders = [];
   }
+
   updateTestedCount();
 }
 
@@ -738,12 +743,38 @@ const tierPointsMap = {
   "HT1": 30
 };
 
+// Builder-specific tier points
+const builderTierPointsMap = {
+  "LT5": 1,
+  "HT5": 3,
+  "LT4": 6,
+  "HT4": 12,
+  "LT3": 18,
+  "HT3": 26,
+  "LT2": 36,
+  "HT2": 48,
+  "LT1": 60,
+  "HT1": 80
+};
+
 // Calculate total points for a player based on the fixed tierPointsMap
-function calculatePoints(player) {
-  return player.tiers.reduce((sum, t) => {
-    if (!t.tier || t.tier === "Unknown") return sum;
-    return sum + (tierPointsMap[t.tier] || 0);
-  }, 0);
+function calculatePoints(entity, type = "player") {
+  if (type === "builder") {
+    // For builders, sum over subjects using builderTierPointsMap
+    const subjects = ["Creativity", "Spacing", "Execution", "Details"];
+    let total = 0;
+    subjects.forEach(subj => {
+      const tier = entity.tiers?.[subj];
+      if (tier && tier !== "Unknown") total += builderTierPointsMap[tier] || 0;
+    });
+    return total;
+  } else {
+    // Default: player/fighter points
+    return entity.tiers.reduce((sum, t) => {
+      if (!t.tier || t.tier === "Unknown") return sum;
+      return sum + (tierPointsMap[t.tier] || 0);
+    }, 0);
+  }
 }
 
 
@@ -1212,6 +1243,8 @@ modalContent.innerHTML = `
 
 (async () => {
   await loadPlayers();
+  players.forEach(p => p.points = calculatePoints(p, "player"));
+  builders.forEach(b => b.points = calculatePoints(b, "builder"));
   await loadPlayerNames();
   await loadTesters();
   await loadBuilders(); // builders loaded here, updateTestedCount() is called inside loadBuilders
