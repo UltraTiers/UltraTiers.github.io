@@ -2002,7 +2002,7 @@ grid-template-columns: 50px 50px 1fr 1fr 6fr; /* last column is now flexible */
     }
 
     .dropdown-menu {
-        min-width: 120px;
+        min-width: 100%;
         max-width: 95vw;
     }
 
