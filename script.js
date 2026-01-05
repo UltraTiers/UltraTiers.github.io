@@ -783,7 +783,6 @@ document.querySelector(".application-form").addEventListener("submit", async (e)
 
 function generatePlayers(region = "global") {
   tableHeader.style.display = "grid";
-  playersContainer.innerHTML = "";
 
   // Sort by points (global order)
   const sorted = [...players].sort((a, b) => b.points - a.points);
@@ -847,7 +846,6 @@ function generatePlayers(region = "global") {
 function generateModeLeaderboard(mode) {
   // 🔥 HARD RESET — REQUIRED FOR MODE → MODE
   tableHeader.style.display = "none";
-  playersContainer.innerHTML = "";
 
   playersContainer.innerHTML = `
     <div class="mode-wrapper">
