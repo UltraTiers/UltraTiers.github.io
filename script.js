@@ -266,29 +266,32 @@ function generateBuilderModeLeaderboard(subject) {
   attachBuilderClick();
 }
 
-function renderBuilders(region = "global") {
+function renderBuilders(region = "global", subject = null) {
   buildersContainer.innerHTML = "";
 
-  const filtered =
+  let filtered =
     region === "global"
       ? builders
       : builders.filter(b => b.region === region);
 
-  // Sort by points descending
-  filtered.sort((a, b) => b.points - a.points);
+  if (subject) {
+    filtered = filtered.filter(b => b.tiers?.[subject] && b.tiers[subject] !== "Unknown");
+  }
 
-  // HARD LIMIT TO TOP 100
+  filtered.sort((a, b) => b.points - a.points);
   const top100 = filtered.slice(0, 100);
 
   top100.forEach((builder, index) => {
+    const tiersHTML = subject
+      ? generateBuilderTiersHTML({ ...builder, tiers: { [subject]: builder.tiers[subject] } })
+      : generateBuilderTiersHTML(builder);
+
     const borderClass =
       index === 0 ? "gold" :
       index === 1 ? "silver" :
       index === 2 ? "bronze" : "";
 
     const nitroClass = builder.nitro ? "nitro" : "";
-
-    const tiersHTML = generateBuilderTiersHTML(builder);
 
     const cardHTML = `
       <div class="builder-card ${borderClass}" data-builder="${builder.name}">
@@ -341,7 +344,9 @@ document.querySelectorAll(".subject-btn").forEach(btn => {
     tableHeader.style.display = "none";
 
     await loadBuilders();
-    generateBuilderModeLeaderboard(btn.dataset.subject);
+
+    // ✅ Render builders filtered by this subject
+    renderBuilders("global", btn.dataset.subject);
   });
 });
 
@@ -845,20 +850,27 @@ function generatePlayers(region = "global") {
 ============================= */
 
 function generateModeLeaderboard(mode) {
-  // 🔥 HARD RESET — REQUIRED FOR MODE → MODE
   tableHeader.style.display = "none";
-  playersContainer.innerHTML = "";
 
-  playersContainer.innerHTML = `
-    <div class="mode-wrapper">
-      <div class="mode-title">${mode} Leaderboard</div>
-      <div class="mode-tiers" id="mode-tiers"></div>
-    </div>
+  // Remove old mode leaderboard if exists
+  const existingModeWrapper = document.getElementById("mode-wrapper");
+  if (existingModeWrapper) existingModeWrapper.remove();
+
+  // Create new wrapper below normal leaderboard
+  const wrapper = document.createElement("div");
+  wrapper.id = "mode-wrapper";
+  wrapper.className = "mode-wrapper";
+  wrapper.innerHTML = `
+    <div class="mode-title">${mode} Leaderboard</div>
+    <div class="mode-tiers" id="mode-tiers"></div>
   `;
 
-  const tiersGrid = document.getElementById("mode-tiers");
+  // Append after playersContainer
+  playersContainer.parentNode.insertBefore(wrapper, playersContainer.nextSibling);
 
-  // Create Tier 1–5 columns fresh every time
+  const tiersGrid = wrapper.querySelector("#mode-tiers");
+
+  // Create Tier 1–5 columns
   for (let i = 1; i <= 5; i++) {
     const col = document.createElement("div");
     col.className = "mode-tier-column";
@@ -867,13 +879,11 @@ function generateModeLeaderboard(mode) {
   }
 
   players.forEach(player => {
-    const tierObj = player.tiers.find(
-      t => t.gamemode === mode && t.tier && t.tier !== "Unknown"
-    );
+    const tierObj = player.tiers.find(t => t.gamemode === mode && t.tier && t.tier !== "Unknown");
     if (!tierObj) return;
 
     const tierNumber = parseInt(tierObj.tier.match(/\d+/)[0]);
-    const targetColumn = document.querySelectorAll(".mode-tier-column")[tierNumber - 1];
+    const targetColumn = tiersGrid.querySelectorAll(".mode-tier-column")[tierNumber - 1];
     if (!targetColumn) return;
 
     const isHT = tierObj.tier.includes("HT");
@@ -883,13 +893,14 @@ function generateModeLeaderboard(mode) {
     playerDiv.dataset.player = player.name;
     playerDiv.dataset.signvalue = isHT ? 2 : 1;
 
+    // ✅ Add region color class here
     playerDiv.innerHTML = `
       <div class="mode-player-left">
         <img src="https://render.crafty.gg/3d/bust/${player.uuid}">
         <span class="player-label">${player.name}</span>
         <span class="tier-sign">${isHT ? "+" : "-"}</span>
       </div>
-      <div class="region-box">
+      <div class="region-box region-${player.region.toLowerCase()}">
         <span>${player.region.toUpperCase()}</span>
       </div>
     `;
@@ -897,13 +908,11 @@ function generateModeLeaderboard(mode) {
     targetColumn.appendChild(playerDiv);
   });
 
-  // Sort + add empty only if needed
-  document.querySelectorAll(".mode-tier-column").forEach(col => {
+  // Sort + add empty if needed
+  tiersGrid.querySelectorAll(".mode-tier-column").forEach(col => {
     const players = [...col.querySelectorAll(".mode-player")];
-
-    players
-      .sort((a, b) => b.dataset.signvalue - a.dataset.signvalue)
-      .forEach(p => col.appendChild(p));
+    players.sort((a, b) => b.dataset.signvalue - a.dataset.signvalue)
+           .forEach(p => col.appendChild(p));
 
     if (players.length === 0) {
       const empty = document.createElement("div");
