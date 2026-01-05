@@ -203,6 +203,42 @@ function generateBuilderTiersHTML(builder) {
   }).join("");
 }
 
+function attachBuilderModeClick() {
+  document.querySelectorAll("[data-builder]").forEach(el => {
+    el.addEventListener("click", () => {
+      const name = el.dataset.builder;
+      const builder = builders.find(b => b.name === name);
+      if (!builder) return;
+
+      modalTitle.textContent = builder.name;
+      modalContent.innerHTML = `
+        <div class="modal-header">
+          <img class="modal-avatar" src="https://render.crafty.gg/3d/bust/${builder.uuid}">
+        </div>
+        <div class="modal-section">
+          <div>Region: ${builder.region}</div>
+          <div>Creativity: ${builder.tiers.Creativity}</div>
+          <div>Spacing: ${builder.tiers.Spacing}</div>
+          <div>Details: ${builder.tiers.Details}</div>
+          <div>Execution: ${builder.tiers.Execution}</div>
+          <div>Total Points: ${builder.points}</div>
+        </div>
+      `;
+      modal.classList.add("show");
+    });
+  });
+}
+
+document.querySelectorAll(".mode-btn").forEach(btn => {
+  btn.addEventListener("click", () => {
+
+    showSection(leaderboardSection);
+    tableHeader.style.display = "none";
+
+    generateBuilderModeLeaderboard(btn.dataset.mode);
+  });
+});
+
 function generateBuilderModeLeaderboard(subject) {
   if (!subject) return;
 
@@ -308,42 +344,6 @@ function renderBuilders(region = "global") {
 
   attachBuilderClick();
 }
-
-function attachBuilderModeClick() {
-  document.querySelectorAll("[data-builder]").forEach(el => {
-    el.addEventListener("click", () => {
-      const name = el.dataset.builder;
-      const builder = builders.find(b => b.name === name);
-      if (!builder) return;
-
-      modalTitle.textContent = builder.name;
-      modalContent.innerHTML = `
-        <div class="modal-header">
-          <img class="modal-avatar" src="https://render.crafty.gg/3d/bust/${builder.uuid}">
-        </div>
-        <div class="modal-section">
-          <div>Region: ${builder.region}</div>
-          <div>Creativity: ${builder.tiers.Creativity}</div>
-          <div>Spacing: ${builder.tiers.Spacing}</div>
-          <div>Details: ${builder.tiers.Details}</div>
-          <div>Execution: ${builder.tiers.Execution}</div>
-          <div>Total Points: ${builder.points}</div>
-        </div>
-      `;
-      modal.classList.add("show");
-    });
-  });
-}
-
-document.querySelectorAll(".subject-btn").forEach(btn => {
-  btn.addEventListener("click", async () => {
-    showSection(buildersSection);
-    tableHeader.style.display = "none";
-
-    await loadBuilders();
-    generateBuilderModeLeaderboard(btn.dataset.subject);
-  });
-});
 
 /* =============================
    SECTION SWITCHING HELPER
