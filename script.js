@@ -79,11 +79,24 @@ function updateTestedCount() {
 }
 
 document.querySelectorAll(".builder-option").forEach(opt => {
-opt.addEventListener("click", async () => {
-  const region = opt.dataset.region;
-  await loadBuilders();
-  showBuildersSection(region);
-});
+  opt.addEventListener("click", async () => {
+    const region = opt.dataset.region; // e.g., "eu", "na", "global"
+
+    // Reload builders and normalize tiers
+    await loadBuilders();
+    normalizeBuilderTiers();
+
+    // Show builders section for this region
+    showBuildersSection(region);
+    await generateBuilderModeLeaderboard(region);
+
+    // Update URL hash
+    window.location.hash = `#builders-${region}`;
+
+    // Optional: highlight active region
+    document.querySelectorAll(".builder-option").forEach(btn => btn.classList.remove("active"));
+    opt.classList.add("active");
+  });
 });
 
 function normalizeBuilderTiers() {
@@ -524,10 +537,19 @@ document.addEventListener("click", (e) => {
 });
 
 document.querySelectorAll(".ranking-option").forEach(opt => {
-  opt.addEventListener("click", () => {
-    const region = opt.dataset.region;
+  opt.addEventListener("click", async () => {
+    const region = opt.dataset.region; // e.g., "eu", "na", "global"
+
+    // Show the leaderboard section and update players
     showSection(leaderboardSection);
-    generatePlayers(region);
+    await generatePlayers(region);
+
+    // Update URL hash
+    window.location.hash = `#rankings-${region}`;
+
+    // Optional: highlight active region
+    document.querySelectorAll(".ranking-option").forEach(btn => btn.classList.remove("active"));
+    opt.classList.add("active");
   });
 });
 
@@ -1217,24 +1239,48 @@ modalContent.innerHTML = `
 
   const hash = window.location.hash;
 
-  if (hash.startsWith("#subject=")) {
+  if (hash.startsWith("#builders-")) {
+    // Restore builder leaderboard by region
+    const region = hash.split("-")[1]; // e.g., "eu", "na", "global"
+    normalizeBuilderTiers();
+    showBuildersSection(region);
+    await generateBuilderModeLeaderboard(region);
+
+    // Highlight active region button
+    document.querySelectorAll(".builder-option").forEach(btn => btn.classList.remove("active"));
+    const activeBtn = document.querySelector(`.builder-option[data-region="${region}"]`);
+    if (activeBtn) activeBtn.classList.add("active");
+
+  } else if (hash.startsWith("#rankings-")) {
+    // Restore player leaderboard by region
+    const region = hash.split("-")[1]; // e.g., "eu", "na", "global"
+    showSection(leaderboardSection);
+    tableHeader.style.display = "none";
+    await generatePlayers(region);
+
+    // Highlight active region button
+    document.querySelectorAll(".ranking-option").forEach(btn => btn.classList.remove("active"));
+    const activeBtn = document.querySelector(`.ranking-option[data-region="${region}"]`);
+    if (activeBtn) activeBtn.classList.add("active");
+
+  } else if (hash.startsWith("#subject=")) {
     // Restore builder subject leaderboard
     const subject = hash.split("=")[1];
     normalizeBuilderTiers();
     showBuildersSection("global");
-    generateBuilderModeLeaderboard(subject);
+    await generateBuilderModeLeaderboard(subject);
 
   } else if (hash.startsWith("#mode=")) {
     // Restore player mode leaderboard
     const mode = hash.split("=")[1];
     showSection(leaderboardSection);
     tableHeader.style.display = "none";
-    generateModeLeaderboard(mode);
+    await generateModeLeaderboard(mode);
 
   } else {
     // Default: show global player leaderboard
     showSection(leaderboardSection);
-    generatePlayers();
+    await generatePlayers("global"); // default to global
   }
 
   // Load testers
@@ -1245,6 +1291,3 @@ modalContent.innerHTML = `
   const savedUser = localStorage.getItem("ultratiers_user");
   if (savedUser) setLoggedInUser(JSON.parse(savedUser));
 })();
-
-
-
