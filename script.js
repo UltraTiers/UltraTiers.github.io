@@ -209,7 +209,7 @@ function generateBuilderModeLeaderboard(subject) {
 
   tableHeader.style.display = "none";
 
-  // 🔥 ALWAYS reset builder container (DO NOT reuse mode DOM)
+  // Reset builder container
   buildersContainer.innerHTML = `
     <div class="mode-wrapper">
       <div class="mode-title">${subject} Builders</div>
@@ -219,7 +219,7 @@ function generateBuilderModeLeaderboard(subject) {
 
   const tiersGrid = document.getElementById("builder-mode-tiers");
 
-    // Create Tier 1–5 columns fresh every time
+  // Create Tier 1–5 columns fresh every time
   for (let i = 1; i <= 5; i++) {
     const col = document.createElement("div");
     col.className = "mode-tier-column";
@@ -262,6 +262,14 @@ function generateBuilderModeLeaderboard(subject) {
     playerList
       .sort((a, b) => b.dataset.signvalue - a.dataset.signvalue)
       .forEach(el => col.appendChild(el));
+
+    // Append "No Builders" if column is empty
+    if (playerList.length === 0) {
+      const emptyDiv = document.createElement("div");
+      emptyDiv.className = "mode-empty";
+      emptyDiv.textContent = "No Builders";
+      col.appendChild(emptyDiv);
+    }
   });
 
   attachBuilderClick();
@@ -906,9 +914,9 @@ function generateModeLeaderboard(mode) {
     targetColumn.appendChild(playerDiv);
   });
 
-  // ⭐ Sort players inside each column so HT (+) is always above LT (–)
-document.querySelectorAll(".mode-tier-column").forEach(col => {
-  // Get only actual player cards
+// ⭐ Sort players inside each column and append "No players" if empty
+document.querySelectorAll(".mode-tier-column").forEach((col, i) => {
+  // Get all player divs already appended to this column
   const playerList = [...col.querySelectorAll(".mode-player")];
 
   // Sort HT (+) above LT (-)
@@ -916,9 +924,8 @@ document.querySelectorAll(".mode-tier-column").forEach(col => {
     .sort((a, b) => b.dataset.signvalue - a.dataset.signvalue)
     .forEach(p => col.appendChild(p));
 
-  // ✅ Only append “No players” if truly empty (ignore header)
-  const hasOnlyHeader = col.querySelectorAll(".mode-player").length === 0;
-  if (hasOnlyHeader) {
+  // Append "No players" only if column is truly empty
+  if (playerList.length === 0) {
     const emptyDiv = document.createElement("div");
     emptyDiv.className = "mode-empty";
     emptyDiv.textContent = "No players";
