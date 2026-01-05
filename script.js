@@ -139,29 +139,40 @@ function attachBuilderClick() {
 
       modalTitle.textContent = "";
 
-      modalContent.innerHTML = `
-        <div class="modal-header"
-             style="background-image: url('anime-style-stone.jpg')">
-          <img class="modal-avatar ${nitroClass}" src="https://render.crafty.gg/3d/bust/${builder.uuid}" alt="${builder.name} Avatar">
-          <div class="modal-name ${nitroClass}">${builder.name || "Unknown Builder"}</div>
-        </div>
+modalContent.innerHTML = `
+  <div class="modal-header"
+       style="background-image: url('anime-style-stone.jpg')">
+    <img class="modal-avatar ${nitroClass}" src="https://render.crafty.gg/3d/bust/${builder.uuid}" alt="${builder.name} Avatar">
+    <div class="modal-name ${nitroClass}">${builder.name || "Unknown Builder"}</div>
+  </div>
 
-        <div class="modal-section">
-          <div class="modal-info-row ${nitroClass}">
-            <span class="modal-label">Region:</span>
-            <span class="modal-value">${builder.region || "Unknown"}</span>
-          </div>
-          <div class="modal-info-row ${nitroClass}">
-            <span class="modal-label">Total Points:</span>
-            <span class="modal-value">${builder.points || 0}</span>
-          </div>
-        </div>
+  <div class="modal-section">
+    <div class="modal-info-row ${nitroClass}">
+      <span class="modal-label">Placement:</span>
+      <span class="modal-value">#${getBuilderPlacement(builder)}</span>
+    </div>
 
-        <h3 class="modal-subtitle ${nitroClass}">Tier Progress</h3>
-        <div class="tiers-container">
-          ${tiersHTML}
-        </div>
-      `;
+    <div class="modal-info-row ${nitroClass}">
+      <span class="modal-label">Region:</span>
+      <span class="modal-value">${builder.region || "Unknown"}</span>
+    </div>
+
+    <div class="modal-info-row ${nitroClass}">
+      <span class="modal-label">Rank:</span>
+      <span class="modal-value">${getRankTitle(builder.points)}</span>
+    </div>
+
+    <div class="modal-info-row ${nitroClass}">
+      <span class="modal-label">Points:</span>
+      <span class="modal-value">${builder.points.toLocaleString()}</span>
+    </div>
+  </div>
+
+  <h3 class="modal-subtitle ${nitroClass}">Tier Progress</h3>
+  <div class="tiers-container">
+    ${tiersHTML}
+  </div>
+`;
 
       modal.classList.add("show");
     });
@@ -196,6 +207,21 @@ function generateBuilderTiersHTML(builder) {
       </div>
     `;
   }).join("");
+}
+
+function getBuilderPlacement(builder, region = "global") {
+  // Sort builders by points descending
+  const sorted = [...builders].sort((a, b) => b.points - a.points);
+
+  // Apply region filter if needed
+  const filtered =
+    region === "global"
+      ? sorted
+      : sorted.filter(b => b.region === region);
+
+  // Find placement
+  const index = filtered.findIndex(b => b.uuid === builder.uuid);
+  return index >= 0 ? index + 1 : null;
 }
 
 function generateBuilderModeLeaderboard(subject) {
