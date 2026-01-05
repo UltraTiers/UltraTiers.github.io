@@ -219,7 +219,7 @@ function generateBuilderModeLeaderboard(subject) {
 
   const tiersGrid = document.getElementById("builder-mode-tiers");
 
-  // Create Tier 1–5 columns fresh every time
+  // Create Tier 1–5 columns
   for (let i = 1; i <= 5; i++) {
     const col = document.createElement("div");
     col.className = "mode-tier-column";
@@ -227,11 +227,21 @@ function generateBuilderModeLeaderboard(subject) {
     tiersGrid.appendChild(col);
   }
 
-  // Append builders to the proper columns
-  builders.forEach(builder => {
-    const tierStr = builder.tiers?.[subject];
-    if (!tierStr || tierStr === "Unknown") return;
+  // Filter builders that have this subject
+  const buildersWithSubject = builders.filter(b => {
+    const tier = b.tiers?.[subject];
+    return tier && tier !== "Unknown";
+  });
 
+  if (buildersWithSubject.length === 0) {
+    // No builders for this subject at all
+    tiersGrid.innerHTML = `<div class="no-builders-message">No Builders</div>`;
+    return;
+  }
+
+  // Append builders to columns
+  buildersWithSubject.forEach(builder => {
+    const tierStr = builder.tiers[subject];
     const tierNumber = parseInt(tierStr.match(/\d+/)[0]);
     const isHT = tierStr.includes("HT");
     const targetColumn = document.querySelectorAll(".mode-tier-column")[tierNumber - 1];
@@ -256,20 +266,12 @@ function generateBuilderModeLeaderboard(subject) {
     targetColumn.appendChild(builderDiv);
   });
 
-  // Sort builders in each column so HT (+) is above LT (-)
+  // Sort builders in each column
   document.querySelectorAll(".mode-tier-column").forEach(col => {
     const playerList = [...col.querySelectorAll(".mode-player")];
     playerList
       .sort((a, b) => b.dataset.signvalue - a.dataset.signvalue)
       .forEach(el => col.appendChild(el));
-
-    // Append "No Builders" if column is empty
-    if (playerList.length === 0) {
-      const emptyDiv = document.createElement("div");
-      emptyDiv.className = "mode-empty";
-      emptyDiv.textContent = "No Builders";
-      col.appendChild(emptyDiv);
-    }
   });
 
   attachBuilderClick();
