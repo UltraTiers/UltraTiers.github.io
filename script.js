@@ -63,11 +63,6 @@ let currentUser = null;
 let testers = [];
 let builders = [];
 
-// ===== UI STATE (FIXES SUBJECT/MODE BREAKAGE) =====
-let activeView = null;        // "players" | "builders"
-let activeSubject = null;     // Creativity, Spacing, etc
-let buildersLoaded = false;
-
 async function loadTesters() {
   try {
     const res = await fetch("/testers");
@@ -125,7 +120,6 @@ async function loadBuilders() {
     console.error("Failed to load builders:", err);
     builders = [];
   }
-  buildersLoaded = true;
 }
 
 function attachBuilderClick() {
@@ -217,35 +211,25 @@ function generateBuilderTiersHTML(builder) {
 
 function generateBuilderModeLeaderboard(subject) {
   if (!subject) return;
-  if (!builders || builders.length === 0) {
-    buildersContainer.innerHTML = "<p>No builders found.</p>";
-    return;
-  }
 
   tableHeader.style.display = "none";
 
-  // Only create wrapper and columns if they don't exist
-  let tiersGrid = document.getElementById("builder-mode-tiers");
-  if (!tiersGrid) {
-    buildersContainer.innerHTML = `
-      <div class="mode-wrapper">
-        <div class="mode-title">${subject} Builders</div>
-        <div class="mode-tiers" id="builder-mode-tiers"></div>
-      </div>
-    `;
-    tiersGrid = document.getElementById("builder-mode-tiers");
+  // 🔥 ALWAYS reset builder container (DO NOT reuse mode DOM)
+  buildersContainer.innerHTML = `
+    <div class="mode-wrapper">
+      <div class="mode-title">${subject} Builders</div>
+      <div class="mode-tiers" id="builder-mode-tiers"></div>
+    </div>
+  `;
 
-    for (let i = 1; i <= 5; i++) {
-      const col = document.createElement("div");
-      col.className = "mode-tier-column";
-      col.innerHTML = `<div class="mode-tier-header">Tier ${i}</div>`;
-      tiersGrid.appendChild(col);
-    }
-  } else {
-    // If already exists, just clear previous builders in columns
-    document.querySelectorAll(".mode-tier-column").forEach(col => {
-      col.querySelectorAll(".mode-player").forEach(el => el.remove());
-    });
+  const tiersGrid = document.getElementById("builder-mode-tiers");
+
+    // Create Tier 1–5 columns fresh every time
+  for (let i = 1; i <= 5; i++) {
+    const col = document.createElement("div");
+    col.className = "mode-tier-column";
+    col.innerHTML = `<div class="mode-tier-header">Tier ${i}</div>`;
+    tiersGrid.appendChild(col);
   }
 
   // Append builders to the proper columns
@@ -290,19 +274,13 @@ function generateBuilderModeLeaderboard(subject) {
 
 document.querySelectorAll(".subject-btn").forEach(btn => {
   btn.addEventListener("click", async () => {
-    activeView = "builders";
-    activeSubject = btn.dataset.subject;
 
     showSection(buildersSection);
     tableHeader.style.display = "none";
 
-    if (!buildersLoaded) {
-      await loadBuilders();
-      normalizeBuilderTiers();
-      buildersLoaded = true;
-    }
-
-    generateBuilderModeLeaderboard(activeSubject);
+    await loadBuilders();
+  normalizeBuilderTiers();
+  generateBuilderModeLeaderboard(btn.dataset.subject);
   });
 });
 
@@ -655,8 +633,6 @@ document.querySelector(".testers-btn")?.addEventListener("click", async () => {
 
 document.querySelectorAll(".mode-btn").forEach(btn => {
   btn.addEventListener("click", () => {
-    activeView = "players";
-    activeSubject = null; // 🔥 reset subject state
 
     showSection(leaderboardSection);
     tableHeader.style.display = "none";
@@ -877,6 +853,8 @@ function generatePlayers(region = "global") {
 ============================= */
 
 function generateModeLeaderboard(mode) {
+  if (!leaderboardSection.classList.contains("active-section")) return;
+  if (buildersSection.classList.contains("active-section")) return;
   tableHeader.style.display = "none"; // hide header
 
   playersContainer.innerHTML = `
