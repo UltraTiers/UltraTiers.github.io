@@ -790,6 +790,8 @@ document.querySelector(".application-form").addEventListener("submit", async (e)
 ============================= */
 
 function generatePlayers(region = "global") {
+  // ⚡ Guard: only render if leaderboard is active
+  if (!leaderboardSection.classList.contains("active-section")) return;
   tableHeader.style.display = "grid";
   playersContainer.innerHTML = "";
 
@@ -853,6 +855,8 @@ function generatePlayers(region = "global") {
 ============================= */
 
 function generateModeLeaderboard(mode) {
+  // ⚡ Guard: only render if leaderboard is active
+  if (!leaderboardSection.classList.contains("active-section")) return;
   tableHeader.style.display = "none"; // hide header
 
   playersContainer.innerHTML = `
