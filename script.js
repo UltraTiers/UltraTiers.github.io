@@ -276,10 +276,14 @@ function generateBuilderModeLeaderboard(subject) {
 }
 
 document.querySelectorAll(".subject-btn").forEach(btn => {
-  btn.addEventListener("click", async () => {
-    await loadBuilders();
-    normalizeBuilderTiers();
-    generateBuilderModeLeaderboard(btn.dataset.subject);
+  btn.addEventListener("click", () => {
+    const subject = btn.dataset.subject;
+
+    // Save subject to URL hash
+    window.location.hash = `subject=${subject}`;
+
+    // Reload the page
+    window.location.reload();
   });
 });
 
@@ -1203,8 +1207,17 @@ modalContent.innerHTML = `
   await loadPlayerNames();
   await loadTesters();
 
-  showSection(leaderboardSection);
-  generatePlayers();
+  const hash = window.location.hash;
+  if (hash.startsWith("#subject=")) {
+    const subject = hash.split("=")[1];
+    await loadBuilders();
+    normalizeBuilderTiers();
+    showBuildersSection("global");
+    generateBuilderModeLeaderboard(subject);
+  } else {
+    showSection(leaderboardSection);
+    generatePlayers();
+  }
 
   populateTesterModes();
   renderTesters();
