@@ -118,6 +118,7 @@ async function loadBuilders() {
   } catch (err) {
     console.error("Failed to load builders:", err);
     builders = [];
+    updateTestedCount();
   }
 }
 
@@ -1212,13 +1213,13 @@ modalContent.innerHTML = `
   await loadPlayers();
   await loadPlayerNames();
   await loadTesters();
+  await loadBuilders(); // builders loaded here, updateTestedCount() is called inside loadBuilders
 
   const hash = window.location.hash;
 
   if (hash.startsWith("#subject=")) {
     // Restore builder subject leaderboard
     const subject = hash.split("=")[1];
-    await loadBuilders();
     normalizeBuilderTiers();
     showBuildersSection("global");
     generateBuilderModeLeaderboard(subject);
@@ -1244,5 +1245,6 @@ modalContent.innerHTML = `
   const savedUser = localStorage.getItem("ultratiers_user");
   if (savedUser) setLoggedInUser(JSON.parse(savedUser));
 })();
+
 
 
