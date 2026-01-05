@@ -845,9 +845,9 @@ function generatePlayers(region = "global") {
 ============================= */
 
 function generateModeLeaderboard(mode) {
-  if (!leaderboardSection.classList.contains("active-section")) return;
-  if (buildersSection.classList.contains("active-section")) return;
-  tableHeader.style.display = "none"; // hide header
+  // 🔥 HARD RESET — REQUIRED FOR MODE → MODE
+  tableHeader.style.display = "none";
+  playersContainer.innerHTML = "";
 
   playersContainer.innerHTML = `
     <div class="mode-wrapper">
@@ -858,7 +858,7 @@ function generateModeLeaderboard(mode) {
 
   const tiersGrid = document.getElementById("mode-tiers");
 
-  // Create Tier 1–5 columns
+  // Create Tier 1–5 columns fresh every time
   for (let i = 1; i <= 5; i++) {
     const col = document.createElement("div");
     col.className = "mode-tier-column";
@@ -866,26 +866,26 @@ function generateModeLeaderboard(mode) {
     tiersGrid.appendChild(col);
   }
 
-  // Add players into columns
   players.forEach(player => {
-    const tierObj = player.tiers.find(t => t.gamemode === mode && t.tier !== "Unknown");
+    const tierObj = player.tiers.find(
+      t => t.gamemode === mode && t.tier && t.tier !== "Unknown"
+    );
     if (!tierObj) return;
 
     const tierNumber = parseInt(tierObj.tier.match(/\d+/)[0]);
     const targetColumn = document.querySelectorAll(".mode-tier-column")[tierNumber - 1];
+    if (!targetColumn) return;
+
+    const isHT = tierObj.tier.includes("HT");
 
     const playerDiv = document.createElement("div");
     playerDiv.className = "mode-player";
     playerDiv.dataset.player = player.name;
-    playerDiv.dataset.region = player.region.toLowerCase();
-
-    // Assign + or - rank
-    const isHT = tierObj.tier.includes("HT");
     playerDiv.dataset.signvalue = isHT ? 2 : 1;
 
     playerDiv.innerHTML = `
       <div class="mode-player-left">
-        <img src="https://render.crafty.gg/3d/bust/${player.name}">
+        <img src="https://render.crafty.gg/3d/bust/${player.uuid}">
         <span class="player-label">${player.name}</span>
         <span class="tier-sign">${isHT ? "+" : "-"}</span>
       </div>
@@ -897,25 +897,21 @@ function generateModeLeaderboard(mode) {
     targetColumn.appendChild(playerDiv);
   });
 
-  // ⭐ Sort players inside each column so HT (+) is always above LT (–)
-document.querySelectorAll(".mode-tier-column").forEach(col => {
-  // Get only actual player cards
-  const playerList = [...col.querySelectorAll(".mode-player")];
+  // Sort + add empty only if needed
+  document.querySelectorAll(".mode-tier-column").forEach(col => {
+    const players = [...col.querySelectorAll(".mode-player")];
 
-  // Sort HT (+) above LT (-)
-  playerList
-    .sort((a, b) => b.dataset.signvalue - a.dataset.signvalue)
-    .forEach(p => col.appendChild(p));
+    players
+      .sort((a, b) => b.dataset.signvalue - a.dataset.signvalue)
+      .forEach(p => col.appendChild(p));
 
-  // ✅ Only append “No players” if truly empty (ignore header)
-  const hasOnlyHeader = col.querySelectorAll(".mode-player").length === 0;
-  if (hasOnlyHeader) {
-    const emptyDiv = document.createElement("div");
-    emptyDiv.className = "mode-empty";
-    emptyDiv.textContent = "No players";
-    col.appendChild(emptyDiv);
-  }
-});
+    if (players.length === 0) {
+      const empty = document.createElement("div");
+      empty.className = "mode-empty";
+      empty.textContent = "No players";
+      col.appendChild(empty);
+    }
+  });
 
   attachPlayerClick();
 }
