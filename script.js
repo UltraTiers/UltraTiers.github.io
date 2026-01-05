@@ -279,7 +279,6 @@ document.querySelectorAll(".subject-btn").forEach(btn => {
   btn.addEventListener("click", async () => {
     await loadBuilders();
     normalizeBuilderTiers();
-    showBuildersSection("global");
     generateBuilderModeLeaderboard(btn.dataset.subject);
   });
 });
