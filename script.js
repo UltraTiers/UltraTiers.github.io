@@ -75,16 +75,11 @@ async function loadTesters() {
 }
 
 document.querySelectorAll(".builder-option").forEach(opt => {
-  opt.addEventListener("click", async () => {
-    const region = opt.dataset.region;
-    showSection(buildersSection);
-    tableHeader.style.display = "grid";
-
-    if (!builders.length) await loadBuilders();
-
-    // Render builders for that region
-    renderBuilders(region);
-  });
+opt.addEventListener("click", async () => {
+  const region = opt.dataset.region;
+  await loadBuilders();
+  showBuildersSection(region);
+});
 });
 
 function normalizeBuilderTiers() {
@@ -274,13 +269,10 @@ function generateBuilderModeLeaderboard(subject) {
 
 document.querySelectorAll(".subject-btn").forEach(btn => {
   btn.addEventListener("click", async () => {
-
-    showSection(buildersSection);
-    tableHeader.style.display = "none";
-
     await loadBuilders();
-  normalizeBuilderTiers();
-  generateBuilderModeLeaderboard(btn.dataset.subject);
+    normalizeBuilderTiers();
+    showBuildersSection("global");
+    generateBuilderModeLeaderboard(btn.dataset.subject);
   });
 });
 
@@ -790,8 +782,6 @@ document.querySelector(".application-form").addEventListener("submit", async (e)
 ============================= */
 
 function generatePlayers(region = "global") {
-  // ⚡ Guard: only render if leaderboard is active
-  if (!leaderboardSection.classList.contains("active-section")) return;
   tableHeader.style.display = "grid";
   playersContainer.innerHTML = "";
 
@@ -850,13 +840,22 @@ function generatePlayers(region = "global") {
   attachPlayerClick();
 }
 
+function showBuildersSection(region = "global") {
+  showSection(buildersSection);        // show the builders section
+  tableHeader.style.display = "none";  // hide table header
+
+  if (!builders.length) {
+    loadBuilders().then(() => renderBuilders(region));
+  } else {
+    renderBuilders(region);
+  }
+}
+
 /* =============================
    MODE LEADERBOARD
 ============================= */
 
 function generateModeLeaderboard(mode) {
-  // ⚡ Guard: only render if leaderboard is active
-  if (!leaderboardSection.classList.contains("active-section")) return;
   tableHeader.style.display = "none"; // hide header
 
   playersContainer.innerHTML = `
