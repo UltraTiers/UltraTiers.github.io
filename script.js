@@ -1150,6 +1150,8 @@ modalContent.innerHTML = `
 
 function generateDocs() {
   tierDocsContainer.innerHTML = "";
+
+  // Add player/fighter tiers
   tiersDocs.forEach(t => {
     const item = document.createElement("div");
     item.className = "tier-item";
@@ -1161,9 +1163,37 @@ function generateDocs() {
     `;
     tierDocsContainer.appendChild(item);
   });
+
+  // Add builder tiers
+  const builderTiers = [
+    { tier: "LT5", subject: "Builder Tier 5", points: 1 },
+    { tier: "HT5", subject: "Builder Tier 5", points: 3 },
+    { tier: "LT4", subject: "Builder Tier 4", points: 6 },
+    { tier: "HT4", subject: "Builder Tier 4", points: 12 },
+    { tier: "LT3", subject: "Builder Tier 3", points: 18 },
+    { tier: "HT3", subject: "Builder Tier 3", points: 26 },
+    { tier: "LT2", subject: "Builder Tier 2", points: 36 },
+    { tier: "HT2", subject: "Builder Tier 2", points: 48 },
+    { tier: "LT1", subject: "Builder Tier 1", points: 60 },
+    { tier: "HT1", subject: "Builder Tier 1", points: 80 }
+  ];
+
+  builderTiers.forEach(b => {
+    const item = document.createElement("div");
+    item.className = "tier-item builder-tier";
+    item.dataset.subject = b.subject;
+    item.dataset.tier = b.tier;
+    item.dataset.points = b.points;
+    item.innerHTML = `
+      <strong>${b.tier}</strong> (${b.subject})<br>
+      <span>Gives ${b.points} points.</span>
+    `;
+    tierDocsContainer.appendChild(item);
+  });
 }
 
 generateDocs();
+
 
 /* =============================
    SEARCH
