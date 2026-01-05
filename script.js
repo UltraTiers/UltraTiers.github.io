@@ -152,22 +152,6 @@ function attachBuilderClick() {
             <span class="modal-value">${builder.region || "Unknown"}</span>
           </div>
           <div class="modal-info-row ${nitroClass}">
-            <span class="modal-label">Creativity:</span>
-            <span class="modal-value">${builder.tiers?.Creativity || "N/A"}</span>
-          </div>
-          <div class="modal-info-row ${nitroClass}">
-            <span class="modal-label">Spacing:</span>
-            <span class="modal-value">${builder.tiers?.Spacing || "N/A"}</span>
-          </div>
-          <div class="modal-info-row ${nitroClass}">
-            <span class="modal-label">Details:</span>
-            <span class="modal-value">${builder.tiers?.Details || "N/A"}</span>
-          </div>
-          <div class="modal-info-row ${nitroClass}">
-            <span class="modal-label">Execution:</span>
-            <span class="modal-value">${builder.tiers?.Execution || "N/A"}</span>
-          </div>
-          <div class="modal-info-row ${nitroClass}">
             <span class="modal-label">Total Points:</span>
             <span class="modal-value">${builder.points || 0}</span>
           </div>
