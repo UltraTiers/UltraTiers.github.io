@@ -118,8 +118,8 @@ async function loadBuilders() {
   } catch (err) {
     console.error("Failed to load builders:", err);
     builders = [];
-    updateTestedCount();
   }
+  updateTestedCount();
 }
 
 function attachBuilderClick() {
