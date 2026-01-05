@@ -75,7 +75,10 @@ async function loadTesters() {
 
 function updateTestedCount() {
   const playerCountEl = document.getElementById("player-count");
-  playerCountEl.textContent = `Fighters Tested: ${players.length} | Builders Tested: ${builders.length}`;
+  playerCountEl.innerHTML = `
+    <div>Fighters Tested: ${players.length}</div>
+    <div>Builders Tested: ${builders.length}</div>
+  `;
 }
 
 document.querySelectorAll(".builder-option").forEach(opt => {
