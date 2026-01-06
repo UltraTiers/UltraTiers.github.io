@@ -186,20 +186,9 @@ function sortBuilderTiers(tiersObj) {
   return Object.entries(tiersObj || {})
     .filter(([_, tier]) => tier && tier !== "Unknown")
     .sort((a, b) => {
-      const aTier = a[1];
-      const bTier = b[1];
-
-      const aNum = parseInt(aTier.match(/\d+/)[0], 10);
-      const bNum = parseInt(bTier.match(/\d+/)[0], 10);
-
-      // 1️⃣ Tier number: LOW → HIGH
-      if (aNum !== bNum) return aNum - bNum;
-
-      // 2️⃣ Same tier number: LT before HT
-      const aIsHT = aTier.startsWith("HT");
-      const bIsHT = bTier.startsWith("HT");
-
-      return aIsHT - bIsHT; // false(0)=LT comes before true(1)=HT
+      const aPoints = builderTierPointsMap[a[1]] || -1;
+      const bPoints = builderTierPointsMap[b[1]] || -1;
+      return bPoints - aPoints; // highest points first
     });
 }
 
@@ -537,19 +526,9 @@ function showSection(sectionToShow) {
 
 function sortPlayerTiers(tiers) {
   return tiers.slice().sort((a, b) => {
-    if (!a.tier || !b.tier) return 0;
-
-    const aNum = parseInt(a.tier.match(/\d+/)[0], 10);
-    const bNum = parseInt(b.tier.match(/\d+/)[0], 10);
-
-    // 1️⃣ Tier number: smaller number = better
-    if (aNum !== bNum) return aNum - bNum;
-
-    // 2️⃣ Within same tier number: HT before LT
-    const aIsHT = a.tier.startsWith("HT") ? 1 : 0;
-    const bIsHT = b.tier.startsWith("HT") ? 1 : 0;
-
-    return bIsHT - aIsHT; // HT=1 first, LT=0 last
+    const aPoints = tierPointsMap[a.tier] || -1;
+    const bPoints = tierPointsMap[b.tier] || -1;
+    return bPoints - aPoints; // highest points first
   });
 }
 
