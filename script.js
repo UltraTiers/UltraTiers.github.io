@@ -186,9 +186,20 @@ function sortBuilderTiers(tiersObj) {
   return Object.entries(tiersObj || {})
     .filter(([_, tier]) => tier && tier !== "Unknown")
     .sort((a, b) => {
-      const aPts = builderTierPointsMap[a[1]] || 0;
-      const bPts = builderTierPointsMap[b[1]] || 0;
-      return bPts - aPts; // highest first
+      const aTier = a[1];
+      const bTier = b[1];
+
+      const aNum = parseInt(aTier.match(/\d+/)[0], 10);
+      const bNum = parseInt(bTier.match(/\d+/)[0], 10);
+
+      // 1️⃣ Tier number: LOW → HIGH
+      if (aNum !== bNum) return aNum - bNum;
+
+      // 2️⃣ Same tier number: LT before HT
+      const aIsHT = aTier.startsWith("HT");
+      const bIsHT = bTier.startsWith("HT");
+
+      return aIsHT - bIsHT; // false(0)=LT comes before true(1)=HT
     });
 }
 
