@@ -182,34 +182,41 @@ modalContent.innerHTML = `
   });
 }
 
+function sortBuilderTiers(tiersObj) {
+  return Object.entries(tiersObj || {})
+    .filter(([_, tier]) => tier && tier !== "Unknown")
+    .sort((a, b) => {
+      const aPts = builderTierPointsMap[a[1]] || 0;
+      const bPts = builderTierPointsMap[b[1]] || 0;
+      return bPts - aPts; // highest first
+    });
+}
+
 function generateBuilderTiersHTML(builder) {
-  const subjects = ["Creativity", "Spacing", "Execution", "Details"];
+  const sortedTiers = sortBuilderTiers(builder.tiers);
 
-  return subjects.map(subject => {
-    const tier = builder.tiers?.[subject];
-
-    if (!tier || tier === "Unknown") {
-      return `<div class="tier empty" data-tooltip="${subject} — Unrated"></div>`;
-    }
-
+  // Always show exactly 4 slots
+  const filled = sortedTiers.map(([subject, tier]) => {
     const tierNum = tier.match(/\d+/)?.[0];
-    if (!tierNum) {
-      return `<div class="tier empty"></div>`;
-    }
-
-    // Add subject image
-    const subjectImage = `${subject}.png`; // assuming your images are named Creativity.png, Spacing.png, Details.png
+    if (!tierNum) return `<div class="tier empty"></div>`;
 
     return `
       <div class="tier"
         data-subject="${subject}"
         data-tier="${tierNum}"
         data-tooltip="${subject} — ${tier}">
-        <img src="${subjectImage}" alt="${subject}" class="tier-subject-icon">
+        <img src="${subject}.png" alt="${subject}" class="tier-subject-icon">
         <span>${tier}</span>
       </div>
     `;
-  }).join("");
+  });
+
+  // Pad missing slots
+  while (filled.length < 4) {
+    filled.push(`<div class="tier empty"></div>`);
+  }
+
+  return filled.join("");
 }
 
 function getBuilderPlacement(builder, region = "global") {
