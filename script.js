@@ -537,9 +537,22 @@ function showSection(sectionToShow) {
 
 function sortPlayerTiers(tiers) {
   return tiers.slice().sort((a, b) => {
-    const aPoints = tierPointsMap[a.tier] || -1;
-    const bPoints = tierPointsMap[b.tier] || -1;
-    return bPoints - aPoints; // highest points first
+    const aTier = a.tier;
+    const bTier = b.tier;
+
+    if (!aTier || !bTier) return 0;
+
+    const aNum = parseInt(aTier.match(/\d+/)[0], 10);
+    const bNum = parseInt(bTier.match(/\d+/)[0], 10);
+
+    // 1️⃣ Tier number: LOW → HIGH
+    if (aNum !== bNum) return aNum - bNum;
+
+    // 2️⃣ Same tier number: LT before HT
+    const aIsHT = aTier.startsWith("HT");
+    const bIsHT = bTier.startsWith("HT");
+
+    return aIsHT - bIsHT; // LT (0) before HT (1)
   });
 }
 
