@@ -542,14 +542,14 @@ function sortPlayerTiers(tiers) {
     const aNum = parseInt(a.tier.match(/\d+/)[0], 10);
     const bNum = parseInt(b.tier.match(/\d+/)[0], 10);
 
-    // 1️⃣ Tier number: HIGH → LOW (best first)
-    if (aNum !== bNum) return aNum - bNum; // 1 beats 5
+    // 1️⃣ Tier number: smaller number = better
+    if (aNum !== bNum) return aNum - bNum;
 
-    // 2️⃣ Same tier number: LT before HT
-    const aIsHT = a.tier.startsWith("HT");
-    const bIsHT = b.tier.startsWith("HT");
+    // 2️⃣ Within same tier number: HT before LT
+    const aIsHT = a.tier.startsWith("HT") ? 1 : 0;
+    const bIsHT = b.tier.startsWith("HT") ? 1 : 0;
 
-    return aIsHT - bIsHT;
+    return bIsHT - aIsHT; // HT=1 first, LT=0 last
   });
 }
 
