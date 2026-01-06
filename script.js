@@ -681,7 +681,7 @@ document.querySelectorAll(".mode-btn").forEach(btn => {
     const mode = btn.dataset.mode;
 
     // Save mode to URL hash
-    window.location.hash = `mode=${mode}`;
+    window.location.hash = `mode=${encodeURIComponent(mode)}`;
 
     // Reload the page so the init code restores this mode
     window.location.reload();
@@ -1321,14 +1321,12 @@ modalContent.innerHTML = `
     showBuildersSection("global");
     generateBuilderModeLeaderboard(subject);
 
-  } else if (hash.startsWith("#mode=")) {
-    // Restore player mode leaderboard
-    const mode = hash.split("=")[1];
-    showSection(leaderboardSection);
-    tableHeader.style.display = "none";
-    generateModeLeaderboard(mode);
-
-  } else {
+} else if (hash.startsWith("#mode=")) {
+  const mode = decodeURIComponent(hash.split("=")[1]);
+  showSection(leaderboardSection);
+  tableHeader.style.display = "none";
+  generateModeLeaderboard(mode);
+} else {
     // Default: show global player leaderboard
     showSection(leaderboardSection);
     generatePlayers();
