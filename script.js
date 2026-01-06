@@ -537,22 +537,19 @@ function showSection(sectionToShow) {
 
 function sortPlayerTiers(tiers) {
   return tiers.slice().sort((a, b) => {
-    const aTier = a.tier;
-    const bTier = b.tier;
+    if (!a.tier || !b.tier) return 0;
 
-    if (!aTier || !bTier) return 0;
+    const aNum = parseInt(a.tier.match(/\d+/)[0], 10);
+    const bNum = parseInt(b.tier.match(/\d+/)[0], 10);
 
-    const aNum = parseInt(aTier.match(/\d+/)[0], 10);
-    const bNum = parseInt(bTier.match(/\d+/)[0], 10);
-
-    // 1️⃣ Tier number: LOW → HIGH
-    if (aNum !== bNum) return aNum - bNum;
+    // 1️⃣ Tier number: HIGH → LOW (best first)
+    if (aNum !== bNum) return aNum - bNum; // 1 beats 5
 
     // 2️⃣ Same tier number: LT before HT
-    const aIsHT = aTier.startsWith("HT");
-    const bIsHT = bTier.startsWith("HT");
+    const aIsHT = a.tier.startsWith("HT");
+    const bIsHT = b.tier.startsWith("HT");
 
-    return aIsHT - bIsHT; // LT (0) before HT (1)
+    return aIsHT - bIsHT;
   });
 }
 
