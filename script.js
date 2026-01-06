@@ -386,10 +386,12 @@ function attachBuilderModeClick() {
         </div>
         <div class="modal-section">
           <div>Region: ${builder.region}</div>
-          <div>Creativity: ${builder.tiers.Creativity}</div>
-          <div>Spacing: ${builder.tiers.Spacing}</div>
+          <div>Composition: ${builder.tiers.Composition}</div>
+          <div>Buildings: ${builder.tiers.Buildings}</div>
+          <div>Organics: ${builder.tiers.Organics}</div>
+          <div>Terrain: ${builder.tiers.Terrain}</div>
           <div>Details: ${builder.tiers.Details}</div>
-          <div>Execution: ${builder.tiers.Execution}</div>
+          <div>Colouring: ${builder.tiers.Colouring}</div>
           <div>Total Points: ${builder.points}</div>
         </div>
       `;
@@ -792,7 +794,14 @@ const builderTierPointsMap = {
 function calculatePoints(entity, type = "player") {
   if (type === "builder") {
     // For builders, sum over subjects using builderTierPointsMap
-    const subjects = ["Creativity", "Spacing", "Execution", "Details"];
+    const subjects = [
+  "Composition",
+  "Buildings",
+  "Organics",
+  "Terrain",
+  "Details",
+  "Colouring"
+];
     let total = 0;
     subjects.forEach(subj => {
       const tier = entity.tiers?.[subj];

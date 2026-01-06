@@ -450,17 +450,37 @@ app.post("/auth/login", async (req, res) => {
 // -------------------
 app.post("/builders/rate", async (req, res) => {
   try {
-    const { uuid, name, region, details, spacing, execution, creativity } = req.body;
+    const {
+      uuid,
+      name,
+      region,
+      composition,
+      buildings,
+      organics,
+      terrain,
+      details,
+      colouring
+    } = req.body;
 
-    if (!uuid || !details || !spacing || !execution || !creativity) {
+    if (
+      !uuid ||
+      !composition ||
+      !buildings ||
+      !organics ||
+      !terrain ||
+      !details ||
+      !colouring
+    ) {
       return res.status(400).json({ error: "Missing rating fields" });
     }
 
     const ratings = {
+      Composition: composition,
+      Buildings: buildings,
+      Organics: organics,
+      Terrain: terrain,
       Details: details,
-      Spacing: spacing,
-      Execution: execution,
-      Creativity: creativity
+      Colouring: colouring
     };
 
     await saveOrUpdateBuilderRatings({ uuid, name, region, ratings });
