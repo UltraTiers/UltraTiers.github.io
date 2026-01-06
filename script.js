@@ -321,7 +321,7 @@ document.querySelectorAll(".subject-btn").forEach(btn => {
     const subject = btn.dataset.subject;
 
     // Save subject to URL hash
-    window.location.hash = `subject=${subject}`;
+    window.location.hash = `subject=${encodeURIComponent(subject)}`;
 
     // Reload the page
     window.location.reload();
@@ -1316,7 +1316,7 @@ modalContent.innerHTML = `
 
   if (hash.startsWith("#subject=")) {
     // Restore builder subject leaderboard
-    const subject = hash.split("=")[1];
+    const subject = decodeURIComponent(hash.split("=")[1]);
     normalizeBuilderTiers();
     showBuildersSection("global");
     generateBuilderModeLeaderboard(subject);
