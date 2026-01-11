@@ -195,90 +195,82 @@ app.get("/building_players", async (req, res) => {
 });
 
 async function saveOrUpdatePlayer(player) {
-  const { uuid, name, region, tiers, points, nitro, banner, border_only } = player;
+  const {
+    uuid,
+    name,
+    region,
+    tiers,
+    points,
+    nitro,
+    banner,
+    border_only_modes
+  } = player;
+
+  const safeBorderModes = Array.isArray(border_only_modes)
+    ? border_only_modes
+    : [];
+
+  const payload = {
+    name,
+    region,
+    tiers,
+    points,
+    nitro: nitro || false,
+    border_only_modes: safeBorderModes,
+    banner: banner || "anime-style-stone.jpg"
+  };
 
   const { data: existing, error } = await supabase
     .from("ultratiers")
-    .select("*")
+    .select("uuid")
     .eq("uuid", uuid)
     .maybeSingle();
 
   if (error) throw error;
 
   if (existing) {
-    const { error: updateError } = await supabase
-      .from("ultratiers")
-      .update({
-        name,
-        region,
-        tiers,
-        points,
-        nitro: nitro || false,
-        border_only: border_only || false,
-        banner: banner || existing.banner || "anime-style-stone.jpg"
-      })
-      .eq("uuid", uuid);
-
-    if (updateError) throw updateError;
+    await supabase.from("ultratiers").update(payload).eq("uuid", uuid);
   } else {
-    const { error: insertError } = await supabase
-      .from("ultratiers")
-      .insert([{
-        uuid,
-        name,
-        region,
-        tiers,
-        points,
-        nitro: nitro || false,
-        border_only: border_only || false,
-        banner: banner || "anime-style-stone.jpg"
-      }]);
-
-    if (insertError) throw insertError;
+    await supabase.from("ultratiers").insert([{ uuid, ...payload }]);
   }
 }
 
 app.post("/borderonly", async (req, res) => {
   try {
-    const { uuid, name, borderOnly } = req.body;
-    if (!uuid || !name || borderOnly !== true)
-      return res.status(400).json({ error: "Missing uuid, name, or borderOnly flag" });
+    const { uuid, mode } = req.body;
+    if (!uuid || !mode)
+      return res.status(400).json({ error: "Missing uuid or mode" });
 
-    let players = await loadPlayers();
-    let player = players.find(p => p.uuid === uuid);
+    const { data: player, error } = await supabase
+      .from("ultratiers")
+      .select("*")
+      .eq("uuid", uuid)
+      .maybeSingle();
 
-    if (!player) {
-      player = {
-        uuid,
-        name,
-        region: "Unknown",
-        tiers: allGamemodes.map(g => ({ gamemode: g, tier: "Unknown" })),
-        points: 0,
-        nitro: false,
-        border_only: true
-      };
-    } else {
-      player.border_only = true;
-      if (name) player.name = name;
+    if (error || !player) return res.status(404).json({ error: "Player not found" });
 
-      // Ensure tiers exist
-      if (!Array.isArray(player.tiers) || player.tiers.length === 0) {
-        player.tiers = allGamemodes.map(g => ({ gamemode: g, tier: "Unknown" }));
-      }
+    const current = Array.isArray(player.border_only_modes)
+      ? player.border_only_modes
+      : [];
 
-      player.points = player.tiers.reduce(
-        (sum, t) => sum + (tierPointsMap[t.tier] || 0),
-        0
-      );
-    }
+    // Toggle
+    const updated =
+      current.includes(mode)
+        ? current.filter(m => m !== mode)
+        : [...current, mode];
 
-    await saveOrUpdatePlayer(player);
-    return res.json({ message: `${name} now has border-only tiers`, player });
+    await supabase
+      .from("ultratiers")
+      .update({ border_only_modes: updated })
+      .eq("uuid", uuid);
+
+    res.json({ success: true, modes: updated });
   } catch (err) {
-    console.error("Error in POST /borderonly:", err);
-    res.status(500).json({ error: "Internal server error" });
+    console.error("borderonly failed:", err);
+    res.status(500).json({ error: "Server error" });
   }
 });
+
 
 app.post("/profile/banner", async (req, res) => {
   try {
@@ -381,7 +373,9 @@ app.get("/players", async (req, res) => {
   tiers: fullTiers,
   points,
   nitro: p.nitro || false,
-  border_only: p.border_only || false,
+  border_only_modes: Array.isArray(p.border_only_modes)
+  ? p.border_only_modes
+  : [],
   banner: p.banner || "anime-style-stone.jpg"
 };
     });
