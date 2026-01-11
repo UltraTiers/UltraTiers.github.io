@@ -1112,6 +1112,10 @@ body {
 .tier[data-tier="4"] { background-color: #60a5fa; } /* blue */
 .tier[data-tier="5"] { background-color: #a78bfa; } /* purple */
 
+.tier.border-only {
+  background-color: var(--border);
+}
+
 /* Empty tier for Unknown */
 .tier.empty {
     border: 2px dashed rgba(255, 255, 255, 0.3);

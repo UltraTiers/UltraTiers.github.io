@@ -195,7 +195,7 @@ app.get("/building_players", async (req, res) => {
 });
 
 async function saveOrUpdatePlayer(player) {
-  const { uuid, name, region, tiers, points, nitro, banner } = player;
+  const { uuid, name, region, tiers, points, nitro, banner, border_only } = player;
 
   const { data: existing, error } = await supabase
     .from("ultratiers")
@@ -214,6 +214,7 @@ async function saveOrUpdatePlayer(player) {
         tiers,
         points,
         nitro: nitro || false,
+        border_only: border_only || false,
         banner: banner || existing.banner || "anime-style-stone.jpg"
       })
       .eq("uuid", uuid);
@@ -229,12 +230,55 @@ async function saveOrUpdatePlayer(player) {
         tiers,
         points,
         nitro: nitro || false,
+        border_only: border_only || false,
         banner: banner || "anime-style-stone.jpg"
       }]);
 
     if (insertError) throw insertError;
   }
 }
+
+app.post("/borderonly", async (req, res) => {
+  try {
+    const { uuid, name, borderOnly } = req.body;
+    if (!uuid || !name || borderOnly !== true)
+      return res.status(400).json({ error: "Missing uuid, name, or borderOnly flag" });
+
+    let players = await loadPlayers();
+    let player = players.find(p => p.uuid === uuid);
+
+    if (!player) {
+      player = {
+        uuid,
+        name,
+        region: "Unknown",
+        tiers: allGamemodes.map(g => ({ gamemode: g, tier: "Unknown" })),
+        points: 0,
+        nitro: false,
+        border_only: true
+      };
+    } else {
+      player.border_only = true;
+      if (name) player.name = name;
+
+      // Ensure tiers exist
+      if (!Array.isArray(player.tiers) || player.tiers.length === 0) {
+        player.tiers = allGamemodes.map(g => ({ gamemode: g, tier: "Unknown" }));
+      }
+
+      player.points = player.tiers.reduce(
+        (sum, t) => sum + (tierPointsMap[t.tier] || 0),
+        0
+      );
+    }
+
+    await saveOrUpdatePlayer(player);
+    return res.json({ message: `${name} now has border-only tiers`, player });
+  } catch (err) {
+    console.error("Error in POST /borderonly:", err);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
 
 app.post("/profile/banner", async (req, res) => {
   try {
@@ -337,6 +381,7 @@ app.get("/players", async (req, res) => {
   tiers: fullTiers,
   points,
   nitro: p.nitro || false,
+  border_only: p.border_only || false,
   banner: p.banner || "anime-style-stone.jpg"
 };
     });
