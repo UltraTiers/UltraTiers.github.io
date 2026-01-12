@@ -200,10 +200,8 @@ function generateBuilderTiersHTML(builder) {
     const tierNum = tier.match(/\d+/)?.[0];
     if (!tierNum) return `<div class="tier empty"></div>`;
 
-const isBorderOnly = player.border_only_modes?.includes(t.gamemode);
-
-return `
-  <div class="tier ${isBorderOnly ? "border-only" : ""}"
+    return `
+      <div class="tier"
         data-subject="${subject}"
         data-tier="${tierNum}"
         data-tooltip="${subject} — ${tier}">
@@ -886,10 +884,8 @@ function generatePlayers(region = "global") {
       const tierNum = t.tier.match(/\d+/)?.[0];
       if (!tierNum) return `<div class="tier empty"></div>`;
 
-const isBorderOnly = player.border_only_modes?.includes(t.gamemode);
-
-return `
-  <div class="tier ${isBorderOnly ? "border-only" : ""}"
+      return `
+        <div class="tier"
           data-gamemode="${t.gamemode}"
           data-tier="${tierNum}"
           data-tooltip="${t.gamemode} — ${t.tier}">
@@ -1124,10 +1120,8 @@ const tiersHTML = sortedTiers
           const tierMatch = t.tier.match(/\d+/);
 if (!tierMatch) return `<div class="tier empty"></div>`; // fallback for invalid tier
 const tierNumber = tierMatch[0];
-const isBorderOnly = player.border_only_modes?.includes(t.gamemode);
-
 return `
-  <div class="tier ${isBorderOnly ? "border-only" : ""}"
+  <div class="tier"
        data-gamemode="${t.gamemode}"
        data-tier="${tierNumber}"
        data-tooltip="${t.gamemode} — ${t.tier}">
@@ -1249,10 +1243,8 @@ const tiersHTML = sortedTiers
         const tierMatch = t.tier.match(/\d+/);
 if (!tierMatch) return `<div class="tier empty"></div>`; // fallback for invalid tier
 const tierNumber = tierMatch[0];
-const isBorderOnly = player.border_only_modes?.includes(t.gamemode);
-
 return `
-  <div class="tier ${isBorderOnly ? "border-only" : ""}"
+  <div class="tier"
        data-gamemode="${t.gamemode}"
        data-tier="${tierNumber}"
        data-tooltip="${t.gamemode} — ${t.tier}">

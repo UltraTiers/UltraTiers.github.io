@@ -195,82 +195,46 @@ app.get("/building_players", async (req, res) => {
 });
 
 async function saveOrUpdatePlayer(player) {
-  const {
-    uuid,
-    name,
-    region,
-    tiers,
-    points,
-    nitro,
-    banner,
-    border_only_modes
-  } = player;
-
-  const safeBorderModes = Array.isArray(border_only_modes)
-    ? border_only_modes
-    : [];
-
-  const payload = {
-    name,
-    region,
-    tiers,
-    points,
-    nitro: nitro || false,
-    border_only_modes: safeBorderModes,
-    banner: banner || "anime-style-stone.jpg"
-  };
+  const { uuid, name, region, tiers, points, nitro, banner } = player;
 
   const { data: existing, error } = await supabase
     .from("ultratiers")
-    .select("uuid")
+    .select("*")
     .eq("uuid", uuid)
     .maybeSingle();
 
   if (error) throw error;
 
   if (existing) {
-    await supabase.from("ultratiers").update(payload).eq("uuid", uuid);
-  } else {
-    await supabase.from("ultratiers").insert([{ uuid, ...payload }]);
-  }
-}
-
-app.post("/borderonly", async (req, res) => {
-  try {
-    const { uuid, mode } = req.body;
-    if (!uuid || !mode)
-      return res.status(400).json({ error: "Missing uuid or mode" });
-
-    const { data: player, error } = await supabase
+    const { error: updateError } = await supabase
       .from("ultratiers")
-      .select("*")
-      .eq("uuid", uuid)
-      .maybeSingle();
-
-    if (error || !player) return res.status(404).json({ error: "Player not found" });
-
-    const current = Array.isArray(player.border_only_modes)
-      ? player.border_only_modes
-      : [];
-
-    // Toggle
-    const updated =
-      current.includes(mode)
-        ? current.filter(m => m !== mode)
-        : [...current, mode];
-
-    await supabase
-      .from("ultratiers")
-      .update({ border_only_modes: updated })
+      .update({
+        name,
+        region,
+        tiers,
+        points,
+        nitro: nitro || false,
+        banner: banner || existing.banner || "anime-style-stone.jpg"
+      })
       .eq("uuid", uuid);
 
-    res.json({ success: true, modes: updated });
-  } catch (err) {
-    console.error("borderonly failed:", err);
-    res.status(500).json({ error: "Server error" });
-  }
-});
+    if (updateError) throw updateError;
+  } else {
+    const { error: insertError } = await supabase
+      .from("ultratiers")
+      .insert([{
+        uuid,
+        name,
+        region,
+        tiers,
+        points,
+        nitro: nitro || false,
+        banner: banner || "anime-style-stone.jpg"
+      }]);
 
+    if (insertError) throw insertError;
+  }
+}
 
 app.post("/profile/banner", async (req, res) => {
   try {
@@ -373,9 +337,6 @@ app.get("/players", async (req, res) => {
   tiers: fullTiers,
   points,
   nitro: p.nitro || false,
-  border_only_modes: Array.isArray(p.border_only_modes)
-  ? p.border_only_modes
-  : [],
   banner: p.banner || "anime-style-stone.jpg"
 };
     });
