@@ -203,7 +203,7 @@ function generateBuilderTiersHTML(builder) {
     return `
 <div class="tier ${player.retired_modes?.includes(t.gamemode) ? "retired" : ""}"
   data-gamemode="${t.gamemode}"
-  data-tier="${tierNumber}"
+  data-tier="${t.tier}"
   data-tooltip="${t.gamemode} — ${t.tier}">
         <img src="${subject}.png" alt="${subject}" class="tier-subject-icon">
         <span>${tier}</span>
@@ -887,7 +887,7 @@ function generatePlayers(region = "global") {
       return `
 <div class="tier ${player.retired_modes?.includes(t.gamemode) ? "retired" : ""}"
   data-gamemode="${t.gamemode}"
-  data-tier="${tierNumber}"
+  data-tier="${t.tier}"
   data-tooltip="${t.gamemode} — ${t.tier}">
           <img src="gamemodes/${t.gamemode}.png">
           <span>${t.tier}</span>
@@ -1123,7 +1123,7 @@ const tierNumber = tierMatch[0];
 return `
 <div class="tier ${player.retired_modes?.includes(t.gamemode) ? "retired" : ""}"
   data-gamemode="${t.gamemode}"
-  data-tier="${tierNumber}"
+  data-tier="${t.tier}"
   data-tooltip="${t.gamemode} — ${t.tier}">
     <img src="gamemodes/${t.gamemode}.png">
     <span>${t.tier}</span>
@@ -1246,7 +1246,7 @@ const tierNumber = tierMatch[0];
 return `
 <div class="tier ${player.retired_modes?.includes(t.gamemode) ? "retired" : ""}"
   data-gamemode="${t.gamemode}"
-  data-tier="${tierNumber}"
+  data-tier="${t.tier}"
   data-tooltip="${t.gamemode} — ${t.tier}">
     <img src="gamemodes/${t.gamemode}.png">
     <span>${t.tier}</span>
