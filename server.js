@@ -332,12 +332,13 @@ app.get("/players", async (req, res) => {
         tier: tiersMap[g] || "Unknown"
       }));
       const points = fullTiers.reduce((sum, t) => sum + (tierPointsMap[t.tier] || 0), 0);
-      return {
+return {
   ...p,
   tiers: fullTiers,
   points,
   nitro: p.nitro || false,
-  banner: p.banner || "anime-style-stone.jpg"
+  banner: p.banner || "anime-style-stone.jpg",
+  retired_modes: p.retired_modes || []   // 👈 ADD
 };
     });
 
@@ -347,6 +348,39 @@ app.get("/players", async (req, res) => {
     res.status(500).json({ error: "Internal server error" });
   }
 });
+
+app.post("/retire", async (req, res) => {
+  try {
+    const { ign, mode } = req.body;
+    if (!ign || !mode) return res.status(400).json({ error: "Missing ign or mode" });
+
+    const { data: player, error } = await supabase
+      .from("ultratiers")
+      .select("retired_modes")
+      .eq("name", ign)
+      .maybeSingle();
+
+    if (error) throw error;
+    if (!player) return res.status(404).json({ error: "Player not found" });
+
+    const retired = Array.isArray(player.retired_modes) ? player.retired_modes : [];
+
+    if (!retired.includes(mode)) retired.push(mode);
+
+    const { error: updateError } = await supabase
+      .from("ultratiers")
+      .update({ retired_modes: retired })
+      .eq("name", ign);
+
+    if (updateError) throw updateError;
+
+    res.json({ success: true, retired_modes: retired });
+  } catch (err) {
+    console.error("Retire failed:", err);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
 
 // -------------------
 // Update or add player tiers

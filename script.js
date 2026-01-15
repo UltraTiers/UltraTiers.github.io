@@ -201,10 +201,10 @@ function generateBuilderTiersHTML(builder) {
     if (!tierNum) return `<div class="tier empty"></div>`;
 
     return `
-      <div class="tier"
-        data-subject="${subject}"
-        data-tier="${tierNum}"
-        data-tooltip="${subject} — ${tier}">
+<div class="tier ${player.retired_modes?.includes(t.gamemode) ? "retired" : ""}"
+  data-gamemode="${t.gamemode}"
+  data-tier="${tierNumber}"
+  data-tooltip="${t.gamemode} — ${t.tier}">
         <img src="${subject}.png" alt="${subject}" class="tier-subject-icon">
         <span>${tier}</span>
       </div>
@@ -885,10 +885,10 @@ function generatePlayers(region = "global") {
       if (!tierNum) return `<div class="tier empty"></div>`;
 
       return `
-        <div class="tier"
-          data-gamemode="${t.gamemode}"
-          data-tier="${tierNum}"
-          data-tooltip="${t.gamemode} — ${t.tier}">
+<div class="tier ${player.retired_modes?.includes(t.gamemode) ? "retired" : ""}"
+  data-gamemode="${t.gamemode}"
+  data-tier="${tierNumber}"
+  data-tooltip="${t.gamemode} — ${t.tier}">
           <img src="gamemodes/${t.gamemode}.png">
           <span>${t.tier}</span>
         </div>
@@ -1121,10 +1121,10 @@ const tiersHTML = sortedTiers
 if (!tierMatch) return `<div class="tier empty"></div>`; // fallback for invalid tier
 const tierNumber = tierMatch[0];
 return `
-  <div class="tier"
-       data-gamemode="${t.gamemode}"
-       data-tier="${tierNumber}"
-       data-tooltip="${t.gamemode} — ${t.tier}">
+<div class="tier ${player.retired_modes?.includes(t.gamemode) ? "retired" : ""}"
+  data-gamemode="${t.gamemode}"
+  data-tier="${tierNumber}"
+  data-tooltip="${t.gamemode} — ${t.tier}">
     <img src="gamemodes/${t.gamemode}.png">
     <span>${t.tier}</span>
   </div>
@@ -1244,10 +1244,10 @@ const tiersHTML = sortedTiers
 if (!tierMatch) return `<div class="tier empty"></div>`; // fallback for invalid tier
 const tierNumber = tierMatch[0];
 return `
-  <div class="tier"
-       data-gamemode="${t.gamemode}"
-       data-tier="${tierNumber}"
-       data-tooltip="${t.gamemode} — ${t.tier}">
+<div class="tier ${player.retired_modes?.includes(t.gamemode) ? "retired" : ""}"
+  data-gamemode="${t.gamemode}"
+  data-tier="${tierNumber}"
+  data-tooltip="${t.gamemode} — ${t.tier}">
     <img src="gamemodes/${t.gamemode}.png">
     <span>${t.tier}</span>
   </div>
