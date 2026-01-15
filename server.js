@@ -338,7 +338,7 @@ return {
   points,
   nitro: p.nitro || false,
   banner: p.banner || "anime-style-stone.jpg",
-  retired_modes: p.retired_modes || []   // 👈 ADD
+  retired_modes: Array.isArray(p.retired_modes) ? p.retired_modes : []
 };
     });
 
