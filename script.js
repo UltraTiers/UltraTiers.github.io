@@ -528,12 +528,21 @@ function showSection(sectionToShow) {
     if (sectionToShow === buildersSection) document.querySelector(".builders-btn")?.classList.add("active-tab");
 }
 
-function sortPlayerTiers(tiers) {
-  return tiers.slice().sort((a, b) => {
-    const aPoints = tierPointsMap[a.tier] || -1;
-    const bPoints = tierPointsMap[b.tier] || -1;
-    return bPoints - aPoints; // highest points first
-  });
+function sortPlayerTiers(tiers, retiredModes = []) {
+  return tiers
+    .slice()
+    .sort((a, b) => {
+      const aRetired = retiredModes?.includes(a.gamemode) ? 1 : 0;
+      const bRetired = retiredModes?.includes(b.gamemode) ? 1 : 0;
+
+      // Retired tiers go last
+      if (aRetired !== bRetired) return aRetired - bRetired;
+
+      // Otherwise sort by points descending
+      const aPoints = tierPointsMap[a.tier] || -1;
+      const bPoints = tierPointsMap[b.tier] || -1;
+      return bPoints - aPoints;
+    });
 }
 
 const authButtons = document.getElementById("auth-buttons");
@@ -1122,7 +1131,10 @@ function attachPlayerClick() {
       // Set modal title to empty because the player name is now displayed below avatar
       modalTitle.textContent = "";
 
-const sortedTiers = sortPlayerTiers(player.tiers.filter(t => t.tier !== "Unknown"));
+const sortedTiers = sortPlayerTiers(
+  player.tiers.filter(t => t.tier !== "Unknown"),
+  player.retired_modes
+);
 const tiersHTML = sortedTiers
   .map(t => {
           const tierMatch = t.tier.match(/\d+/);
@@ -1248,7 +1260,10 @@ searchInput.addEventListener("keydown", function(e) {
     // Use same modal format as clicking a player
     modalTitle.textContent = ""; // same as click modal
 
-const sortedTiers = sortPlayerTiers(player.tiers.filter(t => t.tier !== "Unknown"));
+const sortedTiers = sortPlayerTiers(
+  player.tiers.filter(t => t.tier !== "Unknown"),
+  player.retired_modes
+);
 const tiersHTML = sortedTiers
   .map(t => {
         const tierMatch = t.tier.match(/\d+/);
