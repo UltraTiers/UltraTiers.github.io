@@ -530,18 +530,25 @@ function showSection(sectionToShow) {
 
 function sortPlayerTiers(tiers, retiredModes = []) {
   return tiers.slice().sort((a, b) => {
+    const aEmpty = !a.tier || a.tier === "Unknown" ? 1 : 0;
+    const bEmpty = !b.tier || b.tier === "Unknown" ? 1 : 0;
+
+    // Empty tiers always go to the end
+    if (aEmpty !== bEmpty) return aEmpty - bEmpty;
+
     const aRetired = retiredModes?.includes(a.gamemode) ? 1 : 0;
     const bRetired = retiredModes?.includes(b.gamemode) ? 1 : 0;
 
-    // Retired tiers always go to the end
+    // Retired tiers come after active tiers
     if (aRetired !== bRetired) return aRetired - bRetired;
 
-    // If both are retired or both are active, sort by points descending
+    // Both active or both retired: sort by points descending
     const aPoints = tierPointsMap[a.tier] || 0;
     const bPoints = tierPointsMap[b.tier] || 0;
     return bPoints - aPoints;
   });
 }
+
 
 
 const authButtons = document.getElementById("auth-buttons");
