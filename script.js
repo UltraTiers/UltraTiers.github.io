@@ -529,20 +529,18 @@ function showSection(sectionToShow) {
 }
 
 function sortPlayerTiers(tiers, retiredModes = []) {
-  return tiers
-    .slice()
-    .filter(t => t.tier && t.tier !== "Unknown") // keep only valid tiers
-    .sort((a, b) => {
-      const aRetired = retiredModes?.includes(a.gamemode) ? 1 : 0;
-      const bRetired = retiredModes?.includes(b.gamemode) ? 1 : 0;
+  return tiers.slice().sort((a, b) => {
+    const aRetired = retiredModes?.includes(a.gamemode) ? 1 : 0;
+    const bRetired = retiredModes?.includes(b.gamemode) ? 1 : 0;
 
-      if (aRetired !== bRetired) return aRetired - bRetired; // retired last
+    // Retired tiers always go to the end
+    if (aRetired !== bRetired) return aRetired - bRetired;
 
-      const aPoints = tierPointsMap[a.tier] || -1;
-      const bPoints = tierPointsMap[b.tier] || -1;
-
-      return bPoints - aPoints; // normal points sorting
-    });
+    // If both are retired or both are active, sort by points descending
+    const aPoints = tierPointsMap[a.tier] || 0;
+    const bPoints = tierPointsMap[b.tier] || 0;
+    return bPoints - aPoints;
+  });
 }
 
 
@@ -891,7 +889,7 @@ function generatePlayers(region = "global") {
   const top100 = filtered.slice(0, 100);
 
   top100.forEach((player, index) => {
-    const sortedTiers = sortPlayerTiers(player.tiers);
+    const sortedTiers = sortPlayerTiers(player.tiers, player.retired_modes);
 
     const tiersHTML = sortedTiers.map(t => {
       if (!t.tier || t.tier === "Unknown") return `<div class="tier empty"></div>`;
@@ -1132,7 +1130,10 @@ function attachPlayerClick() {
       // Set modal title to empty because the player name is now displayed below avatar
       modalTitle.textContent = "";
 
-const sortedTiers = sortPlayerTiers(player.tiers, player.retired_modes);
+const sortedTiers = sortPlayerTiers(
+  player.tiers.filter(t => t.tier !== "Unknown"),
+  player.retired_modes
+);
 const tiersHTML = sortedTiers
   .map(t => {
           const tierMatch = t.tier.match(/\d+/);
@@ -1258,7 +1259,10 @@ searchInput.addEventListener("keydown", function(e) {
     // Use same modal format as clicking a player
     modalTitle.textContent = ""; // same as click modal
 
-const sortedTiers = sortPlayerTiers(player.tiers, player.retired_modes);
+const sortedTiers = sortPlayerTiers(
+  player.tiers.filter(t => t.tier !== "Unknown"),
+  player.retired_modes
+);
 const tiersHTML = sortedTiers
   .map(t => {
         const tierMatch = t.tier.match(/\d+/);
