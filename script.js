@@ -200,15 +200,19 @@ function generateBuilderTiersHTML(builder) {
     const tierNum = tier.match(/\d+/)?.[0];
     if (!tierNum) return `<div class="tier empty"></div>`;
 
-    return `
-<div class="tier ${player.retired_modes?.includes(t.gamemode) ? "retired" : ""}"
-  data-gamemode="${t.gamemode}"
-  data-tier="${t.tier}"
-  data-tooltip="${t.gamemode} — ${t.tier}">
-        <img src="${subject}.png" alt="${subject}" class="tier-subject-icon">
-        <span>${tier}</span>
-      </div>
-    `;
+const tierNumber = tier.match(/\d+/)?.[0];
+const tierRank = tier.startsWith("HT") ? "HT" : "LT";
+
+return `
+<div class="tier"
+  data-subject="${subject}"
+  data-tier="${tierNumber}"
+  data-rank="${tierRank}"
+  data-tooltip="${subject} — ${tier}">
+    <img src="${subject}.png" alt="${subject}" class="tier-subject-icon">
+    <span>Tier ${tierNumber}</span>
+</div>
+`;
   });
 
   // Pad missing slots
@@ -884,15 +888,19 @@ function generatePlayers(region = "global") {
       const tierNum = t.tier.match(/\d+/)?.[0];
       if (!tierNum) return `<div class="tier empty"></div>`;
 
-      return `
+const tierNumber = t.tier.match(/\d+/)?.[0];
+const tierRank = t.tier.startsWith("HT") ? "HT" : "LT";
+
+return `
 <div class="tier ${player.retired_modes?.includes(t.gamemode) ? "retired" : ""}"
   data-gamemode="${t.gamemode}"
-  data-tier="${t.tier}"
+  data-tier="${tierNumber}"
+  data-rank="${tierRank}"
   data-tooltip="${t.gamemode} — ${t.tier}">
-          <img src="gamemodes/${t.gamemode}.png">
-          <span>${t.tier}</span>
-        </div>
-      `;
+    <img src="gamemodes/${t.gamemode}.png">
+    <span>Tier ${tierNumber}</span>
+</div>
+`;
     }).join("");
 
     const borderClass =
@@ -1119,15 +1127,18 @@ const tiersHTML = sortedTiers
   .map(t => {
           const tierMatch = t.tier.match(/\d+/);
 if (!tierMatch) return `<div class="tier empty"></div>`; // fallback for invalid tier
-const tierNumber = tierMatch[0];
+const tierNumber = t.tier.match(/\d+/)?.[0];
+const tierRank = t.tier.startsWith("HT") ? "HT" : "LT";
+
 return `
 <div class="tier ${player.retired_modes?.includes(t.gamemode) ? "retired" : ""}"
   data-gamemode="${t.gamemode}"
-  data-tier="${t.tier}"
+  data-tier="${tierNumber}"
+  data-rank="${tierRank}"
   data-tooltip="${t.gamemode} — ${t.tier}">
     <img src="gamemodes/${t.gamemode}.png">
-    <span>${t.tier}</span>
-  </div>
+    <span>Tier ${tierNumber}</span>
+</div>
 `;
         }).join("");
 
@@ -1242,17 +1253,19 @@ const tiersHTML = sortedTiers
   .map(t => {
         const tierMatch = t.tier.match(/\d+/);
 if (!tierMatch) return `<div class="tier empty"></div>`; // fallback for invalid tier
-const tierNumber = tierMatch[0];
+const tierNumber = t.tier.match(/\d+/)?.[0];
+const tierRank = t.tier.startsWith("HT") ? "HT" : "LT";
+
 return `
 <div class="tier ${player.retired_modes?.includes(t.gamemode) ? "retired" : ""}"
   data-gamemode="${t.gamemode}"
-  data-tier="${t.tier}"
+  data-tier="${tierNumber}"
+  data-rank="${tierRank}"
   data-tooltip="${t.gamemode} — ${t.tier}">
     <img src="gamemodes/${t.gamemode}.png">
-    <span>${t.tier}</span>
-  </div>
+    <span>Tier ${tierNumber}</span>
+</div>
 `;
-
       }).join("");
 
 const nitroClass = player.nitro ? "nitro" : "";
