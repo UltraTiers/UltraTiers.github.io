@@ -210,7 +210,7 @@ return `
   data-rank="${tierRank}"
   data-tooltip="${subject} — ${tier}">
     <img src="${subject}.png" alt="${subject}" class="tier-subject-icon">
-    <span>Tier ${tierNumber}</span>
+    <span>${tierRank}${tierNumber}</span>
 </div>
 `;
   });
@@ -898,7 +898,7 @@ return `
   data-rank="${tierRank}"
   data-tooltip="${t.gamemode} — ${t.tier}">
     <img src="gamemodes/${t.gamemode}.png">
-    <span>Tier ${tierNumber}</span>
+    <span>${tierRank}${tierNumber}</span>
 </div>
 `;
     }).join("");
@@ -1137,7 +1137,7 @@ return `
   data-rank="${tierRank}"
   data-tooltip="${t.gamemode} — ${t.tier}">
     <img src="gamemodes/${t.gamemode}.png">
-    <span>Tier ${tierNumber}</span>
+    <span>${tierRank}${tierNumber}</span>
 </div>
 `;
         }).join("");
@@ -1263,7 +1263,7 @@ return `
   data-rank="${tierRank}"
   data-tooltip="${t.gamemode} — ${t.tier}">
     <img src="gamemodes/${t.gamemode}.png">
-    <span>Tier ${tierNumber}</span>
+    <span>${tierRank}${tierNumber}</span>
 </div>
 `;
       }).join("");
