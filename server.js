@@ -302,8 +302,8 @@ app.post("/apply", async (req, res) => {
 // Default tiers order
 // -------------------
 const allGamemodes = [
-  "Axe","Sword","Bow","Vanilla","NethOP","Pot","UHC","SMP","Mace","Diamond SMP",
-  "OG Vanilla","Bed","DeBuff","Speed","Manhunt","Elytra","Diamond Survival","Minecart",
+  "Axe","Sword","Bow","Vanilla","NethOP","Pot","UHC","SMP","Mace","Spear Mace","Diamond SMP",
+  "OG Vanilla","Bed","DeBuff","Speed","Manhunt","Elytra","Spear Elytra","Diamond Survival","Minecart",
   "Creeper","Trident","AxePot","Pearl","Bridge","Sumo","OP"
 ];
 
