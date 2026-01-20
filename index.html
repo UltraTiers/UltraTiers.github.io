@@ -49,7 +49,7 @@
 <header>
 <nav class="navbar">
     <div class="nav-left">
-        <img src="UltraTiers_White.png" class="logo-img">
+        <img src="UltraTiers_White.png" class="logo-img" style="cursor: pointer;">
     </div>
 
     <div class="nav-center">
@@ -385,12 +385,105 @@
 </header>
 
 <!-- LEADERBOARD SECTION -->
-<div id="leaderboard-section" class="leaderboard active-section">
+<div id="home-section" class="home-section active-section">
+  <div class="home-hero">
+    <div class="hero-content">
+      <h1 class="hero-title">
+        <span class="title-icon">🏆</span>
+        UltraTiers
+      </h1>
+      <p class="hero-subtitle">Track the best Minecraft PvP & Building performance</p>
+    </div>
+  </div>
+
+  <div class="home-grid">
+    <!-- Fighters Card -->
+    <div class="home-card fighters-card" data-section="rankings">
+      <div class="card-icon">⚔️</div>
+      <h3 class="card-title">Fighters</h3>
+      <p class="card-description">View the top PvP fighters across all modes and regions</p>
+      <div class="card-stats">
+        <span id="home-fighter-count">0</span> Tested
+      </div>
+      <button class="card-button">View Rankings</button>
+    </div>
+
+    <!-- Builders Card -->
+    <div class="home-card builders-card" data-section="builders">
+      <div class="card-icon">🏗️</div>
+      <h3 class="card-title">Builders</h3>
+      <p class="card-description">Explore the best builders by subject and region</p>
+      <div class="card-stats">
+        <span id="home-builder-count">0</span> Tested
+      </div>
+      <button class="card-button">View Builders</button>
+    </div>
+
+    <!-- Modes Card -->
+    <div class="home-card modes-card" data-section="modes">
+      <div class="card-icon">🎮</div>
+      <h3 class="card-title">Game Modes</h3>
+      <p class="card-description">Browse all 27 PvP modes organized by category</p>
+      <div class="card-stats">
+        <span>27</span> Modes
+      </div>
+      <button class="card-button">Explore Modes</button>
+    </div>
+
+    <!-- Testers Card -->
+    <div class="home-card testers-card" data-section="testers">
+      <div class="card-icon">🧪</div>
+      <h3 class="card-title">Official Testers</h3>
+      <p class="card-description">Meet the official UltraTiers testers</p>
+      <div class="card-stats">
+        Filter by mode & region
+      </div>
+      <button class="card-button">View Testers</button>
+    </div>
+
+    <!-- Documentation Card -->
+    <div class="home-card docs-card" data-section="docs">
+      <div class="card-icon">📚</div>
+      <h3 class="card-title">Documentation</h3>
+      <p class="card-description">Learn about tier system and points</p>
+      <div class="card-stats">
+        Tiers 1-5
+      </div>
+      <button class="card-button">Read Docs</button>
+    </div>
+
+    <!-- Application Card -->
+    <div class="home-card application-card" data-section="application">
+      <div class="card-icon">📝</div>
+      <h3 class="card-title">Apply Now</h3>
+      <p class="card-description">Become an official UltraTiers tester</p>
+      <div class="card-stats">
+        Quick & Easy
+      </div>
+      <button class="card-button">Apply Today</button>
+    </div>
+  </div>
+
+  <div class="home-footer">
+    <p>Join our <a href="https://discord.gg/Bvebb7RwaG" target="_blank" class="discord-link"><i class="fab fa-discord"></i> Discord</a> for updates and community</p>
+  </div>
+</div>
+
+<div id="leaderboard-section" class="leaderboard hidden-section">
         <div class="header-container">
     <div colspan="4" class="header-message">
         Join our discord for more updates!
     </div>
     </div>
+
+    <!-- Mode Category Tabs -->
+    <div class="leaderboard-mode-tabs">
+      <button class="leaderboard-mode-tab-btn active" data-mode-category="main">Main</button>
+      <button class="leaderboard-mode-tab-btn" data-mode-category="sub">Sub</button>
+      <button class="leaderboard-mode-tab-btn" data-mode-category="extra">Extra</button>
+      <button class="leaderboard-mode-tab-btn" data-mode-category="bonus">Bonus</button>
+    </div>
+
 <div class="table-header">
     <!-- players generated -->
 </div>
@@ -399,11 +492,27 @@
 </div>
 
 <!-- Builders section -->
-<section id="builders-section" class="builders-section">
+<section id="builders-section" class="builders-section hidden-section">
           <div class="header-container">
     <div colspan="4" class="header-message">
         Join our discord for more updates!
     </div>
+    </div>
+
+    <!-- Builder Region Tabs -->
+    <div class="builders-region-tabs">
+      <button class="builders-region-tab-btn active" data-builder-region="global">🌍 Global</button>
+      <button class="builders-region-tab-btn" data-builder-region="NA">🌍 North America</button>
+      <button class="builders-region-tab-btn" data-builder-region="EU">🌍 Europe</button>
+      <button class="builders-region-tab-btn" data-builder-region="AS">🌏 Asia</button>
+      <button class="builders-region-tab-btn" data-builder-region="SA">🌎 South America</button>
+      <button class="builders-region-tab-btn" data-builder-region="ME">🌍 Middle East</button>
+      <button class="builders-region-tab-btn" data-builder-region="AU">🌍 Australia</button>
+      <button class="builders-region-tab-btn" data-builder-region="AF">🌍 Africa</button>
+    </div>
+
+    <div class="builders-table-header">
+        <!-- builders generated -->
     </div>
     <!-- ADD THIS DIV -->
     <div id="builders-container" class="builders-grid"></div>

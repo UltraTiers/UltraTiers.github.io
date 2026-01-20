@@ -37,6 +37,7 @@ async function loadPlayers() {
    ELEMENTS
 ============================= */
 
+const homeSection = document.getElementById("home-section");
 const leaderboardSection = document.getElementById("leaderboard-section");
 const applicationSection = document.getElementById("application-section");
 const docsSection = document.getElementById("docs-section");
@@ -89,15 +90,24 @@ async function loadTesters() {
 
 function updateTestedCount() {
   const playerCountEl = document.getElementById("player-count");
+  const homePlayerCount = document.getElementById("home-fighter-count");
+  const homeBuilderCount = document.getElementById("home-builder-count");
+  
   playerCountEl.innerHTML = `
     <div>Fighters Tested: ${players.length}</div>
     <div>Builders Tested: ${builders.length}</div>
   `;
+  
+  if (homePlayerCount) homePlayerCount.textContent = players.length;
+  if (homeBuilderCount) homeBuilderCount.textContent = builders.length;
 }
+
+let currentBuildersRegion = "global";
 
 document.querySelectorAll(".builder-option").forEach(opt => {
 opt.addEventListener("click", async () => {
   const region = opt.dataset.region;
+  currentBuildersRegion = region;
   await loadBuilders();
   showBuildersSection(region);
 });
@@ -515,6 +525,7 @@ profileBanner.style.backgroundImage =
 
 function showSection(sectionToShow) {
     const sections = [
+        homeSection,
         leaderboardSection,
         docsSection,
         applicationSection,
@@ -535,6 +546,7 @@ function showSection(sectionToShow) {
     // navbar active state
     document.querySelectorAll(".nav-center a, .nav-center .dropdown-trigger").forEach(el => el.classList.remove("active-tab"));
 
+    if (sectionToShow === homeSection) window.location.hash = '';
     if (sectionToShow === leaderboardSection) document.querySelector(".rankings-btn")?.classList.add("active-tab");
     if (sectionToShow === docsSection) document.querySelector(".docs-btn")?.classList.add("active-tab");
     if (sectionToShow === applicationSection) document.querySelector(".application-btn")?.classList.add("active-tab");
@@ -583,11 +595,17 @@ document.addEventListener("click", (e) => {
   }
 });
 
+let currentLeaderboardRegion = "global";
+
 document.querySelectorAll(".ranking-option").forEach(opt => {
   opt.addEventListener("click", () => {
     const region = opt.dataset.region;
+    currentLeaderboardRegion = region;
     showSection(leaderboardSection);
-    generatePlayers(region);
+    // Reset to main category and generate players
+    document.querySelectorAll(".leaderboard-mode-tab-btn").forEach(b => b.classList.remove("active"));
+    document.querySelector(".leaderboard-mode-tab-btn[data-mode-category='main']").classList.add("active");
+    generatePlayers(region, "main");
   });
 });
 
@@ -669,7 +687,57 @@ bannerOptions.forEach(img => {
    NAVIGATION BUTTONS
 ============================= */
 
+// Logo/Home button
+document.querySelector(".logo-img")?.addEventListener("click", () => {
+  showLoadingScreen();
+  setTimeout(() => {
+    showSection(homeSection);
+    hideLoadingScreen();
+  }, 300);
+});
+
+// Home page card navigation
+document.querySelectorAll(".home-card").forEach(card => {
+  card.addEventListener("click", () => {
+    const section = card.dataset.section;
+    showLoadingScreen();
+    setTimeout(() => {
+      if (section === "rankings") {
+        showSection(leaderboardSection);
+        tableHeader.style.display = "grid";
+      } else if (section === "builders") {
+        showSection(buildersSection);
+        tableHeader.style.display = "none";
+        renderBuilders("global");
+      } else if (section === "modes") {
+        // Just navigate to home, users can select modes from navbar
+        showSection(leaderboardSection);
+        tableHeader.style.display = "grid";
+      } else if (section === "testers") {
+        showSection(testersSection);
+        tableHeader.style.display = "none";
+        if (!testers.length) {
+          loadTesters().then(() => {
+            populateTesterModes();
+            renderTesters();
+          });
+        } else {
+          renderTesters();
+        }
+      } else if (section === "docs") {
+        showSection(docsSection);
+        tableHeader.style.display = "none";
+      } else if (section === "application") {
+        showSection(applicationSection);
+        tableHeader.style.display = "none";
+      }
+      hideLoadingScreen();
+    }, 300);
+  });
+});
+
 document.querySelector(".rankings-btn").addEventListener("click", () => {
+
   showLoadingScreen();
   setTimeout(() => {
     showSection(leaderboardSection);
@@ -778,6 +846,61 @@ document.querySelectorAll(".mode-tab-btn").forEach(btn => {
   });
 });
 
+/* =============================
+   LEADERBOARD MODE TAB SWITCHING
+============================= */
+
+document.querySelectorAll(".leaderboard-mode-tab-btn").forEach(btn => {
+  btn.addEventListener("click", () => {
+    const category = btn.dataset.modeCategory;
+    
+    // Show loading screen
+    showLoadingScreen();
+    
+    setTimeout(() => {
+      // Remove active class from all tabs
+      document.querySelectorAll(".leaderboard-mode-tab-btn").forEach(b => b.classList.remove("active"));
+      
+      // Add active class to clicked tab
+      btn.classList.add("active");
+      
+      // Regenerate players with new category using current region
+      generatePlayers(currentLeaderboardRegion, category);
+      
+      // Hide loading screen
+      hideLoadingScreen();
+    }, 350);
+  });
+});
+
+/* =============================
+   BUILDERS REGION TAB SWITCHING
+============================= */
+
+document.querySelectorAll(".builders-region-tab-btn").forEach(btn => {
+  btn.addEventListener("click", () => {
+    const region = btn.dataset.builderRegion;
+    
+    // Show loading screen
+    showLoadingScreen();
+    
+    setTimeout(() => {
+      // Remove active class from all tabs
+      document.querySelectorAll(".builders-region-tab-btn").forEach(b => b.classList.remove("active"));
+      
+      // Add active class to clicked tab
+      btn.classList.add("active");
+      
+      // Update current region and regenerate builders
+      currentBuildersRegion = region;
+      renderBuilders(region);
+      
+      // Hide loading screen
+      hideLoadingScreen();
+    }, 350);
+  });
+});
+
 const mode = [
   "Axe",
   "Sword",
@@ -807,6 +930,14 @@ const mode = [
   "Sumo",
   "OP"
 ];
+
+// Mode categories mapping
+const modeCategories = {
+  main: ["Sword", "Axe", "Bow", "Vanilla", "UHC", "Pot"],
+  sub: ["Mace", "Diamond SMP", "OG Vanilla", "Bed", "DeBuff", "Speed", "Manhunt", "Elytra", "Spear Elytra", "NethOP"],
+  extra: ["Diamond Survival", "Minecart", "Creeper", "Trident", "AxePot", "Pearl", "Bridge", "Sumo", "SMP"],
+  bonus: ["Spear Mace", "OP"]
+};
 
 // Optional: auto-set kit image src based on mode name (dynamic)
 document.querySelectorAll(".mode-btn").forEach(btn => {
@@ -939,7 +1070,7 @@ document.querySelector(".application-form").addEventListener("submit", async (e)
    NORMAL LEADERBOARD (TOP 3 BORDERS)
 ============================= */
 
-function generatePlayers(region = "global") {
+function generatePlayers(region = "global", modeCategory = "main") {
   tableHeader.style.display = "grid";
   playersContainer.innerHTML = "";
 
@@ -952,8 +1083,17 @@ function generatePlayers(region = "global") {
       ? sorted
       : sorted.filter(p => p.region === region);
 
+  // Filter by mode category - only include players who have tiers in the selected category
+  const categoryModes = modeCategories[modeCategory] || modeCategories.main;
+  const categoryFiltered = filtered.filter(player => {
+    return player.tiers && player.tiers.some(t => categoryModes.includes(t.gamemode));
+  });
+
+  // Sort filtered players by points again to get proper ranking within category
+  categoryFiltered.sort((a, b) => b.points - a.points);
+
   // ✅ HARD LIMIT TO TOP 100
-  const top100 = filtered.slice(0, 100);
+  const top100 = categoryFiltered.slice(0, 100);
 
   top100.forEach((player, index) => {
     const sortedTiers = sortPlayerTiers(player.tiers, player.retired_modes);
@@ -1005,6 +1145,10 @@ return `
 function showBuildersSection(region = "global") {
   showSection(buildersSection);        // show the builders section
   tableHeader.style.display = "none";  // hide table header
+
+  // Set active tab
+  document.querySelectorAll(".builders-region-tab-btn").forEach(b => b.classList.remove("active"));
+  document.querySelector(`.builders-region-tab-btn[data-builder-region='${region}']`).classList.add("active");
 
   if (!builders.length) {
     loadBuilders().then(() => renderBuilders(region));
@@ -1413,9 +1557,8 @@ modalContent.innerHTML = `
   tableHeader.style.display = "none";
   generateModeLeaderboard(mode);
 } else {
-    // Default: show global player leaderboard
-    showSection(leaderboardSection);
-    generatePlayers();
+    // Default: show home page
+    showSection(homeSection);
   }
 
   // Load testers
