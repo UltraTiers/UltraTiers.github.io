@@ -524,6 +524,7 @@ profileBanner.style.backgroundImage =
 
 
 function showSection(sectionToShow) {
+    console.log("Showing section:", sectionToShow.id);
     const sections = [
         homeSection,
         leaderboardSection,
@@ -699,9 +700,14 @@ document.querySelector(".logo-img")?.addEventListener("click", () => {
 });
 
 // Home page card navigation
-document.querySelectorAll(".home-card").forEach(card => {
-  card.addEventListener("click", () => {
+const cardButtons = document.querySelectorAll(".card-button");
+console.log("Found card buttons:", cardButtons.length);
+cardButtons.forEach(button => {
+  button.addEventListener("click", (e) => {
+    e.stopPropagation(); // Prevent bubbling to card if any
+    const card = button.closest(".home-card");
     const section = card.dataset.section;
+    console.log("Button clicked:", section);
     showLoadingScreen();
     setTimeout(() => {
       if (section === "rankings") {
@@ -1571,14 +1577,25 @@ modalContent.innerHTML = `
     await loadPlayers();
   } catch (error) {
     console.error("Failed to load players from server:", error);
-    // Optionally load from local file or set players to empty
     players = [];
   }
   players.forEach(p => p.points = calculatePoints(p, "player"));
   builders.forEach(b => b.points = calculatePoints(b, "builder"));
-  await loadPlayerNames();
-  await loadTesters();
-  await loadBuilders(); // builders loaded here, updateTestedCount() is called inside loadBuilders
+  try {
+    await loadPlayerNames();
+  } catch (error) {
+    console.error("Failed to load player names:", error);
+  }
+  try {
+    await loadTesters();
+  } catch (error) {
+    console.error("Failed to load testers:", error);
+  }
+  try {
+    await loadBuilders();
+  } catch (error) {
+    console.error("Failed to load builders:", error);
+  }
 
   updateTestedCount();
 
