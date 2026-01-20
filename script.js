@@ -12,6 +12,20 @@ const tiersDocs = [
     { tier: "LT5", gamemode: "Fighter Tier", description: "Gives you 1 point." }
 ];
 
+/* =============================
+   LOADING SCREEN UTILITY
+============================= */
+
+const loadingScreen = document.getElementById("loading-screen");
+
+function showLoadingScreen() {
+    loadingScreen.classList.add("show");
+}
+
+function hideLoadingScreen() {
+    loadingScreen.classList.remove("show");
+}
+
 async function loadPlayers() {
   const res = await fetch("/players");
   players = await res.json();
@@ -656,29 +670,45 @@ bannerOptions.forEach(img => {
 ============================= */
 
 document.querySelector(".rankings-btn").addEventListener("click", () => {
-  showSection(leaderboardSection);
-  tableHeader.style.display = "grid";
+  showLoadingScreen();
+  setTimeout(() => {
+    showSection(leaderboardSection);
+    tableHeader.style.display = "grid";
+    hideLoadingScreen();
+  }, 300);
 });
 
 document.querySelector(".docs-btn").addEventListener("click", () => {
-  showSection(docsSection);
-  tableHeader.style.display = "none";
+  showLoadingScreen();
+  setTimeout(() => {
+    showSection(docsSection);
+    tableHeader.style.display = "none";
+    hideLoadingScreen();
+  }, 300);
 });
 
 document.querySelector(".application-btn").addEventListener("click", () => {
-  showSection(applicationSection);
-  tableHeader.style.display = "none";
+  showLoadingScreen();
+  setTimeout(() => {
+    showSection(applicationSection);
+    tableHeader.style.display = "none";
+    hideLoadingScreen();
+  }, 300);
 });
 
 document.querySelector(".testers-btn")?.addEventListener("click", async () => {
-  showSection(testersSection);
-  tableHeader.style.display = "none";
+  showLoadingScreen();
+  setTimeout(async () => {
+    showSection(testersSection);
+    tableHeader.style.display = "none";
 
-  if (!testers.length) {
-    await loadTesters();
-    populateTesterModes();
-    renderTesters();
-  }
+    if (!testers.length) {
+      await loadTesters();
+      populateTesterModes();
+      renderTesters();
+    }
+    hideLoadingScreen();
+  }, 300);
 });
 
 /* =============================
@@ -692,8 +722,11 @@ document.querySelectorAll(".mode-btn").forEach(btn => {
     // Save mode to URL hash
     window.location.hash = `mode=${encodeURIComponent(mode)}`;
 
-    // Reload the page so the init code restores this mode
-    window.location.reload();
+    // Show loading screen and reload
+    showLoadingScreen();
+    setTimeout(() => {
+      window.location.reload();
+    }, 350);
   });
 });
 
@@ -717,6 +750,32 @@ document.querySelectorAll(".mode-info").forEach(icon => {
 // Close popups when clicking outside
 document.addEventListener("click", () => {
   document.querySelectorAll(".mode-btn").forEach(btn => btn.classList.remove("show-info"));
+});
+
+/* =============================
+   MODE TAB SWITCHING
+============================= */
+
+document.querySelectorAll(".mode-tab-btn").forEach(btn => {
+  btn.addEventListener("click", () => {
+    const tabName = btn.dataset.tab;
+    
+    // Show loading screen with brief delay for visual effect
+    showLoadingScreen();
+    
+    setTimeout(() => {
+      // Remove active class from all tabs and contents
+      document.querySelectorAll(".mode-tab-btn").forEach(b => b.classList.remove("active"));
+      document.querySelectorAll(".mode-tab-content").forEach(content => content.classList.remove("active"));
+      
+      // Add active class to clicked tab and corresponding content
+      btn.classList.add("active");
+      document.getElementById(`${tabName}-tab`).classList.add("active");
+      
+      // Hide loading screen
+      hideLoadingScreen();
+    }, 350);
+  });
 });
 
 const mode = [

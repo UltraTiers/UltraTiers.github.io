@@ -38,6 +38,14 @@
 </head>
 <body>
 
+<!-- LOADING SCREEN -->
+<div id="loading-screen" class="loading-screen">
+  <div class="loading-spinner">
+    <div class="spinner"></div>
+    <p>Loading...</p>
+  </div>
+</div>
+
 <header>
 <nav class="navbar">
     <div class="nav-left">
@@ -82,9 +90,16 @@
     <i class="fas fa-layer-group"></i> Modes <i class="fas fa-chevron-down"></i>
   </div>
   <div class="dropdown-menu" id="modes-menu">
-    <!-- Melee Weapons Category -->
-    <div class="mode-category">
-      <div class="mode-category-header">⚔️ Melee Weapons</div>
+    <!-- Mode Category Tabs -->
+    <div class="mode-tabs">
+      <button class="mode-tab-btn active" data-tab="main">Main</button>
+      <button class="mode-tab-btn" data-tab="sub">Sub</button>
+      <button class="mode-tab-btn" data-tab="extra">Extra</button>
+      <button class="mode-tab-btn" data-tab="bonus">Bonus</button>
+    </div>
+
+    <!-- Main Category (6 modes) -->
+    <div class="mode-tab-content active" id="main-tab">
       <div class="mode-category-items">
         <div class="mode-btn" data-mode="Sword">
           <img src="gamemodes/Sword.png" class="mode-icon">
@@ -102,6 +117,44 @@
             <img src="kitsmodes/AxeKit.png" alt="Axe Kit">
           </div>
         </div>
+        <div class="mode-btn" data-mode="Bow">
+          <img src="gamemodes/Bow.png" class="mode-icon">
+          <span class="mode-name">Bow</span>
+          <i class="fas fa-circle-info mode-info"></i>
+          <div class="mode-info-popup">
+            <img src="kitsmodes/BowKit.png" alt="Bow Kit">
+          </div>
+        </div>
+        <div class="mode-btn" data-mode="Vanilla">
+          <img src="gamemodes/Vanilla.png" class="mode-icon">
+          <span class="mode-name">Vanilla</span>
+          <i class="fas fa-circle-info mode-info"></i>
+          <div class="mode-info-popup">
+            <img src="kitsmodes/VanillaKit.png" alt="Vanilla Kit">
+          </div>
+        </div>
+        <div class="mode-btn" data-mode="UHC">
+          <img src="gamemodes/UHC.png" class="mode-icon">
+          <span class="mode-name">UHC</span>
+          <i class="fas fa-circle-info mode-info"></i>
+          <div class="mode-info-popup">
+            <img src="kitsmodes/UHCKit.png" alt="UHC Kit">
+          </div>
+        </div>
+        <div class="mode-btn" data-mode="Pot">
+          <img src="gamemodes/Pot.png" class="mode-icon">
+          <span class="mode-name">Pot</span>
+          <i class="fas fa-circle-info mode-info"></i>
+          <div class="mode-info-popup">
+            <img src="kitsmodes/PotKit.png" alt="Pot Kit">
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Sub Category (10 modes) -->
+    <div class="mode-tab-content" id="sub-tab">
+      <div class="mode-category-items">
         <div class="mode-btn" data-mode="Mace">
           <img src="gamemodes/Mace.png" class="mode-icon">
           <span class="mode-name">Mace</span>
@@ -118,89 +171,12 @@
             <img src="kitsmodes/Spear MaceKit.png" alt="Spear Mace Kit">
           </div>
         </div>
-      </div>
-    </div>
-
-    <!-- Ranged Category -->
-    <div class="mode-category">
-      <div class="mode-category-header">🏹 Ranged</div>
-      <div class="mode-category-items">
-        <div class="mode-btn" data-mode="Bow">
-          <img src="gamemodes/Bow.png" class="mode-icon">
-          <span class="mode-name">Bow</span>
-          <i class="fas fa-circle-info mode-info"></i>
-          <div class="mode-info-popup">
-            <img src="kitsmodes/BowKit.png" alt="Bow Kit">
-          </div>
-        </div>
         <div class="mode-btn" data-mode="Trident">
           <img src="gamemodes/Trident.png" class="mode-icon">
           <span class="mode-name">Trident</span>
           <i class="fas fa-circle-info mode-info"></i>
           <div class="mode-info-popup">
             <img src="kitsmodes/TridentKit.png" alt="Trident Kit">
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Enhanced/Buff Category -->
-    <div class="mode-category">
-      <div class="mode-category-header">✨ Enhanced Modes</div>
-      <div class="mode-category-items">
-        <div class="mode-btn" data-mode="Pot">
-          <img src="gamemodes/Pot.png" class="mode-icon">
-          <span class="mode-name">Pot</span>
-          <i class="fas fa-circle-info mode-info"></i>
-          <div class="mode-info-popup">
-            <img src="kitsmodes/PotKit.png" alt="Pot Kit">
-          </div>
-        </div>
-        <div class="mode-btn" data-mode="AxePot">
-          <img src="gamemodes/AxePot.png" class="mode-icon">
-          <span class="mode-name">AxePot</span>
-          <i class="fas fa-circle-info mode-info"></i>
-          <div class="mode-info-popup">
-            <img src="kitsmodes/AxePotKit.png" alt="AxePot Kit">
-          </div>
-        </div>
-        <div class="mode-btn" data-mode="NethOP">
-          <img src="gamemodes/NethOP.png" class="mode-icon">
-          <span class="mode-name">NethOP</span>
-          <i class="fas fa-circle-info mode-info"></i>
-          <div class="mode-info-popup">
-            <img src="kitsmodes/NethOPKit.png" alt="NethOP Kit">
-          </div>
-        </div>
-        <div class="mode-btn" data-mode="DeBuff">
-          <img src="gamemodes/DeBuff.png" class="mode-icon">
-          <span class="mode-name">DeBuff</span>
-          <i class="fas fa-circle-info mode-info"></i>
-          <div class="mode-info-popup">
-            <img src="kitsmodes/DeBuffKit.png" alt="DeBuff Kit">
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Vanilla Variants Category -->
-    <div class="mode-category">
-      <div class="mode-category-header">🏔️ Vanilla Variants</div>
-      <div class="mode-category-items">
-        <div class="mode-btn" data-mode="Vanilla">
-          <img src="gamemodes/Vanilla.png" class="mode-icon">
-          <span class="mode-name">Vanilla</span>
-          <i class="fas fa-circle-info mode-info"></i>
-          <div class="mode-info-popup">
-            <img src="kitsmodes/VanillaKit.png" alt="Vanilla Kit">
-          </div>
-        </div>
-        <div class="mode-btn" data-mode="OG Vanilla">
-          <img src="gamemodes/OG Vanilla.png" class="mode-icon">
-          <span class="mode-name">OG Vanilla</span>
-          <i class="fas fa-circle-info mode-info"></i>
-          <div class="mode-info-popup">
-            <img src="kitsmodes/OG VanillaKit.png" alt="OG Vanilla Kit">
           </div>
         </div>
         <div class="mode-btn" data-mode="SMP">
@@ -219,6 +195,60 @@
             <img src="kitsmodes/Diamond SMPKit.png" alt="Diamond SMP Kit">
           </div>
         </div>
+        <div class="mode-btn" data-mode="NethOP">
+          <img src="gamemodes/NethOP.png" class="mode-icon">
+          <span class="mode-name">NethOP</span>
+          <i class="fas fa-circle-info mode-info"></i>
+          <div class="mode-info-popup">
+            <img src="kitsmodes/NethOPKit.png" alt="NethOP Kit">
+          </div>
+        </div>
+        <div class="mode-btn" data-mode="DeBuff">
+          <img src="gamemodes/DeBuff.png" class="mode-icon">
+          <span class="mode-name">DeBuff</span>
+          <i class="fas fa-circle-info mode-info"></i>
+          <div class="mode-info-popup">
+            <img src="kitsmodes/DeBuffKit.png" alt="DeBuff Kit">
+          </div>
+        </div>
+        <div class="mode-btn" data-mode="Speed">
+          <img src="gamemodes/Speed.png" class="mode-icon">
+          <span class="mode-name">Speed</span>
+          <i class="fas fa-circle-info mode-info"></i>
+          <div class="mode-info-popup">
+            <img src="kitsmodes/SpeedKit.png" alt="Speed Kit">
+          </div>
+        </div>
+        <div class="mode-btn" data-mode="AxePot">
+          <img src="gamemodes/AxePot.png" class="mode-icon">
+          <span class="mode-name">AxePot</span>
+          <i class="fas fa-circle-info mode-info"></i>
+          <div class="mode-info-popup">
+            <img src="kitsmodes/AxePotKit.png" alt="AxePot Kit">
+          </div>
+        </div>
+        <div class="mode-btn" data-mode="Pearl">
+          <img src="gamemodes/Pearl.png" class="mode-icon">
+          <span class="mode-name">Pearl</span>
+          <i class="fas fa-circle-info mode-info"></i>
+          <div class="mode-info-popup">
+            <img src="kitsmodes/PearlKit.png" alt="Pearl Kit">
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Extra Category (9 modes) -->
+    <div class="mode-tab-content" id="extra-tab">
+      <div class="mode-category-items">
+        <div class="mode-btn" data-mode="OG Vanilla">
+          <img src="gamemodes/OG Vanilla.png" class="mode-icon">
+          <span class="mode-name">OG Vanilla</span>
+          <i class="fas fa-circle-info mode-info"></i>
+          <div class="mode-info-popup">
+            <img src="kitsmodes/OG VanillaKit.png" alt="OG Vanilla Kit">
+          </div>
+        </div>
         <div class="mode-btn" data-mode="Diamond Survival">
           <img src="gamemodes/Diamond Survival.png" class="mode-icon">
           <span class="mode-name">Diamond Survival</span>
@@ -227,35 +257,12 @@
             <img src="kitsmodes/Diamond SurvivalKit.png" alt="Diamond Survival Kit">
           </div>
         </div>
-        <div class="mode-btn" data-mode="UHC">
-          <img src="gamemodes/UHC.png" class="mode-icon">
-          <span class="mode-name">UHC</span>
+        <div class="mode-btn" data-mode="Bed">
+          <img src="gamemodes/Bed.png" class="mode-icon">
+          <span class="mode-name">Bed</span>
           <i class="fas fa-circle-info mode-info"></i>
           <div class="mode-info-popup">
-            <img src="kitsmodes/UHCKit.png" alt="UHC Kit">
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Special/Specialty Category -->
-    <div class="mode-category">
-      <div class="mode-category-header">🎮 Specialty Modes</div>
-      <div class="mode-category-items">
-        <div class="mode-btn" data-mode="Bridge">
-          <img src="gamemodes/Bridge.png" class="mode-icon">
-          <span class="mode-name">Bridge</span>
-          <i class="fas fa-circle-info mode-info"></i>
-          <div class="mode-info-popup">
-            <img src="kitsmodes/BridgeKit.png" alt="Bridge Kit">
-          </div>
-        </div>
-        <div class="mode-btn" data-mode="Sumo">
-          <img src="gamemodes/Sumo.png" class="mode-icon">
-          <span class="mode-name">Sumo</span>
-          <i class="fas fa-circle-info mode-info"></i>
-          <div class="mode-info-popup">
-            <img src="kitsmodes/SumoKit.png" alt="Sumo Kit">
+            <img src="kitsmodes/BedKit.png" alt="Bed Kit">
           </div>
         </div>
         <div class="mode-btn" data-mode="Manhunt">
@@ -282,22 +289,6 @@
             <img src="kitsmodes/Spear ElytraKit.png" alt="Spear Elytra Kit">
           </div>
         </div>
-        <div class="mode-btn" data-mode="Bed">
-          <img src="gamemodes/Bed.png" class="mode-icon">
-          <span class="mode-name">Bed</span>
-          <i class="fas fa-circle-info mode-info"></i>
-          <div class="mode-info-popup">
-            <img src="kitsmodes/BedKit.png" alt="Bed Kit">
-          </div>
-        </div>
-        <div class="mode-btn" data-mode="Speed">
-          <img src="gamemodes/Speed.png" class="mode-icon">
-          <span class="mode-name">Speed</span>
-          <i class="fas fa-circle-info mode-info"></i>
-          <div class="mode-info-popup">
-            <img src="kitsmodes/SpeedKit.png" alt="Speed Kit">
-          </div>
-        </div>
         <div class="mode-btn" data-mode="Minecart">
           <img src="gamemodes/Minecart.png" class="mode-icon">
           <span class="mode-name">Minecart</span>
@@ -314,12 +305,26 @@
             <img src="kitsmodes/CreeperKit.png" alt="Creeper Kit">
           </div>
         </div>
-        <div class="mode-btn" data-mode="Pearl">
-          <img src="gamemodes/Pearl.png" class="mode-icon">
-          <span class="mode-name">Pearl</span>
+        <div class="mode-btn" data-mode="Bridge">
+          <img src="gamemodes/Bridge.png" class="mode-icon">
+          <span class="mode-name">Bridge</span>
           <i class="fas fa-circle-info mode-info"></i>
           <div class="mode-info-popup">
-            <img src="kitsmodes/PearlKit.png" alt="Pearl Kit">
+            <img src="kitsmodes/BridgeKit.png" alt="Bridge Kit">
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bonus Category (2 modes) -->
+    <div class="mode-tab-content" id="bonus-tab">
+      <div class="mode-category-items">
+        <div class="mode-btn" data-mode="Sumo">
+          <img src="gamemodes/Sumo.png" class="mode-icon">
+          <span class="mode-name">Sumo</span>
+          <i class="fas fa-circle-info mode-info"></i>
+          <div class="mode-info-popup">
+            <img src="kitsmodes/SumoKit.png" alt="Sumo Kit">
           </div>
         </div>
         <div class="mode-btn" data-mode="OP">
