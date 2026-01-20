@@ -1567,7 +1567,13 @@ modalContent.innerHTML = `
 ============================= */
 
 (async () => {
-  await loadPlayers();
+  try {
+    await loadPlayers();
+  } catch (error) {
+    console.error("Failed to load players from server:", error);
+    // Optionally load from local file or set players to empty
+    players = [];
+  }
   players.forEach(p => p.points = calculatePoints(p, "player"));
   builders.forEach(b => b.points = calculatePoints(b, "builder"));
   await loadPlayerNames();
