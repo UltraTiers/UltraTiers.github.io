@@ -1809,6 +1809,46 @@ body {
 }
 
 /* ============================= */
+/* FIGHTERS REGION TABS */
+/* ============================= */
+
+.fighters-region-tabs {
+    display: flex;
+    gap: 6px;
+    margin-bottom: 12px;
+    flex-wrap: wrap;
+    padding: 8px 12px;
+    background: rgba(255,255,255,0.02);
+    border-radius: 10px;
+}
+
+.fighters-region-tab-btn {
+    padding: 8px 14px;
+    border: none;
+    background: rgba(255,255,255,0.04);
+    color: rgba(255,255,255,0.65);
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.fighters-region-tab-btn:hover {
+    color: rgba(255,255,255,0.9);
+    background: rgba(255,255,255,0.08);
+    transform: translateY(-1px);
+}
+
+.fighters-region-tab-btn.active {
+    color: rgba(255,255,255,1);
+    background: rgba(255,255,255,0.12);
+    box-shadow: 0 2px 8px rgba(255,255,255,0.06);
+}
+
+/* ============================= */
 /* LEADERBOARD MODE TABS */
 /* ============================= */
 

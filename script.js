@@ -602,7 +602,9 @@ document.querySelectorAll(".ranking-option").forEach(opt => {
     const region = opt.dataset.region;
     currentLeaderboardRegion = region;
     showSection(leaderboardSection);
-    // Reset to main category and generate players
+    // Reset to main category and set active region tab
+    document.querySelectorAll(".fighters-region-tab-btn").forEach(b => b.classList.remove("active"));
+    document.querySelector(`.fighters-region-tab-btn[data-fighter-region='${region}']`).classList.add("active");
     document.querySelectorAll(".leaderboard-mode-tab-btn").forEach(b => b.classList.remove("active"));
     document.querySelector(".leaderboard-mode-tab-btn[data-mode-category='main']").classList.add("active");
     generatePlayers(region, "main");
@@ -874,6 +876,37 @@ document.querySelectorAll(".leaderboard-mode-tab-btn").forEach(btn => {
 });
 
 /* =============================
+   FIGHTERS REGION TAB SWITCHING
+============================= */
+
+document.querySelectorAll(".fighters-region-tab-btn").forEach(btn => {
+  btn.addEventListener("click", () => {
+    const region = btn.dataset.fighterRegion;
+    
+    // Show loading screen
+    showLoadingScreen();
+    
+    setTimeout(() => {
+      // Remove active class from all tabs
+      document.querySelectorAll(".fighters-region-tab-btn").forEach(b => b.classList.remove("active"));
+      
+      // Add active class to clicked tab
+      btn.classList.add("active");
+      
+      // Get current mode category
+      const modeCategory = document.querySelector(".leaderboard-mode-tab-btn.active")?.dataset.modeCategory || "main";
+      
+      // Update current region and regenerate players
+      currentLeaderboardRegion = region;
+      generatePlayers(region, modeCategory);
+      
+      // Hide loading screen
+      hideLoadingScreen();
+    }, 350);
+  });
+});
+
+/* =============================
    BUILDERS REGION TAB SWITCHING
 ============================= */
 
@@ -933,6 +966,7 @@ const mode = [
 
 // Mode categories mapping
 const modeCategories = {
+  overall: ["Axe", "Sword", "Bow", "Vanilla", "NethOP", "Pot", "UHC", "SMP", "Mace", "Spear Mace", "Diamond SMP", "OG Vanilla", "Bed", "DeBuff", "Speed", "Manhunt", "Elytra", "Spear Elytra", "Diamond Survival", "Minecart", "Creeper", "Trident", "AxePot", "Pearl", "Bridge", "Sumo", "OP"],
   main: ["Sword", "Axe", "Bow", "Vanilla", "UHC", "Pot"],
   sub: ["Mace", "Diamond SMP", "OG Vanilla", "Bed", "DeBuff", "Speed", "Manhunt", "Elytra", "Spear Elytra", "NethOP"],
   extra: ["Diamond Survival", "Minecart", "Creeper", "Trident", "AxePot", "Pearl", "Bridge", "Sumo", "SMP"],
