@@ -18,6 +18,16 @@ let docsSection;
 let applicationSection;
 let testersSection;
 let buildersSection;
+let tableHeader;
+let playersContainer;
+let testersContainer;
+let testerModeFilter;
+let testerRegionFilter;
+let searchInput;
+let modal;
+let modalTitle;
+let modalContent;
+let authModal;
 
 /* =============================
    LOADING SCREEN UTILITY
@@ -431,7 +441,7 @@ function getPlayerPlacement(player, region = "global") {
 // Moved inside DOMContentLoaded
 
 const loginBtn = document.getElementById("login-btn");
-const authModal = document.getElementById("auth-modal");
+authModal = document.getElementById("auth-modal");
 const authCancelBtn = document.getElementById("auth-cancel");
 
 // Moved inside DOMContentLoaded
@@ -622,25 +632,25 @@ homeSection = document.getElementById("home-section");
 leaderboardSection = document.getElementById("leaderboard-section");
 docsSection = document.getElementById("docs-section");
 applicationSection = document.getElementById("application-section");
-testersSection = document.getElementById("testers-section");
 buildersSection = document.getElementById("builders-section");
-  const playersContainer = document.getElementById("players-container");
-  const tierDocsContainer = document.getElementById("tier-docs-container");
-  const modal = document.getElementById("modal");
-  const modalTitle = document.getElementById("modal-title");
-  const modalContent = document.getElementById("modal-content");
-  const closeModalBtn = document.getElementById("close-modal");
-  const searchInput = document.getElementById("search-input");
-  const tableHeader = document.querySelector(".table-header");
-  const testersContainer = document.getElementById("testers-container");
-  const testerModeFilter = document.getElementById("tester-mode-filter");
-  const testerRegionFilter = document.getElementById("tester-region-filter");
+playersContainer = document.querySelector(".players-container");
+tierDocsContainer = document.getElementById("tier-docs-container");
+modal = document.getElementById("modal");
+modalTitle = document.getElementById("modal-title");
+modalContent = document.getElementById("modal-content");
+closeModalBtn = document.getElementById("close-modal");
+searchInput = document.getElementById("search-input");
+tableHeader = document.querySelector(".table-header");
+testersContainer = document.getElementById("testers-container");
+testerModeFilter = document.getElementById("tester-mode-filter");
+testerRegionFilter = document.getElementById("tester-region-filter");
 
-  const authButtons = document.getElementById("auth-buttons");
-  const userDropdown = document.getElementById("user-profile-dropdown");
-  const userAvatar = document.getElementById("user-avatar");
-  const profileMenu = document.getElementById("profile-menu");
-  const logoutBtn = document.getElementById("logout-btn");
+authButtons = document.getElementById("auth-buttons");
+userDropdown = document.getElementById("user-profile-dropdown");
+userAvatar = document.getElementById("user-avatar");
+profileMenu = document.getElementById("profile-menu");
+logoutBtn = document.getElementById("logout-btn");
+
 
   // Toggle dropdown
   userDropdown.addEventListener("click", (e) => {
