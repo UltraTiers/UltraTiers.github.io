@@ -423,70 +423,21 @@ function getPlayerPlacement(player, region = "global") {
 }
 
 // Close PLAYER modal with X button
-closeModalBtn.addEventListener("click", () => {
-  modal.classList.remove("show");
-});
+// Moved inside DOMContentLoaded
 
 const loginBtn = document.getElementById("login-btn");
 const authModal = document.getElementById("auth-modal");
 const authCancelBtn = document.getElementById("auth-cancel");
 
-authCancelBtn.addEventListener("click", closeAuth);
-
-loginBtn.addEventListener("click", () => {
-  authModal.classList.add("show");
-});
+// Moved inside DOMContentLoaded
 
 function closeAuth() {
   authModal.classList.remove("show");
 }
 
-// Close PLAYER modal when clicking backdrop
-modal.addEventListener("click", (e) => {
-  if (e.target === modal) {
-    modal.classList.remove("show");
-  }
-});
+// Moved inside DOMContentLoaded
 
-const authForm = document.querySelector(".auth-form");
-
-authForm.addEventListener("submit", async (e) => {
-  e.preventDefault();
-
-  const ign = document.getElementById("auth-ign").value.trim();
-  const code = document.getElementById("auth-code").value.trim();
-
-  if (!ign || !code) {
-    alert("Please enter IGN and login code");
-    return;
-  }
-
-  try {
-    const res = await fetch("/auth/login", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ ign, code })
-    });
-
-    const data = await res.json();
-
-    if (!res.ok) {
-      alert(data.error || "Login failed");
-      return;
-    }
-
-    // ✅ Save login state
-    localStorage.setItem("ultratiers_user", JSON.stringify(data));
-
-    // ✅ Update UI
-    setLoggedInUser(data);
-
-    closeAuth();
-  } catch (err) {
-    console.error(err);
-    alert("Server error during login");
-  }
-});
+// Moved inside DOMContentLoaded
 
 function setLoggedInUser(user) {
   currentUser = user;
@@ -561,24 +512,13 @@ function sortPlayerTiers(tiers, retiredModes = []) {
 }
 
 
-const authButtons = document.getElementById("auth-buttons");
-const userDropdown = document.getElementById("user-profile-dropdown");
-const userAvatar = document.getElementById("user-avatar");
-const profileMenu = document.getElementById("profile-menu");
-const logoutBtn = document.getElementById("logout-btn");
+// Moved inside DOMContentLoaded
 
 // Toggle dropdown
-userDropdown.addEventListener("click", (e) => {
-  e.stopPropagation(); // prevent immediate closing
-  userDropdown.classList.toggle("active");
-});
+// Moved inside DOMContentLoaded
 
 // Close dropdown if clicking outside
-document.addEventListener("click", (e) => {
-  if (!userDropdown.contains(e.target)) {
-    userDropdown.classList.remove("active");
-  }
-});
+// Moved inside DOMContentLoaded
 
 let currentLeaderboardRegion = "global";
 
@@ -596,21 +536,7 @@ document.querySelectorAll(".ranking-option").forEach(opt => {
   });
 });
 
-
-// Logout
-logoutBtn.addEventListener("click", () => {
-  localStorage.removeItem("ultratiers_user");
-
-  currentUser = null;
-
-  authButtons.classList.remove("hidden");
-  userDropdown.classList.add("hidden");
-  userDropdown.classList.remove("active");
-
-  profileDesignerModal.classList.remove("show");
-
-  console.log("User logged out");
-});
+// Moved inside DOMContentLoaded
 
 /* =============================
    PROFILE DESIGNER LOGIC
@@ -706,7 +632,99 @@ document.addEventListener("DOMContentLoaded", () => {
   const testerModeFilter = document.getElementById("tester-mode-filter");
   const testerRegionFilter = document.getElementById("tester-region-filter");
 
-  // Add more elements as needed
+  const authButtons = document.getElementById("auth-buttons");
+  const userDropdown = document.getElementById("user-profile-dropdown");
+  const userAvatar = document.getElementById("user-avatar");
+  const profileMenu = document.getElementById("profile-menu");
+  const logoutBtn = document.getElementById("logout-btn");
+
+  // Toggle dropdown
+  userDropdown.addEventListener("click", (e) => {
+    e.stopPropagation(); // prevent immediate closing
+    userDropdown.classList.toggle("active");
+  });
+
+  // Close dropdown if clicking outside
+  document.addEventListener("click", (e) => {
+    if (!userDropdown.contains(e.target)) {
+      userDropdown.classList.remove("active");
+    }
+  });
+
+  // Logout
+  logoutBtn.addEventListener("click", () => {
+    localStorage.removeItem("ultratiers_user");
+
+    currentUser = null;
+
+    authButtons.classList.remove("hidden");
+    userDropdown.classList.add("hidden");
+    userDropdown.classList.remove("active");
+
+    profileDesignerModal.classList.remove("show");
+
+    console.log("User logged out");
+  });
+  closeModalBtn.addEventListener("click", () => {
+    modal.classList.remove("show");
+  });
+
+  const loginBtn = document.getElementById("login-btn");
+  const authModal = document.getElementById("auth-modal");
+  const authCancelBtn = document.getElementById("auth-cancel");
+
+  authCancelBtn.addEventListener("click", closeAuth);
+
+  loginBtn.addEventListener("click", () => {
+    authModal.classList.add("show");
+  });
+
+  // Close PLAYER modal when clicking backdrop
+  modal.addEventListener("click", (e) => {
+    if (e.target === modal) {
+      modal.classList.remove("show");
+    }
+  });
+
+  const authForm = document.querySelector(".auth-form");
+
+  authForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
+
+    const ign = document.getElementById("auth-ign").value.trim();
+    const code = document.getElementById("auth-code").value.trim();
+
+    if (!ign || !code) {
+      alert("Please enter IGN and login code");
+      return;
+    }
+
+    try {
+      const res = await fetch("/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ign, code })
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        alert(data.error || "Login failed");
+        return;
+      }
+
+      // ✅ Save login state
+      localStorage.setItem("ultratiers_user", JSON.stringify(data));
+
+      // ✅ Update UI
+      setLoggedInUser(data);
+
+      closeAuth();
+    } catch (err) {
+      console.error(err);
+      alert("Server error during login");
+    }
+  });
 
   // Home page card navigation
   const cardButtons = document.querySelectorAll(".card-button");
