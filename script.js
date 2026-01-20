@@ -12,6 +12,13 @@ const tiersDocs = [
     { tier: "LT5", gamemode: "Fighter Tier", description: "Gives you 1 point." }
 ];
 
+let homeSection;
+let leaderboardSection;
+let docsSection;
+let applicationSection;
+let testersSection;
+let buildersSection;
+
 /* =============================
    LOADING SCREEN UTILITY
 ============================= */
@@ -54,8 +61,6 @@ const editBannerBtn = document.getElementById("edit-banner-btn");
 const bannerOptions = document.querySelectorAll(".banner-options img");
 const designerName = document.getElementById("designer-name");
 const designerAvatar = document.getElementById("designer-avatar");
-
-const buildersSection = document.getElementById("builders-section");
 const buildersContainer = document.getElementById("builders-container");
 
 let currentUser = null;
@@ -613,12 +618,12 @@ document.addEventListener("DOMContentLoaded", () => {
   /* =============================
      ELEMENTS
   ============================= */
-
-  const homeSection = document.getElementById("home-section");
-  const leaderboardSection = document.getElementById("leaderboard-section");
-  const applicationSection = document.getElementById("application-section");
-  const docsSection = document.getElementById("docs-section");
-  const buildersSection = document.getElementById("builders-section");
+homeSection = document.getElementById("home-section");
+leaderboardSection = document.getElementById("leaderboard-section");
+docsSection = document.getElementById("docs-section");
+applicationSection = document.getElementById("application-section");
+testersSection = document.getElementById("testers-section");
+buildersSection = document.getElementById("builders-section");
   const playersContainer = document.getElementById("players-container");
   const tierDocsContainer = document.getElementById("tier-docs-container");
   const modal = document.getElementById("modal");
@@ -627,7 +632,6 @@ document.addEventListener("DOMContentLoaded", () => {
   const closeModalBtn = document.getElementById("close-modal");
   const searchInput = document.getElementById("search-input");
   const tableHeader = document.querySelector(".table-header");
-  const testersSection = document.getElementById("testers-section");
   const testersContainer = document.getElementById("testers-container");
   const testerModeFilter = document.getElementById("tester-mode-filter");
   const testerRegionFilter = document.getElementById("tester-region-filter");
@@ -1653,62 +1657,3 @@ modalContent.innerHTML = `
     modal.classList.add("show");
   }
 });
-
-/* =============================
-   INIT
-============================= */
-
-(async () => {
-  try {
-    await loadPlayers();
-  } catch (error) {
-    console.error("Failed to load players from server:", error);
-    players = [];
-  }
-  players.forEach(p => p.points = calculatePoints(p, "player"));
-  builders.forEach(b => b.points = calculatePoints(b, "builder"));
-  try {
-    await loadPlayerNames();
-  } catch (error) {
-    console.error("Failed to load player names:", error);
-  }
-  try {
-    await loadTesters();
-  } catch (error) {
-    console.error("Failed to load testers:", error);
-  }
-  try {
-    await loadBuilders();
-  } catch (error) {
-    console.error("Failed to load builders:", error);
-  }
-
-  updateTestedCount();
-
-  const hash = window.location.hash;
-
-  if (hash.startsWith("#subject=")) {
-    // Restore builder subject leaderboard
-    const subject = decodeURIComponent(hash.split("=")[1]);
-    normalizeBuilderTiers();
-    showBuildersSection("global");
-    generateBuilderModeLeaderboard(subject);
-
-} else if (hash.startsWith("#mode=")) {
-  const mode = decodeURIComponent(hash.split("=")[1]);
-  showSection(leaderboardSection);
-  tableHeader.style.display = "none";
-  generateModeLeaderboard(mode);
-} else {
-    // Default: show home page
-    showSection(homeSection);
-  }
-
-  // Load testers
-  populateTesterModes();
-  renderTesters();
-
-  // Restore logged-in user
-  const savedUser = localStorage.getItem("ultratiers_user");
-  if (savedUser) setLoggedInUser(JSON.parse(savedUser));
-})();
