@@ -12,23 +12,6 @@ const tiersDocs = [
     { tier: "LT5", gamemode: "Fighter Tier", description: "Gives you 1 point." }
 ];
 
-let homeSection;
-let leaderboardSection;
-let docsSection;
-let applicationSection;
-let testersSection;
-let buildersSection;
-let tableHeader;
-let playersContainer;
-let testersContainer;
-let testerModeFilter;
-let testerRegionFilter;
-let searchInput;
-let modal;
-let modalTitle;
-let modalContent;
-let authModal;
-
 /* =============================
    LOADING SCREEN UTILITY
 ============================= */
@@ -54,7 +37,22 @@ async function loadPlayers() {
    ELEMENTS
 ============================= */
 
-// Moved inside DOMContentLoaded
+const homeSection = document.getElementById("home-section");
+const leaderboardSection = document.getElementById("leaderboard-section");
+const applicationSection = document.getElementById("application-section");
+const docsSection = document.getElementById("docs-section");
+const playersContainer = document.getElementById("players-container");
+const tierDocsContainer = document.getElementById("tier-docs-container");
+const modal = document.getElementById("modal");
+const modalTitle = document.getElementById("modal-title");
+const modalContent = document.getElementById("modal-content");
+const closeModalBtn = document.getElementById("close-modal");
+const searchInput = document.getElementById("search-input");
+const tableHeader = document.querySelector(".table-header");
+const testersSection = document.getElementById("testers-section");
+const testersContainer = document.getElementById("testers-container");
+const testerModeFilter = document.getElementById("tester-mode-filter");
+const testerRegionFilter = document.getElementById("tester-region-filter");
 
 /* =============================
    PROFILE DESIGNER ELEMENTS
@@ -71,6 +69,8 @@ const editBannerBtn = document.getElementById("edit-banner-btn");
 const bannerOptions = document.querySelectorAll(".banner-options img");
 const designerName = document.getElementById("designer-name");
 const designerAvatar = document.getElementById("designer-avatar");
+
+const buildersSection = document.getElementById("builders-section");
 const buildersContainer = document.getElementById("builders-container");
 
 let currentUser = null;
@@ -438,21 +438,70 @@ function getPlayerPlacement(player, region = "global") {
 }
 
 // Close PLAYER modal with X button
-// Moved inside DOMContentLoaded
+closeModalBtn.addEventListener("click", () => {
+  modal.classList.remove("show");
+});
 
 const loginBtn = document.getElementById("login-btn");
-authModal = document.getElementById("auth-modal");
+const authModal = document.getElementById("auth-modal");
 const authCancelBtn = document.getElementById("auth-cancel");
 
-// Moved inside DOMContentLoaded
+authCancelBtn.addEventListener("click", closeAuth);
+
+loginBtn.addEventListener("click", () => {
+  authModal.classList.add("show");
+});
 
 function closeAuth() {
   authModal.classList.remove("show");
 }
 
-// Moved inside DOMContentLoaded
+// Close PLAYER modal when clicking backdrop
+modal.addEventListener("click", (e) => {
+  if (e.target === modal) {
+    modal.classList.remove("show");
+  }
+});
 
-// Moved inside DOMContentLoaded
+const authForm = document.querySelector(".auth-form");
+
+authForm.addEventListener("submit", async (e) => {
+  e.preventDefault();
+
+  const ign = document.getElementById("auth-ign").value.trim();
+  const code = document.getElementById("auth-code").value.trim();
+
+  if (!ign || !code) {
+    alert("Please enter IGN and login code");
+    return;
+  }
+
+  try {
+    const res = await fetch("/auth/login", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ ign, code })
+    });
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      alert(data.error || "Login failed");
+      return;
+    }
+
+    // ✅ Save login state
+    localStorage.setItem("ultratiers_user", JSON.stringify(data));
+
+    // ✅ Update UI
+    setLoggedInUser(data);
+
+    closeAuth();
+  } catch (err) {
+    console.error(err);
+    alert("Server error during login");
+  }
+});
 
 function setLoggedInUser(user) {
   currentUser = user;
@@ -527,13 +576,24 @@ function sortPlayerTiers(tiers, retiredModes = []) {
 }
 
 
-// Moved inside DOMContentLoaded
+const authButtons = document.getElementById("auth-buttons");
+const userDropdown = document.getElementById("user-profile-dropdown");
+const userAvatar = document.getElementById("user-avatar");
+const profileMenu = document.getElementById("profile-menu");
+const logoutBtn = document.getElementById("logout-btn");
 
 // Toggle dropdown
-// Moved inside DOMContentLoaded
+userDropdown.addEventListener("click", (e) => {
+  e.stopPropagation(); // prevent immediate closing
+  userDropdown.classList.toggle("active");
+});
 
 // Close dropdown if clicking outside
-// Moved inside DOMContentLoaded
+document.addEventListener("click", (e) => {
+  if (!userDropdown.contains(e.target)) {
+    userDropdown.classList.remove("active");
+  }
+});
 
 let currentLeaderboardRegion = "global";
 
@@ -551,7 +611,21 @@ document.querySelectorAll(".ranking-option").forEach(opt => {
   });
 });
 
-// Moved inside DOMContentLoaded
+
+// Logout
+logoutBtn.addEventListener("click", () => {
+  localStorage.removeItem("ultratiers_user");
+
+  currentUser = null;
+
+  authButtons.classList.remove("hidden");
+  userDropdown.classList.add("hidden");
+  userDropdown.classList.remove("active");
+
+  profileDesignerModal.classList.remove("show");
+
+  console.log("User logged out");
+});
 
 /* =============================
    PROFILE DESIGNER LOGIC
@@ -624,224 +698,44 @@ document.querySelector(".logo-img")?.addEventListener("click", () => {
   }, 300);
 });
 
-document.addEventListener("DOMContentLoaded", () => {
-  /* =============================
-     ELEMENTS
-  ============================= */
-homeSection = document.getElementById("home-section");
-leaderboardSection = document.getElementById("leaderboard-section");
-docsSection = document.getElementById("docs-section");
-applicationSection = document.getElementById("application-section");
-buildersSection = document.getElementById("builders-section");
-playersContainer = document.querySelector(".players-container");
-tierDocsContainer = document.getElementById("tier-docs-container");
-modal = document.getElementById("modal");
-modalTitle = document.getElementById("modal-title");
-modalContent = document.getElementById("modal-content");
-closeModalBtn = document.getElementById("close-modal");
-searchInput = document.getElementById("search-input");
-tableHeader = document.querySelector(".table-header");
-testersContainer = document.getElementById("testers-container");
-testerModeFilter = document.getElementById("tester-mode-filter");
-testerRegionFilter = document.getElementById("tester-region-filter");
-
-authButtons = document.getElementById("auth-buttons");
-userDropdown = document.getElementById("user-profile-dropdown");
-userAvatar = document.getElementById("user-avatar");
-profileMenu = document.getElementById("profile-menu");
-logoutBtn = document.getElementById("logout-btn");
-
-
-  // Toggle dropdown
-  userDropdown.addEventListener("click", (e) => {
-    e.stopPropagation(); // prevent immediate closing
-    userDropdown.classList.toggle("active");
-  });
-
-  // Close dropdown if clicking outside
-  document.addEventListener("click", (e) => {
-    if (!userDropdown.contains(e.target)) {
-      userDropdown.classList.remove("active");
-    }
-  });
-
-  // Logout
-  logoutBtn.addEventListener("click", () => {
-    localStorage.removeItem("ultratiers_user");
-
-    currentUser = null;
-
-    authButtons.classList.remove("hidden");
-    userDropdown.classList.add("hidden");
-    userDropdown.classList.remove("active");
-
-    profileDesignerModal.classList.remove("show");
-
-    console.log("User logged out");
-  });
-  closeModalBtn.addEventListener("click", () => {
-    modal.classList.remove("show");
-  });
-
-  const loginBtn = document.getElementById("login-btn");
-  const authModal = document.getElementById("auth-modal");
-  const authCancelBtn = document.getElementById("auth-cancel");
-
-  authCancelBtn.addEventListener("click", closeAuth);
-
-  loginBtn.addEventListener("click", () => {
-    authModal.classList.add("show");
-  });
-
-  // Close PLAYER modal when clicking backdrop
-  modal.addEventListener("click", (e) => {
-    if (e.target === modal) {
-      modal.classList.remove("show");
-    }
-  });
-
-  const authForm = document.querySelector(".auth-form");
-
-  authForm.addEventListener("submit", async (e) => {
-    e.preventDefault();
-
-    const ign = document.getElementById("auth-ign").value.trim();
-    const code = document.getElementById("auth-code").value.trim();
-
-    if (!ign || !code) {
-      alert("Please enter IGN and login code");
-      return;
-    }
-
-    try {
-      const res = await fetch("/auth/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ign, code })
-      });
-
-      const data = await res.json();
-
-      if (!res.ok) {
-        alert(data.error || "Login failed");
-        return;
-      }
-
-      // ✅ Save login state
-      localStorage.setItem("ultratiers_user", JSON.stringify(data));
-
-      // ✅ Update UI
-      setLoggedInUser(data);
-
-      closeAuth();
-    } catch (err) {
-      console.error(err);
-      alert("Server error during login");
-    }
-  });
-
-  // Home page card navigation
-  const cardButtons = document.querySelectorAll(".card-button");
-  console.log("Found card buttons:", cardButtons.length);
-  cardButtons.forEach(button => {
-    button.addEventListener("click", (e) => {
-      e.stopPropagation(); // Prevent bubbling to card if any
-      const card = button.closest(".home-card");
-      const section = card.dataset.section;
-      console.log("Button clicked:", section);
-      showLoadingScreen();
-      setTimeout(() => {
-        if (section === "rankings") {
-          showSection(leaderboardSection);
-          tableHeader.style.display = "grid";
-        } else if (section === "builders") {
-          showSection(buildersSection);
-          tableHeader.style.display = "none";
-          renderBuilders("global");
-        } else if (section === "modes") {
-          // Just navigate to home, users can select modes from navbar
-          showSection(leaderboardSection);
-          tableHeader.style.display = "grid";
-        } else if (section === "testers") {
-          showSection(testersSection);
-          tableHeader.style.display = "none";
-          if (!testers.length) {
-            loadTesters().then(() => {
-              populateTesterModes();
-              renderTesters();
-            });
-          } else {
+// Home page card navigation
+document.querySelectorAll(".home-card").forEach(card => {
+  card.addEventListener("click", () => {
+    const section = card.dataset.section;
+    showLoadingScreen();
+    setTimeout(() => {
+      if (section === "rankings") {
+        showSection(leaderboardSection);
+        tableHeader.style.display = "grid";
+      } else if (section === "builders") {
+        showSection(buildersSection);
+        tableHeader.style.display = "none";
+        renderBuilders("global");
+      } else if (section === "modes") {
+        // Just navigate to home, users can select modes from navbar
+        showSection(leaderboardSection);
+        tableHeader.style.display = "grid";
+      } else if (section === "testers") {
+        showSection(testersSection);
+        tableHeader.style.display = "none";
+        if (!testers.length) {
+          loadTesters().then(() => {
+            populateTesterModes();
             renderTesters();
-          }
-        } else if (section === "docs") {
-          showSection(docsSection);
-          tableHeader.style.display = "none";
-        } else if (section === "application") {
-          showSection(applicationSection);
-          tableHeader.style.display = "none";
+          });
+        } else {
+          renderTesters();
         }
-        hideLoadingScreen();
-      }, 300);
-    });
+      } else if (section === "docs") {
+        showSection(docsSection);
+        tableHeader.style.display = "none";
+      } else if (section === "application") {
+        showSection(applicationSection);
+        tableHeader.style.display = "none";
+      }
+      hideLoadingScreen();
+    }, 300);
   });
-
-  // Other event listeners would need to be moved here too, but for now, focus on this
-
-  // The IIFE for loading data
-  (async () => {
-    try {
-      await loadPlayers();
-    } catch (error) {
-      console.error("Failed to load players from server:", error);
-      players = [];
-    }
-    players.forEach(p => p.points = calculatePoints(p, "player"));
-    builders.forEach(b => b.points = calculatePoints(b, "builder"));
-    try {
-      await loadPlayerNames();
-    } catch (error) {
-      console.error("Failed to load player names:", error);
-    }
-    try {
-      await loadTesters();
-    } catch (error) {
-      console.error("Failed to load testers:", error);
-    }
-    try {
-      await loadBuilders();
-    } catch (error) {
-      console.error("Failed to load builders:", error);
-    }
-
-    updateTestedCount();
-
-    const hash = window.location.hash;
-
-    if (hash.startsWith("#subject=")) {
-      // Restore builder subject leaderboard
-      const subject = decodeURIComponent(hash.split("=")[1]);
-      normalizeBuilderTiers();
-      showBuildersSection("global");
-      generateBuilderModeLeaderboard(subject);
-
-  } else if (hash.startsWith("#mode=")) {
-    const mode = decodeURIComponent(hash.split("=")[1]);
-    showSection(leaderboardSection);
-    tableHeader.style.display = "none";
-    generateModeLeaderboard(mode);
-  } else {
-      // Default: show home page
-      showSection(homeSection);
-    }
-
-    // Load testers
-    populateTesterModes();
-    renderTesters();
-
-    // Restore logged-in user
-    const savedUser = localStorage.getItem("ultratiers_user");
-    if (savedUser) setLoggedInUser(JSON.parse(savedUser));
-  })();
 });
 
 document.querySelector(".rankings-btn").addEventListener("click", () => {
@@ -1667,3 +1561,45 @@ modalContent.innerHTML = `
     modal.classList.add("show");
   }
 });
+
+/* =============================
+   INIT
+============================= */
+
+(async () => {
+  await loadPlayers();
+  players.forEach(p => p.points = calculatePoints(p, "player"));
+  builders.forEach(b => b.points = calculatePoints(b, "builder"));
+  await loadPlayerNames();
+  await loadTesters();
+  await loadBuilders(); // builders loaded here, updateTestedCount() is called inside loadBuilders
+
+  updateTestedCount();
+
+  const hash = window.location.hash;
+
+  if (hash.startsWith("#subject=")) {
+    // Restore builder subject leaderboard
+    const subject = decodeURIComponent(hash.split("=")[1]);
+    normalizeBuilderTiers();
+    showBuildersSection("global");
+    generateBuilderModeLeaderboard(subject);
+
+} else if (hash.startsWith("#mode=")) {
+  const mode = decodeURIComponent(hash.split("=")[1]);
+  showSection(leaderboardSection);
+  tableHeader.style.display = "none";
+  generateModeLeaderboard(mode);
+} else {
+    // Default: show home page
+    showSection(homeSection);
+  }
+
+  // Load testers
+  populateTesterModes();
+  renderTesters();
+
+  // Restore logged-in user
+  const savedUser = localStorage.getItem("ultratiers_user");
+  if (savedUser) setLoggedInUser(JSON.parse(savedUser));
+})();
