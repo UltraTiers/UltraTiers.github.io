@@ -1244,6 +1244,38 @@ body {
     box-shadow: 0 0 12px rgba(255,255,255,0.08); /* optional for emphasis */
 }
 
+/* ============================= */
+/* MODE CATEGORIES */
+/* ============================= */
+
+.mode-category {
+    margin-bottom: 12px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+
+.mode-category:last-child {
+    margin-bottom: 0;
+    padding-bottom: 0;
+    border-bottom: none;
+}
+
+.mode-category-header {
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: rgba(255,255,255,0.55);
+    padding: 8px 0;
+    margin-bottom: 8px;
+}
+
+.mode-category-items {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
 /* Discord Buttons */
 .discord-btn {
     background: rgba(255,255,255,0.06) !important;
