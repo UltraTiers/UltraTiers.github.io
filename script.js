@@ -58,6 +58,30 @@ const designerAvatar = document.getElementById("designer-avatar");
 const buildersSection = document.getElementById("builders-section");
 const buildersContainer = document.getElementById("builders-container");
 
+// ===== GLOBAL DOM REFERENCES (FIX FOR BROKEN BUTTONS) =====
+let homeSection,
+    leaderboardSection,
+    docsSection,
+    applicationSection,
+    testersSection,
+    playersContainer,
+    tierDocsContainer,
+    modal,
+    modalTitle,
+    modalContent,
+    closeModalBtn,
+    searchInput,
+    tableHeader,
+    testersContainer,
+    testerModeFilter,
+    testerRegionFilter,
+    authButtons,
+    userDropdown,
+    userAvatar,
+    profileMenu,
+    logoutBtn;
+
+
 let currentUser = null;
 let testers = [];
 let builders = [];
@@ -614,29 +638,30 @@ document.addEventListener("DOMContentLoaded", () => {
      ELEMENTS
   ============================= */
 
-  const homeSection = document.getElementById("home-section");
-  const leaderboardSection = document.getElementById("leaderboard-section");
-  const applicationSection = document.getElementById("application-section");
-  const docsSection = document.getElementById("docs-section");
-  const buildersSection = document.getElementById("builders-section");
-  const playersContainer = document.getElementById("players-container");
-  const tierDocsContainer = document.getElementById("tier-docs-container");
-  const modal = document.getElementById("modal");
-  const modalTitle = document.getElementById("modal-title");
-  const modalContent = document.getElementById("modal-content");
-  const closeModalBtn = document.getElementById("close-modal");
-  const searchInput = document.getElementById("search-input");
-  const tableHeader = document.querySelector(".table-header");
-  const testersSection = document.getElementById("testers-section");
-  const testersContainer = document.getElementById("testers-container");
-  const testerModeFilter = document.getElementById("tester-mode-filter");
-  const testerRegionFilter = document.getElementById("tester-region-filter");
+  homeSection = document.getElementById("home-section");
+  leaderboardSection = document.getElementById("leaderboard-section");
+  applicationSection = document.getElementById("application-section");
+  docsSection = document.getElementById("docs-section");
+  testersSection = document.getElementById("testers-section");
+  buildersSection = document.getElementById("builders-section");
+  playersContainer = document.getElementById("players-container");
+  tierDocsContainer = document.getElementById("tier-docs-container");
+  modal = document.getElementById("modal");
+  modalTitle = document.getElementById("modal-title");
+  modalContent = document.getElementById("modal-content");
+  closeModalBtn = document.getElementById("close-modal");
+  searchInput = document.getElementById("search-input");
+  tableHeader = document.querySelector(".table-header");
+  testersContainer = document.getElementById("testers-container");
+  testerModeFilter = document.getElementById("tester-mode-filter");
+  testerRegionFilter = document.getElementById("tester-region-filter");
 
-  const authButtons = document.getElementById("auth-buttons");
-  const userDropdown = document.getElementById("user-profile-dropdown");
-  const userAvatar = document.getElementById("user-avatar");
-  const profileMenu = document.getElementById("profile-menu");
-  const logoutBtn = document.getElementById("logout-btn");
+  authButtons = document.getElementById("auth-buttons");
+  userDropdown = document.getElementById("user-profile-dropdown");
+  userAvatar = document.getElementById("user-avatar");
+  profileMenu = document.getElementById("profile-menu");
+  logoutBtn = document.getElementById("logout-btn");
+
 
   // Toggle dropdown
   userDropdown.addEventListener("click", (e) => {
@@ -1657,58 +1682,3 @@ modalContent.innerHTML = `
 /* =============================
    INIT
 ============================= */
-
-(async () => {
-  try {
-    await loadPlayers();
-  } catch (error) {
-    console.error("Failed to load players from server:", error);
-    players = [];
-  }
-  players.forEach(p => p.points = calculatePoints(p, "player"));
-  builders.forEach(b => b.points = calculatePoints(b, "builder"));
-  try {
-    await loadPlayerNames();
-  } catch (error) {
-    console.error("Failed to load player names:", error);
-  }
-  try {
-    await loadTesters();
-  } catch (error) {
-    console.error("Failed to load testers:", error);
-  }
-  try {
-    await loadBuilders();
-  } catch (error) {
-    console.error("Failed to load builders:", error);
-  }
-
-  updateTestedCount();
-
-  const hash = window.location.hash;
-
-  if (hash.startsWith("#subject=")) {
-    // Restore builder subject leaderboard
-    const subject = decodeURIComponent(hash.split("=")[1]);
-    normalizeBuilderTiers();
-    showBuildersSection("global");
-    generateBuilderModeLeaderboard(subject);
-
-} else if (hash.startsWith("#mode=")) {
-  const mode = decodeURIComponent(hash.split("=")[1]);
-  showSection(leaderboardSection);
-  tableHeader.style.display = "none";
-  generateModeLeaderboard(mode);
-} else {
-    // Default: show home page
-    showSection(homeSection);
-  }
-
-  // Load testers
-  populateTesterModes();
-  renderTesters();
-
-  // Restore logged-in user
-  const savedUser = localStorage.getItem("ultratiers_user");
-  if (savedUser) setLoggedInUser(JSON.parse(savedUser));
-})();
