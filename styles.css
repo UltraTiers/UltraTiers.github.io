@@ -1935,8 +1935,8 @@ body {
 }
 
 .modal-box .tier.empty {
-    border: 2px dashed rgba(255,255,255,0.3);
-    background-color: transparent;
+    background: transparent;
+    border: 1px dashed rgba(255,255,255,0.2);
 }
 
 .modal-box .tier:hover {

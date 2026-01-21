@@ -1481,18 +1481,9 @@ function attachPlayerClick() {
     el.addEventListener("click", () => {
       const name = el.dataset.player;
       const player = players.find(p => p.name === name);
-      showPlayerModal(player);
-    });
-  });
-}
 
-/* =============================
-   DOCS
-============================= */
-
-function showPlayerModal(player) {
-  // Set modal title to empty because the player name is now displayed below avatar
-  modalTitle.textContent = "";
+      // Set modal title to empty because the player name is now displayed below avatar
+      modalTitle.textContent = "";
 
 const sortedTiers = sortPlayerTiers(player.tiers, player.retired_modes);
 const tiersHTML = sortedTiers
@@ -1552,7 +1543,13 @@ modalContent.innerHTML = `
 `;
 
 modal.style.display = "flex";
+    });
+  });
 }
+
+/* =============================
+   DOCS
+============================= */
 
 function generateDocs() {
   tierDocsContainer.innerHTML = "";
@@ -1985,12 +1982,12 @@ function renderLeaderboardForMode(mode) {
       };
     });
   
-  // Create tier columns (5, 4, 3, 2, 1)
+  // Create tier columns (1, 2, 3, 4, 5)
   const tiersHTML = `
     <div class="mode-wrapper">
       <div class="mode-tiers" id="leaderboard-mode-tiers">
         ${Array.from({length: 5}, (_, i) => {
-          const tierNum = 5 - i; // 5, 4, 3, 2, 1
+          const tierNum = i + 1; // 1, 2, 3, 4, 5
           return '<div class="mode-tier-column"><div class="mode-tier-header">Tier ' + tierNum + '</div></div>';
         }).join('')}
       </div>
@@ -2002,7 +1999,7 @@ function renderLeaderboardForMode(mode) {
   // Add players to their tier columns, sorted by HT first
   playersWithMode.forEach(player => {
     const tierNumber = parseInt(player.modeTierNumber);
-    const tierColumn = document.querySelectorAll("#leaderboard-mode-tiers .mode-tier-column")[5 - tierNumber];
+    const tierColumn = document.querySelectorAll("#leaderboard-mode-tiers .mode-tier-column")[tierNumber - 1];
     
     if (!tierColumn) return;
     
