@@ -1771,52 +1771,154 @@ const modeCategoriesDisplay = {
 function renderModeCategories() {
   modesCategoriesContainer.innerHTML = "";
   
+  // Create category filter buttons
+  const filterContainer = document.createElement("div");
+  filterContainer.className = "mode-category-filters";
+  
   Object.entries(modeCategoriesDisplay).forEach(([category, modes]) => {
-    const categoryDiv = document.createElement("div");
-    categoryDiv.className = "mode-category";
+    const filterBtn = document.createElement("button");
+    filterBtn.className = "mode-category-btn";
+    filterBtn.textContent = category;
+    filterBtn.dataset.category = category.toLowerCase();
     
-    const titleDiv = document.createElement("div");
-    titleDiv.className = "mode-category-title";
-    titleDiv.textContent = category;
-    categoryDiv.appendChild(titleDiv);
-    
-    const listDiv = document.createElement("div");
-    listDiv.className = "mode-list";
-    
-    modes.forEach(mode => {
-      const modeItem = document.createElement("div");
-      modeItem.className = "mode-item";
-      modeItem.textContent = mode;
-      modeItem.addEventListener("click", () => {
-        showLoadingScreen();
-        setTimeout(() => {
-          // Find the category this mode belongs to
-          const modeCategory = getModeCategory(mode);
-          showSection(leaderboardSection);
-          tableHeader.style.display = "grid";
-          const fightRegionTabs = document.querySelector(".fighters-region-tabs");
-          if (fightRegionTabs) fightRegionTabs.style.display = "block";
-          generatePlayers("global", modeCategory);
-          hideLoadingScreen();
-        }, 300);
+    filterBtn.addEventListener("click", () => {
+      // Update active button
+      document.querySelectorAll(".mode-category-btn").forEach(btn => {
+        btn.classList.remove("active");
       });
-      listDiv.appendChild(modeItem);
+      filterBtn.classList.add("active");
+      
+      // Show players for this category
+      showLoadingScreen();
+      setTimeout(() => {
+        showModesCategoryPlayers(category, modes);
+        hideLoadingScreen();
+      }, 300);
     });
     
-    categoryDiv.appendChild(listDiv);
-    modesCategoriesContainer.appendChild(categoryDiv);
+    filterContainer.appendChild(filterBtn);
   });
+  
+  modesCategoriesContainer.appendChild(filterContainer);
+  
+  // Set "Main" as active by default and show its players
+  const mainBtn = filterContainer.querySelector('[data-category="main"]');
+  if (mainBtn) {
+    mainBtn.classList.add("active");
+  }
+  
+  // Create container for mode list and players
+  const contentContainer = document.createElement("div");
+  contentContainer.className = "mode-category-content";
+  contentContainer.id = "mode-category-content";
+  modesCategoriesContainer.appendChild(contentContainer);
+  
+  // Show Main category by default
+  showModesCategoryPlayers("Main", modeCategoriesDisplay["Main"]);
 }
 
-function getModeCategory(mode) {
-  // Find which category this mode belongs to
-  for (const [category, modes] of Object.entries(modeCategoriesDisplay)) {
-    if (modes.includes(mode)) {
-      return category.toLowerCase();
-    }
-  }
-  return "main"; // default fallback
+function showModesCategoryPlayers(category, modes) {
+  const contentContainer = document.getElementById("mode-category-content");
+  if (!contentContainer) return;
+  
+  contentContainer.innerHTML = "";
+  
+  // Show the modes list
+  const modesListDiv = document.createElement("div");
+  modesListDiv.className = "modes-list-display";
+  modesListDiv.innerHTML = `
+    <div class="modes-separator"></div>
+    <h3 class="modes-category-label">${category}</h3>
+    <div class="modes-separator"></div>
+    <div class="modes-in-category">
+      ${modes.map(mode => `<div class="mode-badge">${mode}</div>`).join("")}
+    </div>
+    <div class="modes-separator"></div>
+  `;
+  contentContainer.appendChild(modesListDiv);
+  
+  // Create a container for the players
+  const playersDiv = document.createElement("div");
+  playersDiv.id = "modes-players-container";
+  contentContainer.appendChild(playersDiv);
+  
+  // Generate and display players for this category
+  generatePlayersForCategory(category.toLowerCase(), modes);
 }
+
+function generatePlayersForCategory(category, modes) {
+  const playersDiv = document.getElementById("modes-players-container");
+  if (!playersDiv) return;
+  
+  playersDiv.innerHTML = "";
+  
+  // Sort by points (global order)
+  const sorted = [...players].sort((a, b) => b.points - a.points);
+  
+  // Filter by modes in this category - only include players who have tiers in these modes
+  const categoryModes = modes;
+  const categoryFiltered = sorted.filter(player => {
+    return player.tiers && player.tiers.some(t => categoryModes.includes(t.gamemode));
+  });
+  
+  // Sort filtered players by points again to get proper ranking within category
+  categoryFiltered.sort((a, b) => b.points - a.points);
+  
+  // ✅ HARD LIMIT TO TOP 100
+  const top100 = categoryFiltered.slice(0, 100);
+  
+  top100.forEach((player, index) => {
+    const sortedTiers = sortPlayerTiers(player.tiers, player.retired_modes);
+    
+    // Only show tiers from this category
+    const tiersHTML = sortedTiers
+      .filter(t => categoryModes.includes(t.gamemode))
+      .map(t => {
+        if (!t.tier || t.tier === "Unknown") return `<div class="tier empty"></div>`;
+        const tierNum = t.tier.match(/\d+/)?.[0];
+        if (!tierNum) return `<div class="tier empty"></div>`;
+        
+        const tierNumber = t.tier.match(/\d+/)?.[0];
+        const tierRank = t.tier.startsWith("HT") ? "HT" : "LT";
+        
+        return `
+        <div class="tier ${player.retired_modes?.includes(t.gamemode) ? "retired" : ""}"
+          data-gamemode="${t.gamemode}"
+          data-tier="${tierNumber}"
+          data-rank="${tierRank}"
+          data-tooltip="${t.gamemode} — ${t.tier}">
+            <img src="gamemodes/${t.gamemode}.png">
+            <span>${tierRank}${tierNumber}</span>
+        </div>
+        `;
+      }).join("");
+    
+    const borderClass =
+      index === 0 ? "gold" :
+      index === 1 ? "silver" :
+      index === 2 ? "bronze" : "";
+    
+    const nitroClass = player.nitro ? "nitro" : "";
+    
+    playersDiv.insertAdjacentHTML("beforeend", `
+      <div class="player-card ${borderClass}" data-player="${player.name}">
+        <div class="rank">${index + 1}.</div>
+        <img class="avatar" src="https://render.crafty.gg/3d/bust/${player.uuid}">
+        <div class="player-info">
+          <div class="player-name ${nitroClass}">${player.name}</div>
+          <div class="player-sub">⭐ ${getRankTitle(player.points)} (${player.points})</div>
+        </div>
+        <div class="region region-${player.region.toLowerCase()}">${player.region}</div>
+        <div class="tiers">${tiersHTML}</div>
+      </div>
+    `);
+  });
+  
+  // Attach click handlers to player cards
+  attachPlayerClick();
+}
+
+
 
 /* =============================
    LEADERBOARDS - PER MODE
