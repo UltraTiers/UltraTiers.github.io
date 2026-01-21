@@ -1068,10 +1068,10 @@ const mode = [
 // Mode categories mapping
 const modeCategories = {
   overall: ["Axe", "Sword", "Bow", "Vanilla", "NethOP", "Pot", "UHC", "SMP", "Mace", "Spear Mace", "Diamond SMP", "OG Vanilla", "Bed", "DeBuff", "Speed", "Manhunt", "Elytra", "Spear Elytra", "Diamond Survival", "Minecart", "Creeper", "Trident", "AxePot", "Pearl", "Bridge", "Sumo", "OP"],
-  main: ["Sword", "Axe", "Bow", "Vanilla", "UHC", "Pot"],
-  sub: ["Mace", "Diamond SMP", "OG Vanilla", "Bed", "DeBuff", "Speed", "Manhunt", "Elytra", "Spear Elytra", "NethOP"],
-  extra: ["Diamond Survival", "Minecart", "Creeper", "Trident", "AxePot", "Pearl", "Bridge", "Sumo", "SMP"],
-  bonus: ["Spear Mace", "OP"]
+  main: ["Vanilla", "UHC", "Pot", "NethOP", "SMP", "Sword", "Axe", "Mace"],
+  sub: ["Minecart", "Diamond Survival", "DeBuff", "Elytra", "Speed", "Creeper", "Manhunt", "Diamond SMP", "Bow", "Bed", "OG Vanilla", "Trident", "Spear Elytra", "Spear Mace"],
+  extra: ["AxePot", "Sumo", "OP"],
+  bonus: ["Bridge", "Pearl"]
 };
 
 // Optional: auto-set kit image src based on mode name (dynamic)
@@ -1771,10 +1771,10 @@ function generateAllPlayerModes(region = "global") {
 ============================= */
 
 const modeCategoriesDisplay = {
-  "Main": ["Sword", "Axe", "Bow", "Vanilla", "UHC", "Pot"],
-  "Sub": ["Mace", "Diamond SMP", "OG Vanilla", "Bed", "DeBuff", "Speed", "Manhunt", "Elytra", "Spear Elytra", "NethOP"],
-  "Extra": ["Diamond Survival", "Minecart", "Creeper", "Trident", "AxePot", "Pearl", "Bridge", "Sumo", "SMP"],
-  "Bonus": ["Spear Mace", "OP"]
+  "Main": ["Vanilla", "UHC", "Pot", "NethOP", "SMP", "Sword", "Axe", "Mace"],
+  "Sub": ["Minecart", "Diamond Survival", "DeBuff", "Elytra", "Speed", "Creeper", "Manhunt", "Diamond SMP", "Bow", "Bed", "OG Vanilla", "Trident", "Spear Elytra", "Spear Mace"],
+  "Extra": ["AxePot", "Sumo", "OP"],
+  "Bonus": ["Bridge", "Pearl"]
 };
 
 function renderModeCategories() {
@@ -1879,26 +1879,28 @@ function generatePlayersForCategory(category, modes) {
   const top100 = playersWithCategoryPoints.slice(0, 100);
   
   top100.forEach((player, index) => {
-    // Filter player tiers to only include this category
-    const categoryTiers = player.tiers.filter(t => modes.includes(t.gamemode));
+    // Create tiers for all modes in the category, using "Unknown" for untested
+    const categoryTiers = modes.map(mode => {
+      const existingTier = player.tiers.find(t => t.gamemode === mode);
+      return existingTier || { gamemode: mode, tier: "Unknown" };
+    });
     const sortedTiers = sortPlayerTiers(categoryTiers, player.retired_modes);
     
-    // Generate tier HTML - only for filtered tiers
+    // Generate tier HTML - for all modes in category
     const tiersHTML = sortedTiers
       .map(t => {
-        if (!t.tier || t.tier === "Unknown") return "";
-        const tierNum = t.tier.match(/\d+/)?.[0];
+        const tierNum = t.tier === "Unknown" ? "?" : t.tier.match(/\d+/)?.[0];
         if (!tierNum) return "";
         
-        const tierRank = t.tier.startsWith("HT") ? "HT" : "LT";
+        const tierRank = t.tier === "Unknown" ? "Unknown" : (t.tier.startsWith("HT") ? "HT" : "LT");
         
-        return `<div class="tier ${player.retired_modes?.includes(t.gamemode) ? "retired" : ""}"
+        return `<div class="tier ${player.retired_modes?.includes(t.gamemode) ? "retired" : ""} ${t.tier === "Unknown" ? "unknown" : ""}"
           data-gamemode="${t.gamemode}"
           data-tier="${tierNum}"
           data-rank="${tierRank}"
           data-tooltip="${t.gamemode} — ${t.tier}">
             <img src="gamemodes/${t.gamemode}.png">
-            <span>${tierRank}${tierNum}</span>
+            <span>${tierRank === "Unknown" ? "?" : tierRank + tierNum}</span>
         </div>`;
       }).filter(html => html !== "").join("");
     
@@ -2102,7 +2104,7 @@ function showAllModesInTiers() {
       <div class="mode-wrapper">
         <div class="mode-tiers" data-mode="${mode}">
           ${Array.from({length: 5}, (_, i) => {
-            const tierNum = 5 - i;
+            const tierNum = i + 1;
             return '<div class="mode-tier-column"><div class="mode-tier-header">Tier ' + tierNum + '</div></div>';
           }).join('')}
         </div>
@@ -2125,7 +2127,7 @@ function showAllModesInTiers() {
       const tierNumber = parseInt(tierData.tier.match(/\d+/)?.[0]) || 0;
       if (tierNumber < 1 || tierNumber > 5) return;
       
-      const tierColumn = modeTiers.querySelectorAll(".mode-tier-column")[5 - tierNumber];
+      const tierColumn = modeTiers.querySelectorAll(".mode-tier-column")[tierNumber - 1];
       if (!tierColumn) return;
       
       // Check if player already exists in this column
@@ -2162,10 +2164,6 @@ function showAllModesInTiers() {
       .forEach(p => col.appendChild(p));
   });
 }
-
-/* =============================
-   INIT
-============================= */
 
 (async () => {
   await loadPlayers();
