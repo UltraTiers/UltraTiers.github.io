@@ -104,10 +104,12 @@ function updateTestedCount() {
   const homePlayerCount = document.getElementById("home-fighter-count");
   const homeBuilderCount = document.getElementById("home-builder-count");
   
-  playerCountEl.innerHTML = `
-    <div>Fighters Tested: ${players.length}</div>
-    <div>Builders Tested: ${builders.length}</div>
-  `;
+  if (playerCountEl) {
+    playerCountEl.innerHTML = `
+      <div>Fighters Tested: ${players.length}</div>
+      <div>Builders Tested: ${builders.length}</div>
+    `;
+  }
   
   if (homePlayerCount) homePlayerCount.textContent = players.length;
   if (homeBuilderCount) homeBuilderCount.textContent = builders.length;
