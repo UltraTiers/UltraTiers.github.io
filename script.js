@@ -27,8 +27,14 @@ function hideLoadingScreen() {
 }
 
 async function loadPlayers() {
-  const res = await fetch("/players");
-  players = await res.json();
+  try {
+    const res = await fetch("/players");
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    players = await res.json();
+  } catch (err) {
+    console.error("Failed to fetch players:", err);
+    players = [];
+  }
 
   // Update the footer with the number of players
   updateTestedCount();
@@ -754,7 +760,7 @@ document.querySelectorAll(".home-card").forEach(card => {
   }
 });
 
-document.querySelector(".rankings-btn").addEventListener("click", () => {
+document.querySelector(".rankings-btn")?.addEventListener("click", () => {
 
   showLoadingScreen();
   setTimeout(() => {
@@ -764,7 +770,7 @@ document.querySelector(".rankings-btn").addEventListener("click", () => {
   }, 300);
 });
 
-document.querySelector(".docs-btn").addEventListener("click", () => {
+document.querySelector(".docs-btn")?.addEventListener("click", () => {
   showLoadingScreen();
   setTimeout(() => {
     showSection(docsSection);
@@ -773,7 +779,7 @@ document.querySelector(".docs-btn").addEventListener("click", () => {
   }, 300);
 });
 
-document.querySelector(".application-btn").addEventListener("click", () => {
+document.querySelector(".application-btn")?.addEventListener("click", () => {
   showLoadingScreen();
   setTimeout(() => {
     showSection(applicationSection);
