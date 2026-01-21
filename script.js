@@ -1151,6 +1151,15 @@ function calculatePoints(entity, type = "player") {
   }
 }
 
+function calculateCategoryPoints(player, categoryModes) {
+  // Calculate points based only on tiers from specified modes
+  if (!player.tiers || !Array.isArray(player.tiers)) return 0;
+  
+  return player.tiers.reduce((sum, t) => {
+    if (!categoryModes.includes(t.gamemode) || !t.tier || t.tier === "Unknown") return sum;
+    return sum + (tierPointsMap[t.tier] || 0);
+  }, 0);
+}
 
 /* =============================
    DROPDOWNS
@@ -1852,24 +1861,23 @@ function generatePlayersForCategory(category, modes) {
   
   playersDiv.innerHTML = "";
   
-  // Sort by points (global order)
-  const sorted = [...players].sort((a, b) => b.points - a.points);
+  // Calculate category-specific points for each player
+  const playersWithCategoryPoints = players
+    .map(player => ({
+      ...player,
+      categoryPoints: calculateCategoryPoints(player, modes)
+    }))
+    .filter(player => player.categoryPoints > 0); // Only include players with tiers in this category
   
-  // Filter by modes in this category - only include players who have tiers in these modes
-  const categoryModes = modes;
-  const categoryFiltered = sorted.filter(player => {
-    return player.tiers && player.tiers.some(t => categoryModes.includes(t.gamemode));
-  });
-  
-  // Sort filtered players by points again to get proper ranking within category
-  categoryFiltered.sort((a, b) => b.points - a.points);
+  // Sort by category points (NOT overall points)
+  playersWithCategoryPoints.sort((a, b) => b.categoryPoints - a.categoryPoints);
   
   // ✅ HARD LIMIT TO TOP 100
-  const top100 = categoryFiltered.slice(0, 100);
+  const top100 = playersWithCategoryPoints.slice(0, 100);
   
   top100.forEach((player, index) => {
     // Filter player tiers to only include this category
-    const categoryTiers = player.tiers.filter(t => categoryModes.includes(t.gamemode));
+    const categoryTiers = player.tiers.filter(t => modes.includes(t.gamemode));
     const sortedTiers = sortPlayerTiers(categoryTiers, player.retired_modes);
     
     // Generate tier HTML - only for filtered tiers
@@ -1904,7 +1912,7 @@ function generatePlayersForCategory(category, modes) {
         <img class="avatar" src="https://render.crafty.gg/3d/bust/${player.uuid}">
         <div class="player-info">
           <div class="player-name ${nitroClass}">${player.name}</div>
-          <div class="player-sub">⭐ ${getRankTitle(player.points)} (${player.points})</div>
+          <div class="player-sub">⭐ ${getRankTitle(player.categoryPoints)} (${player.categoryPoints})</div>
         </div>
         <div class="region region-${player.region.toLowerCase()}">${player.region}</div>
         <div class="tiers">${tiersHTML}</div>
