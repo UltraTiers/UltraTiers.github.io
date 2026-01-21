@@ -2052,25 +2052,40 @@ function populateLeaderboardModesWithTiers() {
   
   const sortedModes = Array.from(allModes).sort();
   
-  // Clear and populate the filter dropdown
-  leaderboardModeFilter.innerHTML = '<option value="">-- Select a Mode --</option>';
+  // Clear and populate the mode buttons
+  const buttonsContainer = document.getElementById("leaderboards-mode-buttons");
+  buttonsContainer.innerHTML = "";
+  
+  // Add "All Modes" button
+  const allButton = document.createElement("button");
+  allButton.className = "leaderboard-mode-btn active";
+  allButton.textContent = "All Modes";
+  allButton.dataset.mode = "";
+  allButton.addEventListener("click", handleLeaderboardModeChange);
+  buttonsContainer.appendChild(allButton);
+  
   sortedModes.forEach(mode => {
-    const option = document.createElement("option");
-    option.value = mode;
-    option.textContent = mode;
-    leaderboardModeFilter.appendChild(option);
+    const button = document.createElement("button");
+    button.className = "leaderboard-mode-btn";
+    button.textContent = mode;
+    button.dataset.mode = mode;
+    button.addEventListener("click", handleLeaderboardModeChange);
+    buttonsContainer.appendChild(button);
   });
   
   // Show all modes by default in tier columns
   showAllModesInTiers();
-  
-  // Update when mode changes
-  leaderboardModeFilter.removeEventListener("change", handleLeaderboardModeChange);
-  leaderboardModeFilter.addEventListener("change", handleLeaderboardModeChange);
 }
 
 function handleLeaderboardModeChange(e) {
-  const mode = e.target.value;
+  const mode = e.target.dataset.mode;
+  
+  // Update active button
+  document.querySelectorAll(".leaderboard-mode-btn").forEach(btn => {
+    btn.classList.remove("active");
+  });
+  e.target.classList.add("active");
+  
   if (mode) {
     renderLeaderboardForMode(mode);
   } else {
