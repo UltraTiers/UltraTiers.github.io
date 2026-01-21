@@ -12,6 +12,20 @@ const tiersDocs = [
     { tier: "LT5", gamemode: "Fighter Tier", description: "Gives you 1 point." }
 ];
 
+/* =============================
+   LOADING SCREEN UTILITY
+============================= */
+
+const loadingScreen = document.getElementById("loading-screen");
+
+function showLoadingScreen() {
+    loadingScreen.classList.add("show");
+}
+
+function hideLoadingScreen() {
+    loadingScreen.classList.remove("show");
+}
+
 async function loadPlayers() {
   const res = await fetch("/players");
   players = await res.json();
@@ -23,6 +37,7 @@ async function loadPlayers() {
    ELEMENTS
 ============================= */
 
+const homeSection = document.getElementById("home-section");
 const leaderboardSection = document.getElementById("leaderboard-section");
 const applicationSection = document.getElementById("application-section");
 const docsSection = document.getElementById("docs-section");
@@ -75,15 +90,24 @@ async function loadTesters() {
 
 function updateTestedCount() {
   const playerCountEl = document.getElementById("player-count");
+  const homePlayerCount = document.getElementById("home-fighter-count");
+  const homeBuilderCount = document.getElementById("home-builder-count");
+  
   playerCountEl.innerHTML = `
     <div>Fighters Tested: ${players.length}</div>
     <div>Builders Tested: ${builders.length}</div>
   `;
+  
+  if (homePlayerCount) homePlayerCount.textContent = players.length;
+  if (homeBuilderCount) homeBuilderCount.textContent = builders.length;
 }
+
+let currentBuildersRegion = "global";
 
 document.querySelectorAll(".builder-option").forEach(opt => {
 opt.addEventListener("click", async () => {
   const region = opt.dataset.region;
+  currentBuildersRegion = region;
   await loadBuilders();
   showBuildersSection(region);
 });
@@ -501,6 +525,7 @@ profileBanner.style.backgroundImage =
 
 function showSection(sectionToShow) {
     const sections = [
+        homeSection,
         leaderboardSection,
         docsSection,
         applicationSection,
@@ -521,6 +546,7 @@ function showSection(sectionToShow) {
     // navbar active state
     document.querySelectorAll(".nav-center a, .nav-center .dropdown-trigger").forEach(el => el.classList.remove("active-tab"));
 
+    if (sectionToShow === homeSection) window.location.hash = '';
     if (sectionToShow === leaderboardSection) document.querySelector(".rankings-btn")?.classList.add("active-tab");
     if (sectionToShow === docsSection) document.querySelector(".docs-btn")?.classList.add("active-tab");
     if (sectionToShow === applicationSection) document.querySelector(".application-btn")?.classList.add("active-tab");
@@ -569,11 +595,19 @@ document.addEventListener("click", (e) => {
   }
 });
 
+let currentLeaderboardRegion = "global";
+
 document.querySelectorAll(".ranking-option").forEach(opt => {
   opt.addEventListener("click", () => {
     const region = opt.dataset.region;
+    currentLeaderboardRegion = region;
     showSection(leaderboardSection);
-    generatePlayers(region);
+    // Reset to main category and set active region tab
+    document.querySelectorAll(".fighters-region-tab-btn").forEach(b => b.classList.remove("active"));
+    document.querySelector(`.fighters-region-tab-btn[data-fighter-region='${region}']`).classList.add("active");
+    document.querySelectorAll(".leaderboard-mode-tab-btn").forEach(b => b.classList.remove("active"));
+    document.querySelector(".leaderboard-mode-tab-btn[data-mode-category='main']").classList.add("active");
+    generatePlayers(region, "main");
   });
 });
 
@@ -655,30 +689,112 @@ bannerOptions.forEach(img => {
    NAVIGATION BUTTONS
 ============================= */
 
+// Helper function for card navigation
+function handleCardNavigation(section) {
+  showLoadingScreen();
+  setTimeout(() => {
+    if (section === "rankings") {
+      showSection(leaderboardSection);
+      tableHeader.style.display = "grid";
+    } else if (section === "builders") {
+      showSection(buildersSection);
+      tableHeader.style.display = "none";
+      renderBuilders("global");
+    } else if (section === "modes") {
+      // Just navigate to home, users can select modes from navbar
+      showSection(leaderboardSection);
+      tableHeader.style.display = "grid";
+    } else if (section === "testers") {
+      showSection(testersSection);
+      tableHeader.style.display = "none";
+      if (!testers.length) {
+        loadTesters().then(() => {
+          populateTesterModes();
+          renderTesters();
+        });
+      } else {
+        renderTesters();
+      }
+    } else if (section === "docs") {
+      showSection(docsSection);
+      tableHeader.style.display = "none";
+    } else if (section === "application") {
+      showSection(applicationSection);
+      tableHeader.style.display = "none";
+    }
+    hideLoadingScreen();
+  }, 300);
+}
+
+// Logo/Home button
+document.querySelector(".logo-img")?.addEventListener("click", () => {
+  showLoadingScreen();
+  setTimeout(() => {
+    showSection(homeSection);
+    hideLoadingScreen();
+  }, 300);
+});
+
+// Home page card navigation - attach to both card and button
+document.querySelectorAll(".home-card").forEach(card => {
+  const section = card.dataset.section;
+  card.addEventListener("click", (e) => {
+    // Don't navigate if clicking internal buttons/links
+    if (e.target.tagName === 'A' || e.target.closest('form')) return;
+    handleCardNavigation(section);
+  });
+  
+  // Also attach to the button directly
+  const button = card.querySelector(".card-button");
+  if (button) {
+    button.addEventListener("click", (e) => {
+      e.stopPropagation();
+      handleCardNavigation(section);
+    });
+  }
+});
+
 document.querySelector(".rankings-btn").addEventListener("click", () => {
-  showSection(leaderboardSection);
-  tableHeader.style.display = "grid";
+
+  showLoadingScreen();
+  setTimeout(() => {
+    showSection(leaderboardSection);
+    tableHeader.style.display = "grid";
+    hideLoadingScreen();
+  }, 300);
 });
 
 document.querySelector(".docs-btn").addEventListener("click", () => {
-  showSection(docsSection);
-  tableHeader.style.display = "none";
+  showLoadingScreen();
+  setTimeout(() => {
+    showSection(docsSection);
+    tableHeader.style.display = "none";
+    hideLoadingScreen();
+  }, 300);
 });
 
 document.querySelector(".application-btn").addEventListener("click", () => {
-  showSection(applicationSection);
-  tableHeader.style.display = "none";
+  showLoadingScreen();
+  setTimeout(() => {
+    showSection(applicationSection);
+    tableHeader.style.display = "none";
+    hideLoadingScreen();
+  }, 300);
 });
 
 document.querySelector(".testers-btn")?.addEventListener("click", async () => {
-  showSection(testersSection);
-  tableHeader.style.display = "none";
+  showLoadingScreen();
+  setTimeout(async () => {
+    showSection(testersSection);
+    tableHeader.style.display = "none";
 
-  if (!testers.length) {
-    await loadTesters();
-    populateTesterModes();
-    renderTesters();
-  }
+    if (!testers.length) {
+      await loadTesters();
+      populateTesterModes();
+      renderTesters();
+    }
+    hideLoadingScreen();
+  }, 300);
 });
 
 /* =============================
@@ -692,8 +808,11 @@ document.querySelectorAll(".mode-btn").forEach(btn => {
     // Save mode to URL hash
     window.location.hash = `mode=${encodeURIComponent(mode)}`;
 
-    // Reload the page so the init code restores this mode
-    window.location.reload();
+    // Show loading screen and reload
+    showLoadingScreen();
+    setTimeout(() => {
+      window.location.reload();
+    }, 350);
   });
 });
 
@@ -717,6 +836,118 @@ document.querySelectorAll(".mode-info").forEach(icon => {
 // Close popups when clicking outside
 document.addEventListener("click", () => {
   document.querySelectorAll(".mode-btn").forEach(btn => btn.classList.remove("show-info"));
+});
+
+/* =============================
+   MODE TAB SWITCHING
+============================= */
+
+document.querySelectorAll(".mode-tab-btn").forEach(btn => {
+  btn.addEventListener("click", () => {
+    const tabName = btn.dataset.tab;
+    
+    // Show loading screen with brief delay for visual effect
+    showLoadingScreen();
+    
+    setTimeout(() => {
+      // Remove active class from all tabs and contents
+      document.querySelectorAll(".mode-tab-btn").forEach(b => b.classList.remove("active"));
+      document.querySelectorAll(".mode-tab-content").forEach(content => content.classList.remove("active"));
+      
+      // Add active class to clicked tab and corresponding content
+      btn.classList.add("active");
+      document.getElementById(`${tabName}-tab`).classList.add("active");
+      
+      // Hide loading screen
+      hideLoadingScreen();
+    }, 350);
+  });
+});
+
+/* =============================
+   LEADERBOARD MODE TAB SWITCHING
+============================= */
+
+document.querySelectorAll(".leaderboard-mode-tab-btn").forEach(btn => {
+  btn.addEventListener("click", () => {
+    const category = btn.dataset.modeCategory;
+    
+    // Show loading screen
+    showLoadingScreen();
+    
+    setTimeout(() => {
+      // Remove active class from all tabs
+      document.querySelectorAll(".leaderboard-mode-tab-btn").forEach(b => b.classList.remove("active"));
+      
+      // Add active class to clicked tab
+      btn.classList.add("active");
+      
+      // Regenerate players with new category using current region
+      generatePlayers(currentLeaderboardRegion, category);
+      
+      // Hide loading screen
+      hideLoadingScreen();
+    }, 350);
+  });
+});
+
+/* =============================
+   FIGHTERS REGION TAB SWITCHING
+============================= */
+
+document.querySelectorAll(".fighters-region-tab-btn").forEach(btn => {
+  btn.addEventListener("click", () => {
+    const region = btn.dataset.fighterRegion;
+    
+    // Show loading screen
+    showLoadingScreen();
+    
+    setTimeout(() => {
+      // Remove active class from all tabs
+      document.querySelectorAll(".fighters-region-tab-btn").forEach(b => b.classList.remove("active"));
+      
+      // Add active class to clicked tab
+      btn.classList.add("active");
+      
+      // Get current mode category
+      const modeCategory = document.querySelector(".leaderboard-mode-tab-btn.active")?.dataset.modeCategory || "main";
+      
+      // Update current region and regenerate players
+      currentLeaderboardRegion = region;
+      generatePlayers(region, modeCategory);
+      
+      // Hide loading screen
+      hideLoadingScreen();
+    }, 350);
+  });
+});
+
+/* =============================
+   BUILDERS REGION TAB SWITCHING
+============================= */
+
+document.querySelectorAll(".builders-region-tab-btn").forEach(btn => {
+  btn.addEventListener("click", () => {
+    const region = btn.dataset.builderRegion;
+    
+    // Show loading screen
+    showLoadingScreen();
+    
+    setTimeout(() => {
+      // Remove active class from all tabs
+      document.querySelectorAll(".builders-region-tab-btn").forEach(b => b.classList.remove("active"));
+      
+      // Add active class to clicked tab
+      btn.classList.add("active");
+      
+      // Update current region and regenerate builders
+      currentBuildersRegion = region;
+      renderBuilders(region);
+      
+      // Hide loading screen
+      hideLoadingScreen();
+    }, 350);
+  });
 });
 
 const mode = [
@@ -748,6 +979,15 @@ const mode = [
   "Sumo",
   "OP"
 ];
+
+// Mode categories mapping
+const modeCategories = {
+  overall: ["Axe", "Sword", "Bow", "Vanilla", "NethOP", "Pot", "UHC", "SMP", "Mace", "Spear Mace", "Diamond SMP", "OG Vanilla", "Bed", "DeBuff", "Speed", "Manhunt", "Elytra", "Spear Elytra", "Diamond Survival", "Minecart", "Creeper", "Trident", "AxePot", "Pearl", "Bridge", "Sumo", "OP"],
+  main: ["Sword", "Axe", "Bow", "Vanilla", "UHC", "Pot"],
+  sub: ["Mace", "Diamond SMP", "OG Vanilla", "Bed", "DeBuff", "Speed", "Manhunt", "Elytra", "Spear Elytra", "NethOP"],
+  extra: ["Diamond Survival", "Minecart", "Creeper", "Trident", "AxePot", "Pearl", "Bridge", "Sumo", "SMP"],
+  bonus: ["Spear Mace", "OP"]
+};
 
 // Optional: auto-set kit image src based on mode name (dynamic)
 document.querySelectorAll(".mode-btn").forEach(btn => {
@@ -880,7 +1120,7 @@ document.querySelector(".application-form").addEventListener("submit", async (e)
    NORMAL LEADERBOARD (TOP 3 BORDERS)
 ============================= */
 
-function generatePlayers(region = "global") {
+function generatePlayers(region = "global", modeCategory = "main") {
   tableHeader.style.display = "grid";
   playersContainer.innerHTML = "";
 
@@ -893,8 +1133,17 @@ function generatePlayers(region = "global") {
       ? sorted
       : sorted.filter(p => p.region === region);
 
+  // Filter by mode category - only include players who have tiers in the selected category
+  const categoryModes = modeCategories[modeCategory] || modeCategories.main;
+  const categoryFiltered = filtered.filter(player => {
+    return player.tiers && player.tiers.some(t => categoryModes.includes(t.gamemode));
+  });
+
+  // Sort filtered players by points again to get proper ranking within category
+  categoryFiltered.sort((a, b) => b.points - a.points);
+
   // ✅ HARD LIMIT TO TOP 100
-  const top100 = filtered.slice(0, 100);
+  const top100 = categoryFiltered.slice(0, 100);
 
   top100.forEach((player, index) => {
     const sortedTiers = sortPlayerTiers(player.tiers, player.retired_modes);
@@ -946,6 +1195,10 @@ return `
 function showBuildersSection(region = "global") {
   showSection(buildersSection);        // show the builders section
   tableHeader.style.display = "none";  // hide table header
+
+  // Set active tab
+  document.querySelectorAll(".builders-region-tab-btn").forEach(b => b.classList.remove("active"));
+  document.querySelector(`.builders-region-tab-btn[data-builder-region='${region}']`).classList.add("active");
 
   if (!builders.length) {
     loadBuilders().then(() => renderBuilders(region));
@@ -1354,9 +1607,8 @@ modalContent.innerHTML = `
   tableHeader.style.display = "none";
   generateModeLeaderboard(mode);
 } else {
-    // Default: show global player leaderboard
-    showSection(leaderboardSection);
-    generatePlayers();
+    // Default: show home page
+    showSection(homeSection);
   }
 
   // Load testers
