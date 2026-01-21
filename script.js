@@ -709,6 +709,9 @@ function handleCardNavigation(section) {
     if (section === "rankings") {
       showSection(leaderboardSection);
       tableHeader.style.display = "none";
+      // Hide mode/region tabs for fighters view
+      document.querySelector(".fighters-region-tabs")?.style.display = "none";
+      document.querySelector(".leaderboard-mode-tabs")?.style.display = "none";
       // Show all modes together without filters
       generateAllPlayerModes("global");
     } else if (section === "builders") {
@@ -1603,47 +1606,94 @@ modalContent.innerHTML = `
    FIGHTERS - ALL MODES COMBINED
 ============================= */
 
+const fighterModesToShow = {
+  "Main": ["Vanilla", "UHC", "Pot", "NethOP", "SMP", "Sword", "Axe", "Mace"],
+  "Sub": ["Minecart", "Diamond Survival", "DeBuff", "Elytra", "Speed", "Creeper", "Manhunt", "Diamond SMP", "Bow", "Bed", "OG Vanilla", "Trident", "Spear Elytra", "Spear Mace"],
+  "Extra": ["AxePot", "Sumo", "OP"],
+  "Bonus": ["Bridge", "Pearl"]
+};
+
 function generateAllPlayerModes(region = "global") {
   playersContainer.innerHTML = "";
+  tableHeader.style.display = "none";
   
+  // Flatten all modes to show
+  const allModesToShow = Object.values(fighterModesToShow).flat();
+  
+  // Filter players by region
   const filteredPlayers = region === "global" ? players : players.filter(p => p.region === region);
-  const sorted = [...filteredPlayers].sort((a, b) => b.points - a.points);
   
-  sorted.forEach((player, index) => {
-    const playerDiv = document.createElement("div");
-    playerDiv.className = "table-row player-row";
-    playerDiv.style.borderLeftColor = getRegionColor(player.region);
+  // Build the grid structure with 5 tiers (1-5)
+  const tiersHTML = `
+    <div class="mode-wrapper">
+      <div class="mode-tiers" id="fighter-mode-tiers">
+        ${Array.from({length: 5}, (_, i) => {
+          const tierNum = 5 - i; // 5, 4, 3, 2, 1
+          return `<div class="mode-tier-column"><div class="mode-tier-header">Tier ${tierNum}</div></div>`;
+        }).join('')}
+      </div>
+    </div>
+  `;
+  
+  playersContainer.innerHTML = tiersHTML;
+  
+  // Add players to their tier columns
+  filteredPlayers.forEach(player => {
+    if (!player.tiers || !Array.isArray(player.tiers)) return;
     
-    const tiers = player.tiers || [];
-    const tiersHTML = tiers.map(t => {
-      if (!t.tier || t.tier === "Unknown") return `<div class="tier empty"></div>`;
-      const tierNumber = t.tier.match(/\d+/)?.[0];
-      const tierRank = t.tier.startsWith("HT") ? "HT" : "LT";
-      return `<div class="tier" data-tooltip="${t.gamemode} — ${t.tier}">
-        <img src="gamemodes/${t.gamemode}.png" alt="${t.gamemode}">
-        <span>${tierRank}${tierNumber}</span>
-      </div>`;
-    }).join("");
+    // Get highest tier from the modes we're showing
+    const relevantTiers = player.tiers.filter(t => 
+      allModesToShow.some(mode => {
+        // Handle mode name variations
+        if (mode === "Diamond Survival" && (t.gamemode === "Diamond Survival" || t.gamemode === "Diamond Vanilla")) return true;
+        return t.gamemode === mode;
+      }) && t.tier !== "Unknown"
+    );
+    
+    if (relevantTiers.length === 0) return;
+    
+    // Get the highest tier
+    const highestTier = relevantTiers.reduce((max, current) => {
+      const maxNum = parseInt(max.tier.match(/\d+/)[0]);
+      const curNum = parseInt(current.tier.match(/\d+/)[0]);
+      return curNum > maxNum ? current : max;
+    });
+    
+    const tierNumber = parseInt(highestTier.tier.match(/\d+/)[0]);
+    const tierColumn = document.querySelectorAll(".mode-tier-column")[5 - tierNumber]; // Reverse mapping
+    
+    if (!tierColumn) return;
+    
+    const playerDiv = document.createElement("div");
+    playerDiv.className = "mode-player";
+    playerDiv.dataset.player = player.name;
+    playerDiv.dataset.region = player.region.toLowerCase();
+    
+    const isHT = highestTier.tier.includes("HT");
+    playerDiv.dataset.signvalue = isHT ? 2 : 1;
     
     playerDiv.innerHTML = `
-      <div class="rank">#${index + 1}</div>
-      <div class="player-name">${player.name || "Unknown"}</div>
-      <div class="player-points">${player.points} pts</div>
-      <div class="tiers-container">${tiersHTML}</div>
+      <div class="mode-player-left">
+        <img src="https://render.crafty.gg/3d/bust/${player.name}">
+        <span class="player-label">${player.name}</span>
+        <span class="tier-sign">${isHT ? "+" : "-"}</span>
+      </div>
+      <div class="region-box">
+        <span>${player.region.toUpperCase()}</span>
+      </div>
     `;
     
     playerDiv.addEventListener("click", () => showPlayerModal(player));
-    playersContainer.appendChild(playerDiv);
+    tierColumn.appendChild(playerDiv);
   });
-}
-
-function getRegionColor(region) {
-  const colors = {
-    "NA": "#ef4444", "EU": "#22c55e", "AS": "#7c22c5",
-    "SA": "#FF8AC4", "ME": "#FFBF00", "AU": "#4169E1",
-    "AF": "#FF7518", "global": "#6366f1"
-  };
-  return colors[region] || "#6366f1";
+  
+  // Sort players in each column (HT above LT)
+  document.querySelectorAll(".mode-tier-column").forEach(col => {
+    const playerList = [...col.querySelectorAll(".mode-player")];
+    playerList
+      .sort((a, b) => b.dataset.signvalue - a.dataset.signvalue)
+      .forEach(p => col.appendChild(p));
+  });
 }
 
 /* =============================
@@ -1652,7 +1702,7 @@ function getRegionColor(region) {
 
 const modeCategoriesDisplay = {
   "Main": ["Vanilla", "UHC", "Pot", "NethOP", "SMP", "Sword", "Axe", "Mace"],
-  "Sub": ["Minecart", "Diamond Survival (Diamond Vanilla)", "Debuff", "Elytra", "Speed", "Creeper", "Manhunt", "Diamond SMP", "Bow", "Bed", "OG Vanilla", "Trident", "Spear Elytra", "Spear Mace"],
+  "Sub": ["Minecart", "Diamond Survival", "DeBuff", "Elytra", "Speed", "Creeper", "Manhunt", "Diamond SMP", "Bow", "Bed", "OG Vanilla", "Trident", "Spear Elytra", "Spear Mace"],
   "Extra": ["AxePot", "Sumo", "OP"],
   "Bonus": ["Bridge", "Pearl"]
 };
@@ -1740,34 +1790,59 @@ function renderLeaderboardForMode(mode) {
       return {
         ...p,
         modeTier: tierData?.tier || "Unknown",
-        modeTierNumber: tierData?.tier?.match(/\d+/)?.[0] || 0
+        modeTierNumber: tierData?.tier?.match(/\d+/)?.[0] || 0,
+        isHT: tierData?.tier?.includes("HT") || false
       };
-    })
-    .sort((a, b) => b.modeTierNumber - a.modeTierNumber);
+    });
   
-  const title = document.createElement("h2");
-  title.textContent = `${mode} Leaderboard`;
-  title.style.marginBottom = "20px";
-  leaderboardsContainer.appendChild(title);
+  // Create tier columns (5, 4, 3, 2, 1)
+  const tiersHTML = `
+    <div class="mode-wrapper">
+      <div class="mode-tiers" id="leaderboard-mode-tiers">
+        ${Array.from({length: 5}, (_, i) => {
+          const tierNum = 5 - i; // 5, 4, 3, 2, 1
+          return `<div class="mode-tier-column"><div class="mode-tier-header">Tier ${tierNum}</div></div>`;
+        }).join('')}
+      </div>
+    </div>
+  `;
   
-  playersWithMode.forEach((player, index) => {
-    const row = document.createElement("div");
-    row.className = "leaderboard-player-row";
-    row.style.borderLeftColor = getRegionColor(player.region);
+  leaderboardsContainer.innerHTML = tiersHTML;
+  
+  // Add players to their tier columns, sorted by HT first
+  playersWithMode.forEach(player => {
+    const tierNumber = parseInt(player.modeTierNumber);
+    const tierColumn = document.querySelectorAll("#leaderboard-mode-tiers .mode-tier-column")[5 - tierNumber];
     
-    const isHT = player.modeTier.startsWith("HT");
-    const badge = isHT ? "+" : "-";
-    const tierNum = player.modeTierNumber;
+    if (!tierColumn) return;
     
-    row.innerHTML = `
-      <div class="leaderboard-rank">#${index + 1}</div>
-      <div class="leaderboard-tier-badge">${badge}</div>
-      <div class="leaderboard-player-name">${player.name || "Unknown"}</div>
-      <div class="leaderboard-points">T${tierNum}</div>
+    const playerDiv = document.createElement("div");
+    playerDiv.className = "mode-player";
+    playerDiv.dataset.player = player.name;
+    playerDiv.dataset.region = player.region.toLowerCase();
+    playerDiv.dataset.signvalue = player.isHT ? 2 : 1;
+    
+    playerDiv.innerHTML = `
+      <div class="mode-player-left">
+        <img src="https://render.crafty.gg/3d/bust/${player.name}">
+        <span class="player-label">${player.name}</span>
+        <span class="tier-sign">${player.isHT ? "+" : "-"}</span>
+      </div>
+      <div class="region-box">
+        <span>${player.region.toUpperCase()}</span>
+      </div>
     `;
     
-    row.addEventListener("click", () => showPlayerModal(player));
-    leaderboardsContainer.appendChild(row);
+    playerDiv.addEventListener("click", () => showPlayerModal(player));
+    tierColumn.appendChild(playerDiv);
+  });
+  
+  // Sort players in each column (HT above LT)
+  document.querySelectorAll("#leaderboard-mode-tiers .mode-tier-column").forEach(col => {
+    const playerList = [...col.querySelectorAll(".mode-player")];
+    playerList
+      .sort((a, b) => b.dataset.signvalue - a.dataset.signvalue)
+      .forEach(p => col.appendChild(p));
   });
 }
 
