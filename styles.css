@@ -954,48 +954,73 @@ body {
 }
 
 .leaderboards-mode-selector {
-    margin-bottom: 30px;
+    margin-bottom: 25px;
     display: flex;
-    gap: 15px;
+    gap: 12px;
     align-items: center;
+    padding: 15px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
 }
 
 .leaderboards-mode-selector label {
     font-weight: 700;
-    color: rgba(255,255,255,0.85);
+    color: rgba(255,255,255,0.75);
+    font-size: 14px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    min-width: 80px;
 }
 
 .leaderboards-mode-selector select {
     padding: 10px 15px;
     background: rgba(255,255,255,0.08);
-    border: 1px solid rgba(255,255,255,0.12);
+    border: 1px solid rgba(255,255,255,0.15);
     color: rgba(255,255,255,0.95);
-    border-radius: 8px;
+    border-radius: 6px;
     font-size: 14px;
+    font-weight: 600;
     cursor: pointer;
+    transition: all 0.3s ease;
+    flex: 1;
+    max-width: 300px;
+}
+
+.leaderboards-mode-selector select:hover {
+    background: rgba(255,255,255,0.12);
+    border-color: rgba(255,255,255,0.25);
+}
+
+.leaderboards-mode-selector select:focus {
+    outline: none;
+    background: rgba(255,255,255,0.12);
+    border-color: rgba(255,255,255,0.3);
+    box-shadow: 0 0 0 2px rgba(255,255,255,0.08);
 }
 
 .leaderboards-container {
     display: flex;
     flex-direction: column;
-    gap: 15px;
+    gap: 0;
 }
 
 .leaderboard-mode-section {
-    margin-bottom: 40px;
-    padding: 20px;
-    background: rgba(255,255,255,0.02);
-    border: 1px solid rgba(255,255,255,0.08);
-    border-radius: 12px;
+    margin-bottom: 0;
+    padding: 0;
+    background: transparent;
+    border: none;
+    border-radius: 0;
 }
 
 .mode-section-title {
-    font-size: 22px;
+    font-size: 18px;
     font-weight: 700;
-    color: rgba(255,255,255,0.95);
-    margin: 0 0 20px 0;
-    padding-bottom: 10px;
+    color: rgba(255,255,255,0.9);
+    margin: 25px 0 15px 0;
+    padding: 0;
+    padding-bottom: 12px;
     border-bottom: 2px solid rgba(255,255,255,0.1);
+    text-transform: uppercase;
+    letter-spacing: 1px;
 }
 
 .leaderboard-player-row {

@@ -1771,10 +1771,10 @@ function generateAllPlayerModes(region = "global") {
 ============================= */
 
 const modeCategoriesDisplay = {
-  "Main": ["Vanilla", "UHC", "Pot", "NethOP", "SMP", "Sword", "Axe", "Mace"],
-  "Sub": ["Minecart", "Diamond Survival", "DeBuff", "Elytra", "Speed", "Creeper", "Manhunt", "Diamond SMP", "Bow", "Bed", "OG Vanilla", "Trident", "Spear Elytra", "Spear Mace"],
-  "Extra": ["AxePot", "Sumo", "OP"],
-  "Bonus": ["Bridge", "Pearl"]
+  "Main": ["Sword", "Axe", "Bow", "Vanilla", "UHC", "Pot"],
+  "Sub": ["Mace", "Diamond SMP", "OG Vanilla", "Bed", "DeBuff", "Speed", "Manhunt", "Elytra", "Spear Elytra", "NethOP"],
+  "Extra": ["Diamond Survival", "Minecart", "Creeper", "Trident", "AxePot", "Pearl", "Bridge", "Sumo", "SMP"],
+  "Bonus": ["Spear Mace", "OP"]
 };
 
 function renderModeCategories() {
@@ -1871,6 +1871,9 @@ function generatePlayersForCategory(category, modes) {
   
   // Sort by category points (NOT overall points)
   playersWithCategoryPoints.sort((a, b) => b.categoryPoints - a.categoryPoints);
+  
+  // DEBUG: Log top 3 for this category
+  console.log(`${category} Category Top 3:`, playersWithCategoryPoints.slice(0, 3).map(p => ({name: p.name, categoryPoints: p.categoryPoints, globalPoints: p.points})));
   
   // ✅ HARD LIMIT TO TOP 100
   const top100 = playersWithCategoryPoints.slice(0, 100);
