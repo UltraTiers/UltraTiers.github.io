@@ -45,6 +45,8 @@ async function loadPlayers() {
 
 const homeSection = document.getElementById("home-section");
 const leaderboardSection = document.getElementById("leaderboard-section");
+const modesSection = document.getElementById("modes-section");
+const leaderboardsSection = document.getElementById("leaderboards-section");
 const applicationSection = document.getElementById("application-section");
 const docsSection = document.getElementById("docs-section");
 const playersContainer = document.getElementById("players-container");
@@ -59,6 +61,9 @@ const testersSection = document.getElementById("testers-section");
 const testersContainer = document.getElementById("testers-container");
 const testerModeFilter = document.getElementById("tester-mode-filter");
 const testerRegionFilter = document.getElementById("tester-region-filter");
+const leaderboardModeFilter = document.getElementById("leaderboard-mode-filter");
+const leaderboardsContainer = document.getElementById("leaderboards-container");
+const modesCategoriesContainer = document.getElementById("modes-categories-container");
 
 /* =============================
    PROFILE DESIGNER ELEMENTS
@@ -533,6 +538,8 @@ function showSection(sectionToShow) {
     const sections = [
         homeSection,
         leaderboardSection,
+        modesSection,
+        leaderboardsSection,
         docsSection,
         applicationSection,
         testersSection,
@@ -701,15 +708,23 @@ function handleCardNavigation(section) {
   setTimeout(() => {
     if (section === "rankings") {
       showSection(leaderboardSection);
-      tableHeader.style.display = "grid";
+      tableHeader.style.display = "none";
+      // Show all modes together without filters
+      generateAllPlayerModes("global");
     } else if (section === "builders") {
       showSection(buildersSection);
       tableHeader.style.display = "none";
       renderBuilders("global");
     } else if (section === "modes") {
-      // Just navigate to home, users can select modes from navbar
-      showSection(leaderboardSection);
-      tableHeader.style.display = "grid";
+      // Show mode categories with specific modes
+      showSection(modesSection);
+      tableHeader.style.display = "none";
+      renderModeCategories();
+    } else if (section === "leaderboards") {
+      // Show per-mode leaderboards
+      showSection(leaderboardsSection);
+      tableHeader.style.display = "none";
+      populateLeaderboardModes();
     } else if (section === "testers") {
       showSection(testersSection);
       tableHeader.style.display = "none";
@@ -1583,6 +1598,178 @@ modalContent.innerHTML = `
     modal.classList.add("show");
   }
 });
+
+/* =============================
+   FIGHTERS - ALL MODES COMBINED
+============================= */
+
+function generateAllPlayerModes(region = "global") {
+  playersContainer.innerHTML = "";
+  
+  const filteredPlayers = region === "global" ? players : players.filter(p => p.region === region);
+  const sorted = [...filteredPlayers].sort((a, b) => b.points - a.points);
+  
+  sorted.forEach((player, index) => {
+    const playerDiv = document.createElement("div");
+    playerDiv.className = "table-row player-row";
+    playerDiv.style.borderLeftColor = getRegionColor(player.region);
+    
+    const tiers = player.tiers || [];
+    const tiersHTML = tiers.map(t => {
+      if (!t.tier || t.tier === "Unknown") return `<div class="tier empty"></div>`;
+      const tierNumber = t.tier.match(/\d+/)?.[0];
+      const tierRank = t.tier.startsWith("HT") ? "HT" : "LT";
+      return `<div class="tier" data-tooltip="${t.gamemode} — ${t.tier}">
+        <img src="gamemodes/${t.gamemode}.png" alt="${t.gamemode}">
+        <span>${tierRank}${tierNumber}</span>
+      </div>`;
+    }).join("");
+    
+    playerDiv.innerHTML = `
+      <div class="rank">#${index + 1}</div>
+      <div class="player-name">${player.name || "Unknown"}</div>
+      <div class="player-points">${player.points} pts</div>
+      <div class="tiers-container">${tiersHTML}</div>
+    `;
+    
+    playerDiv.addEventListener("click", () => showPlayerModal(player));
+    playersContainer.appendChild(playerDiv);
+  });
+}
+
+function getRegionColor(region) {
+  const colors = {
+    "NA": "#ef4444", "EU": "#22c55e", "AS": "#7c22c5",
+    "SA": "#FF8AC4", "ME": "#FFBF00", "AU": "#4169E1",
+    "AF": "#FF7518", "global": "#6366f1"
+  };
+  return colors[region] || "#6366f1";
+}
+
+/* =============================
+   MODES - CATEGORIES VIEW
+============================= */
+
+const modeCategoriesDisplay = {
+  "Main": ["Vanilla", "UHC", "Pot", "NethOP", "SMP", "Sword", "Axe", "Mace"],
+  "Sub": ["Minecart", "Diamond Survival (Diamond Vanilla)", "Debuff", "Elytra", "Speed", "Creeper", "Manhunt", "Diamond SMP", "Bow", "Bed", "OG Vanilla", "Trident", "Spear Elytra", "Spear Mace"],
+  "Extra": ["AxePot", "Sumo", "OP"],
+  "Bonus": ["Bridge", "Pearl"]
+};
+
+function renderModeCategories() {
+  modesCategoriesContainer.innerHTML = "";
+  
+  Object.entries(modeCategoriesDisplay).forEach(([category, modes]) => {
+    const categoryDiv = document.createElement("div");
+    categoryDiv.className = "mode-category";
+    
+    const titleDiv = document.createElement("div");
+    titleDiv.className = "mode-category-title";
+    titleDiv.textContent = category;
+    categoryDiv.appendChild(titleDiv);
+    
+    const listDiv = document.createElement("div");
+    listDiv.className = "mode-list";
+    
+    modes.forEach(mode => {
+      const modeItem = document.createElement("div");
+      modeItem.className = "mode-item";
+      modeItem.textContent = mode;
+      modeItem.addEventListener("click", () => {
+        showLoadingScreen();
+        setTimeout(() => {
+          showSection(leaderboardsSection);
+          populateLeaderboardModes();
+          leaderboardModeFilter.value = mode;
+          renderLeaderboardForMode(mode);
+          hideLoadingScreen();
+        }, 300);
+      });
+      listDiv.appendChild(modeItem);
+    });
+    
+    categoryDiv.appendChild(listDiv);
+    modesCategoriesContainer.appendChild(categoryDiv);
+  });
+}
+
+/* =============================
+   LEADERBOARDS - PER MODE
+============================= */
+
+function populateLeaderboardModes() {
+  const allModes = new Set();
+  players.forEach(p => {
+    if (p.tiers && Array.isArray(p.tiers)) {
+      p.tiers.forEach(t => {
+        if (t.gamemode && t.tier !== "Unknown") {
+          allModes.add(t.gamemode);
+        }
+      });
+    }
+  });
+  
+  const sortedModes = Array.from(allModes).sort();
+  leaderboardModeFilter.innerHTML = '<option value="">-- Select a Mode --</option>';
+  sortedModes.forEach(mode => {
+    const option = document.createElement("option");
+    option.value = mode;
+    option.textContent = mode;
+    leaderboardModeFilter.appendChild(option);
+  });
+  
+  leaderboardModeFilter.addEventListener("change", (e) => {
+    const mode = e.target.value;
+    if (mode) {
+      renderLeaderboardForMode(mode);
+    } else {
+      leaderboardsContainer.innerHTML = "";
+    }
+  });
+}
+
+function renderLeaderboardForMode(mode) {
+  leaderboardsContainer.innerHTML = "";
+  
+  // Get all players with this mode
+  const playersWithMode = players
+    .filter(p => p.tiers && p.tiers.some(t => t.gamemode === mode && t.tier !== "Unknown"))
+    .map(p => {
+      const tierData = p.tiers.find(t => t.gamemode === mode);
+      return {
+        ...p,
+        modeTier: tierData?.tier || "Unknown",
+        modeTierNumber: tierData?.tier?.match(/\d+/)?.[0] || 0
+      };
+    })
+    .sort((a, b) => b.modeTierNumber - a.modeTierNumber);
+  
+  const title = document.createElement("h2");
+  title.textContent = `${mode} Leaderboard`;
+  title.style.marginBottom = "20px";
+  leaderboardsContainer.appendChild(title);
+  
+  playersWithMode.forEach((player, index) => {
+    const row = document.createElement("div");
+    row.className = "leaderboard-player-row";
+    row.style.borderLeftColor = getRegionColor(player.region);
+    
+    const isHT = player.modeTier.startsWith("HT");
+    const badge = isHT ? "+" : "-";
+    const tierNum = player.modeTierNumber;
+    
+    row.innerHTML = `
+      <div class="leaderboard-rank">#${index + 1}</div>
+      <div class="leaderboard-tier-badge">${badge}</div>
+      <div class="leaderboard-player-name">${player.name || "Unknown"}</div>
+      <div class="leaderboard-points">T${tierNum}</div>
+    `;
+    
+    row.addEventListener("click", () => showPlayerModal(player));
+    leaderboardsContainer.appendChild(row);
+  });
+}
 
 /* =============================
    INIT

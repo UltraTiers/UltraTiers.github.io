@@ -103,6 +103,17 @@
       <button class="card-button">View Rankings</button>
     </div>
 
+    <!-- Leaderboards Card -->
+    <div class="home-card leaderboards-card" data-section="leaderboards">
+      <div class="card-icon">📊</div>
+      <h3 class="card-title">Leaderboards</h3>
+      <p class="card-description">Browse leaderboards for each individual PvP mode</p>
+      <div class="card-stats">
+        Per-mode rankings
+      </div>
+      <button class="card-button">View Leaderboards</button>
+    </div>
+
     <!-- Builders Card -->
     <div class="home-card builders-card" data-section="builders">
       <div class="card-icon">🏗️</div>
@@ -287,6 +298,24 @@
 
     <button id="close-designer">Close</button>
   </div>
+</div>
+
+<section id="modes-section" class="modes-section hidden-section">
+    <h1>🎮 Game Modes</h1>
+    <div class="modes-categories-container" id="modes-categories-container">
+        <!-- Mode categories will be generated here -->
+    </div>
+</section>
+
+<!-- LEADERBOARDS SECTION -->
+<div id="leaderboards-section" class="leaderboards-section hidden-section">
+    <div class="leaderboards-mode-selector">
+        <label for="leaderboard-mode-filter">Select Mode:</label>
+        <select id="leaderboard-mode-filter">
+            <option value="">-- Select a Mode --</option>
+        </select>
+    </div>
+    <div id="leaderboards-container" class="leaderboards-container"></div>
 </div>
 
 <!-- DOCS SECTION -->
