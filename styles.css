@@ -1898,6 +1898,17 @@ body {
   background-color: #3f3f46; /* gray */
 }
 
+/* Unknown tier */
+.tier.unknown {
+  background-color: #6b7280; /* gray */
+  color: white;
+}
+
+.tier.unknown span {
+  color: white;
+  font-weight: bold;
+}
+
 /* Empty tier for Unknown */
 .tier.empty {
     border: 2px dashed rgba(255, 255, 255, 0.3);
