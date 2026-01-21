@@ -1481,9 +1481,18 @@ function attachPlayerClick() {
     el.addEventListener("click", () => {
       const name = el.dataset.player;
       const player = players.find(p => p.name === name);
+      showPlayerModal(player);
+    });
+  });
+}
 
-      // Set modal title to empty because the player name is now displayed below avatar
-      modalTitle.textContent = "";
+/* =============================
+   DOCS
+============================= */
+
+function showPlayerModal(player) {
+  // Set modal title to empty because the player name is now displayed below avatar
+  modalTitle.textContent = "";
 
 const sortedTiers = sortPlayerTiers(player.tiers, player.retired_modes);
 const tiersHTML = sortedTiers
@@ -1526,30 +1535,24 @@ modalContent.innerHTML = `
     </div>
 
     <div class="modal-info-row ${nitroClass}">
-      <span class="modal-label">Rank:</span>
-      <span class="modal-value">${getRankTitle(player.points)}</span>
+      <span class="modal-label">Points:</span>
+      <span class="modal-value">${player.points || 0}</span>
     </div>
 
     <div class="modal-info-row ${nitroClass}">
-      <span class="modal-label">Points:</span>
-      <span class="modal-value">${player.points.toLocaleString()}</span>
+      <span class="modal-label">Rank:</span>
+      <span class="modal-value">${getRankTitle(player.points || 0)}</span>
     </div>
   </div>
 
-  <h3 class="modal-subtitle ${nitroClass}">Tier Progress</h3>
-  <div class="tiers-container">
-    ${tiersHTML}
+  <div class="modal-section">
+    <h3 class="modal-section-title">Tiers</h3>
+    <div class="modal-tiers">${tiersHTML}</div>
   </div>
 `;
 
-      modal.classList.add("show");
-    });
-  });
+modal.style.display = "flex";
 }
-
-/* =============================
-   DOCS
-============================= */
 
 function generateDocs() {
   tierDocsContainer.innerHTML = "";
