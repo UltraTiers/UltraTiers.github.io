@@ -2020,7 +2020,6 @@ function renderLeaderboardForMode(mode) {
       </div>
     `;
     
-    playerDiv.addEventListener("click", () => showPlayerModal(player));
     tierColumn.appendChild(playerDiv);
   });
   
@@ -2166,7 +2165,6 @@ function showAllModesInTiers() {
         </div>
       `;
       
-      playerDiv.addEventListener("click", () => showPlayerModal(player));
       tierColumn.appendChild(playerDiv);
     });
   });
@@ -2178,6 +2176,9 @@ function showAllModesInTiers() {
       .sort((a, b) => b.dataset.signvalue - a.dataset.signvalue)
       .forEach(p => col.appendChild(p));
   });
+  
+  // Attach click handlers to leaderboard players
+  attachPlayerClick();
 }
 
 (async () => {

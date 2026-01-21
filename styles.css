@@ -1899,8 +1899,8 @@ body {
 }
 
 .tier.unknown {
-    background-color: rgba(255, 255, 255, 0.1);
-    border: 2px solid rgba(255, 255, 255, 0.2);
+    background: transparent;
+    border: 2px dashed rgba(255,255,255,0.2);
 }
 
 /* MODAL TIERS - wrap inside modal */
@@ -1936,7 +1936,7 @@ body {
 
 .modal-box .tier.empty {
     background: transparent;
-    border: 1px dashed rgba(255,255,255,0.2);
+    border: 2px dashed rgba(255,255,255,0.2);
 }
 
 .modal-box .tier:hover {
