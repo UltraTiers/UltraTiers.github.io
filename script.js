@@ -1894,12 +1894,12 @@ function generatePlayersForCategory(category, modes) {
         
         const tierRank = t.tier === "Unknown" ? "Unknown" : (t.tier.startsWith("HT") ? "HT" : "LT");
         
-        return `<div class="tier ${player.retired_modes?.includes(t.gamemode) ? "retired" : ""} ${t.tier === "Unknown" ? "unknown" : ""}"
+        return `<div class="tier ${player.retired_modes?.includes(t.gamemode) ? "retired" : ""} ${t.tier === "Unknown" ? "unknown empty" : ""}"
           data-gamemode="${t.gamemode}"
           data-tier="${tierNum}"
           data-rank="${tierRank}"
           data-tooltip="${t.gamemode} — ${t.tier}">
-            <img src="gamemodes/${t.gamemode}.png">
+            ${t.tier === "Unknown" ? "" : `<img src="gamemodes/${t.gamemode}.png">`}
             ${t.tier === "Unknown" ? "" : `<span>${tierRank + tierNum}</span>`}
         </div>`;
       }).filter(html => html !== "").join("");

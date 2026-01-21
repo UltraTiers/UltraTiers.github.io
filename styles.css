@@ -953,25 +953,16 @@ body {
     padding: 20px;
 }
 
-.leaderboards-mode-selector {
+.leaderboards-mode-buttons {
     margin-bottom: 25px;
     display: flex;
-    gap: 12px;
-    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
     padding: 15px 0;
     border-bottom: 1px solid rgba(255,255,255,0.08);
 }
 
-.leaderboards-mode-selector label {
-    font-weight: 700;
-    color: rgba(255,255,255,0.75);
-    font-size: 14px;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    min-width: 80px;
-}
-
-.leaderboards-mode-selector select {
+.leaderboard-mode-btn {
     padding: 10px 15px;
     background: rgba(255,255,255,0.08);
     border: 1px solid rgba(255,255,255,0.15);
@@ -981,20 +972,17 @@ body {
     font-weight: 600;
     cursor: pointer;
     transition: all 0.3s ease;
-    flex: 1;
-    max-width: 300px;
 }
 
-.leaderboards-mode-selector select:hover {
+.leaderboard-mode-btn:hover {
     background: rgba(255,255,255,0.12);
     border-color: rgba(255,255,255,0.25);
 }
 
-.leaderboards-mode-selector select:focus {
-    outline: none;
-    background: rgba(255,255,255,0.12);
+.leaderboard-mode-btn.active {
+    background: rgba(255,255,255,0.18);
     border-color: rgba(255,255,255,0.3);
-    box-shadow: 0 0 0 2px rgba(255,255,255,0.08);
+    color: #fff;
 }
 
 .leaderboards-container {
@@ -1907,6 +1895,11 @@ body {
     min-height: 40px;    /* ⬅️ prevents squishing */
     flex: 0 0 auto;      /* ⬅️ stops flex-shrinking */
     flex-shrink: 0;
+}
+
+.tier.unknown {
+    background-color: rgba(255, 255, 255, 0.1);
+    border: 2px solid rgba(255, 255, 255, 0.2);
 }
 
 /* MODAL TIERS - wrap inside modal */
