@@ -712,8 +712,10 @@ function handleCardNavigation(section) {
       showSection(leaderboardSection);
       tableHeader.style.display = "none";
       // Hide mode/region tabs for fighters view
-      document.querySelector(".fighters-region-tabs")?.style.display = "none";
-      document.querySelector(".leaderboard-mode-tabs")?.style.display = "none";
+      const fightRegionTabs = document.querySelector(".fighters-region-tabs");
+      const leaderboardModeTabs = document.querySelector(".leaderboard-mode-tabs");
+      if (fightRegionTabs) fightRegionTabs.style.display = "none";
+      if (leaderboardModeTabs) leaderboardModeTabs.style.display = "none";
       // Show all modes together without filters
       generateAllPlayerModes("global");
     } else if (section === "builders") {
