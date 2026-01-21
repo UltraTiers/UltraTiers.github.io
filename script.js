@@ -730,12 +730,12 @@ function handleCardNavigation(section) {
       if (section === "rankings") {
         console.log(`→ Showing leaderboard section for rankings`);
         showSection(leaderboardSection);
-        tableHeader.style.display = "none";
+        tableHeader.style.display = "grid";
         const fightRegionTabs = document.querySelector(".fighters-region-tabs");
         const leaderboardModeTabs = document.querySelector(".leaderboard-mode-tabs");
-        if (fightRegionTabs) fightRegionTabs.style.display = "none";
+        if (fightRegionTabs) fightRegionTabs.style.display = "block";
         if (leaderboardModeTabs) leaderboardModeTabs.style.display = "none";
-        generateAllPlayerModes("global");
+        generatePlayers("global", "main");
       } else if (section === "builders") {
         console.log(`→ Showing builders section`);
         showSection(buildersSection);
@@ -750,7 +750,7 @@ function handleCardNavigation(section) {
         console.log(`→ Showing leaderboards section`);
         showSection(leaderboardsSection);
         tableHeader.style.display = "none";
-        populateLeaderboardModes();
+        populateLeaderboardModesWithTiers();
       } else if (section === "testers") {
         console.log(`→ Showing testers section`);
         showSection(testersSection);
@@ -1790,10 +1790,13 @@ function renderModeCategories() {
       modeItem.addEventListener("click", () => {
         showLoadingScreen();
         setTimeout(() => {
-          showSection(leaderboardsSection);
-          populateLeaderboardModes();
-          leaderboardModeFilter.value = mode;
-          renderLeaderboardForMode(mode);
+          // Find the category this mode belongs to
+          const modeCategory = getModeCategory(mode);
+          showSection(leaderboardSection);
+          tableHeader.style.display = "grid";
+          const fightRegionTabs = document.querySelector(".fighters-region-tabs");
+          if (fightRegionTabs) fightRegionTabs.style.display = "block";
+          generatePlayers("global", modeCategory);
           hideLoadingScreen();
         }, 300);
       });
@@ -1803,6 +1806,16 @@ function renderModeCategories() {
     categoryDiv.appendChild(listDiv);
     modesCategoriesContainer.appendChild(categoryDiv);
   });
+}
+
+function getModeCategory(mode) {
+  // Find which category this mode belongs to
+  for (const [category, modes] of Object.entries(modeCategoriesDisplay)) {
+    if (modes.includes(mode)) {
+      return category.toLowerCase();
+    }
+  }
+  return "main"; // default fallback
 }
 
 /* =============================
@@ -1900,6 +1913,138 @@ function renderLeaderboardForMode(mode) {
   
   // Sort players in each column (HT above LT)
   document.querySelectorAll("#leaderboard-mode-tiers .mode-tier-column").forEach(col => {
+    const playerList = [...col.querySelectorAll(".mode-player")];
+    playerList
+      .sort((a, b) => b.dataset.signvalue - a.dataset.signvalue)
+      .forEach(p => col.appendChild(p));
+  });
+}
+
+/* =============================
+   LEADERBOARDS - PER MODE (TIER COLUMNS VIEW)
+============================= */
+
+function populateLeaderboardModesWithTiers() {
+  // Get all unique modes
+  const allModes = new Set();
+  players.forEach(p => {
+    if (p.tiers && Array.isArray(p.tiers)) {
+      p.tiers.forEach(t => {
+        if (t.gamemode && t.tier !== "Unknown") {
+          allModes.add(t.gamemode);
+        }
+      });
+    }
+  });
+  
+  const sortedModes = Array.from(allModes).sort();
+  
+  // Clear and populate the filter dropdown
+  leaderboardModeFilter.innerHTML = '<option value="">-- Select a Mode --</option>';
+  sortedModes.forEach(mode => {
+    const option = document.createElement("option");
+    option.value = mode;
+    option.textContent = mode;
+    leaderboardModeFilter.appendChild(option);
+  });
+  
+  // Show all modes by default in tier columns
+  showAllModesInTiers();
+  
+  // Update when mode changes
+  leaderboardModeFilter.removeEventListener("change", handleLeaderboardModeChange);
+  leaderboardModeFilter.addEventListener("change", handleLeaderboardModeChange);
+}
+
+function handleLeaderboardModeChange(e) {
+  const mode = e.target.value;
+  if (mode) {
+    renderLeaderboardForMode(mode);
+  } else {
+    showAllModesInTiers();
+  }
+}
+
+function showAllModesInTiers() {
+  leaderboardsContainer.innerHTML = "";
+  
+  // Get all modes
+  const allModes = new Set();
+  players.forEach(p => {
+    if (p.tiers && Array.isArray(p.tiers)) {
+      p.tiers.forEach(t => {
+        if (t.gamemode && t.tier !== "Unknown") {
+          allModes.add(t.gamemode);
+        }
+      });
+    }
+  });
+  
+  const sortedModes = Array.from(allModes).sort();
+  
+  // Create a section for each mode with tier columns
+  sortedModes.forEach(mode => {
+    const modeSection = document.createElement("div");
+    modeSection.className = "leaderboard-mode-section";
+    modeSection.innerHTML = `
+      <h3 class="mode-section-title">${mode}</h3>
+      <div class="mode-wrapper">
+        <div class="mode-tiers" data-mode="${mode}">
+          ${Array.from({length: 5}, (_, i) => {
+            const tierNum = 5 - i;
+            return '<div class="mode-tier-column"><div class="mode-tier-header">Tier ' + tierNum + '</div></div>';
+          }).join('')}
+        </div>
+      </div>
+    `;
+    leaderboardsContainer.appendChild(modeSection);
+  });
+  
+  // Add players to their appropriate tier columns
+  players.forEach(player => {
+    if (!player.tiers || !Array.isArray(player.tiers)) return;
+    
+    player.tiers.forEach(tierData => {
+      if (!tierData.gamemode || tierData.tier === "Unknown") return;
+      
+      const mode = tierData.gamemode;
+      const modeTiers = leaderboardsContainer.querySelector(`.mode-tiers[data-mode="${mode}"]`);
+      if (!modeTiers) return;
+      
+      const tierNumber = parseInt(tierData.tier.match(/\d+/)?.[0]) || 0;
+      if (tierNumber < 1 || tierNumber > 5) return;
+      
+      const tierColumn = modeTiers.querySelectorAll(".mode-tier-column")[5 - tierNumber];
+      if (!tierColumn) return;
+      
+      // Check if player already exists in this column
+      const existingPlayer = tierColumn.querySelector(`[data-player="${player.name}"]`);
+      if (existingPlayer) return;
+      
+      const playerDiv = document.createElement("div");
+      playerDiv.className = "mode-player";
+      playerDiv.dataset.player = player.name;
+      playerDiv.dataset.region = player.region.toLowerCase();
+      playerDiv.dataset.signvalue = tierData.tier.includes("HT") ? 2 : 1;
+      
+      playerDiv.innerHTML = `
+        <div class="mode-player-left">
+          <img src="https://render.crafty.gg/3d/bust/${player.uuid}">
+          <span class="player-label">${player.name}</span>
+          <span class="tier-sign">${tierData.tier.includes("HT") ? "+" : "-"}</span>
+        </div>
+        <div class="region-box">
+          <span>${player.region.toUpperCase()}</span>
+        </div>
+      `;
+      
+      playerDiv.addEventListener("click", () => showPlayerModal(player));
+      tierColumn.appendChild(playerDiv);
+    });
+  });
+  
+  // Sort players in each column (HT above LT)
+  leaderboardsContainer.querySelectorAll(".mode-tier-column").forEach(col => {
     const playerList = [...col.querySelectorAll(".mode-player")];
     playerList
       .sort((a, b) => b.dataset.signvalue - a.dataset.signvalue)
