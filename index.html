@@ -38,21 +38,313 @@
 </head>
 <body>
 
-<!-- LOADING SCREEN -->
-<div id="loading-screen" class="loading-screen">
-  <div class="loading-spinner">
-    <div class="spinner"></div>
-    <p>Loading...</p>
-  </div>
-</div>
-
 <header>
 <nav class="navbar">
     <div class="nav-left">
-        <img src="UltraTiers_White.png" class="logo-img" style="cursor: pointer;">
+        <img src="UltraTiers_White.png" class="logo-img">
     </div>
 
     <div class="nav-center">
+        <div class="dropdown-container" id="rankings-dropdown">
+  <div class="dropdown-trigger rankings-btn">
+    <i class="fas fa-trophy"></i> Fighters <i class="fas fa-chevron-down"></i>
+  </div>
+  <div class="dropdown-menu">
+    <div class="ranking-option" data-region="global">🌍 Global</div>
+    <div class="ranking-option" data-region="NA">🌍 North America</div>
+    <div class="ranking-option" data-region="EU">🌍 Europe</div>
+    <div class="ranking-option" data-region="AS">🌏 Asia</div>
+    <div class="ranking-option" data-region="SA">🌎 South America</div>
+    <div class="ranking-option" data-region="ME">🌍 Middle East</div>
+    <div class="ranking-option" data-region="AU">🌍 Australia</div>
+    <div class="ranking-option" data-region="AF">🌍 Africa</div>
+  </div>
+</div>
+
+<div class="dropdown-container" id="builders-dropdown">
+  <div class="dropdown-trigger builders-btn">
+    <i class="fas fa-hammer"></i> Builders <i class="fas fa-chevron-down"></i>
+  </div>
+  <div class="dropdown-menu" id="builders-menu">
+    <div class="builder-option" data-region="global">🌍 Global</div>
+    <div class="builder-option" data-region="NA">🌍 North America</div>
+    <div class="builder-option" data-region="EU">🌍 Europe</div>
+    <div class="builder-option" data-region="AS">🌏 Asia</div>
+    <div class="builder-option" data-region="SA">🌎 South America</div>
+    <div class="builder-option" data-region="ME">🌍 Middle East</div>
+    <div class="builder-option" data-region="AU">🌍 Australia</div>
+    <div class="builder-option" data-region="AF">🌍 Africa</div>
+  </div>
+</div>
+
+<div class="dropdown-container" id="modes-dropdown">
+  <div class="dropdown-trigger">
+    <i class="fas fa-layer-group"></i> Modes <i class="fas fa-chevron-down"></i>
+  </div>
+  <div class="dropdown-menu" id="modes-menu">
+    <div class="mode-btn" data-mode="Axe">
+      <img src="gamemodes/Axe.png" class="mode-icon">
+      <span class="mode-name">Axe</span>
+      <i class="fas fa-circle-info mode-info"></i>
+      <div class="mode-info-popup">
+        <img src="kitsmodes/AxeKit.png" alt="Axe Kit">
+      </div>
+    </div>
+
+    <div class="mode-btn" data-mode="Sword">
+      <img src="gamemodes/Sword.png" class="mode-icon">
+      <span class="mode-name">Sword</span>
+      <i class="fas fa-circle-info mode-info"></i>
+      <div class="mode-info-popup">
+        <img src="kitsmodes/SwordKit.png" alt="Sword Kit">
+      </div>
+    </div>
+
+    <div class="mode-btn" data-mode="Bow">
+      <img src="gamemodes/Bow.png" class="mode-icon">
+      <span class="mode-name">Bow</span>
+      <i class="fas fa-circle-info mode-info"></i>
+      <div class="mode-info-popup">
+        <img src="kitsmodes/BowKit.png" alt="Bow Kit">
+      </div>
+    </div>
+
+    <div class="mode-btn" data-mode="Vanilla">
+      <img src="gamemodes/Vanilla.png" class="mode-icon">
+      <span class="mode-name">Vanilla</span>
+      <i class="fas fa-circle-info mode-info"></i>
+      <div class="mode-info-popup">
+        <img src="kitsmodes/VanillaKit.png" alt="Vanilla Kit">
+      </div>
+    </div>
+
+    <div class="mode-btn" data-mode="NethOP">
+      <img src="gamemodes/NethOP.png" class="mode-icon">
+      <span class="mode-name">NethOP</span>
+      <i class="fas fa-circle-info mode-info"></i>
+      <div class="mode-info-popup">
+        <img src="kitsmodes/NethOPKit.png" alt="NethOP Kit">
+      </div>
+    </div>
+
+    <div class="mode-btn" data-mode="Pot">
+      <img src="gamemodes/Pot.png" class="mode-icon">
+      <span class="mode-name">Pot</span>
+      <i class="fas fa-circle-info mode-info"></i>
+      <div class="mode-info-popup">
+        <img src="kitsmodes/PotKit.png" alt="Pot Kit">
+      </div>
+    </div>
+
+    <div class="mode-btn" data-mode="UHC">
+      <img src="gamemodes/UHC.png" class="mode-icon">
+      <span class="mode-name">UHC</span>
+      <i class="fas fa-circle-info mode-info"></i>
+      <div class="mode-info-popup">
+        <img src="kitsmodes/UHCKit.png" alt="UHC Kit">
+      </div>
+    </div>
+
+    <div class="mode-btn" data-mode="SMP">
+      <img src="gamemodes/SMP.png" class="mode-icon">
+      <span class="mode-name">SMP</span>
+      <i class="fas fa-circle-info mode-info"></i>
+      <div class="mode-info-popup">
+        <img src="kitsmodes/SMPKit.png" alt="SMP Kit">
+      </div>
+    </div>
+
+    <div class="mode-btn" data-mode="Mace">
+      <img src="gamemodes/Mace.png" class="mode-icon">
+      <span class="mode-name">Mace</span>
+      <i class="fas fa-circle-info mode-info"></i>
+      <div class="mode-info-popup">
+        <img src="kitsmodes/MaceKit.png" alt="Mace Kit">
+      </div>
+    </div>
+
+    <div class="mode-btn" data-mode="Spear Mace">
+      <img src="gamemodes/Spear Mace.png" class="mode-icon">
+      <span class="mode-name">Spear Mace</span>
+      <i class="fas fa-circle-info mode-info"></i>
+      <div class="mode-info-popup">
+        <img src="kitsmodes/Spear MaceKit.png" alt="Spear Mace Kit">
+      </div>
+    </div>
+
+    <div class="mode-btn" data-mode="Diamond SMP">
+      <img src="gamemodes/Diamond SMP.png" class="mode-icon">
+      <span class="mode-name">Diamond SMP</span>
+      <i class="fas fa-circle-info mode-info"></i>
+      <div class="mode-info-popup">
+        <img src="kitsmodes/Diamond SMPKit.png" alt="Diamond SMP Kit">
+      </div>
+    </div>
+
+    <div class="mode-btn" data-mode="OG Vanilla">
+      <img src="gamemodes/OG Vanilla.png" class="mode-icon">
+      <span class="mode-name">OG Vanilla</span>
+      <i class="fas fa-circle-info mode-info"></i>
+      <div class="mode-info-popup">
+        <img src="kitsmodes/OG VanillaKit.png" alt="OG Vanilla Kit">
+      </div>
+    </div>
+
+    <div class="mode-btn" data-mode="Bed">
+      <img src="gamemodes/Bed.png" class="mode-icon">
+      <span class="mode-name">Bed</span>
+      <i class="fas fa-circle-info mode-info"></i>
+      <div class="mode-info-popup">
+        <img src="kitsmodes/BedKit.png" alt="Bed Kit">
+      </div>
+    </div>
+
+    <div class="mode-btn" data-mode="DeBuff">
+      <img src="gamemodes/DeBuff.png" class="mode-icon">
+      <span class="mode-name">DeBuff</span>
+      <i class="fas fa-circle-info mode-info"></i>
+      <div class="mode-info-popup">
+        <img src="kitsmodes/DeBuffKit.png" alt="DeBuff Kit">
+      </div>
+    </div>
+
+    <div class="mode-btn" data-mode="Speed">
+      <img src="gamemodes/Speed.png" class="mode-icon">
+      <span class="mode-name">Speed</span>
+      <i class="fas fa-circle-info mode-info"></i>
+      <div class="mode-info-popup">
+        <img src="kitsmodes/SpeedKit.png" alt="Speed Kit">
+      </div>
+    </div>
+
+    <div class="mode-btn" data-mode="Manhunt">
+      <img src="gamemodes/Manhunt.png" class="mode-icon">
+      <span class="mode-name">Manhunt</span>
+      <i class="fas fa-circle-info mode-info"></i>
+      <div class="mode-info-popup">
+        <img src="kitsmodes/ManhuntKit.png" alt="Manhunt Kit">
+      </div>
+    </div>
+
+    <div class="mode-btn" data-mode="Elytra">
+      <img src="gamemodes/Elytra.png" class="mode-icon">
+      <span class="mode-name">Elytra</span>
+      <i class="fas fa-circle-info mode-info"></i>
+      <div class="mode-info-popup">
+        <img src="kitsmodes/ElytraKit.png" alt="Elytra Kit">
+      </div>
+    </div>
+
+    <div class="mode-btn" data-mode="Spear Elytra">
+      <img src="gamemodes/Spear Elytra.png" class="mode-icon">
+      <span class="mode-name">Spear Elytra</span>
+      <i class="fas fa-circle-info mode-info"></i>
+      <div class="mode-info-popup">
+        <img src="kitsmodes/Spear ElytraKit.png" alt="Spear Elytra Kit">
+      </div>
+    </div>
+
+    <div class="mode-btn" data-mode="Diamond Survival">
+      <img src="gamemodes/Diamond Survival.png" class="mode-icon">
+      <span class="mode-name">Diamond Survival</span>
+      <i class="fas fa-circle-info mode-info"></i>
+      <div class="mode-info-popup">
+        <img src="kitsmodes/Diamond SurvivalKit.png" alt="Diamond Survival Kit">
+      </div>
+    </div>
+
+    <div class="mode-btn" data-mode="Minecart">
+      <img src="gamemodes/Minecart.png" class="mode-icon">
+      <span class="mode-name">Minecart</span>
+      <i class="fas fa-circle-info mode-info"></i>
+      <div class="mode-info-popup">
+        <img src="kitsmodes/MinecartKit.png" alt="Minecart Kit">
+      </div>
+    </div>
+
+    <div class="mode-btn" data-mode="Creeper">
+      <img src="gamemodes/Creeper.png" class="mode-icon">
+      <span class="mode-name">Creeper</span>
+      <i class="fas fa-circle-info mode-info"></i>
+      <div class="mode-info-popup">
+        <img src="kitsmodes/CreeperKit.png" alt="Creeper Kit">
+      </div>
+    </div>
+
+    <div class="mode-btn" data-mode="Trident">
+      <img src="gamemodes/Trident.png" class="mode-icon">
+      <span class="mode-name">Trident</span>
+      <i class="fas fa-circle-info mode-info"></i>
+      <div class="mode-info-popup">
+        <img src="kitsmodes/TridentKit.png" alt="Trident Kit">
+      </div>
+    </div>
+
+    <div class="mode-btn" data-mode="AxePot">
+      <img src="gamemodes/AxePot.png" class="mode-icon">
+      <span class="mode-name">AxePot</span>
+      <i class="fas fa-circle-info mode-info"></i>
+      <div class="mode-info-popup">
+        <img src="kitsmodes/AxePotKit.png" alt="AxePot Kit">
+      </div>
+    </div>
+
+    <div class="mode-btn" data-mode="Pearl">
+      <img src="gamemodes/Pearl.png" class="mode-icon">
+      <span class="mode-name">Pearl</span>
+      <i class="fas fa-circle-info mode-info"></i>
+      <div class="mode-info-popup">
+        <img src="kitsmodes/PearlKit.png" alt="Pearl Kit">
+      </div>
+    </div>
+
+    <div class="mode-btn" data-mode="Bridge">
+      <img src="gamemodes/Bridge.png" class="mode-icon">
+      <span class="mode-name">Bridge</span>
+      <i class="fas fa-circle-info mode-info"></i>
+      <div class="mode-info-popup">
+        <img src="kitsmodes/BridgeKit.png" alt="Bridge Kit">
+      </div>
+    </div>
+
+    <div class="mode-btn" data-mode="Sumo">
+      <img src="gamemodes/Sumo.png" class="mode-icon">
+      <span class="mode-name">Sumo</span>
+      <i class="fas fa-circle-info mode-info"></i>
+      <div class="mode-info-popup">
+        <img src="kitsmodes/SumoKit.png" alt="Sumo Kit">
+      </div>
+    </div>
+
+    <div class="mode-btn" data-mode="OP">
+      <img src="gamemodes/OP.png" class="mode-icon">
+      <span class="mode-name">OP</span>
+      <i class="fas fa-circle-info mode-info"></i>
+      <div class="mode-info-popup">
+        <img src="kitsmodes/OPKit.png" alt="OP Kit">
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<div class="dropdown-container" id="subjects-dropdown">
+  <div class="dropdown-trigger">
+    <i class="fas fa-book"></i> Subjects <i class="fas fa-chevron-down"></i>
+  </div>
+  <div class="dropdown-menu" id="subjects-menu">
+    <div class="subject-btn" data-subject="Terrain"><img src="Terrain.png" class="mode-icon">Terrain</div>
+    <div class="subject-btn" data-subject="Composition"><img src="Composition.png" class="mode-icon">Composition</div>
+    <div class="subject-btn" data-subject="Details"><img src="Details.png" class="mode-icon">Details</div>
+    <div class="subject-btn" data-subject="Organics"><img src="Organics.png" class="mode-icon">Organics</div>
+    <div class="subject-btn" data-subject="Buildings"><img src="Buildings.png" class="mode-icon">Buildings</div>
+    <div class="subject-btn" data-subject="Colouring"><img src="Colouring.png" class="mode-icon">Colouring</div>
+  </div>
+</div>
+        <a href="https://discord.gg/Bvebb7RwaG" style="text-decoration: none;"><i class="fab fa-discord"></i> Discord</a>
+        <a class="docs-btn"><i class="fas fa-file-alt"></i> Docs</a>
+        <a class="application-btn"><i class="fas fa-clipboard-list"></i> Application</a>
+        <a class="testers-btn"><i class="fas fa-solid fa-user"></i> Testers</a>
     </div>
 
 <div class="nav-right">
@@ -80,118 +372,12 @@
 </header>
 
 <!-- LEADERBOARD SECTION -->
-<div id="home-section" class="home-section active-section">
-  <div class="home-hero">
-    <div class="hero-content">
-      <h1 class="hero-title">
-        <span class="title-icon">🏆</span>
-        UltraTiers
-      </h1>
-      <p class="hero-subtitle">Track the best Minecraft PvP & Building performance</p>
-    </div>
-  </div>
-
-  <div class="home-grid">
-    <!-- Fighters Card -->
-    <div class="home-card fighters-card" data-section="rankings">
-      <div class="card-icon">⚔️</div>
-      <h3 class="card-title">Fighters</h3>
-      <p class="card-description">View the top PvP fighters across all modes and regions</p>
-      <div class="card-stats">
-        <span id="home-fighter-count">0</span> Tested
-      </div>
-      <button class="card-button">View Rankings</button>
-    </div>
-
-    <!-- Builders Card -->
-    <div class="home-card builders-card" data-section="builders">
-      <div class="card-icon">🏗️</div>
-      <h3 class="card-title">Builders</h3>
-      <p class="card-description">Explore the best builders by subject and region</p>
-      <div class="card-stats">
-        <span id="home-builder-count">0</span> Tested
-      </div>
-      <button class="card-button">View Builders</button>
-    </div>
-
-    <!-- Modes Card -->
-    <div class="home-card modes-card" data-section="modes">
-      <div class="card-icon">🎮</div>
-      <h3 class="card-title">Game Modes</h3>
-      <p class="card-description">Browse all 27 PvP modes organized by category</p>
-      <div class="card-stats">
-        <span>27</span> Modes
-      </div>
-      <button class="card-button">Explore Modes</button>
-    </div>
-
-    <!-- Testers Card -->
-    <div class="home-card testers-card" data-section="testers">
-      <div class="card-icon">🧪</div>
-      <h3 class="card-title">Official Testers</h3>
-      <p class="card-description">Meet the official UltraTiers testers</p>
-      <div class="card-stats">
-        Filter by mode & region
-      </div>
-      <button class="card-button">View Testers</button>
-    </div>
-
-    <!-- Documentation Card -->
-    <div class="home-card docs-card" data-section="docs">
-      <div class="card-icon">📚</div>
-      <h3 class="card-title">Documentation</h3>
-      <p class="card-description">Learn about tier system and points</p>
-      <div class="card-stats">
-        Tiers 1-5
-      </div>
-      <button class="card-button">Read Docs</button>
-    </div>
-
-    <!-- Application Card -->
-    <div class="home-card application-card" data-section="application">
-      <div class="card-icon">📝</div>
-      <h3 class="card-title">Apply Now</h3>
-      <p class="card-description">Become an official UltraTiers tester</p>
-      <div class="card-stats">
-        Quick & Easy
-      </div>
-      <button class="card-button">Apply Today</button>
-    </div>
-  </div>
-
-  <div class="home-footer">
-    <p>Join our <a href="https://discord.gg/Bvebb7RwaG" target="_blank" class="discord-link"><i class="fab fa-discord"></i> Discord</a> for updates and community</p>
-  </div>
-</div>
-
-<div id="leaderboard-section" class="leaderboard hidden-section">
+<div id="leaderboard-section" class="leaderboard active-section">
         <div class="header-container">
     <div colspan="4" class="header-message">
         Join our discord for more updates!
     </div>
     </div>
-
-    <!-- Fighter Region Tabs -->
-    <div class="fighters-region-tabs">
-      <button class="fighters-region-tab-btn active" data-fighter-region="global">🌍 Global</button>
-      <button class="fighters-region-tab-btn" data-fighter-region="NA">🌍 North America</button>
-      <button class="fighters-region-tab-btn" data-fighter-region="EU">🌍 Europe</button>
-      <button class="fighters-region-tab-btn" data-fighter-region="AS">🌏 Asia</button>
-      <button class="fighters-region-tab-btn" data-fighter-region="SA">🌎 South America</button>
-      <button class="fighters-region-tab-btn" data-fighter-region="ME">🌍 Middle East</button>
-      <button class="fighters-region-tab-btn" data-fighter-region="AU">🌍 Australia</button>
-      <button class="fighters-region-tab-btn" data-fighter-region="AF">🌍 Africa</button>
-    </div>
-
-    <!-- Mode Category Tabs -->
-    <div class="leaderboard-mode-tabs">
-      <button class="leaderboard-mode-tab-btn" data-mode-category="overall">Overall</button>
-      <button class="leaderboard-mode-tab-btn active" data-mode-category="main">Main</button>
-      <button class="leaderboard-mode-tab-btn" data-mode-category="sub">Sub</button>
-      <button class="leaderboard-mode-tab-btn" data-mode-category="extra">Extra</button>
-      <button class="leaderboard-mode-tab-btn" data-mode-category="bonus">Bonus</button>
-    </div>
-
 <div class="table-header">
     <!-- players generated -->
 </div>
@@ -200,27 +386,11 @@
 </div>
 
 <!-- Builders section -->
-<section id="builders-section" class="builders-section hidden-section">
+<section id="builders-section" class="builders-section">
           <div class="header-container">
     <div colspan="4" class="header-message">
         Join our discord for more updates!
     </div>
-    </div>
-
-    <!-- Builder Region Tabs -->
-    <div class="builders-region-tabs">
-      <button class="builders-region-tab-btn active" data-builder-region="global">🌍 Global</button>
-      <button class="builders-region-tab-btn" data-builder-region="NA">🌍 North America</button>
-      <button class="builders-region-tab-btn" data-builder-region="EU">🌍 Europe</button>
-      <button class="builders-region-tab-btn" data-builder-region="AS">🌏 Asia</button>
-      <button class="builders-region-tab-btn" data-builder-region="SA">🌎 South America</button>
-      <button class="builders-region-tab-btn" data-builder-region="ME">🌍 Middle East</button>
-      <button class="builders-region-tab-btn" data-builder-region="AU">🌍 Australia</button>
-      <button class="builders-region-tab-btn" data-builder-region="AF">🌍 Africa</button>
-    </div>
-
-    <div class="builders-table-header">
-        <!-- builders generated -->
     </div>
     <!-- ADD THIS DIV -->
     <div id="builders-container" class="builders-grid"></div>
@@ -380,6 +550,6 @@
 </footer>
 
 <!-- SCRIPT -->
-<script src="script.js"></script>
+<script type="module" src="script.js"></script>
 </body>
 </html>

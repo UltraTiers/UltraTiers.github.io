@@ -12,20 +12,6 @@ const tiersDocs = [
     { tier: "LT5", gamemode: "Fighter Tier", description: "Gives you 1 point." }
 ];
 
-/* =============================
-   LOADING SCREEN UTILITY
-============================= */
-
-const loadingScreen = document.getElementById("loading-screen");
-
-function showLoadingScreen() {
-    loadingScreen.classList.add("show");
-}
-
-function hideLoadingScreen() {
-    loadingScreen.classList.remove("show");
-}
-
 async function loadPlayers() {
   const res = await fetch("/players");
   players = await res.json();
@@ -37,7 +23,21 @@ async function loadPlayers() {
    ELEMENTS
 ============================= */
 
-// Moved inside DOMContentLoaded
+const leaderboardSection = document.getElementById("leaderboard-section");
+const applicationSection = document.getElementById("application-section");
+const docsSection = document.getElementById("docs-section");
+const playersContainer = document.getElementById("players-container");
+const tierDocsContainer = document.getElementById("tier-docs-container");
+const modal = document.getElementById("modal");
+const modalTitle = document.getElementById("modal-title");
+const modalContent = document.getElementById("modal-content");
+const closeModalBtn = document.getElementById("close-modal");
+const searchInput = document.getElementById("search-input");
+const tableHeader = document.querySelector(".table-header");
+const testersSection = document.getElementById("testers-section");
+const testersContainer = document.getElementById("testers-container");
+const testerModeFilter = document.getElementById("tester-mode-filter");
+const testerRegionFilter = document.getElementById("tester-region-filter");
 
 /* =============================
    PROFILE DESIGNER ELEMENTS
@@ -75,24 +75,15 @@ async function loadTesters() {
 
 function updateTestedCount() {
   const playerCountEl = document.getElementById("player-count");
-  const homePlayerCount = document.getElementById("home-fighter-count");
-  const homeBuilderCount = document.getElementById("home-builder-count");
-  
   playerCountEl.innerHTML = `
     <div>Fighters Tested: ${players.length}</div>
     <div>Builders Tested: ${builders.length}</div>
   `;
-  
-  if (homePlayerCount) homePlayerCount.textContent = players.length;
-  if (homeBuilderCount) homeBuilderCount.textContent = builders.length;
 }
-
-let currentBuildersRegion = "global";
 
 document.querySelectorAll(".builder-option").forEach(opt => {
 opt.addEventListener("click", async () => {
   const region = opt.dataset.region;
-  currentBuildersRegion = region;
   await loadBuilders();
   showBuildersSection(region);
 });
@@ -510,7 +501,6 @@ profileBanner.style.backgroundImage =
 
 function showSection(sectionToShow) {
     const sections = [
-        homeSection,
         leaderboardSection,
         docsSection,
         applicationSection,
@@ -531,7 +521,6 @@ function showSection(sectionToShow) {
     // navbar active state
     document.querySelectorAll(".nav-center a, .nav-center .dropdown-trigger").forEach(el => el.classList.remove("active-tab"));
 
-    if (sectionToShow === homeSection) window.location.hash = '';
     if (sectionToShow === leaderboardSection) document.querySelector(".rankings-btn")?.classList.add("active-tab");
     if (sectionToShow === docsSection) document.querySelector(".docs-btn")?.classList.add("active-tab");
     if (sectionToShow === applicationSection) document.querySelector(".application-btn")?.classList.add("active-tab");
@@ -580,19 +569,11 @@ document.addEventListener("click", (e) => {
   }
 });
 
-let currentLeaderboardRegion = "global";
-
 document.querySelectorAll(".ranking-option").forEach(opt => {
   opt.addEventListener("click", () => {
     const region = opt.dataset.region;
-    currentLeaderboardRegion = region;
     showSection(leaderboardSection);
-    // Reset to main category and set active region tab
-    document.querySelectorAll(".fighters-region-tab-btn").forEach(b => b.classList.remove("active"));
-    document.querySelector(`.fighters-region-tab-btn[data-fighter-region='${region}']`).classList.add("active");
-    document.querySelectorAll(".leaderboard-mode-tab-btn").forEach(b => b.classList.remove("active"));
-    document.querySelector(".leaderboard-mode-tab-btn[data-mode-category='main']").classList.add("active");
-    generatePlayers(region, "main");
+    generatePlayers(region);
   });
 });
 
@@ -674,185 +655,30 @@ bannerOptions.forEach(img => {
    NAVIGATION BUTTONS
 ============================= */
 
-// Logo/Home button
-document.querySelector(".logo-img")?.addEventListener("click", () => {
-  showLoadingScreen();
-  setTimeout(() => {
-    showSection(homeSection);
-    hideLoadingScreen();
-  }, 300);
-});
-
-document.addEventListener("DOMContentLoaded", () => {
-  /* =============================
-     ELEMENTS
-  ============================= */
-
-  const homeSection = document.getElementById("home-section");
-  const leaderboardSection = document.getElementById("leaderboard-section");
-  const applicationSection = document.getElementById("application-section");
-  const docsSection = document.getElementById("docs-section");
-  const buildersSection = document.getElementById("builders-section");
-  const playersContainer = document.getElementById("players-container");
-  const tierDocsContainer = document.getElementById("tier-docs-container");
-  const modal = document.getElementById("modal");
-  const modalTitle = document.getElementById("modal-title");
-  const modalContent = document.getElementById("modal-content");
-  const closeModalBtn = document.getElementById("close-modal");
-  const searchInput = document.getElementById("search-input");
-  const tableHeader = document.querySelector(".table-header");
-  const testersSection = document.getElementById("testers-section");
-  const testersContainer = document.getElementById("testers-container");
-  const testerModeFilter = document.getElementById("tester-mode-filter");
-  const testerRegionFilter = document.getElementById("tester-region-filter");
-
-  // Add more elements as needed
-
-  // Home page card navigation
-  const cardButtons = document.querySelectorAll(".card-button");
-  console.log("Found card buttons:", cardButtons.length);
-  cardButtons.forEach(button => {
-    button.addEventListener("click", (e) => {
-      e.stopPropagation(); // Prevent bubbling to card if any
-      const card = button.closest(".home-card");
-      const section = card.dataset.section;
-      console.log("Button clicked:", section);
-      showLoadingScreen();
-      setTimeout(() => {
-        if (section === "rankings") {
-          showSection(leaderboardSection);
-          tableHeader.style.display = "grid";
-        } else if (section === "builders") {
-          showSection(buildersSection);
-          tableHeader.style.display = "none";
-          renderBuilders("global");
-        } else if (section === "modes") {
-          // Just navigate to home, users can select modes from navbar
-          showSection(leaderboardSection);
-          tableHeader.style.display = "grid";
-        } else if (section === "testers") {
-          showSection(testersSection);
-          tableHeader.style.display = "none";
-          if (!testers.length) {
-            loadTesters().then(() => {
-              populateTesterModes();
-              renderTesters();
-            });
-          } else {
-            renderTesters();
-          }
-        } else if (section === "docs") {
-          showSection(docsSection);
-          tableHeader.style.display = "none";
-        } else if (section === "application") {
-          showSection(applicationSection);
-          tableHeader.style.display = "none";
-        }
-        hideLoadingScreen();
-      }, 300);
-    });
-  });
-
-  // Other event listeners would need to be moved here too, but for now, focus on this
-
-  // The IIFE for loading data
-  (async () => {
-    try {
-      await loadPlayers();
-    } catch (error) {
-      console.error("Failed to load players from server:", error);
-      players = [];
-    }
-    players.forEach(p => p.points = calculatePoints(p, "player"));
-    builders.forEach(b => b.points = calculatePoints(b, "builder"));
-    try {
-      await loadPlayerNames();
-    } catch (error) {
-      console.error("Failed to load player names:", error);
-    }
-    try {
-      await loadTesters();
-    } catch (error) {
-      console.error("Failed to load testers:", error);
-    }
-    try {
-      await loadBuilders();
-    } catch (error) {
-      console.error("Failed to load builders:", error);
-    }
-
-    updateTestedCount();
-
-    const hash = window.location.hash;
-
-    if (hash.startsWith("#subject=")) {
-      // Restore builder subject leaderboard
-      const subject = decodeURIComponent(hash.split("=")[1]);
-      normalizeBuilderTiers();
-      showBuildersSection("global");
-      generateBuilderModeLeaderboard(subject);
-
-  } else if (hash.startsWith("#mode=")) {
-    const mode = decodeURIComponent(hash.split("=")[1]);
-    showSection(leaderboardSection);
-    tableHeader.style.display = "none";
-    generateModeLeaderboard(mode);
-  } else {
-      // Default: show home page
-      showSection(homeSection);
-    }
-
-    // Load testers
-    populateTesterModes();
-    renderTesters();
-
-    // Restore logged-in user
-    const savedUser = localStorage.getItem("ultratiers_user");
-    if (savedUser) setLoggedInUser(JSON.parse(savedUser));
-  })();
-});
-
 document.querySelector(".rankings-btn").addEventListener("click", () => {
-
-  showLoadingScreen();
-  setTimeout(() => {
-    showSection(leaderboardSection);
-    tableHeader.style.display = "grid";
-    hideLoadingScreen();
-  }, 300);
+  showSection(leaderboardSection);
+  tableHeader.style.display = "grid";
 });
 
 document.querySelector(".docs-btn").addEventListener("click", () => {
-  showLoadingScreen();
-  setTimeout(() => {
-    showSection(docsSection);
-    tableHeader.style.display = "none";
-    hideLoadingScreen();
-  }, 300);
+  showSection(docsSection);
+  tableHeader.style.display = "none";
 });
 
 document.querySelector(".application-btn").addEventListener("click", () => {
-  showLoadingScreen();
-  setTimeout(() => {
-    showSection(applicationSection);
-    tableHeader.style.display = "none";
-    hideLoadingScreen();
-  }, 300);
+  showSection(applicationSection);
+  tableHeader.style.display = "none";
 });
 
 document.querySelector(".testers-btn")?.addEventListener("click", async () => {
-  showLoadingScreen();
-  setTimeout(async () => {
-    showSection(testersSection);
-    tableHeader.style.display = "none";
+  showSection(testersSection);
+  tableHeader.style.display = "none";
 
-    if (!testers.length) {
-      await loadTesters();
-      populateTesterModes();
-      renderTesters();
-    }
-    hideLoadingScreen();
-  }, 300);
+  if (!testers.length) {
+    await loadTesters();
+    populateTesterModes();
+    renderTesters();
+  }
 });
 
 /* =============================
@@ -866,11 +692,8 @@ document.querySelectorAll(".mode-btn").forEach(btn => {
     // Save mode to URL hash
     window.location.hash = `mode=${encodeURIComponent(mode)}`;
 
-    // Show loading screen and reload
-    showLoadingScreen();
-    setTimeout(() => {
-      window.location.reload();
-    }, 350);
+    // Reload the page so the init code restores this mode
+    window.location.reload();
   });
 });
 
@@ -894,118 +717,6 @@ document.querySelectorAll(".mode-info").forEach(icon => {
 // Close popups when clicking outside
 document.addEventListener("click", () => {
   document.querySelectorAll(".mode-btn").forEach(btn => btn.classList.remove("show-info"));
-});
-
-/* =============================
-   MODE TAB SWITCHING
-============================= */
-
-document.querySelectorAll(".mode-tab-btn").forEach(btn => {
-  btn.addEventListener("click", () => {
-    const tabName = btn.dataset.tab;
-    
-    // Show loading screen with brief delay for visual effect
-    showLoadingScreen();
-    
-    setTimeout(() => {
-      // Remove active class from all tabs and contents
-      document.querySelectorAll(".mode-tab-btn").forEach(b => b.classList.remove("active"));
-      document.querySelectorAll(".mode-tab-content").forEach(content => content.classList.remove("active"));
-      
-      // Add active class to clicked tab and corresponding content
-      btn.classList.add("active");
-      document.getElementById(`${tabName}-tab`).classList.add("active");
-      
-      // Hide loading screen
-      hideLoadingScreen();
-    }, 350);
-  });
-});
-
-/* =============================
-   LEADERBOARD MODE TAB SWITCHING
-============================= */
-
-document.querySelectorAll(".leaderboard-mode-tab-btn").forEach(btn => {
-  btn.addEventListener("click", () => {
-    const category = btn.dataset.modeCategory;
-    
-    // Show loading screen
-    showLoadingScreen();
-    
-    setTimeout(() => {
-      // Remove active class from all tabs
-      document.querySelectorAll(".leaderboard-mode-tab-btn").forEach(b => b.classList.remove("active"));
-      
-      // Add active class to clicked tab
-      btn.classList.add("active");
-      
-      // Regenerate players with new category using current region
-      generatePlayers(currentLeaderboardRegion, category);
-      
-      // Hide loading screen
-      hideLoadingScreen();
-    }, 350);
-  });
-});
-
-/* =============================
-   FIGHTERS REGION TAB SWITCHING
-============================= */
-
-document.querySelectorAll(".fighters-region-tab-btn").forEach(btn => {
-  btn.addEventListener("click", () => {
-    const region = btn.dataset.fighterRegion;
-    
-    // Show loading screen
-    showLoadingScreen();
-    
-    setTimeout(() => {
-      // Remove active class from all tabs
-      document.querySelectorAll(".fighters-region-tab-btn").forEach(b => b.classList.remove("active"));
-      
-      // Add active class to clicked tab
-      btn.classList.add("active");
-      
-      // Get current mode category
-      const modeCategory = document.querySelector(".leaderboard-mode-tab-btn.active")?.dataset.modeCategory || "main";
-      
-      // Update current region and regenerate players
-      currentLeaderboardRegion = region;
-      generatePlayers(region, modeCategory);
-      
-      // Hide loading screen
-      hideLoadingScreen();
-    }, 350);
-  });
-});
-
-/* =============================
-   BUILDERS REGION TAB SWITCHING
-============================= */
-
-document.querySelectorAll(".builders-region-tab-btn").forEach(btn => {
-  btn.addEventListener("click", () => {
-    const region = btn.dataset.builderRegion;
-    
-    // Show loading screen
-    showLoadingScreen();
-    
-    setTimeout(() => {
-      // Remove active class from all tabs
-      document.querySelectorAll(".builders-region-tab-btn").forEach(b => b.classList.remove("active"));
-      
-      // Add active class to clicked tab
-      btn.classList.add("active");
-      
-      // Update current region and regenerate builders
-      currentBuildersRegion = region;
-      renderBuilders(region);
-      
-      // Hide loading screen
-      hideLoadingScreen();
-    }, 350);
-  });
 });
 
 const mode = [
@@ -1037,15 +748,6 @@ const mode = [
   "Sumo",
   "OP"
 ];
-
-// Mode categories mapping
-const modeCategories = {
-  overall: ["Axe", "Sword", "Bow", "Vanilla", "NethOP", "Pot", "UHC", "SMP", "Mace", "Spear Mace", "Diamond SMP", "OG Vanilla", "Bed", "DeBuff", "Speed", "Manhunt", "Elytra", "Spear Elytra", "Diamond Survival", "Minecart", "Creeper", "Trident", "AxePot", "Pearl", "Bridge", "Sumo", "OP"],
-  main: ["Sword", "Axe", "Bow", "Vanilla", "UHC", "Pot"],
-  sub: ["Mace", "Diamond SMP", "OG Vanilla", "Bed", "DeBuff", "Speed", "Manhunt", "Elytra", "Spear Elytra", "NethOP"],
-  extra: ["Diamond Survival", "Minecart", "Creeper", "Trident", "AxePot", "Pearl", "Bridge", "Sumo", "SMP"],
-  bonus: ["Spear Mace", "OP"]
-};
 
 // Optional: auto-set kit image src based on mode name (dynamic)
 document.querySelectorAll(".mode-btn").forEach(btn => {
@@ -1178,7 +880,7 @@ document.querySelector(".application-form").addEventListener("submit", async (e)
    NORMAL LEADERBOARD (TOP 3 BORDERS)
 ============================= */
 
-function generatePlayers(region = "global", modeCategory = "main") {
+function generatePlayers(region = "global") {
   tableHeader.style.display = "grid";
   playersContainer.innerHTML = "";
 
@@ -1191,17 +893,8 @@ function generatePlayers(region = "global", modeCategory = "main") {
       ? sorted
       : sorted.filter(p => p.region === region);
 
-  // Filter by mode category - only include players who have tiers in the selected category
-  const categoryModes = modeCategories[modeCategory] || modeCategories.main;
-  const categoryFiltered = filtered.filter(player => {
-    return player.tiers && player.tiers.some(t => categoryModes.includes(t.gamemode));
-  });
-
-  // Sort filtered players by points again to get proper ranking within category
-  categoryFiltered.sort((a, b) => b.points - a.points);
-
   // ✅ HARD LIMIT TO TOP 100
-  const top100 = categoryFiltered.slice(0, 100);
+  const top100 = filtered.slice(0, 100);
 
   top100.forEach((player, index) => {
     const sortedTiers = sortPlayerTiers(player.tiers, player.retired_modes);
@@ -1253,10 +946,6 @@ return `
 function showBuildersSection(region = "global") {
   showSection(buildersSection);        // show the builders section
   tableHeader.style.display = "none";  // hide table header
-
-  // Set active tab
-  document.querySelectorAll(".builders-region-tab-btn").forEach(b => b.classList.remove("active"));
-  document.querySelector(`.builders-region-tab-btn[data-builder-region='${region}']`).classList.add("active");
 
   if (!builders.length) {
     loadBuilders().then(() => renderBuilders(region));
@@ -1641,29 +1330,12 @@ modalContent.innerHTML = `
 ============================= */
 
 (async () => {
-  try {
-    await loadPlayers();
-  } catch (error) {
-    console.error("Failed to load players from server:", error);
-    players = [];
-  }
+  await loadPlayers();
   players.forEach(p => p.points = calculatePoints(p, "player"));
   builders.forEach(b => b.points = calculatePoints(b, "builder"));
-  try {
-    await loadPlayerNames();
-  } catch (error) {
-    console.error("Failed to load player names:", error);
-  }
-  try {
-    await loadTesters();
-  } catch (error) {
-    console.error("Failed to load testers:", error);
-  }
-  try {
-    await loadBuilders();
-  } catch (error) {
-    console.error("Failed to load builders:", error);
-  }
+  await loadPlayerNames();
+  await loadTesters();
+  await loadBuilders(); // builders loaded here, updateTestedCount() is called inside loadBuilders
 
   updateTestedCount();
 
@@ -1682,8 +1354,9 @@ modalContent.innerHTML = `
   tableHeader.style.display = "none";
   generateModeLeaderboard(mode);
 } else {
-    // Default: show home page
-    showSection(homeSection);
+    // Default: show global player leaderboard
+    showSection(leaderboardSection);
+    generatePlayers();
   }
 
   // Load testers
