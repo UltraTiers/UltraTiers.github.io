@@ -28,7 +28,7 @@ function hideLoadingScreen() {
 
 async function loadPlayers() {
   try {
-    const res = await fetch("players.json");
+    const res = await fetch("/players");
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     players = await res.json();
   } catch (err) {
@@ -90,7 +90,7 @@ let builders = [];
 
 async function loadTesters() {
   try {
-    const res = await fetch("testers.json");
+    const res = await fetch("/testers");
     const data = await res.json();
     testers = Array.isArray(data) ? data : [];
   } catch (err) {
@@ -140,7 +140,7 @@ function normalizeBuilderTiers() {
 
 async function loadBuilders() {
   try {
-    const res = await fetch("builders.json");
+    const res = await fetch("/builders");
     builders = await res.json();
 
     // Normalize tiers to object keyed by subject
@@ -582,6 +582,27 @@ function showSection(sectionToShow) {
     if (sectionToShow === applicationSection) document.querySelector(".application-btn")?.classList.add("active-tab");
     if (sectionToShow === testersSection) document.querySelector(".testers-btn")?.classList.add("active-tab");
     if (sectionToShow === buildersSection) document.querySelector(".builders-btn")?.classList.add("active-tab");
+}
+
+function sortPlayerTiers(tiers, retiredModes = []) {
+  return tiers.slice().sort((a, b) => {
+    const aEmpty = !a.tier || a.tier === "Unknown" ? 1 : 0;
+    const bEmpty = !b.tier || b.tier === "Unknown" ? 1 : 0;
+
+    // Empty tiers always go to the very end
+    if (aEmpty !== bEmpty) return aEmpty - bEmpty;
+
+    const aRetired = retiredModes?.includes(a.gamemode) ? 1 : 0;
+    const bRetired = retiredModes?.includes(b.gamemode) ? 1 : 0;
+
+    // Retired tiers come after active tiers
+    if (aRetired !== bRetired) return aRetired - bRetired;
+
+    // Both active or both retired: sort by points descending
+    const aPoints = tierPointsMap[a.tier] || 0;
+    const bPoints = tierPointsMap[b.tier] || 0;
+    return bPoints - aPoints;
+  });
 }
 
 
@@ -1048,36 +1069,9 @@ const mode = [
 const modeCategories = {
   overall: ["Axe", "Sword", "Bow", "Vanilla", "NethOP", "Pot", "UHC", "SMP", "Mace", "Spear Mace", "Diamond SMP", "OG Vanilla", "Bed", "DeBuff", "Speed", "Manhunt", "Elytra", "Spear Elytra", "Diamond Survival", "Minecart", "Creeper", "Trident", "AxePot", "Pearl", "Bridge", "Sumo", "OP"],
   main: ["Sword", "Axe", "Bow", "Vanilla", "UHC", "Pot"],
-  vanilla: ["Vanilla"],
-  uhc: ["UHC"],
-  pot: ["Pot"],
-  nethop: ["NethOP"],
-  smp: ["SMP"],
-  sword: ["Sword"],
-  axe: ["Axe"],
-  mace: ["Mace"],
   sub: ["Mace", "Diamond SMP", "OG Vanilla", "Bed", "DeBuff", "Speed", "Manhunt", "Elytra", "Spear Elytra", "NethOP"],
-  minecart: ["Minecart"],
-  "diamond-survival": ["Diamond Survival"],
-  debuff: ["DeBuff"],
-  elytra: ["Elytra"],
-  speed: ["Speed"],
-  creeper: ["Creeper"],
-  manhunt: ["Manhunt"],
-  "diamond-smp": ["Diamond SMP"],
-  bow: ["Bow"],
-  bed: ["Bed"],
-  "og-vanilla": ["OG Vanilla"],
-  trident: ["Trident"],
-  "spear-elytra": ["Spear Elytra"],
-  "spear-mace": ["Spear Mace"],
   extra: ["Diamond Survival", "Minecart", "Creeper", "Trident", "AxePot", "Pearl", "Bridge", "Sumo", "SMP"],
-  axepot: ["AxePot"],
-  sumo: ["Sumo"],
-  op: ["OP"],
-  bonus: ["Spear Mace", "OP"],
-  bridge: ["Bridge"],
-  pearl: ["Pearl"]
+  bonus: ["Spear Mace", "OP"]
 };
 
 // Optional: auto-set kit image src based on mode name (dynamic)
@@ -1165,38 +1159,6 @@ function calculateCategoryPoints(player, categoryModes) {
     if (!categoryModes.includes(t.gamemode) || !t.tier || t.tier === "Unknown") return sum;
     return sum + (tierPointsMap[t.tier] || 0);
   }, 0);
-}
-
-function sortPlayerTiers(tiers, retiredModes = []) {
-  if (!Array.isArray(tiers)) return [];
-  
-  // Get all tested tiers
-  const testedTiers = tiers.filter(t => t.tier && t.tier !== "Unknown");
-  
-  // Create a map of gamemode to tier
-  const tierMap = {};
-  testedTiers.forEach(t => {
-    tierMap[t.gamemode] = t;
-  });
-  
-  // For all modes, if not tested, add unknown
-  const allTiers = mode.map(gamemode => {
-    if (tierMap[gamemode]) {
-      return tierMap[gamemode];
-    } else {
-      return { gamemode, tier: "Unknown" };
-    }
-  });
-  
-  // Sort by points descending, unknowns last
-  return allTiers.sort((a, b) => {
-    if (a.tier === "Unknown" && b.tier === "Unknown") return 0;
-    if (a.tier === "Unknown") return 1;
-    if (b.tier === "Unknown") return -1;
-    const aPoints = tierPointsMap[a.tier] || 0;
-    const bPoints = tierPointsMap[b.tier] || 0;
-    return bPoints - aPoints;
-  });
 }
 
 /* =============================
@@ -1355,8 +1317,8 @@ function generateModeLeaderboard(mode) {
 
   const tiersGrid = document.getElementById("mode-tiers");
 
-  // Create Tier 5–1 columns (highest first)
-  for (let i = 5; i >= 1; i--) {
+  // Create Tier 1–5 columns
+  for (let i = 1; i <= 5; i++) {
     const col = document.createElement("div");
     col.className = "mode-tier-column";
     col.innerHTML = `<div class="mode-tier-header">Tier ${i}</div>`;
@@ -1369,7 +1331,7 @@ function generateModeLeaderboard(mode) {
     if (!tierObj) return;
 
     const tierNumber = parseInt(tierObj.tier.match(/\d+/)[0]);
-    const targetColumn = document.querySelectorAll(".mode-tier-column")[5 - tierNumber];
+    const targetColumn = document.querySelectorAll(".mode-tier-column")[tierNumber - 1];
 
     const playerDiv = document.createElement("div");
     playerDiv.className = "mode-player";
@@ -1526,15 +1488,6 @@ function attachPlayerClick() {
 const sortedTiers = sortPlayerTiers(player.tiers, player.retired_modes);
 const tiersHTML = sortedTiers
   .map(t => {
-          if (t.tier === "Unknown") {
-            return `<div class="tier unknown"
-  data-gamemode="${t.gamemode}"
-  data-tier="unknown"
-  data-tooltip="${t.gamemode} — Unknown">
-    <img src="gamemodes/${t.gamemode}.png">
-    <span>Unknown</span>
-</div>`;
-          }
           const tierMatch = t.tier.match(/\d+/);
 if (!tierMatch) return `<div class="tier empty"></div>`; // fallback for invalid tier
 const tierNumber = t.tier.match(/\d+/)?.[0];
