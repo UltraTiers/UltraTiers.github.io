@@ -1868,30 +1868,28 @@ function generatePlayersForCategory(category, modes) {
   const top100 = categoryFiltered.slice(0, 100);
   
   top100.forEach((player, index) => {
-    const sortedTiers = sortPlayerTiers(player.tiers, player.retired_modes);
+    // Filter player tiers to only include this category
+    const categoryTiers = player.tiers.filter(t => categoryModes.includes(t.gamemode));
+    const sortedTiers = sortPlayerTiers(categoryTiers, player.retired_modes);
     
-    // Only show tiers from this category
+    // Generate tier HTML - only for filtered tiers
     const tiersHTML = sortedTiers
-      .filter(t => categoryModes.includes(t.gamemode))
       .map(t => {
-        if (!t.tier || t.tier === "Unknown") return `<div class="tier empty"></div>`;
+        if (!t.tier || t.tier === "Unknown") return "";
         const tierNum = t.tier.match(/\d+/)?.[0];
-        if (!tierNum) return `<div class="tier empty"></div>`;
+        if (!tierNum) return "";
         
-        const tierNumber = t.tier.match(/\d+/)?.[0];
         const tierRank = t.tier.startsWith("HT") ? "HT" : "LT";
         
-        return `
-        <div class="tier ${player.retired_modes?.includes(t.gamemode) ? "retired" : ""}"
+        return `<div class="tier ${player.retired_modes?.includes(t.gamemode) ? "retired" : ""}"
           data-gamemode="${t.gamemode}"
-          data-tier="${tierNumber}"
+          data-tier="${tierNum}"
           data-rank="${tierRank}"
           data-tooltip="${t.gamemode} — ${t.tier}">
             <img src="gamemodes/${t.gamemode}.png">
-            <span>${tierRank}${tierNumber}</span>
-        </div>
-        `;
-      }).join("");
+            <span>${tierRank}${tierNum}</span>
+        </div>`;
+      }).filter(html => html !== "").join("");
     
     const borderClass =
       index === 0 ? "gold" :
