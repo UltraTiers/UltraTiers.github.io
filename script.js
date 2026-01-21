@@ -1835,18 +1835,14 @@ function showModesCategoryPlayers(category, modes) {
   // Show the modes list
   const modesListDiv = document.createElement("div");
   modesListDiv.className = "modes-list-display";
-  
-  // Format mode names
-  const formattedModes = modes.map(mode => {
-    if (mode === "Diamond Survival") return "Diamond Survival (Diamond Vanilla)";
-    return mode;
-  });
-  
   modesListDiv.innerHTML = `
-    <div class="modes-category-header">${category}</div>
+    <div class="modes-separator"></div>
+    <h3 class="modes-category-label">${category}</h3>
+    <div class="modes-separator"></div>
     <div class="modes-in-category">
-      ${formattedModes.map(mode => `<div class="mode-badge">${mode}</div>`).join("")}
+      ${modes.map(mode => `<div class="mode-badge">${mode}</div>`).join("")}
     </div>
+    <div class="modes-separator"></div>
   `;
   contentContainer.appendChild(modesListDiv);
   
@@ -1931,160 +1927,6 @@ function generatePlayersForCategory(category, modes) {
   attachPlayerClick();
 }
 
-function generatePlayersForMode(mode) {
-  const playersDiv = document.getElementById("modes-players-container");
-  if (!playersDiv) return;
-  
-  playersDiv.innerHTML = "";
-  
-  // Get all players and create tier columns (Tier 1 first, Tier 5 last)
-  const playersWithMode = players
-    .map(p => {
-      const tierData = p.tiers?.find(t => t.gamemode === mode);
-      return {
-        ...p,
-        modeTier: tierData?.tier || "Unknown",
-        modeTierNumber: tierData?.tier?.match(/\d+/)?.[0] || "Unknown",
-        isHT: tierData?.tier?.includes("HT") || false
-      };
-    })
-    .filter(p => p.tiers && Array.isArray(p.tiers) && p.tiers.length > 0); // Only players with tier data
-  
-  // Create tier columns (1, 2, 3, 4, 5) - so Tier 1 is first
-  const tiersHTML = `
-    <div class="mode-wrapper">
-      <div class="mode-tiers" id="leaderboard-mode-tiers">
-        ${Array.from({length: 6}, (_, i) => {
-          let tierNum = i; // 0, 1, 2, 3, 4, 5
-          let headerText = tierNum === 0 ? "Unknown" : "Tier " + tierNum;
-          return '<div class="mode-tier-column"><div class="mode-tier-header">' + headerText + '</div></div>';
-        }).join('')}
-      </div>
-    </div>
-  `;
-  
-  playersDiv.innerHTML = tiersHTML;
-  
-  // Add players to their tier columns
-  playersWithMode.forEach(player => {
-    let columnIndex = 0;
-    if (player.modeTierNumber === "Unknown") {
-      columnIndex = 0; // Unknown column
-    } else {
-      columnIndex = parseInt(player.modeTierNumber); // 1-5 maps to column 1-5
-    }
-    
-    const tierColumn = document.querySelectorAll("#leaderboard-mode-tiers .mode-tier-column")[columnIndex];
-    
-    if (!tierColumn) return;
-    
-    const playerDiv = document.createElement("div");
-    playerDiv.className = "mode-player";
-    playerDiv.dataset.player = player.name;
-    playerDiv.dataset.region = player.region.toLowerCase();
-    playerDiv.dataset.signvalue = player.isHT ? 2 : 1;
-    
-    playerDiv.innerHTML = `
-      <div class="mode-player-left">
-        <img src="https://render.crafty.gg/3d/bust/${player.uuid}">
-        <span class="player-label">${player.name}</span>
-        <span class="tier-sign">${player.modeTierNumber === "Unknown" ? "?" : (player.isHT ? "+" : "-")}</span>
-      </div>
-      <div class="region-box">
-        <span>${player.region.toUpperCase()}</span>
-      </div>
-    `;
-    
-    playerDiv.addEventListener("click", () => showPlayerModal(player));
-    tierColumn.appendChild(playerDiv);
-  });
-  
-  // Sort players in each column (HT above LT)
-  document.querySelectorAll("#leaderboard-mode-tiers .mode-tier-column").forEach(col => {
-    const playerList = [...col.querySelectorAll(".mode-player")];
-    playerList
-      .sort((a, b) => b.dataset.signvalue - a.dataset.signvalue)
-      .forEach(p => col.appendChild(p));
-  });
-}
-
-function generatePlayersForMode(mode) {
-  const playersDiv = document.getElementById("modes-players-container");
-  if (!playersDiv) return;
-  
-  playersDiv.innerHTML = "";
-  
-  // Get all players and create tier columns (Tier 1 first, Tier 5 last)
-  const playersWithMode = players
-    .map(p => {
-      const tierData = p.tiers?.find(t => t.gamemode === mode);
-      return {
-        ...p,
-        modeTier: tierData?.tier || "Unknown",
-        modeTierNumber: tierData?.tier?.match(/\d+/)?.[0] || "Unknown",
-        isHT: tierData?.tier?.includes("HT") || false
-      };
-    })
-    .filter(p => p.tiers && Array.isArray(p.tiers) && p.tiers.length > 0); // Only players with tier data
-  
-  // Create tier columns (1, 2, 3, 4, 5) - so Tier 1 is first
-  const tiersHTML = `
-    <div class="mode-wrapper">
-      <div class="mode-tiers" id="leaderboard-mode-tiers">
-        ${Array.from({length: 6}, (_, i) => {
-          let tierNum = i; // 0, 1, 2, 3, 4, 5
-          let headerText = tierNum === 0 ? "Unknown" : "Tier " + tierNum;
-          return '<div class="mode-tier-column"><div class="mode-tier-header">' + headerText + '</div></div>';
-        }).join('')}
-      </div>
-    </div>
-  `;
-  
-  playersDiv.innerHTML = tiersHTML;
-  
-  // Add players to their tier columns
-  playersWithMode.forEach(player => {
-    let columnIndex = 0;
-    if (player.modeTierNumber === "Unknown") {
-      columnIndex = 0; // Unknown column
-    } else {
-      columnIndex = parseInt(player.modeTierNumber); // 1-5 maps to column 1-5
-    }
-    
-    const tierColumn = document.querySelectorAll("#leaderboard-mode-tiers .mode-tier-column")[columnIndex];
-    
-    if (!tierColumn) return;
-    
-    const playerDiv = document.createElement("div");
-    playerDiv.className = "mode-player";
-    playerDiv.dataset.player = player.name;
-    playerDiv.dataset.region = player.region.toLowerCase();
-    playerDiv.dataset.signvalue = player.isHT ? 2 : 1;
-    
-    playerDiv.innerHTML = `
-      <div class="mode-player-left">
-        <img src="https://render.crafty.gg/3d/bust/${player.uuid}">
-        <span class="player-label">${player.name}</span>
-        <span class="tier-sign">${player.modeTierNumber === "Unknown" ? "?" : (player.isHT ? "+" : "-")}</span>
-      </div>
-      <div class="region-box">
-        <span>${player.region.toUpperCase()}</span>
-      </div>
-    `;
-    
-    playerDiv.addEventListener("click", () => showPlayerModal(player));
-    tierColumn.appendChild(playerDiv);
-  });
-  
-  // Sort players in each column (HT above LT)
-  document.querySelectorAll("#leaderboard-mode-tiers .mode-tier-column").forEach(col => {
-    const playerList = [...col.querySelectorAll(".mode-player")];
-    playerList
-      .sort((a, b) => b.dataset.signvalue - a.dataset.signvalue)
-      .forEach(p => col.appendChild(p));
-  });
-}
-
 
 
 /* =============================
@@ -2125,27 +1967,26 @@ function populateLeaderboardModes() {
 function renderLeaderboardForMode(mode) {
   leaderboardsContainer.innerHTML = "";
   
-  // Get all players with this mode (including Unknown)
+  // Get all players with this mode
   const playersWithMode = players
+    .filter(p => p.tiers && p.tiers.some(t => t.gamemode === mode && t.tier !== "Unknown"))
     .map(p => {
-      const tierData = p.tiers?.find(t => t.gamemode === mode);
+      const tierData = p.tiers.find(t => t.gamemode === mode);
       return {
         ...p,
         modeTier: tierData?.tier || "Unknown",
-        modeTierNumber: tierData?.tier?.match(/\d+/)?.[0] || "Unknown",
+        modeTierNumber: tierData?.tier?.match(/\d+/)?.[0] || 0,
         isHT: tierData?.tier?.includes("HT") || false
       };
-    })
-    .filter(p => p.tiers && Array.isArray(p.tiers) && p.tiers.length > 0); // Only players with tier data
+    });
   
-  // Create tier columns (Unknown, 1, 2, 3, 4, 5)
+  // Create tier columns (5, 4, 3, 2, 1)
   const tiersHTML = `
     <div class="mode-wrapper">
       <div class="mode-tiers" id="leaderboard-mode-tiers">
-        ${Array.from({length: 6}, (_, i) => {
-          let tierNum = i; // 0=Unknown, 1-5 are tiers
-          let headerText = tierNum === 0 ? "Unknown" : "Tier " + tierNum;
-          return '<div class="mode-tier-column"><div class="mode-tier-header">' + headerText + '</div></div>';
+        ${Array.from({length: 5}, (_, i) => {
+          const tierNum = 5 - i; // 5, 4, 3, 2, 1
+          return '<div class="mode-tier-column"><div class="mode-tier-header">Tier ' + tierNum + '</div></div>';
         }).join('')}
       </div>
     </div>
@@ -2153,16 +1994,10 @@ function renderLeaderboardForMode(mode) {
   
   leaderboardsContainer.innerHTML = tiersHTML;
   
-  // Add players to their tier columns
+  // Add players to their tier columns, sorted by HT first
   playersWithMode.forEach(player => {
-    let columnIndex = 0;
-    if (player.modeTierNumber === "Unknown") {
-      columnIndex = 0; // Unknown column
-    } else {
-      columnIndex = parseInt(player.modeTierNumber); // 1-5 maps to column 1-5
-    }
-    
-    const tierColumn = document.querySelectorAll("#leaderboard-mode-tiers .mode-tier-column")[columnIndex];
+    const tierNumber = parseInt(player.modeTierNumber);
+    const tierColumn = document.querySelectorAll("#leaderboard-mode-tiers .mode-tier-column")[5 - tierNumber];
     
     if (!tierColumn) return;
     
@@ -2174,9 +2009,9 @@ function renderLeaderboardForMode(mode) {
     
     playerDiv.innerHTML = `
       <div class="mode-player-left">
-        <img src="https://render.crafty.gg/3d/bust/${player.uuid}">
+        <img src="https://render.crafty.gg/3d/bust/${player.name}">
         <span class="player-label">${player.name}</span>
-        <span class="tier-sign">${player.modeTierNumber === "Unknown" ? "?" : (player.isHT ? "+" : "-")}</span>
+        <span class="tier-sign">${player.isHT ? "+" : "-"}</span>
       </div>
       <div class="region-box">
         <span>${player.region.toUpperCase()}</span>
@@ -2249,7 +2084,7 @@ function showAllModesInTiers() {
   players.forEach(p => {
     if (p.tiers && Array.isArray(p.tiers)) {
       p.tiers.forEach(t => {
-        if (t.gamemode) {
+        if (t.gamemode && t.tier !== "Unknown") {
           allModes.add(t.gamemode);
         }
       });
@@ -2266,10 +2101,9 @@ function showAllModesInTiers() {
       <h3 class="mode-section-title">${mode}</h3>
       <div class="mode-wrapper">
         <div class="mode-tiers" data-mode="${mode}">
-          ${Array.from({length: 6}, (_, i) => {
-            let tierNum = i;
-            let headerText = tierNum === 0 ? "Unknown" : "Tier " + tierNum;
-            return '<div class="mode-tier-column"><div class="mode-tier-header">' + headerText + '</div></div>';
+          ${Array.from({length: 5}, (_, i) => {
+            const tierNum = 5 - i;
+            return '<div class="mode-tier-column"><div class="mode-tier-header">Tier ' + tierNum + '</div></div>';
           }).join('')}
         </div>
       </div>
@@ -2282,22 +2116,16 @@ function showAllModesInTiers() {
     if (!player.tiers || !Array.isArray(player.tiers)) return;
     
     player.tiers.forEach(tierData => {
-      if (!tierData.gamemode) return;
+      if (!tierData.gamemode || tierData.tier === "Unknown") return;
       
       const mode = tierData.gamemode;
       const modeTiers = leaderboardsContainer.querySelector(`.mode-tiers[data-mode="${mode}"]`);
       if (!modeTiers) return;
       
-      let columnIndex = 0;
-      if (tierData.tier === "Unknown" || !tierData.tier) {
-        columnIndex = 0; // Unknown column
-      } else {
-        columnIndex = parseInt(tierData.tier.match(/\d+/)?.[0]) || 0; // 1-5 maps to column 1-5
-      }
+      const tierNumber = parseInt(tierData.tier.match(/\d+/)?.[0]) || 0;
+      if (tierNumber < 1 || tierNumber > 5) return;
       
-      if (columnIndex < 0 || columnIndex > 5) return;
-      
-      const tierColumn = modeTiers.querySelectorAll(".mode-tier-column")[columnIndex];
+      const tierColumn = modeTiers.querySelectorAll(".mode-tier-column")[5 - tierNumber];
       if (!tierColumn) return;
       
       // Check if player already exists in this column
@@ -2308,13 +2136,13 @@ function showAllModesInTiers() {
       playerDiv.className = "mode-player";
       playerDiv.dataset.player = player.name;
       playerDiv.dataset.region = player.region.toLowerCase();
-      playerDiv.dataset.signvalue = tierData.tier?.includes("HT") ? 2 : 1;
+      playerDiv.dataset.signvalue = tierData.tier.includes("HT") ? 2 : 1;
       
       playerDiv.innerHTML = `
         <div class="mode-player-left">
           <img src="https://render.crafty.gg/3d/bust/${player.uuid}">
           <span class="player-label">${player.name}</span>
-          <span class="tier-sign">${tierData.tier === "Unknown" || !tierData.tier ? "?" : (tierData.tier.includes("HT") ? "+" : "-")}</span>
+          <span class="tier-sign">${tierData.tier.includes("HT") ? "+" : "-"}</span>
         </div>
         <div class="region-box">
           <span>${player.region.toUpperCase()}</span>

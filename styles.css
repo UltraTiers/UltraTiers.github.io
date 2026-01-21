@@ -1142,32 +1142,10 @@ body {
     margin-bottom: 30px;
 }
 
-.modes-category-header {
-    font-size: 22px;
-    font-weight: 700;
-    color: rgba(255,255,255,0.95);
-    margin: 0 0 15px 0;
-    padding-bottom: 10px;
-    border-bottom: 2px solid rgba(255,255,255,0.1);
-    text-transform: uppercase;
-    letter-spacing: 1px;
-}
-
-.modes-in-category {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-    padding: 10px 0;
-}
-
-.mode-badge {
-    padding: 8px 16px;
-    background: rgba(255,255,255,0.06);
-    border: 1px solid rgba(255,255,255,0.12);
-    border-radius: 6px;
-    font-size: 13px;
-    font-weight: 600;
-    color: rgba(255,255,255,0.8);
+.modes-separator {
+    height: 2px;
+    background: rgba(255,255,255,0.1);
+    border-radius: 1px;
 }
 
 .modes-category-label {
@@ -1321,39 +1299,30 @@ body {
 .mode-tiers {
   display: flex;
   flex-wrap: wrap;
-  gap: 16px;
+  gap: 18px;
   justify-content: center;
 }
 
 .mode-tier-column {
-  background: rgba(255,255,255,0.05);
-  border: 1px solid rgba(255,255,255,0.12);
-  border-radius: 12px;
-  padding: 16px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 14px;
 
-  flex: 1 1 300px;
-  max-width: 340px;
+  flex: 1 1 320px;      /* << responsive width */
+  max-width: 320px;     /* << prevents giant columns on desktop */
 
   display: flex;
   flex-direction: column;
   gap: 10px;
-  transition: all 0.3s ease;
-}
-
-.mode-tier-column:hover {
-  background: rgba(255,255,255,0.08);
-  border-color: rgba(255,255,255,0.2);
 }
 
 .mode-tier-header {
   text-align: center;
-  font-size: 16px;
+  font-size: 20px;
   font-weight: 900;
-  padding: 12px 8px;
-  border-bottom: 2px solid rgba(255,255,255,0.15);
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  color: rgba(255,255,255,0.9);
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--border);
 }
 
 /* ============================= */
@@ -1366,79 +1335,54 @@ body {
   justify-content: space-between;
   gap: 10px;
   width: 100%;
-  background: rgba(255,255,255,0.06);
-  border: 1px solid rgba(255,255,255,0.08);
-  border-radius: 8px;
+  background: rgba(255,255,255,0.08);
+  border-radius: 10px;
   position: relative;
   cursor: pointer;
   overflow: hidden;
-  transition: all 0.2s ease;
-  padding: 8px;
-}
-
-.mode-player:hover {
-  background: rgba(255,255,255,0.12);
-  border-color: rgba(255,255,255,0.15);
-  transform: translateX(4px);
 }
 
 /* Left side: avatar + name + tiers */
 .mode-player-left {
-  padding: 0 6px;
+  padding: 8px 10px;
   display: flex;
   align-items: center;
-  gap: 8px;
-  flex: 1;
+  gap: 10px;
+  flex: 1;       /* take all remaining width */
 }
 
 /* Player avatar */
 .mode-player img {
-  width: 28px;
-  height: 28px;
-  border-radius: 5px;
-  flex-shrink: 0;
+  width: 30px;
+  height: 30px;
+  border-radius: 6px;
 }
 
 /* Player name and optional sign */
 .mode-player span {
   font-weight: 700;
-  font-size: 13px;
 }
 
-.player-label {
-  color: rgba(255,255,255,0.9);
-  flex: 1;
-  min-width: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.tier-sign {
-  color: rgba(255,255,255,0.6);
-  min-width: 16px;
-  text-align: center;
-}
 
 /* ============================= */
 /* Right region box inside the card */
 .region-box {
   position: relative;
-  width: 6px;
-  height: 38px;
-  border-radius: 5px;
+  width: 8px;                /* initial thin line */
+  height: 40px;              /* match card height */
+  border-radius: 6px;
   overflow: hidden;
-  flex-shrink: 0;
+  flex-shrink: 0;            /* keep width */
   transition: width 0.3s ease;
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: center;   /* center text */
   color: white;
-  font-weight: 900;
+  font-weight: 900;          /* bold */
   text-transform: uppercase;
-  padding: 0 5px;
+  padding: 0 6px;            /* horizontal padding inside box */
   box-sizing: border-box;
-  background-color: gray;
+  background-color: gray;     /* fallback */
 }
 
 /* Region colors */
