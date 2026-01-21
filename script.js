@@ -1629,7 +1629,7 @@ function generateAllPlayerModes(region = "global") {
       <div class="mode-tiers" id="fighter-mode-tiers">
         ${Array.from({length: 5}, (_, i) => {
           const tierNum = 5 - i; // 5, 4, 3, 2, 1
-          return `<div class="mode-tier-column"><div class="mode-tier-header">Tier ${tierNum}</div></div>`;
+          return '<div class="mode-tier-column"><div class="mode-tier-header">Tier ' + tierNum + '</div></div>';
         }).join('')}
       </div>
     </div>
@@ -1801,7 +1801,7 @@ function renderLeaderboardForMode(mode) {
       <div class="mode-tiers" id="leaderboard-mode-tiers">
         ${Array.from({length: 5}, (_, i) => {
           const tierNum = 5 - i; // 5, 4, 3, 2, 1
-          return `<div class="mode-tier-column"><div class="mode-tier-header">Tier ${tierNum}</div></div>`;
+          return '<div class="mode-tier-column"><div class="mode-tier-header">Tier ' + tierNum + '</div></div>';
         }).join('')}
       </div>
     </div>
