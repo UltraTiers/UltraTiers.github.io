@@ -1538,7 +1538,7 @@ modalContent.innerHTML = `
 
   <div class="modal-section">
     <h3 class="modal-section-title">Tiers</h3>
-    <div class="modal-tiers">${tiersHTML}</div>
+    <div class="tiers-container">${tiersHTML}</div>
   </div>
 `;
 
@@ -2056,10 +2056,10 @@ function populateLeaderboardModesWithTiers() {
   const buttonsContainer = document.getElementById("leaderboards-mode-buttons");
   buttonsContainer.innerHTML = "";
   
-  // Add "All Modes" button
+  // Add "Overview" button
   const allButton = document.createElement("button");
   allButton.className = "leaderboard-mode-btn active";
-  allButton.textContent = "All Modes";
+  allButton.textContent = "Overview";
   allButton.dataset.mode = "";
   allButton.addEventListener("click", handleLeaderboardModeChange);
   buttonsContainer.appendChild(allButton);
