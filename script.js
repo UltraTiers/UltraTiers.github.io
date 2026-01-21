@@ -37,22 +37,7 @@ async function loadPlayers() {
    ELEMENTS
 ============================= */
 
-const homeSection = document.getElementById("home-section");
-const leaderboardSection = document.getElementById("leaderboard-section");
-const applicationSection = document.getElementById("application-section");
-const docsSection = document.getElementById("docs-section");
-const playersContainer = document.getElementById("players-container");
-const tierDocsContainer = document.getElementById("tier-docs-container");
-const modal = document.getElementById("modal");
-const modalTitle = document.getElementById("modal-title");
-const modalContent = document.getElementById("modal-content");
-const closeModalBtn = document.getElementById("close-modal");
-const searchInput = document.getElementById("search-input");
-const tableHeader = document.querySelector(".table-header");
-const testersSection = document.getElementById("testers-section");
-const testersContainer = document.getElementById("testers-container");
-const testerModeFilter = document.getElementById("tester-mode-filter");
-const testerRegionFilter = document.getElementById("tester-region-filter");
+// Moved inside DOMContentLoaded
 
 /* =============================
    PROFILE DESIGNER ELEMENTS
@@ -698,44 +683,133 @@ document.querySelector(".logo-img")?.addEventListener("click", () => {
   }, 300);
 });
 
-// Home page card navigation
-document.querySelectorAll(".home-card").forEach(card => {
-  card.addEventListener("click", () => {
-    const section = card.dataset.section;
-    showLoadingScreen();
-    setTimeout(() => {
-      if (section === "rankings") {
-        showSection(leaderboardSection);
-        tableHeader.style.display = "grid";
-      } else if (section === "builders") {
-        showSection(buildersSection);
-        tableHeader.style.display = "none";
-        renderBuilders("global");
-      } else if (section === "modes") {
-        // Just navigate to home, users can select modes from navbar
-        showSection(leaderboardSection);
-        tableHeader.style.display = "grid";
-      } else if (section === "testers") {
-        showSection(testersSection);
-        tableHeader.style.display = "none";
-        if (!testers.length) {
-          loadTesters().then(() => {
-            populateTesterModes();
+document.addEventListener("DOMContentLoaded", () => {
+  /* =============================
+     ELEMENTS
+  ============================= */
+
+  const homeSection = document.getElementById("home-section");
+  const leaderboardSection = document.getElementById("leaderboard-section");
+  const applicationSection = document.getElementById("application-section");
+  const docsSection = document.getElementById("docs-section");
+  const buildersSection = document.getElementById("builders-section");
+  const playersContainer = document.getElementById("players-container");
+  const tierDocsContainer = document.getElementById("tier-docs-container");
+  const modal = document.getElementById("modal");
+  const modalTitle = document.getElementById("modal-title");
+  const modalContent = document.getElementById("modal-content");
+  const closeModalBtn = document.getElementById("close-modal");
+  const searchInput = document.getElementById("search-input");
+  const tableHeader = document.querySelector(".table-header");
+  const testersSection = document.getElementById("testers-section");
+  const testersContainer = document.getElementById("testers-container");
+  const testerModeFilter = document.getElementById("tester-mode-filter");
+  const testerRegionFilter = document.getElementById("tester-region-filter");
+
+  // Add more elements as needed
+
+  // Home page card navigation
+  const cardButtons = document.querySelectorAll(".card-button");
+  console.log("Found card buttons:", cardButtons.length);
+  cardButtons.forEach(button => {
+    button.addEventListener("click", (e) => {
+      e.stopPropagation(); // Prevent bubbling to card if any
+      const card = button.closest(".home-card");
+      const section = card.dataset.section;
+      console.log("Button clicked:", section);
+      showLoadingScreen();
+      setTimeout(() => {
+        if (section === "rankings") {
+          showSection(leaderboardSection);
+          tableHeader.style.display = "grid";
+        } else if (section === "builders") {
+          showSection(buildersSection);
+          tableHeader.style.display = "none";
+          renderBuilders("global");
+        } else if (section === "modes") {
+          // Just navigate to home, users can select modes from navbar
+          showSection(leaderboardSection);
+          tableHeader.style.display = "grid";
+        } else if (section === "testers") {
+          showSection(testersSection);
+          tableHeader.style.display = "none";
+          if (!testers.length) {
+            loadTesters().then(() => {
+              populateTesterModes();
+              renderTesters();
+            });
+          } else {
             renderTesters();
-          });
-        } else {
-          renderTesters();
+          }
+        } else if (section === "docs") {
+          showSection(docsSection);
+          tableHeader.style.display = "none";
+        } else if (section === "application") {
+          showSection(applicationSection);
+          tableHeader.style.display = "none";
         }
-      } else if (section === "docs") {
-        showSection(docsSection);
-        tableHeader.style.display = "none";
-      } else if (section === "application") {
-        showSection(applicationSection);
-        tableHeader.style.display = "none";
-      }
-      hideLoadingScreen();
-    }, 300);
+        hideLoadingScreen();
+      }, 300);
+    });
   });
+
+  // Other event listeners would need to be moved here too, but for now, focus on this
+
+  // The IIFE for loading data
+  (async () => {
+    try {
+      await loadPlayers();
+    } catch (error) {
+      console.error("Failed to load players from server:", error);
+      players = [];
+    }
+    players.forEach(p => p.points = calculatePoints(p, "player"));
+    builders.forEach(b => b.points = calculatePoints(b, "builder"));
+    try {
+      await loadPlayerNames();
+    } catch (error) {
+      console.error("Failed to load player names:", error);
+    }
+    try {
+      await loadTesters();
+    } catch (error) {
+      console.error("Failed to load testers:", error);
+    }
+    try {
+      await loadBuilders();
+    } catch (error) {
+      console.error("Failed to load builders:", error);
+    }
+
+    updateTestedCount();
+
+    const hash = window.location.hash;
+
+    if (hash.startsWith("#subject=")) {
+      // Restore builder subject leaderboard
+      const subject = decodeURIComponent(hash.split("=")[1]);
+      normalizeBuilderTiers();
+      showBuildersSection("global");
+      generateBuilderModeLeaderboard(subject);
+
+  } else if (hash.startsWith("#mode=")) {
+    const mode = decodeURIComponent(hash.split("=")[1]);
+    showSection(leaderboardSection);
+    tableHeader.style.display = "none";
+    generateModeLeaderboard(mode);
+  } else {
+      // Default: show home page
+      showSection(homeSection);
+    }
+
+    // Load testers
+    populateTesterModes();
+    renderTesters();
+
+    // Restore logged-in user
+    const savedUser = localStorage.getItem("ultratiers_user");
+    if (savedUser) setLoggedInUser(JSON.parse(savedUser));
+  })();
 });
 
 document.querySelector(".rankings-btn").addEventListener("click", () => {
@@ -1567,12 +1641,29 @@ modalContent.innerHTML = `
 ============================= */
 
 (async () => {
-  await loadPlayers();
+  try {
+    await loadPlayers();
+  } catch (error) {
+    console.error("Failed to load players from server:", error);
+    players = [];
+  }
   players.forEach(p => p.points = calculatePoints(p, "player"));
   builders.forEach(b => b.points = calculatePoints(b, "builder"));
-  await loadPlayerNames();
-  await loadTesters();
-  await loadBuilders(); // builders loaded here, updateTestedCount() is called inside loadBuilders
+  try {
+    await loadPlayerNames();
+  } catch (error) {
+    console.error("Failed to load player names:", error);
+  }
+  try {
+    await loadTesters();
+  } catch (error) {
+    console.error("Failed to load testers:", error);
+  }
+  try {
+    await loadBuilders();
+  } catch (error) {
+    console.error("Failed to load builders:", error);
+  }
 
   updateTestedCount();
 
