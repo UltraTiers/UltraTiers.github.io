@@ -28,7 +28,7 @@ function hideLoadingScreen() {
 
 async function loadPlayers() {
   try {
-    const res = await fetch("/players");
+    const res = await fetch("players.json");
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     players = await res.json();
   } catch (err) {
@@ -90,7 +90,7 @@ let builders = [];
 
 async function loadTesters() {
   try {
-    const res = await fetch("/testers");
+    const res = await fetch("testers.json");
     const data = await res.json();
     testers = Array.isArray(data) ? data : [];
   } catch (err) {
@@ -140,7 +140,7 @@ function normalizeBuilderTiers() {
 
 async function loadBuilders() {
   try {
-    const res = await fetch("/builders");
+    const res = await fetch("builders.json");
     builders = await res.json();
 
     // Normalize tiers to object keyed by subject

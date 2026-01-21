@@ -1,1 +1,25 @@
-[]
+[
+  {
+    "uuid": "sample-uuid-1",
+    "name": "SamplePlayer1",
+    "region": "NA",
+    "tiers": [
+      { "gamemode": "Sword", "tier": "HT3" },
+      { "gamemode": "Axe", "tier": "LT2" },
+      { "gamemode": "Vanilla", "tier": "HT1" }
+    ],
+    "points": 30,
+    "retired_modes": []
+  },
+  {
+    "uuid": "sample-uuid-2",
+    "name": "SamplePlayer2",
+    "region": "EU",
+    "tiers": [
+      { "gamemode": "Bow", "tier": "LT1" },
+      { "gamemode": "UHC", "tier": "HT2" }
+    ],
+    "points": 25,
+    "retired_modes": []
+  }
+]
