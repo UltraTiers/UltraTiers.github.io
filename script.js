@@ -1900,7 +1900,7 @@ function generatePlayersForCategory(category, modes) {
           data-rank="${tierRank}"
           data-tooltip="${t.gamemode} — ${t.tier}">
             <img src="gamemodes/${t.gamemode}.png">
-            <span>${tierRank === "Unknown" ? "?" : tierRank + tierNum}</span>
+            ${t.tier === "Unknown" ? "" : `<span>${tierRank + tierNum}</span>`}
         </div>`;
       }).filter(html => html !== "").join("");
     
