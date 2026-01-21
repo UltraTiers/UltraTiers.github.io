@@ -1780,33 +1780,41 @@ const modeCategoriesDisplay = {
 function renderModeCategories() {
   modesCategoriesContainer.innerHTML = "";
   
-  // Create a single container showing all categories with their modes listed
-  const allModesContainer = document.createElement("div");
-  allModesContainer.className = "all-modes-list-container";
+  // Create category filter buttons
+  const filterContainer = document.createElement("div");
+  filterContainer.className = "mode-category-filters";
   
   Object.entries(modeCategoriesDisplay).forEach(([category, modes]) => {
-    const categoryDiv = document.createElement("div");
-    categoryDiv.className = "mode-category-section";
+    const filterBtn = document.createElement("button");
+    filterBtn.className = "mode-category-btn";
+    filterBtn.textContent = category;
+    filterBtn.dataset.category = category.toLowerCase();
     
-    // Format mode names - replace Diamond Survival with "Diamond Survival (Diamond Vanilla)"
-    const formattedModes = modes.map(mode => {
-      if (mode === "Diamond Survival") return "Diamond Survival (Diamond Vanilla)";
-      return mode;
+    filterBtn.addEventListener("click", () => {
+      // Update active button
+      document.querySelectorAll(".mode-category-btn").forEach(btn => {
+        btn.classList.remove("active");
+      });
+      filterBtn.classList.add("active");
+      
+      // Show players for this category
+      showLoadingScreen();
+      setTimeout(() => {
+        showModesCategoryPlayers(category, modes);
+        hideLoadingScreen();
+      }, 300);
     });
     
-    categoryDiv.innerHTML = `
-      <div class="modes-category-divider">-----------</div>
-      <h3 class="modes-category-title">${category}</h3>
-      <div class="modes-category-divider">-----------</div>
-      <div class="modes-list-inline">
-        ${formattedModes.map((mode, idx) => `<span class="mode-item" data-category="${category.toLowerCase()}" data-mode="${modes[idx]}">${mode}</span>`).join("\n")}
-      </div>
-    `;
-    
-    allModesContainer.appendChild(categoryDiv);
+    filterContainer.appendChild(filterBtn);
   });
   
-  modesCategoriesContainer.appendChild(allModesContainer);
+  modesCategoriesContainer.appendChild(filterContainer);
+  
+  // Set "Main" as active by default and show its players
+  const mainBtn = filterContainer.querySelector('[data-category="main"]');
+  if (mainBtn) {
+    mainBtn.classList.add("active");
+  }
   
   // Create container for mode list and players
   const contentContainer = document.createElement("div");
@@ -1814,43 +1822,41 @@ function renderModeCategories() {
   contentContainer.id = "mode-category-content";
   modesCategoriesContainer.appendChild(contentContainer);
   
-  // Add click handlers to mode items
-  document.querySelectorAll(".mode-item").forEach(item => {
-    item.addEventListener("click", () => {
-      const category = item.dataset.category;
-      const mode = item.dataset.mode;
-      
-      // Update active state
-      document.querySelectorAll(".mode-item").forEach(m => m.classList.remove("active"));
-      item.classList.add("active");
-      
-      // Show players for this specific mode
-      showLoadingScreen();
-      setTimeout(() => {
-        showModesCategoryPlayers(category, mode);
-        hideLoadingScreen();
-      }, 300);
-    });
-  });
-  
   // Show Main category by default
-  showModesCategoryPlayers("main", "Sword");
+  showModesCategoryPlayers("Main", modeCategoriesDisplay["Main"]);
 }
 
-function showModesCategoryPlayers(category, mode) {
+function showModesCategoryPlayers(category, modes) {
   const contentContainer = document.getElementById("mode-category-content");
   if (!contentContainer) return;
   
   contentContainer.innerHTML = "";
   
+  // Show the modes list
+  const modesListDiv = document.createElement("div");
+  modesListDiv.className = "modes-list-display";
+  
+  // Format mode names
+  const formattedModes = modes.map(mode => {
+    if (mode === "Diamond Survival") return "Diamond Survival (Diamond Vanilla)";
+    return mode;
+  });
+  
+  modesListDiv.innerHTML = `
+    <div class="modes-category-header">${category}</div>
+    <div class="modes-in-category">
+      ${formattedModes.map(mode => `<div class="mode-badge">${mode}</div>`).join("")}
+    </div>
+  `;
+  contentContainer.appendChild(modesListDiv);
+  
   // Create a container for the players
   const playersDiv = document.createElement("div");
   playersDiv.id = "modes-players-container";
-  playersDiv.className = "modes-players-ranked-list";
   contentContainer.appendChild(playersDiv);
   
-  // Generate and display players for this specific mode
-  generatePlayersForMode(mode);
+  // Generate and display players for this category
+  generatePlayersForCategory(category.toLowerCase(), modes);
 }
 
 function generatePlayersForCategory(category, modes) {
@@ -1923,6 +1929,83 @@ function generatePlayersForCategory(category, modes) {
   
   // Attach click handlers to player cards
   attachPlayerClick();
+}
+
+function generatePlayersForMode(mode) {
+  const playersDiv = document.getElementById("modes-players-container");
+  if (!playersDiv) return;
+  
+  playersDiv.innerHTML = "";
+  
+  // Get all players and create tier columns (Tier 1 first, Tier 5 last)
+  const playersWithMode = players
+    .map(p => {
+      const tierData = p.tiers?.find(t => t.gamemode === mode);
+      return {
+        ...p,
+        modeTier: tierData?.tier || "Unknown",
+        modeTierNumber: tierData?.tier?.match(/\d+/)?.[0] || "Unknown",
+        isHT: tierData?.tier?.includes("HT") || false
+      };
+    })
+    .filter(p => p.tiers && Array.isArray(p.tiers) && p.tiers.length > 0); // Only players with tier data
+  
+  // Create tier columns (1, 2, 3, 4, 5) - so Tier 1 is first
+  const tiersHTML = `
+    <div class="mode-wrapper">
+      <div class="mode-tiers" id="leaderboard-mode-tiers">
+        ${Array.from({length: 6}, (_, i) => {
+          let tierNum = i; // 0, 1, 2, 3, 4, 5
+          let headerText = tierNum === 0 ? "Unknown" : "Tier " + tierNum;
+          return '<div class="mode-tier-column"><div class="mode-tier-header">' + headerText + '</div></div>';
+        }).join('')}
+      </div>
+    </div>
+  `;
+  
+  playersDiv.innerHTML = tiersHTML;
+  
+  // Add players to their tier columns
+  playersWithMode.forEach(player => {
+    let columnIndex = 0;
+    if (player.modeTierNumber === "Unknown") {
+      columnIndex = 0; // Unknown column
+    } else {
+      columnIndex = parseInt(player.modeTierNumber); // 1-5 maps to column 1-5
+    }
+    
+    const tierColumn = document.querySelectorAll("#leaderboard-mode-tiers .mode-tier-column")[columnIndex];
+    
+    if (!tierColumn) return;
+    
+    const playerDiv = document.createElement("div");
+    playerDiv.className = "mode-player";
+    playerDiv.dataset.player = player.name;
+    playerDiv.dataset.region = player.region.toLowerCase();
+    playerDiv.dataset.signvalue = player.isHT ? 2 : 1;
+    
+    playerDiv.innerHTML = `
+      <div class="mode-player-left">
+        <img src="https://render.crafty.gg/3d/bust/${player.uuid}">
+        <span class="player-label">${player.name}</span>
+        <span class="tier-sign">${player.modeTierNumber === "Unknown" ? "?" : (player.isHT ? "+" : "-")}</span>
+      </div>
+      <div class="region-box">
+        <span>${player.region.toUpperCase()}</span>
+      </div>
+    `;
+    
+    playerDiv.addEventListener("click", () => showPlayerModal(player));
+    tierColumn.appendChild(playerDiv);
+  });
+  
+  // Sort players in each column (HT above LT)
+  document.querySelectorAll("#leaderboard-mode-tiers .mode-tier-column").forEach(col => {
+    const playerList = [...col.querySelectorAll(".mode-player")];
+    playerList
+      .sort((a, b) => b.dataset.signvalue - a.dataset.signvalue)
+      .forEach(p => col.appendChild(p));
+  });
 }
 
 function generatePlayersForMode(mode) {

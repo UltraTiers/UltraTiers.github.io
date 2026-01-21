@@ -1094,76 +1094,41 @@ body {
     width: 100%;
 }
 
-/* ALL MODES LIST DISPLAY */
-.all-modes-list-container {
+.mode-category-filters {
     display: flex;
-    flex-direction: column;
-    gap: 20px;
-    background: rgba(255,255,255,0.02);
-    border: 1px solid rgba(255,255,255,0.08);
-    border-radius: 12px;
-    padding: 25px;
-    margin-bottom: 30px;
-}
-
-.mode-category-section {
-    display: flex;
-    flex-direction: column;
     gap: 12px;
-}
-
-.modes-category-divider {
-    text-align: center;
-    color: rgba(255,255,255,0.3);
-    font-size: 14px;
-    letter-spacing: 2px;
-    font-weight: 600;
-    margin: 8px 0;
-}
-
-.modes-category-title {
-    font-size: 18px;
-    font-weight: 800;
-    color: rgba(255,255,255,0.95);
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    text-align: center;
-    margin: 0;
-}
-
-.modes-list-inline {
-    display: flex;
     flex-wrap: wrap;
-    gap: 10px;
     justify-content: center;
-    padding: 8px 0;
+    padding: 20px 0;
+    border-bottom: 2px solid rgba(255,255,255,0.1);
+    margin-bottom: 20px;
 }
 
-.mode-item {
-    padding: 8px 16px;
-    background: rgba(255,255,255,0.06);
-    border: 1px solid rgba(255,255,255,0.12);
-    color: rgba(255,255,255,0.8);
-    border-radius: 6px;
+.mode-category-btn {
+    padding: 12px 24px;
+    background: rgba(255,255,255,0.05);
+    border: 2px solid rgba(255,255,255,0.1);
+    color: rgba(255,255,255,0.85);
+    border-radius: 8px;
     cursor: pointer;
-    font-size: 13px;
-    font-weight: 600;
-    transition: all 0.2s ease;
-    user-select: none;
+    font-size: 15px;
+    font-weight: 700;
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
 }
 
-.mode-item:hover {
-    background: rgba(255,255,255,0.12);
-    border-color: rgba(255,255,255,0.25);
-    color: rgba(255,255,255,0.95);
+.mode-category-btn:hover {
+    background: rgba(255,255,255,0.1);
+    border-color: rgba(255,255,255,0.2);
     transform: translateY(-2px);
 }
 
-.mode-item.active {
-    background: rgba(100,200,255,0.3);
-    border-color: rgba(100,200,255,0.6);
+.mode-category-btn.active {
+    background: rgba(100,200,255,0.2);
+    border-color: rgba(100,200,255,0.5);
     color: rgba(255,255,255,0.95);
-    box-shadow: 0 0 15px rgba(100,200,255,0.2);
+    box-shadow: 0 0 20px rgba(100,200,255,0.2);
 }
 
 .mode-category-content {
@@ -1177,10 +1142,32 @@ body {
     margin-bottom: 30px;
 }
 
-.modes-separator {
-    height: 2px;
-    background: rgba(255,255,255,0.1);
-    border-radius: 1px;
+.modes-category-header {
+    font-size: 22px;
+    font-weight: 700;
+    color: rgba(255,255,255,0.95);
+    margin: 0 0 15px 0;
+    padding-bottom: 10px;
+    border-bottom: 2px solid rgba(255,255,255,0.1);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.modes-in-category {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    padding: 10px 0;
+}
+
+.mode-badge {
+    padding: 8px 16px;
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 600;
+    color: rgba(255,255,255,0.8);
 }
 
 .modes-category-label {
