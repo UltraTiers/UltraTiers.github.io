@@ -2302,7 +2302,7 @@ function populateBuilderLeaderboardModesWithTiers() {
   const allBtn = document.createElement("button");
   allBtn.className = "mode-btn active";
   allBtn.dataset.subject = "all";
-  allBtn.textContent = "All Subjects";
+  allBtn.textContent = "Overview";
   builderLeaderboardsButtons.appendChild(allBtn);
   
   // Add individual subject buttons
