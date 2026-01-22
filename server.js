@@ -18,16 +18,24 @@ app.use(express.static(path.join(process.cwd())));
 const supabaseUrl = process.env.SUPABASE_URL;
 const supabaseKey = process.env.SUPABASE_KEY;
 
-if (!supabaseUrl || !supabaseKey) {
-  throw new Error("Missing SUPABASE_URL or SUPABASE_KEY");
-}
+let supabase = null;
+let supabaseConfigured = false;
 
-const supabase = createClient(supabaseUrl, supabaseKey);
+if (supabaseUrl && supabaseKey) {
+  supabase = createClient(supabaseUrl, supabaseKey);
+  supabaseConfigured = true;
+  console.log("✅ Supabase connected");
+} else {
+  console.warn("⚠️ Supabase not configured. Using demo mode with empty data.");
+}
 
 // -------------------
 // Helper Functions
 // -------------------
 async function loadPlayers() {
+  if (!supabaseConfigured) {
+    return [];
+  }
   try {
     const { data, error } = await supabase.from("ultratiers").select("*");
     if (error) throw error;
@@ -116,6 +124,10 @@ app.post("/testers", async (req, res) => {
 
 app.get("/testers", async (req, res) => {
   try {
+    if (!supabaseConfigured) {
+      return res.json([]);
+    }
+
     const { data, error } = await supabase.from("testers").select("*");
     if (error) throw error;
     res.json(data);
@@ -575,6 +587,10 @@ async function saveOrUpdateBuilderRatings({ uuid, name, region, ratings }) {
 
 app.get("/builders", async (req, res) => {
   try {
+    if (!supabaseConfigured) {
+      return res.json([]);
+    }
+
     const { data, error } = await supabase.from("builders").select("*");
     if (error) throw error;
 
