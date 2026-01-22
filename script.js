@@ -515,9 +515,13 @@ function showPlayerModal(player) {
 }
 
 // Close PLAYER modal with X button
-closeModalBtn.addEventListener("click", () => {
-  modal.classList.remove("show");
-});
+if (closeModalBtn) {
+  closeModalBtn.addEventListener("click", (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    modal.classList.remove("show");
+  });
+}
 
 const loginBtn = document.getElementById("login-btn");
 const authModal = document.getElementById("auth-modal");
@@ -2139,8 +2143,8 @@ function populateLeaderboardModesWithTiers() {
     buttonsContainer.appendChild(button);
   });
   
-  // Show all modes by default in tier columns
-  showAllModesInTiers();
+  // Show all players in tier grid by default
+  showAllPlayersInTierGrid();
 }
 
 function handleLeaderboardModeChange(e) {
@@ -2155,8 +2159,78 @@ function handleLeaderboardModeChange(e) {
   if (mode) {
     renderLeaderboardForMode(mode);
   } else {
-    showAllModesInTiers();
+    showAllPlayersInTierGrid();
   }
+}
+
+function showAllPlayersInTierGrid() {
+  leaderboardsContainer.innerHTML = "";
+  
+  // Create tier columns (1, 2, 3, 4, 5) with ALL players shown together
+  const tiersHTML = `
+    <div class="mode-wrapper">
+      <div class="mode-tiers" id="leaderboard-all-tiers">
+        ${Array.from({length: 5}, (_, i) => {
+          const tierNum = i + 1; // 1, 2, 3, 4, 5
+          return '<div class="mode-tier-column"><div class="mode-tier-header">Tier ' + tierNum + '</div></div>';
+        }).join('')}
+      </div>
+    </div>
+  `;
+  
+  leaderboardsContainer.innerHTML = tiersHTML;
+  
+  // Get all players with their best tier across all modes
+  const allPlayers = players.filter(p => p.tiers && Array.isArray(p.tiers) && p.tiers.length > 0);
+  
+  // Add players to their tier columns
+  allPlayers.forEach(player => {
+    // Find the best tier for this player
+    const validTiers = player.tiers.filter(t => t.tier !== "Unknown");
+    if (validTiers.length === 0) return;
+    
+    // Get highest tier (numerically lowest number)
+    const bestTier = validTiers.reduce((best, current) => {
+      const bestNum = parseInt(best.tier.match(/\d+/)?.[0] || "5");
+      const currentNum = parseInt(current.tier.match(/\d+/)?.[0] || "5");
+      return currentNum < bestNum ? current : best;
+    });
+    
+    const tierNumber = parseInt(bestTier.tier.match(/\d+/)[0]);
+    const tierColumn = document.querySelectorAll("#leaderboard-all-tiers .mode-tier-column")[tierNumber - 1];
+    
+    if (!tierColumn) return;
+    
+    const playerDiv = document.createElement("div");
+    playerDiv.className = "mode-player";
+    playerDiv.dataset.player = player.name;
+    playerDiv.dataset.region = player.region.toLowerCase();
+    
+    const isHT = bestTier.tier.includes("HT");
+    playerDiv.dataset.signvalue = isHT ? 2 : 1;
+    
+    playerDiv.innerHTML = `
+      <div class="mode-player-left">
+        <img src="https://render.crafty.gg/3d/bust/${player.uuid}">
+        <span class="player-label">${player.name}</span>
+        <span class="tier-sign">${isHT ? "+" : "-"}</span>
+      </div>
+      <div class="region-box">
+        <span>${player.region.toUpperCase()}</span>
+      </div>
+    `;
+    
+    playerDiv.addEventListener("click", () => showPlayerModal(player));
+    tierColumn.appendChild(playerDiv);
+  });
+  
+  // Sort players in each column (HT above LT)
+  document.querySelectorAll("#leaderboard-all-tiers .mode-tier-column").forEach(col => {
+    const playerList = [...col.querySelectorAll(".mode-player")];
+    playerList
+      .sort((a, b) => b.dataset.signvalue - a.dataset.signvalue)
+      .forEach(p => col.appendChild(p));
+  });
 }
 
 function showAllModesInTiers() {
