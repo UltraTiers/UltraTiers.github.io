@@ -1087,9 +1087,6 @@ body {
     gap: 12px;
     flex-wrap: wrap;
     justify-content: center;
-    padding: 20px 0;
-    border-bottom: 2px solid rgba(255,255,255,0.1);
-    margin-bottom: 20px;
 }
 
 .mode-category-btn {
