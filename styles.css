@@ -1109,9 +1109,9 @@ body {
 }
 
 .mode-category-btn.active {
-    background: rgba(100,200,255,0.2);
-    border-color: rgba(100,200,255,0.5);
-    color: rgba(255,255,255,0.95);
+    background: rgba(255,255,255,0.18);
+    border-color: rgba(255,255,255,0.3);
+    color: #fff;
     box-shadow: 0 0 20px rgba(100,200,255,0.2);
 }
 
@@ -1120,10 +1120,7 @@ body {
 }
 
 .modes-list-display {
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-    margin-bottom: 30px;
+    display: none;
 }
 
 .modes-separator {
