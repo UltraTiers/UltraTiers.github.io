@@ -2418,10 +2418,15 @@ function showAllBuildersInTierGrid() {
               <span class="modal-value">${foundBuilder.region || "Unknown"}</span>
             </div>
 
-            <div class="modal-section-title ${nitroClass}">Tiers:</div>
-            <div class="modal-tiers ${nitroClass}">
-              ${tiersHTML}
+            <div class="modal-info-row ${nitroClass}">
+              <span class="modal-label">Points:</span>
+              <span class="modal-value">${foundBuilder.points.toLocaleString()}</span>
             </div>
+          </div>
+
+          <h3 class="modal-subtitle ${nitroClass}">Tier Progress</h3>
+          <div class="tiers-container">
+            ${tiersHTML}
           </div>
         `;
 
@@ -2520,10 +2525,15 @@ function showBuildersBySubjectInTierGrid(subject) {
               <span class="modal-value">${foundBuilder.region || "Unknown"}</span>
             </div>
 
-            <div class="modal-section-title ${nitroClass}">Tiers:</div>
-            <div class="modal-tiers ${nitroClass}">
-              ${tiersHTML}
+            <div class="modal-info-row ${nitroClass}">
+              <span class="modal-label">Points:</span>
+              <span class="modal-value">${foundBuilder.points.toLocaleString()}</span>
             </div>
+          </div>
+
+          <h3 class="modal-subtitle ${nitroClass}">Tier Progress</h3>
+          <div class="tiers-container">
+            ${tiersHTML}
           </div>
         `;
 
