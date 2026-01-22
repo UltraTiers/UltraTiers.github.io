@@ -1159,7 +1159,6 @@ body {
 #modes-players-container {
     display: flex;
     flex-direction: column;
-    gap: 15px;
 }
 
 .mode-category {
@@ -2180,7 +2179,7 @@ body {
 /* ============================= */
 
 .fighters-region-tabs {
-    display: flex;
+    display: flex !important;
     gap: 6px;
     margin-bottom: 12px;
     flex-wrap: wrap;
