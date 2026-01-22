@@ -2661,6 +2661,10 @@ body {
   box-shadow: 0 4px 12px rgba(0,0,0,0.2);
 }
 
+.builder-card:hover .builder-avatar {
+  transform: scale(1.08);
+}
+
 /* Rank */
 .builder-card .builder-rank {
   font-size: 22px;
@@ -2674,6 +2678,7 @@ body {
   height: 48px;
   border-radius: 8px;
   border: none;
+  transition: transform 0.3s ease;
 }
 
 /* Info column */
