@@ -960,6 +960,7 @@ body {
     gap: 10px;
     padding: 15px 0;
     border-bottom: 1px solid rgba(255,255,255,0.08);
+    justify-content: center;
 }
 
 .leaderboard-mode-btn {
@@ -1234,6 +1235,7 @@ body {
     padding: 8px 12px 12px;
     border-radius: 10px;
     flex-wrap: wrap;
+    justify-content: center;
 }
 
 .builders-region-tab-btn {
@@ -2190,11 +2192,13 @@ body {
     padding: 8px 12px;
     background: rgba(255,255,255,0.02);
     border-radius: 10px;
+    justify-content: center;
 }
 
 .fighters-region-tab-btn {
     padding: 8px 14px;
-    border: none;
+    border: 1px solid transparent;
+    border-bottom: 2px solid transparent;
     background: rgba(255,255,255,0.04);
     color: rgba(255,255,255,0.65);
     font-size: 13px;
@@ -2215,6 +2219,7 @@ body {
 .fighters-region-tab-btn.active {
     color: rgba(255,255,255,1);
     background: rgba(255,255,255,0.12);
+    border-bottom-color: rgba(255,255,255,0.9);
     box-shadow: 0 2px 8px rgba(255,255,255,0.06);
 }
 
