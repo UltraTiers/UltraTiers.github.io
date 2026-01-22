@@ -1786,8 +1786,8 @@ function generateAllPlayerModes(region = "global") {
 
 const modeCategoriesDisplay = {
   "Main": ["Vanilla", "UHC", "Pot", "NethOP", "SMP", "Sword", "Axe", "Mace"],
-  "Sub": ["Minecart", "Diamond Survival", "DeBuff", "Elytra", "Speed", "Creeper", "Manhunt", "Diamond SMP", "Bow", "Bed", "OG Vanilla", "Trident", "Spear Elytra", "Spear Mace"],
-  "Extra": ["AxePot", "Sumo", "OP"],
+  "Sub": ["Minecart", "Diamond Survival", "DeBuff", "Elytra", "Speed", "Creeper", "Manhunt", "Diamond SMP", "Bow", "Bed", "OG Vanilla", "Trident"],
+  "Extra": ["AxePot", "Sumo", "OP", "Spear Elytra", "Spear Mace"],
   "Bonus": ["Bridge", "Pearl"]
 };
 
