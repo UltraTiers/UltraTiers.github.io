@@ -91,12 +91,15 @@
     </div>
   </div>
 
+  <!-- FIGHTERS SECTION -->
+  <div class="home-section-header">
+    <h2>Fighters</h2>
+  </div>
   <div class="home-grid">
-    <!-- PvP SECTION -->
     <!-- Fighters Card -->
     <div class="home-card fighters-card" data-section="rankings">
       <div class="card-icon">⚔️</div>
-      <h3 class="card-title">Fighters</h3>
+      <h3 class="card-title">Rankings</h3>
       <p class="card-description">View the top PvP fighters across all modes and regions</p>
       <div class="card-stats">
         <span id="home-fighter-count">0</span> Tested
@@ -107,7 +110,7 @@
     <!-- Leaderboards Card -->
     <div class="home-card leaderboards-card" data-section="leaderboards">
       <div class="card-icon">📊</div>
-      <h3 class="card-title">Fighter Leaderboards</h3>
+      <h3 class="card-title">Leaderboards</h3>
       <p class="card-description">Browse leaderboards for each individual PvP mode</p>
       <div class="card-stats">
         Per-mode rankings
@@ -136,12 +139,17 @@
       </div>
       <button class="card-button">View Testers</button>
     </div>
+  </div>
 
-    <!-- BUILDING SECTION -->
+  <!-- BUILDERS SECTION -->
+  <div class="home-section-header">
+    <h2>Builders</h2>
+  </div>
+  <div class="home-grid">
     <!-- Builders Card -->
     <div class="home-card builders-card" data-section="builders">
       <div class="card-icon">🏗️</div>
-      <h3 class="card-title">Builders</h3>
+      <h3 class="card-title">Rankings</h3>
       <p class="card-description">Explore the best builders by subject and region</p>
       <div class="card-stats">
         <span id="home-builder-count">0</span> Tested
@@ -152,13 +160,32 @@
     <!-- Builder Leaderboards Card -->
     <div class="home-card builder-leaderboards-card" data-section="builder-leaderboards">
       <div class="card-icon">📊</div>
-      <h3 class="card-title">Builder Leaderboards</h3>
+      <h3 class="card-title">Leaderboards</h3>
       <p class="card-description">Browse leaderboards for each individual building subject</p>
       <div class="card-stats">
         Per-subject rankings
       </div>
       <button class="card-button">View Leaderboards</button>
     </div>
+  </div>
+
+  <!-- INFORMATION SECTION -->
+  <div class="home-section-header">
+    <h2>Information</h2>
+  </div>
+  <div class="home-grid">
+    <!-- Tierlist Stats Card -->
+    <div class="home-card stats-card" data-section="stats">
+      <div class="card-icon">📈</div>
+      <h3 class="card-title">Tierlist Stats</h3>
+      <p class="card-description">View statistics about our community, players, and modes</p>
+      <div class="card-stats">
+        See detailed data
+      </div>
+      <button class="card-button">View Stats</button>
+    </div>
+
+    <!-- Documentation Card -->
     <div class="home-card docs-card" data-section="docs">
       <div class="card-icon">📚</div>
       <h3 class="card-title">Documentation</h3>
@@ -183,6 +210,65 @@
 
   <div class="home-footer">
     <p>Join our <a href="https://discord.gg/Bvebb7RwaG" target="_blank" class="discord-link"><i class="fab fa-discord"></i> Discord</a> for updates and community</p>
+  </div>
+</div>
+
+<!-- STATS SECTION -->
+<div id="stats-section" class="stats-section hidden-section">
+  <div class="stats-container">
+    <div class="stats-back-btn">
+      <button class="back-button"><i class="fas fa-arrow-left"></i> Back</button>
+    </div>
+    <h1 class="stats-title">📈 Tierlist Statistics</h1>
+    <p class="stats-subtitle">Community, players, and performance data</p>
+    
+    <div class="stats-grid">
+      <!-- Total Players Card -->
+      <div class="stats-card">
+        <div class="stats-card-title">Total Players</div>
+        <div class="stats-card-value" id="total-players-stat">0</div>
+        <div class="stats-card-description">Tested fighters & builders</div>
+      </div>
+
+      <!-- Fighters Tested -->
+      <div class="stats-card">
+        <div class="stats-card-title">Fighters Tested</div>
+        <div class="stats-card-value" id="fighters-tested-stat">0</div>
+        <div class="stats-card-description">PvP players</div>
+      </div>
+
+      <!-- Builders Tested -->
+      <div class="stats-card">
+        <div class="stats-card-title">Builders Tested</div>
+        <div class="stats-card-value" id="builders-tested-stat">0</div>
+        <div class="stats-card-description">Building players</div>
+      </div>
+
+      <!-- Total Modes -->
+      <div class="stats-card">
+        <div class="stats-card-title">PvP Modes</div>
+        <div class="stats-card-value" id="total-modes-stat">27</div>
+        <div class="stats-card-description">Across 4 categories</div>
+      </div>
+    </div>
+
+    <!-- Modes Breakdown Chart -->
+    <div class="stats-chart-container">
+      <h2>Players Tested Per Mode</h2>
+      <div class="modes-chart" id="modes-chart"></div>
+    </div>
+
+    <!-- Tier Distribution Chart -->
+    <div class="stats-chart-container">
+      <h2>Tier Distribution (Fighters)</h2>
+      <div class="tiers-chart" id="tiers-chart"></div>
+    </div>
+
+    <!-- Regional Breakdown -->
+    <div class="stats-chart-container">
+      <h2>Players by Region</h2>
+      <div class="regions-chart" id="regions-chart"></div>
+    </div>
   </div>
 </div>
 

@@ -49,6 +49,7 @@ const modesSection = document.getElementById("modes-section");
 const leaderboardsSection = document.getElementById("leaderboards-section");
 const applicationSection = document.getElementById("application-section");
 const docsSection = document.getElementById("docs-section");
+const statsSection = document.getElementById("stats-section");
 const playersContainer = document.getElementById("players-container");
 const tierDocsContainer = document.getElementById("tier-docs-container");
 const modal = document.getElementById("modal");
@@ -115,6 +116,161 @@ function updateTestedCount() {
   
   if (homePlayerCount) homePlayerCount.textContent = players.length;
   if (homeBuilderCount) homeBuilderCount.textContent = builders.length;
+}
+
+/* =============================
+   STATISTICS RENDERING
+============================= */
+
+function renderStatistics() {
+  // Update total numbers
+  const totalPlayersEl = document.getElementById("total-players-stat");
+  const fightersTestedEl = document.getElementById("fighters-tested-stat");
+  const buildersTestedEl = document.getElementById("builders-tested-stat");
+  
+  if (totalPlayersEl) totalPlayersEl.textContent = players.length + builders.length;
+  if (fightersTestedEl) fightersTestedEl.textContent = players.length;
+  if (buildersTestedEl) buildersTestedEl.textContent = builders.length;
+  
+  // Render modes chart
+  renderModesChart();
+  
+  // Render tiers distribution chart
+  renderTiersChart();
+  
+  // Render regions chart
+  renderRegionsChart();
+}
+
+function renderModesChart() {
+  const modesChartEl = document.getElementById("modes-chart");
+  if (!modesChartEl || players.length === 0) return;
+  
+  // Count players per mode
+  const modeCount = {};
+  players.forEach(player => {
+    if (player.tiers && Array.isArray(player.tiers)) {
+      player.tiers.forEach(tier => {
+        if (tier.gamemode && tier.tier !== "Unknown") {
+          modeCount[tier.gamemode] = (modeCount[tier.gamemode] || 0) + 1;
+        }
+      });
+    }
+  });
+  
+  // Sort by count
+  const sortedModes = Object.entries(modeCount)
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 15); // Top 15 modes
+  
+  if (sortedModes.length === 0) {
+    modesChartEl.innerHTML = "<p style='color: rgba(255,255,255,0.5);'>No mode data available</p>";
+    return;
+  }
+  
+  const maxCount = Math.max(...sortedModes.map(m => m[1]));
+  
+  modesChartEl.innerHTML = sortedModes.map(([mode, count]) => {
+    const percentage = (count / maxCount) * 100;
+    return `
+      <div class="chart-item">
+        <div class="chart-label">${mode}</div>
+        <div class="chart-bar-wrapper">
+          <div class="chart-bar" style="width: ${percentage}%;">
+            <span class="chart-value">${count}</span>
+          </div>
+        </div>
+      </div>
+    `;
+  }).join("");
+}
+
+function renderTiersChart() {
+  const tiersChartEl = document.getElementById("tiers-chart");
+  if (!tiersChartEl || players.length === 0) return;
+  
+  // Count players per tier (best tier for each player)
+  const tierCount = {
+    "Tier 1": 0,
+    "Tier 2": 0,
+    "Tier 3": 0,
+    "Tier 4": 0,
+    "Tier 5": 0
+  };
+  
+  players.forEach(player => {
+    if (player.tiers && Array.isArray(player.tiers)) {
+      const validTiers = player.tiers.filter(t => t.tier !== "Unknown");
+      if (validTiers.length > 0) {
+        const bestTier = validTiers.reduce((best, current) => {
+          const bestNum = parseInt(best.tier.match(/\d+/)?.[0] || "5");
+          const currentNum = parseInt(current.tier.match(/\d+/)?.[0] || "5");
+          return currentNum < bestNum ? current : best;
+        });
+        const tierNum = parseInt(bestTier.tier.match(/\d+/)[0]);
+        tierCount[`Tier ${tierNum}`]++;
+      }
+    }
+  });
+  
+  const maxCount = Math.max(...Object.values(tierCount));
+  
+  tiersChartEl.innerHTML = Object.entries(tierCount).map(([tier, count]) => {
+    const percentage = maxCount > 0 ? (count / maxCount) * 100 : 0;
+    return `
+      <div class="chart-item">
+        <div class="chart-label">${tier}</div>
+        <div class="chart-bar-wrapper">
+          <div class="chart-bar" style="width: ${percentage}%;">
+            <span class="chart-value">${count}</span>
+          </div>
+        </div>
+      </div>
+    `;
+  }).join("");
+}
+
+function renderRegionsChart() {
+  const regionsChartEl = document.getElementById("regions-chart");
+  if (!regionsChartEl) return;
+  
+  // Count players per region (from both fighters and builders)
+  const regionCount = {};
+  
+  players.forEach(player => {
+    const region = player.region || "Unknown";
+    regionCount[region] = (regionCount[region] || 0) + 1;
+  });
+  
+  builders.forEach(builder => {
+    const region = builder.region || "Unknown";
+    regionCount[region] = (regionCount[region] || 0) + 1;
+  });
+  
+  // Sort by count
+  const sortedRegions = Object.entries(regionCount)
+    .sort((a, b) => b[1] - a[1]);
+  
+  if (sortedRegions.length === 0) {
+    regionsChartEl.innerHTML = "<p style='color: rgba(255,255,255,0.5);'>No region data available</p>";
+    return;
+  }
+  
+  const maxCount = Math.max(...sortedRegions.map(r => r[1]));
+  
+  regionsChartEl.innerHTML = sortedRegions.map(([region, count]) => {
+    const percentage = (count / maxCount) * 100;
+    return `
+      <div class="chart-item">
+        <div class="chart-label">${region}</div>
+        <div class="chart-bar-wrapper">
+          <div class="chart-bar" style="width: ${percentage}%;">
+            <span class="chart-value">${count}</span>
+          </div>
+        </div>
+      </div>
+    `;
+  }).join("");
 }
 
 let currentBuildersRegion = "global";
@@ -847,6 +1003,11 @@ function handleCardNavigation(section) {
         console.log(`→ Showing application section`);
         showSection(applicationSection);
         tableHeader.style.display = "none";
+      } else if (section === "stats") {
+        console.log(`→ Showing stats section`);
+        showSection(statsSection);
+        tableHeader.style.display = "none";
+        renderStatistics();
       } else {
         console.warn(`⚠️ Unknown section: "${section}"`);
       }
@@ -862,6 +1023,15 @@ function handleCardNavigation(section) {
 
 // Logo/Home button
 document.querySelector(".logo-img")?.addEventListener("click", () => {
+  showLoadingScreen();
+  setTimeout(() => {
+    showSection(homeSection);
+    hideLoadingScreen();
+  }, 300);
+});
+
+// Back button from stats
+document.querySelector(".back-button")?.addEventListener("click", () => {
   showLoadingScreen();
   setTimeout(() => {
     showSection(homeSection);
@@ -1752,7 +1922,7 @@ function generateAllPlayerModes(region = "global") {
     });
     
     const tierNumber = parseInt(highestTier.tier.match(/\d+/)[0]);
-    const tierColumn = document.querySelectorAll(".mode-tier-column")[5 - tierNumber]; // Reverse mapping
+    const tierColumn = document.querySelectorAll(".mode-tier-column")[tierNumber - 1];
     
     if (!tierColumn) return;
     
