@@ -610,14 +610,12 @@ body {
 
 .mode-btn:hover {
   background: rgba(255,255,255,0.15);
-  box-shadow: 0 4px 16px rgba(255,255,255,0.12);
   border-color: rgba(255,255,255,0.2);
   transform: translateY(-1px);
 }
 
 .mode-btn.active {
   background: rgba(255,255,255,0.15);
-  box-shadow: 0 4px 16px rgba(255,255,255,0.12);
   border-color: rgba(255,255,255,0.2);
 }
 
