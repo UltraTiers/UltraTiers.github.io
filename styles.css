@@ -1496,7 +1496,7 @@ body {
 
 .player-row .tier.empty {
     background: transparent;
-    border: 1px dashed rgba(255,255,255,0.2);
+    border: 2px dashed rgba(255,255,255,0.2);
 }
 
 /* TESTERS SECTION */
@@ -2370,7 +2370,6 @@ body {
     background: rgba(255,255,255,0.08);
     transform: translateY(-2px);
     box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-    border-color: rgba(255,255,255,0.12);
 }
 
 .margin-top-playercount {
@@ -2663,6 +2662,7 @@ body {
 .builder-card:hover {
   background: rgba(255,255,255,0.08);
   transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
 }
 
 /* Rank */
