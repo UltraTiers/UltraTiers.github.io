@@ -92,6 +92,7 @@
   </div>
 
   <div class="home-grid">
+    <!-- PvP SECTION -->
     <!-- Fighters Card -->
     <div class="home-card fighters-card" data-section="rankings">
       <div class="card-icon">⚔️</div>
@@ -112,17 +113,6 @@
         Per-mode rankings
       </div>
       <button class="card-button">View Leaderboards</button>
-    </div>
-
-    <!-- Builders Card -->
-    <div class="home-card builders-card" data-section="builders">
-      <div class="card-icon">🏗️</div>
-      <h3 class="card-title">Builders</h3>
-      <p class="card-description">Explore the best builders by subject and region</p>
-      <div class="card-stats">
-        <span id="home-builder-count">0</span> Tested
-      </div>
-      <button class="card-button">View Builders</button>
     </div>
 
     <!-- Modes Card -->
@@ -147,7 +137,28 @@
       <button class="card-button">View Testers</button>
     </div>
 
-    <!-- Documentation Card -->
+    <!-- BUILDING SECTION -->
+    <!-- Builders Card -->
+    <div class="home-card builders-card" data-section="builders">
+      <div class="card-icon">🏗️</div>
+      <h3 class="card-title">Builders</h3>
+      <p class="card-description">Explore the best builders by subject and region</p>
+      <div class="card-stats">
+        <span id="home-builder-count">0</span> Tested
+      </div>
+      <button class="card-button">View Builders</button>
+    </div>
+
+    <!-- Builder Leaderboards Card -->
+    <div class="home-card builder-leaderboards-card" data-section="builder-leaderboards">
+      <div class="card-icon">📊</div>
+      <h3 class="card-title">Builder Leaderboards</h3>
+      <p class="card-description">Browse leaderboards for each individual building subject</p>
+      <div class="card-stats">
+        Per-subject rankings
+      </div>
+      <button class="card-button">View Leaderboards</button>
+    </div>
     <div class="home-card docs-card" data-section="docs">
       <div class="card-icon">📚</div>
       <h3 class="card-title">Documentation</h3>
@@ -313,6 +324,14 @@
         <!-- Mode buttons will be generated here -->
     </div>
     <div id="leaderboards-container" class="leaderboards-container"></div>
+</div>
+
+<!-- BUILDER LEADERBOARDS SECTION -->
+<div id="builder-leaderboards-section" class="leaderboards-section hidden-section">
+    <div class="leaderboards-mode-buttons" id="builder-leaderboards-mode-buttons">
+        <!-- Subject buttons will be generated here -->
+    </div>
+    <div id="builder-leaderboards-container" class="leaderboards-container"></div>
 </div>
 
 <!-- DOCS SECTION -->

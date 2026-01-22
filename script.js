@@ -64,6 +64,8 @@ const testerRegionFilter = document.getElementById("tester-region-filter");
 const leaderboardModeFilter = document.getElementById("leaderboard-mode-filter");
 const leaderboardsContainer = document.getElementById("leaderboards-container");
 const modesCategoriesContainer = document.getElementById("modes-categories-container");
+const builderLeaderboardsSection = document.getElementById("builder-leaderboards-section");
+const builderLeaderboardsContainer = document.getElementById("builder-leaderboards-container");
 
 /* =============================
    PROFILE DESIGNER ELEMENTS
@@ -831,6 +833,11 @@ function handleCardNavigation(section) {
         } else {
           renderTesters();
         }
+      } else if (section === "builder-leaderboards") {
+        console.log(`→ Showing builder leaderboards section`);
+        showSection(builderLeaderboardsSection);
+        tableHeader.style.display = "none";
+        populateBuilderLeaderboardModesWithTiers();
       } else if (section === "docs") {
         console.log(`→ Showing docs section`);
         showSection(docsSection);
@@ -2268,6 +2275,273 @@ function showAllModesInTiers() {
   attachPlayerClick();
 }
 
+// Builder Leaderboards Functions
+function populateBuilderLeaderboardModesWithTiers() {
+  const builderLeaderboardsButtons = document.getElementById("builder-leaderboards-mode-buttons");
+  const builderLeaderboardsContainer = document.getElementById("builder-leaderboards-container");
+  
+  if (!builderLeaderboardsButtons || !builderLeaderboardsContainer) return;
+  
+  // Get all unique subjects from builders
+  const allSubjects = new Set();
+  builders.forEach(b => {
+    if (b.tiers && typeof b.tiers === "object") {
+      Object.keys(b.tiers).forEach(subject => {
+        allSubjects.add(subject);
+      });
+    }
+  });
+  
+  const sortedSubjects = Array.from(allSubjects).sort();
+  
+  // Create buttons for each subject
+  builderLeaderboardsButtons.innerHTML = "";
+  
+  // Add "All" button first
+  const allBtn = document.createElement("button");
+  allBtn.className = "mode-btn active";
+  allBtn.dataset.subject = "all";
+  allBtn.textContent = "All Subjects";
+  builderLeaderboardsButtons.appendChild(allBtn);
+  
+  // Add individual subject buttons
+  sortedSubjects.forEach(subject => {
+    const btn = document.createElement("button");
+    btn.className = "mode-btn";
+    btn.dataset.subject = subject;
+    btn.textContent = subject;
+    builderLeaderboardsButtons.appendChild(btn);
+  });
+  
+  // Attach event listeners to buttons
+  builderLeaderboardsButtons.querySelectorAll(".mode-btn").forEach(btn => {
+    btn.addEventListener("click", () => {
+      builderLeaderboardsButtons.querySelectorAll(".mode-btn").forEach(b => b.classList.remove("active"));
+      btn.classList.add("active");
+      
+      const subject = btn.dataset.subject;
+      if (subject === "all") {
+        showAllBuildersInTierGrid();
+      } else {
+        showBuildersBySubjectInTierGrid(subject);
+      }
+    });
+  });
+  
+  // Show all builders by default
+  showAllBuildersInTierGrid();
+}
+
+function showAllBuildersInTierGrid() {
+  const builderLeaderboardsContainer = document.getElementById("builder-leaderboards-container");
+  if (!builderLeaderboardsContainer) return;
+  
+  builderLeaderboardsContainer.innerHTML = "";
+  
+  // Create tier columns (1, 2, 3, 4, 5) with ALL builders shown together
+  const tiersHTML = `
+    <div class="mode-wrapper">
+      <div class="mode-tiers" id="builder-leaderboard-all-tiers">
+        ${Array.from({length: 5}, (_, i) => {
+          const tierNum = i + 1; // 1, 2, 3, 4, 5
+          return '<div class="mode-tier-column"><div class="mode-tier-header">Tier ' + tierNum + '</div></div>';
+        }).join('')}
+      </div>
+    </div>
+  `;
+  
+  builderLeaderboardsContainer.innerHTML = tiersHTML;
+  
+  // Get all builders with their best tier across all subjects
+  const allBuilders = builders.filter(b => b.tiers && typeof b.tiers === "object" && Object.keys(b.tiers).length > 0);
+  
+  // Add builders to their tier columns
+  allBuilders.forEach(builder => {
+    // Find the best tier for this builder
+    const tierValues = Object.values(builder.tiers).filter(t => t && t !== "Unknown");
+    if (tierValues.length === 0) return;
+    
+    // Get highest tier (numerically lowest number)
+    const bestTier = tierValues.reduce((best, current) => {
+      const bestNum = parseInt(best.match(/\d+/)?.[0] || "5");
+      const currentNum = parseInt(current.match(/\d+/)?.[0] || "5");
+      return currentNum < bestNum ? current : best;
+    });
+    
+    const tierNumber = parseInt(bestTier.match(/\d+/)[0]);
+    const tierColumn = document.querySelectorAll("#builder-leaderboard-all-tiers .mode-tier-column")[tierNumber - 1];
+    
+    if (!tierColumn) return;
+    
+    const builderDiv = document.createElement("div");
+    builderDiv.className = "mode-player";
+    builderDiv.dataset.builder = builder.name;
+    builderDiv.dataset.region = builder.region.toLowerCase();
+    
+    const isHT = bestTier.includes("HT");
+    builderDiv.dataset.signvalue = isHT ? 2 : 1;
+    
+    builderDiv.innerHTML = `
+      <div class="mode-player-left">
+        <img src="https://render.crafty.gg/3d/bust/${builder.uuid}">
+        <span class="player-label">${builder.name}</span>
+        <span class="tier-sign">${isHT ? "+" : "-"}</span>
+      </div>
+      <div class="region-box">
+        <span>${builder.region.toUpperCase()}</span>
+      </div>
+    `;
+    
+    builderDiv.addEventListener("click", () => {
+      const foundBuilder = builders.find(b => b.name === builder.name);
+      if (foundBuilder) {
+        // Show builder modal
+        const tiersHTML = generateBuilderTiersHTML(foundBuilder);
+        const nitroClass = foundBuilder.nitro ? "nitro" : "";
+
+        modalTitle.textContent = "";
+        modalContent.innerHTML = `
+          <div class="modal-header" style="background-image: url('anime-style-stone.jpg')">
+            <img class="modal-avatar ${nitroClass}" src="https://render.crafty.gg/3d/bust/${foundBuilder.uuid}" alt="${foundBuilder.name} Avatar">
+            <div class="modal-name ${nitroClass}">${foundBuilder.name || "Unknown Builder"}</div>
+          </div>
+
+          <div class="modal-section">
+            <div class="modal-info-row ${nitroClass}">
+              <span class="modal-label">Placement:</span>
+              <span class="modal-value">#${getBuilderPlacement(foundBuilder)}</span>
+            </div>
+
+            <div class="modal-info-row ${nitroClass}">
+              <span class="modal-label">Region:</span>
+              <span class="modal-value">${foundBuilder.region || "Unknown"}</span>
+            </div>
+
+            <div class="modal-section-title ${nitroClass}">Tiers:</div>
+            <div class="modal-tiers ${nitroClass}">
+              ${tiersHTML}
+            </div>
+          </div>
+        `;
+
+        modal.classList.add("show");
+      }
+    });
+    
+    tierColumn.appendChild(builderDiv);
+  });
+  
+  // Sort builders in each column (HT above LT)
+  document.querySelectorAll("#builder-leaderboard-all-tiers .mode-tier-column").forEach(col => {
+    const builderList = [...col.querySelectorAll(".mode-player")];
+    builderList
+      .sort((a, b) => b.dataset.signvalue - a.dataset.signvalue)
+      .forEach(b => col.appendChild(b));
+  });
+}
+
+function showBuildersBySubjectInTierGrid(subject) {
+  const builderLeaderboardsContainer = document.getElementById("builder-leaderboards-container");
+  if (!builderLeaderboardsContainer) return;
+  
+  builderLeaderboardsContainer.innerHTML = "";
+  
+  // Create tier columns for this subject
+  const tiersHTML = `
+    <div class="mode-wrapper">
+      <div class="mode-tiers" id="builder-leaderboard-subject-tiers">
+        ${Array.from({length: 5}, (_, i) => {
+          const tierNum = i + 1; // 1, 2, 3, 4, 5
+          return '<div class="mode-tier-column"><div class="mode-tier-header">Tier ' + tierNum + '</div></div>';
+        }).join('')}
+      </div>
+    </div>
+  `;
+  
+  builderLeaderboardsContainer.innerHTML = tiersHTML;
+  
+  // Get builders that have this subject
+  const buildersWithSubject = builders.filter(b => 
+    b.tiers && typeof b.tiers === "object" && b.tiers[subject] && b.tiers[subject] !== "Unknown"
+  );
+  
+  // Add builders to their tier columns
+  buildersWithSubject.forEach(builder => {
+    const tierStr = builder.tiers[subject];
+    if (!tierStr) return;
+    
+    const tierNumber = parseInt(tierStr.match(/\d+/)[0]);
+    const tierColumn = document.querySelectorAll("#builder-leaderboard-subject-tiers .mode-tier-column")[tierNumber - 1];
+    
+    if (!tierColumn) return;
+    
+    const builderDiv = document.createElement("div");
+    builderDiv.className = "mode-player";
+    builderDiv.dataset.builder = builder.name;
+    builderDiv.dataset.region = builder.region.toLowerCase();
+    
+    const isHT = tierStr.includes("HT");
+    builderDiv.dataset.signvalue = isHT ? 2 : 1;
+    
+    builderDiv.innerHTML = `
+      <div class="mode-player-left">
+        <img src="https://render.crafty.gg/3d/bust/${builder.uuid}">
+        <span class="player-label">${builder.name}</span>
+        <span class="tier-sign">${isHT ? "+" : "-"}</span>
+      </div>
+      <div class="region-box">
+        <span>${builder.region.toUpperCase()}</span>
+      </div>
+    `;
+    
+    builderDiv.addEventListener("click", () => {
+      const foundBuilder = builders.find(b => b.name === builder.name);
+      if (foundBuilder) {
+        // Show builder modal
+        const tiersHTML = generateBuilderTiersHTML(foundBuilder);
+        const nitroClass = foundBuilder.nitro ? "nitro" : "";
+
+        modalTitle.textContent = "";
+        modalContent.innerHTML = `
+          <div class="modal-header" style="background-image: url('anime-style-stone.jpg')">
+            <img class="modal-avatar ${nitroClass}" src="https://render.crafty.gg/3d/bust/${foundBuilder.uuid}" alt="${foundBuilder.name} Avatar">
+            <div class="modal-name ${nitroClass}">${foundBuilder.name || "Unknown Builder"}</div>
+          </div>
+
+          <div class="modal-section">
+            <div class="modal-info-row ${nitroClass}">
+              <span class="modal-label">Placement:</span>
+              <span class="modal-value">#${getBuilderPlacement(foundBuilder)}</span>
+            </div>
+
+            <div class="modal-info-row ${nitroClass}">
+              <span class="modal-label">Region:</span>
+              <span class="modal-value">${foundBuilder.region || "Unknown"}</span>
+            </div>
+
+            <div class="modal-section-title ${nitroClass}">Tiers:</div>
+            <div class="modal-tiers ${nitroClass}">
+              ${tiersHTML}
+            </div>
+          </div>
+        `;
+
+        modal.classList.add("show");
+      }
+    });
+    
+    tierColumn.appendChild(builderDiv);
+  });
+  
+  // Sort builders in each column (HT above LT)
+  document.querySelectorAll("#builder-leaderboard-subject-tiers .mode-tier-column").forEach(col => {
+    const builderList = [...col.querySelectorAll(".mode-player")];
+    builderList
+      .sort((a, b) => b.dataset.signvalue - a.dataset.signvalue)
+      .forEach(b => col.appendChild(b));
+  });
+}
+
 (async () => {
   await loadPlayers();
   players.forEach(p => p.points = calculatePoints(p, "player"));
@@ -2287,12 +2561,9 @@ function showAllModesInTiers() {
     showBuildersSection("global");
     generateBuilderModeLeaderboard(subject);
 
-} else if (hash.startsWith("#mode=")) {
-  const mode = decodeURIComponent(hash.split("=")[1]);
-  showSection(leaderboardSection);
-  tableHeader.style.display = "none";
-  generateModeLeaderboard(mode);
-} else {
+  } else if (hash.startsWith("#fighter=")) {
+    // This hash is handled by URL routing elsewhere
+  } else {
     // Default: show home page
     showSection(homeSection);
   }
@@ -2305,3 +2576,5 @@ function showAllModesInTiers() {
   const savedUser = localStorage.getItem("ultratiers_user");
   if (savedUser) setLoggedInUser(JSON.parse(savedUser));
 })();
+
+
