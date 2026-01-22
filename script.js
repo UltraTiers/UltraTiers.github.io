@@ -1748,7 +1748,7 @@ function generateAllPlayerModes(region = "global") {
     const highestTier = relevantTiers.reduce((max, current) => {
       const maxNum = parseInt(max.tier.match(/\d+/)[0]);
       const curNum = parseInt(current.tier.match(/\d+/)[0]);
-      return curNum > maxNum ? current : max;
+      return curNum < maxNum ? current : max;
     });
     
     const tierNumber = parseInt(highestTier.tier.match(/\d+/)[0]);
