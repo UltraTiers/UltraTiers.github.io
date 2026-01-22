@@ -2361,10 +2361,16 @@ function showAllBuildersInTierGrid() {
   // Get all builders with their best tier across all subjects
   const allBuilders = builders.filter(b => b.tiers && typeof b.tiers === "object" && Object.keys(b.tiers).length > 0);
   
+  console.log(`[showAllBuildersInTierGrid] allBuilders:`, allBuilders);
+  
   // Add builders to their tier columns
   allBuilders.forEach(builder => {
+    console.log(`[showAllBuildersInTierGrid] Processing builder:`, builder.name, "Tiers:", builder.tiers);
+    
     // Find the best tier for this builder
     const tierValues = Object.values(builder.tiers).filter(t => t && t !== "Unknown");
+    console.log(`[showAllBuildersInTierGrid] tierValues for ${builder.name}:`, tierValues);
+    
     if (tierValues.length === 0) return;
     
     // Get highest tier (numerically lowest number)
@@ -2374,10 +2380,19 @@ function showAllBuildersInTierGrid() {
       return currentNum < bestNum ? current : best;
     });
     
+    console.log(`[showAllBuildersInTierGrid] bestTier for ${builder.name}:`, bestTier);
+    
     const tierNumber = parseInt(bestTier.match(/\d+/)[0]);
+    console.log(`[showAllBuildersInTierGrid] tierNumber for ${builder.name}:`, tierNumber);
+    
     const tierColumn = document.querySelectorAll("#builder-leaderboard-all-tiers .mode-tier-column")[tierNumber - 1];
     
-    if (!tierColumn) return;
+    console.log(`[showAllBuildersInTierGrid] tierColumn:`, tierColumn);
+    
+    if (!tierColumn) {
+      console.warn(`[showAllBuildersInTierGrid] No tier column found for tier ${tierNumber}`);
+      return;
+    }
     
     const builderDiv = document.createElement("div");
     builderDiv.className = "mode-player";
