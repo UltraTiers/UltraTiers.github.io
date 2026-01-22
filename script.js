@@ -2280,6 +2280,10 @@ function populateBuilderLeaderboardModesWithTiers() {
   const builderLeaderboardsButtons = document.getElementById("builder-leaderboards-mode-buttons");
   const builderLeaderboardsContainer = document.getElementById("builder-leaderboards-container");
   
+  console.log(`[Builder Leaderboards] builders array:`, builders);
+  console.log(`[Builder Leaderboards] buttons element:`, builderLeaderboardsButtons);
+  console.log(`[Builder Leaderboards] container element:`, builderLeaderboardsContainer);
+  
   if (!builderLeaderboardsButtons || !builderLeaderboardsContainer) return;
   
   // Get all unique subjects from builders
@@ -2291,6 +2295,8 @@ function populateBuilderLeaderboardModesWithTiers() {
       });
     }
   });
+  
+  console.log(`[Builder Leaderboards] subjects found:`, Array.from(allSubjects));
   
   const sortedSubjects = Array.from(allSubjects).sort();
   
