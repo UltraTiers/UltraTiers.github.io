@@ -66,6 +66,7 @@ const leaderboardsContainer = document.getElementById("leaderboards-container");
 const modesCategoriesContainer = document.getElementById("modes-categories-container");
 const builderLeaderboardsSection = document.getElementById("builder-leaderboards-section");
 const builderLeaderboardsContainer = document.getElementById("builder-leaderboards-container");
+const statsSection = document.getElementById("stats-section");
 
 /* =============================
    PROFILE DESIGNER ELEMENTS
@@ -623,7 +624,8 @@ function showSection(sectionToShow) {
         docsSection,
         applicationSection,
         testersSection,
-        buildersSection
+        buildersSection,
+        statsSection
     ];
     
     // Check for null sections
@@ -785,6 +787,93 @@ bannerOptions.forEach(img => {
   });
 });
 
+function generateRegionStats() {
+  const regionCounts = {};
+
+  [...players, ...builders].forEach(p => {
+    if (!p.region) return;
+    regionCounts[p.region] = (regionCounts[p.region] || 0) + 1;
+  });
+
+  new Chart(regionChart, {
+    type: "doughnut",
+    data: {
+      labels: Object.keys(regionCounts),
+      datasets: [{ data: Object.values(regionCounts) }]
+    }
+  });
+}
+
+function generateTierStats() {
+  const tierCounts = {};
+
+  players.forEach(p => {
+    p.tiers?.forEach(t => {
+      if (!t.tier || t.tier === "Unknown") return;
+      tierCounts[t.tier] = (tierCounts[t.tier] || 0) + 1;
+    });
+  });
+
+  new Chart(tierChart, {
+    type: "bar",
+    data: {
+      labels: Object.keys(tierCounts),
+      datasets: [{ data: Object.values(tierCounts) }]
+    }
+  });
+}
+
+function generateModeStats() {
+  const modeCounts = {};
+
+  players.forEach(p => {
+    p.tiers?.forEach(t => {
+      if (!t.gamemode || t.tier === "Unknown") return;
+      modeCounts[t.gamemode] = (modeCounts[t.gamemode] || 0) + 1;
+    });
+  });
+
+  const top = Object.entries(modeCounts)
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 10);
+
+  new Chart(modeChart, {
+    type: "line",
+    data: {
+      labels: top.map(e => e[0]),
+      datasets: [{ data: top.map(e => e[1]) }]
+    }
+  });
+}
+
+function generateTypeStats() {
+  new Chart(typeChart, {
+    type: "pie",
+    data: {
+      labels: ["Fighters", "Builders"],
+      datasets: [{ data: [players.length, builders.length] }]
+    }
+  });
+}
+
+function generateStatsPage() {
+  statsSection.innerHTML = `
+    <h1 class="stats-title">📊 UltraTiers Statistics</h1>
+    <p class="stats-subtitle">Generated from live player & builder data</p>
+
+    <div class="stats-grid">
+      <div class="stats-card"><h3>Players by Region</h3><canvas id="regionChart"></canvas></div>
+      <div class="stats-card"><h3>Fighters vs Builders</h3><canvas id="typeChart"></canvas></div>
+      <div class="stats-card"><h3>Tier Distribution</h3><canvas id="tierChart"></canvas></div>
+      <div class="stats-card"><h3>Most Played Modes</h3><canvas id="modeChart"></canvas></div>
+    </div>
+  `;
+
+  generateRegionStats();
+  generateTypeStats();
+  generateTierStats();
+  generateModeStats();
+}
 
 /* =============================
    NAVIGATION BUTTONS
@@ -822,7 +911,11 @@ function handleCardNavigation(section) {
         showSection(leaderboardsSection);
         tableHeader.style.display = "none";
         populateLeaderboardModesWithTiers();
-      } else if (section === "testers") {
+      } else if (section === "stats") {
+  showSection(statsSection);
+  tableHeader.style.display = "none";
+  generateStatsPage();
+} else if (section === "testers") {
         console.log(`→ Showing testers section`);
         showSection(testersSection);
         tableHeader.style.display = "none";

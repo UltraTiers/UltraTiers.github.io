@@ -181,6 +181,15 @@
     </div>
   </div>
 
+  <!-- Statistics Card -->
+<div class="home-card stats-card" data-section="stats">
+  <div class="card-icon">📊</div>
+  <h3 class="card-title">Statistics</h3>
+  <p class="card-description">Global UltraTiers analytics</p>
+  <div class="card-stats">Live data</div>
+  <button class="card-button">View Stats</button>
+</div>
+
   <div class="home-footer">
     <p>Join our <a href="https://discord.gg/Bvebb7RwaG" target="_blank" class="discord-link"><i class="fab fa-discord"></i> Discord</a> for updates and community</p>
   </div>
@@ -247,6 +256,8 @@
     <!-- ADD THIS DIV -->
     <div id="builders-container" class="builders-grid"></div>
 </section>
+
+<section id="stats-section" class="stats-section hidden-section"></section>
 
 <!-- TESTERS SECTION -->
 <div id="testers-section" class="testers-section hidden-section">
@@ -425,6 +436,7 @@
 </footer>
 
 <!-- SCRIPT -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script type="module" src="script.js"></script>
 </body>
 </html>
