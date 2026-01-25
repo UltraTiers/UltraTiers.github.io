@@ -2630,6 +2630,7 @@ body {
     border-radius: 10px;
     height: 150px;
     overflow: auto;
+    overflow-x: hidden;
 }
 
 /* DOCS SECTION */
