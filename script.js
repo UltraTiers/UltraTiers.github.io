@@ -67,6 +67,8 @@ const modesCategoriesContainer = document.getElementById("modes-categories-conta
 const builderLeaderboardsSection = document.getElementById("builder-leaderboards-section");
 const builderLeaderboardsContainer = document.getElementById("builder-leaderboards-container");
 const statsSection = document.getElementById("stats-section");
+const kitsSection = document.getElementById("kits-section");
+const kitsGrid = document.getElementById("kits-grid");
 
 /* =============================
    PROFILE DESIGNER ELEMENTS
@@ -624,8 +626,8 @@ function showSection(sectionToShow) {
         docsSection,
         applicationSection,
         testersSection,
-        buildersSection,
-        statsSection
+        statsSection,
+        kitsSection
     ];
     
     // Check for null sections
@@ -677,6 +679,54 @@ function sortPlayerTiers(tiers, retiredModes = []) {
     return bPoints - aPoints;
   });
 }
+
+// 🔧 Edit this list to match your actual kit images
+const kits = [
+  { name: "Axe", image: "kitsmodes/AxeKit.png" },
+  { name: "Sword", image: "kitsmodes/SwordKit.png" },
+  { name: "Bow", image: "kitsmodes/BowKit.png" },
+  { name: "Vanilla", image: "kitsmodes/VanillaKit.png" },
+  { name: "NethOP", image: "kitsmodes/NethOPKit.png" },
+  { name: "Pot", image: "kitsmodes/PotKit.png" },
+  { name: "UHC", image: "kitsmodes/UHCKit.png" },
+  { name: "SMP", image: "kitsmodes/SMPKit.png" },
+  { name: "Mace", image: "kitsmodes/MaceKit.png" },
+  { name: "Spear Mace", image: "kitsmodes/Spear MaceKit.png" },
+  { name: "Diamond SMP", image: "kitsmodes/Diamond SMPKit.png" },
+  { name: "OG Vanilla", image: "kitsmodes/OG VanillaKit.png" },
+  { name: "Bed", image: "kitsmodes/BedKit.png" },
+  { name: "DeBuff", image: "kitsmodes/DeBuffKit.png" },
+  { name: "Speed", image: "kitsmodes/SpeedKit.png" },
+  { name: "Manhunt", image: "kitsmodes/ManhuntKit.png" },
+  { name: "Elytra", image: "kitsmodes/ElytraKit.png" },
+  { name: "Spear Elytra", image: "kitsmodes/Spear ElytraKit.png" },
+  { name: "Diamond Survival", image: "kitsmodes/Diamond SurvivalKit.png" },
+  { name: "Minecart", image: "kitsmodes/MinecartKit.png" },
+  { name: "Creeper", image: "kitsmodes/CreeperKit.png" },
+  { name: "Trident", image: "kitsmodes/TridentKit.png" },
+  { name: "AxePot", image: "kitsmodes/AxePotKit.png" },
+  { name: "Pearl", image: "kitsmodes/PearlKit.png" },
+  { name: "Bridge", image: "kitsmodes/BridgeKit.png" },
+  { name: "Sumo", image: "kitsmodes/SumoKit.png" },
+  { name: "OP", image: "kitsmodes/OPKit.png" }
+];
+
+function renderKits() {
+  kitsGrid.innerHTML = "";
+
+  kits.forEach(kit => {
+    const card = document.createElement("div");
+    card.className = "kit-card";
+
+    card.innerHTML = `
+      <img src="${kit.image}" alt="${kit.name}">
+      <div class="kit-name">${kit.name}</div>
+    `;
+
+    kitsGrid.appendChild(card);
+  });
+}
+
 
 
 const authButtons = document.getElementById("auth-buttons");
@@ -940,7 +990,12 @@ function handleCardNavigation(section) {
         console.log(`→ Showing application section`);
         showSection(applicationSection);
         tableHeader.style.display = "none";
-      } else {
+      } else if (section === "kits") {
+  console.log(`→ Showing kits section`);
+  showSection(kitsSection);
+  tableHeader.style.display = "none";
+  renderKits();
+} else {
         console.warn(`⚠️ Unknown section: "${section}"`);
       }
       
