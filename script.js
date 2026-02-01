@@ -1409,39 +1409,29 @@ document.addEventListener('click', () => {
   document.querySelectorAll('.dropdown-container').forEach(c => c.classList.remove('open'));
 });
 
-document.addEventListener("DOMContentLoaded", () => {
-    const form = document.querySelector(".application-form");
+document.querySelector(".application-form").addEventListener("submit", async (e) => {
+  e.preventDefault();
 
-    form.addEventListener("submit", async (e) => {
-        e.preventDefault();
-        console.log("Form submitted!"); // Test if triggers
+  const payload = {
+    discord: document.getElementById("discord").value,
+    ign: document.getElementById("ign").value,
+    modes: document.getElementById("modes").value,
+    reason: document.getElementById("reason").value,
+    region: document.getElementById("region").value
+  };
 
-        const discord = document.getElementById("discord").value;
-        const ign = document.getElementById("ign").value;
-        const modes = document.getElementById("modes").value;
-        const reason = document.getElementById("reason").value;
-        const region = document.getElementById("region").value;
+  const res = await fetch("/apply", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload)
+  });
 
-        const payload = { discord, ign, modes, reason, region };
-
-        try {
-            const response = await fetch("/api/apply", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(payload),
-            });
-
-            if (response.ok) {
-                alert("Application sent!");
-                form.reset();
-            } else {
-                alert("Failed to send application.");
-            }
-        } catch (err) {
-            console.error(err);
-            alert("Error sending application.");
-        }
-    });
+  if (res.ok) {
+    alert("✅ Application submitted successfully!");
+    e.target.reset();
+  } else {
+    alert("❌ Failed to submit application.");
+  }
 });
 
 /* =============================
