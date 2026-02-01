@@ -977,12 +977,14 @@ function handleCardNavigation(section) {
         } else {
           renderTesters();
         }
-      } else if (section === "builder-leaderboards") {
-        console.log(`→ Showing builder leaderboards section`);
-        showSection(builderLeaderboardsSection);
-        tableHeader.style.display = "none";
-        populateBuilderLeaderboardModesWithTiers();
-      } else if (section === "docs") {
+} else if (section === "builder-leaderboards") {
+  console.log(`→ Showing builder leaderboards section`);
+  showSection(builderLeaderboardsSection);
+  tableHeader.style.display = "none";
+
+  renderBuilders("global"); // 👈 THIS is the missing piece
+  populateBuilderLeaderboardModesWithTiers();
+} else if (section === "docs") {
         console.log(`→ Showing docs section`);
         showSection(docsSection);
         tableHeader.style.display = "none";
