@@ -363,11 +363,8 @@ document.querySelectorAll(".subject-btn").forEach(btn => {
   });
 });
 
-function renderBuilders(region = "global", containerId = "builders-container") {
-  const container = document.getElementById(containerId);
-  if (!container) return;
-
-  container.innerHTML = "";
+function renderBuilders(region = "global") {
+  buildersContainer.innerHTML = "";
 
   const filtered =
     region === "global"
@@ -387,6 +384,7 @@ function renderBuilders(region = "global", containerId = "builders-container") {
       index === 2 ? "bronze" : "";
 
     const nitroClass = builder.nitro ? "nitro" : "";
+
     const tiersHTML = generateBuilderTiersHTML(builder);
 
     const cardHTML = `
@@ -395,22 +393,19 @@ function renderBuilders(region = "global", containerId = "builders-container") {
         <img class="avatar" src="https://render.crafty.gg/3d/bust/${builder.uuid}">
         <div class="player-info">
           <div class="player-name ${nitroClass}">${builder.name}</div>
-          <div class="player-sub ${nitroClass}">
-            ⭐ ${getRankTitle(builder.points)} (${builder.points})
-          </div>
+          <div class="player-sub ${nitroClass}">⭐ ${getRankTitle(builder.points)} (${builder.points})</div>
         </div>
         <div class="region region-${builder.region.toLowerCase()}">${builder.region}</div>
         <div class="tiers">${tiersHTML}</div>
       </div>
     `;
 
-    container.insertAdjacentHTML("beforeend", cardHTML);
+    buildersContainer.insertAdjacentHTML("beforeend", cardHTML);
   });
 
   attachBuilderClick();
   updateTestedCount();
 }
-
 
 function attachBuilderModeClick() {
   document.querySelectorAll("[data-builder]").forEach(el => {
@@ -627,6 +622,7 @@ function showSection(sectionToShow) {
         leaderboardSection,
         modesSection,
         leaderboardsSection,
+        buildersSection,
         builderLeaderboardsSection,
         docsSection,
         applicationSection,
@@ -731,8 +727,6 @@ function renderKits() {
     kitsGrid.appendChild(card);
   });
 }
-
-
 
 const authButtons = document.getElementById("auth-buttons");
 const userDropdown = document.getElementById("user-profile-dropdown");
@@ -986,8 +980,6 @@ function handleCardNavigation(section) {
         console.log(`→ Showing builder leaderboards section`);
         showSection(builderLeaderboardsSection);
         tableHeader.style.display = "none";
-
-        renderBuilders("global", "builder-leaderboards-container");
         populateBuilderLeaderboardModesWithTiers();
       } else if (section === "docs") {
         console.log(`→ Showing docs section`);
