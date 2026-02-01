@@ -2957,8 +2957,6 @@ body {
 
     /* Docs section adjustments */
     .docs-section {
-        width: 250px;
-        max-width: 400px;
         padding: 16px;
         margin: 30px auto;
     }
