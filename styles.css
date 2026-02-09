@@ -6,48 +6,6 @@
     --accent: rgba(255, 255, 255, 0.18);
 }
 
-#site-lock {
-    position: fixed;
-    inset: 0;
-    background: #0f172a;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 99999;
-}
-
-.lock-box {
-    background: #1e293b;
-    padding: 30px;
-    border-radius: 12px;
-    text-align: center;
-    width: 300px;
-}
-
-.lock-box input {
-    width: 200px;
-    padding: 10px;
-    margin-top: 10px;
-    border-radius: 6px;
-    border: none;
-}
-
-.lock-box button {
-    width: 220px;
-    padding: 10px;
-    margin-top: 15px;
-    background: #22c55e;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
-}
-
-#login-error {
-    color: red;
-    margin-top: 10px;
-}
-
-
 .stats-section {
   padding: 40px;
 }
