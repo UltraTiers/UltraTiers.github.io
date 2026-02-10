@@ -55,7 +55,7 @@ const modal = document.getElementById("modal");
 const modalTitle = document.getElementById("modal-title");
 const modalContent = document.getElementById("modal-content");
 const closeModalBtn = document.getElementById("close-modal");
-const searchInput = document.getElementById("search-input");
+const searchInput = null; // navbar search removed; use centered home search instead
 const tableHeader = document.querySelector(".table-header");
 const testersSection = document.getElementById("testers-section");
 const testersContainer = document.getElementById("testers-container");
@@ -1434,6 +1434,115 @@ document.querySelector(".application-form").addEventListener("submit", async (e)
 });
 
 /* =============================
+   HOME SEARCH (centered) + NAV-CATEGORIES wiring
+============================= */
+
+function populateHomeSearchDropdown() {
+  const input = document.getElementById('home-search-input');
+  const results = document.getElementById('home-search-results');
+  if (!input || !results) return;
+
+  function hide() { results.classList.add('hidden'); results.innerHTML = ''; }
+  function showList(items) {
+    results.innerHTML = items.map(it => `
+      <li class="search-item" data-name="${it.name}" data-type="${it.type}">
+        <strong>${it.name}</strong> <span class="muted">— ${it.type}</span>
+      </li>
+    `).join('');
+    results.classList.remove('hidden');
+  }
+
+  input.addEventListener('input', () => {
+    const q = input.value.trim().toLowerCase();
+    if (!q) { hide(); return; }
+
+    const combined = [];
+    players.forEach(p => combined.push({ name: p.name || p.uuid, type: 'Fighter' }));
+    builders.forEach(b => combined.push({ name: b.name || b.uuid, type: 'Builder' }));
+
+    const filtered = combined.filter(c => c.name && c.name.toLowerCase().includes(q)).slice(0, 20);
+    if (!filtered.length) { hide(); return; }
+    showList(filtered);
+  });
+
+  results.addEventListener('click', (e) => {
+    const li = e.target.closest('.search-item');
+    if (!li) return;
+    const name = li.dataset.name;
+    const type = li.dataset.type;
+    input.value = name;
+    hide();
+
+    if (type === 'Fighter') {
+      const player = players.find(p => p.name === name || p.uuid === name);
+      if (player) showPlayerModal(player);
+    } else {
+      const builder = builders.find(b => b.name === name || b.uuid === name);
+      if (builder) {
+        // Minimal builder modal
+        modalTitle.textContent = builder.name || 'Builder';
+        modalContent.innerHTML = `
+          <div class="modal-header">
+            <img class="modal-avatar" src="https://render.crafty.gg/3d/bust/${builder.uuid}">
+          </div>
+          <div class="modal-section">
+            <div>Region: ${builder.region || 'Unknown'}</div>
+            <div>Total Points: ${builder.points || calculatePoints(builder, 'builder')}</div>
+          </div>
+        `;
+        modal.classList.add('show');
+      }
+    }
+  });
+
+  // hide on outside click
+  document.addEventListener('click', (e) => {
+    if (!input.contains(e.target) && !results.contains(e.target)) hide();
+  });
+}
+
+function populateCategoryButtons(category) {
+  const container = document.getElementById('leaderboards-mode-buttons');
+  if (!container) return;
+  container.innerHTML = '';
+
+  const modes = modeCategories[category] || modeCategories[category === 'overall' ? 'overall' : category] || [];
+
+  // Overall button
+  const overallBtn = document.createElement('button');
+  overallBtn.className = 'mode-category-btn overall-btn';
+  overallBtn.textContent = 'Overall';
+  overallBtn.addEventListener('click', () => {
+    // Show overall (category) leaderboard using generatePlayers
+    showSection(leaderboardsSection);
+    generatePlayers('global', category === 'overall' ? 'overall' : category);
+  });
+  container.appendChild(overallBtn);
+
+  // Per-mode buttons
+  modes.forEach(m => {
+    const b = document.createElement('button');
+    b.className = 'mode-category-btn';
+    b.textContent = m;
+    b.addEventListener('click', () => {
+      showSection(leaderboardsSection);
+      generateModeLeaderboard(m);
+    });
+    container.appendChild(b);
+  });
+}
+
+// Nav categories (navbar dropdown items)
+document.querySelectorAll('.nav-category').forEach(el => {
+  el.addEventListener('click', () => {
+    const cat = el.dataset.category;
+    populateCategoryButtons(cat);
+    showSection(leaderboardsSection);
+  });
+});
+
+
+/* =============================
    NORMAL LEADERBOARD (TOP 3 BORDERS)
 ============================= */
 
@@ -1768,28 +1877,25 @@ generateDocs();
 
 
 /* =============================
-   SEARCH
+   SEARCH (centered home search)
 ============================= */
 
-searchInput.addEventListener("keydown", function(e) {
-  if (e.key === "Enter") {
-    const searchValue = searchInput.value.trim().toLowerCase();
-    const player = players.find(p => p.name.toLowerCase() === searchValue);
-    if (!player) return alert("Player not found!");
+const homeSearchInput = document.getElementById('home-search-input');
+if (homeSearchInput) {
+  homeSearchInput.addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') {
+      const q = homeSearchInput.value.trim().toLowerCase();
+      const player = players.find(p => (p.name || '').toLowerCase() === q);
+      if (!player) return alert('Player not found!');
 
-    // Use same modal format as clicking a player
-    modalTitle.textContent = ""; // same as click modal
-
-const sortedTiers = sortPlayerTiers(player.tiers, player.retired_modes);
-const tiersHTML = sortedTiers
-  .map(t => {
-        const tierMatch = t.tier.match(/\d+/);
-if (!tierMatch) return `<div class="tier empty"></div>`; // fallback for invalid tier
-const tierNumber = t.tier.match(/\d+/)?.[0];
-const tierRank = t.tier.startsWith("HT") ? "HT" : "LT";
-
-return `
-<div class="tier ${player.retired_modes?.includes(t.gamemode) ? "retired" : ""}"
+      const sortedTiers = sortPlayerTiers(player.tiers, player.retired_modes);
+      const tiersHTML = sortedTiers.map(t => {
+        const tierMatch = t.tier?.match(/\d+/);
+        if (!tierMatch) return `<div class="tier empty"></div>`;
+        const tierNumber = t.tier.match(/\d+/)?.[0];
+        const tierRank = t.tier.startsWith('HT') ? 'HT' : 'LT';
+        return `
+<div class="tier ${player.retired_modes?.includes(t.gamemode) ? 'retired' : ''}"
   data-gamemode="${t.gamemode}"
   data-tier="${tierNumber}"
   data-rank="${tierRank}"
@@ -1798,48 +1904,29 @@ return `
     <span>${tierRank}${tierNumber}</span>
 </div>
 `;
-      }).join("");
+      }).join('');
 
-const nitroClass = player.nitro ? "nitro" : "";
+      const nitroClass = player.nitro ? 'nitro' : '';
 
-modalContent.innerHTML = `
-  <div class="modal-header"
-     style="background-image: url(${player.banner || 'anime-style-stone.jpg'})">
+      modalContent.innerHTML = `
+  <div class="modal-header" style="background-image: url(${player.banner || 'anime-style-stone.jpg'})">
     <img class="modal-avatar ${nitroClass}" src="https://render.crafty.gg/3d/bust/${player.uuid}" alt="${player.name} Avatar">
-    <div class="modal-name ${nitroClass}">${player.name || "Unknown Player"}</div>
+    <div class="modal-name ${nitroClass}">${player.name || 'Unknown Player'}</div>
   </div>
-
   <div class="modal-section">
-    <div class="modal-info-row ${nitroClass}">
-      <span class="modal-label">Placement:</span>
-      <span class="modal-value">#${getPlayerPlacement(player)}</span>
-    </div>
-
-    <div class="modal-info-row ${nitroClass}">
-      <span class="modal-label">Region:</span>
-      <span class="modal-value">${player.region || "Unknown"}</span>
-    </div>
-
-    <div class="modal-info-row ${nitroClass}">
-      <span class="modal-label">Rank:</span>
-      <span class="modal-value">${getRankTitle(player.points)}</span>
-    </div>
-
-    <div class="modal-info-row ${nitroClass}">
-      <span class="modal-label">Points:</span>
-      <span class="modal-value">${player.points.toLocaleString()}</span>
-    </div>
+    <div class="modal-info-row ${nitroClass}"><span class="modal-label">Placement:</span><span class="modal-value">#${getPlayerPlacement(player)}</span></div>
+    <div class="modal-info-row ${nitroClass}"><span class="modal-label">Region:</span><span class="modal-value">${player.region || 'Unknown'}</span></div>
+    <div class="modal-info-row ${nitroClass}"><span class="modal-label">Rank:</span><span class="modal-value">${getRankTitle(player.points)}</span></div>
+    <div class="modal-info-row ${nitroClass}"><span class="modal-label">Points:</span><span class="modal-value">${player.points.toLocaleString()}</span></div>
   </div>
-
   <h3 class="modal-subtitle ${nitroClass}">Tier Progress</h3>
-  <div class="tiers-container">
-    ${tiersHTML}
-  </div>
+  <div class="tiers-container">${tiersHTML}</div>
 `;
 
-    modal.classList.add("show");
-  }
-});
+      modal.classList.add('show');
+    }
+  });
+}
 
 /* =============================
    FIGHTERS - ALL MODES COMBINED
@@ -2700,155 +2787,6 @@ function showBuildersBySubjectInTierGrid(subject) {
   });
 }
 
-/* =============================
-   NAVBAR CATEGORIES + HOME SEARCH
-   Adds: navbar dropdown for Main/Sub/Extra/Bonus and a central home search
-============================= */
-
-function setupNavbarCategories() {
-  document.querySelectorAll('.category-item').forEach(item => {
-    item.addEventListener('click', (e) => {
-      const cat = item.dataset.category;
-      populateLeaderboardsForCategory(cat);
-      document.querySelectorAll('.dropdown-container').forEach(c => c.classList.remove('open'));
-      showSection(leaderboardsSection);
-    });
-  });
-
-  document.querySelectorAll('.dropdown-trigger').forEach(btn => {
-    btn.addEventListener('click', (e) => {
-      e.stopPropagation();
-      const container = btn.parentElement;
-      container.classList.toggle('open');
-    });
-  });
-}
-
-function populateLeaderboardsForCategory(categoryKey) {
-  const buttonsContainer = document.getElementById('leaderboards-mode-buttons');
-  if (!buttonsContainer) return;
-  buttonsContainer.innerHTML = '';
-
-  const modes = modeCategories[categoryKey] || modeCategories.main || [];
-
-  // Overall button
-  const overallBtn = document.createElement('button');
-  overallBtn.className = 'leaderboard-mode-btn active';
-  overallBtn.textContent = 'Overall';
-  overallBtn.dataset.mode = 'overall';
-  overallBtn.addEventListener('click', () => {
-    document.querySelectorAll('#leaderboards-mode-buttons .leaderboard-mode-btn').forEach(b => b.classList.remove('active'));
-    overallBtn.classList.add('active');
-    generatePlayers('global', 'overall');
-  });
-  buttonsContainer.appendChild(overallBtn);
-
-  modes.forEach(m => {
-    const btn = document.createElement('button');
-    btn.className = 'leaderboard-mode-btn';
-    btn.textContent = m;
-    btn.dataset.mode = m;
-    btn.addEventListener('click', () => {
-      document.querySelectorAll('#leaderboards-mode-buttons .leaderboard-mode-btn').forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
-      renderLeaderboardForMode(m);
-    });
-    buttonsContainer.appendChild(btn);
-  });
-}
-
-function setupHomeSearch() {
-  const homeSearchInput = document.getElementById('home-search');
-  const dropdown = document.getElementById('search-dropdown');
-  if (!homeSearchInput || !dropdown) return;
-
-  homeSearchInput.addEventListener('input', () => {
-    const q = homeSearchInput.value.trim().toLowerCase();
-    if (!q) {
-      dropdown.classList.add('hidden');
-      dropdown.innerHTML = '';
-      return;
-    }
-
-    const fighterMatches = (players || []).filter(p => p.name && p.name.toLowerCase().includes(q)).slice(0, 8);
-    const builderMatches = (builders || []).filter(b => b.name && b.name.toLowerCase().includes(q)).slice(0, 8);
-
-    const items = [];
-    fighterMatches.forEach(p => items.push({ type: 'fighter', name: p.name }));
-    builderMatches.forEach(b => items.push({ type: 'builder', name: b.name }));
-
-    if (items.length === 0) {
-      dropdown.innerHTML = '<div class="search-empty">No players found</div>';
-      dropdown.classList.remove('hidden');
-      return;
-    }
-
-    dropdown.innerHTML = items.map(it => `
-      <div class="search-item" data-type="${it.type}" data-name="${it.name}">
-        <div class="search-name">${it.name}</div>
-        <div class="search-type">${it.type === 'fighter' ? 'Fighter' : 'Builder'}</div>
-      </div>
-    `).join('');
-
-    dropdown.classList.remove('hidden');
-
-    dropdown.querySelectorAll('.search-item').forEach(el => {
-      el.addEventListener('click', () => {
-        const type = el.dataset.type;
-        const name = el.dataset.name;
-        if (type === 'fighter') {
-          const found = players.find(p => p.name === name);
-          if (found) showPlayerModal(found);
-        } else {
-          const found = builders.find(b => b.name === name);
-          if (found) {
-            const tiersHTML = generateBuilderTiersHTML(found);
-            const nitroClass = found.nitro ? 'nitro' : '';
-            modalTitle.textContent = '';
-            modalContent.innerHTML = `
-              <div class="modal-header" style="background-image: url('anime-style-stone.jpg')">
-                <img class="modal-avatar ${nitroClass}" src="https://render.crafty.gg/3d/bust/${found.uuid}" alt="${found.name} Avatar">
-                <div class="modal-name ${nitroClass}">${found.name || "Unknown Builder"}</div>
-              </div>
-
-              <div class="modal-section">
-                <div class="modal-info-row ${nitroClass}">
-                  <span class="modal-label">Placement:</span>
-                  <span class="modal-value">#${getBuilderPlacement(found)}</span>
-                </div>
-
-                <div class="modal-info-row ${nitroClass}">
-                  <span class="modal-label">Region:</span>
-                  <span class="modal-value">${found.region || "Unknown"}</span>
-                </div>
-
-                <div class="modal-info-row ${nitroClass}">
-                  <span class="modal-label">Points:</span>
-                  <span class="modal-value">${found.points.toLocaleString()}</span>
-                </div>
-              </div>
-
-              <h3 class="modal-subtitle ${nitroClass}">Tier Progress</h3>
-              <div class="tiers-container">
-                ${tiersHTML}
-              </div>
-            `;
-
-            modal.classList.add('show');
-          }
-        }
-        dropdown.classList.add('hidden');
-      });
-    });
-  });
-
-  document.addEventListener('click', (e) => {
-    if (!homeSearchInput.contains(e.target) && !dropdown.contains(e.target)) {
-      dropdown.classList.add('hidden');
-    }
-  });
-}
-
 (async () => {
   await loadPlayers();
   players.forEach(p => p.points = calculatePoints(p, "player"));
@@ -2858,14 +2796,6 @@ function setupHomeSearch() {
   await loadBuilders(); // builders loaded here, updateTestedCount() is called inside loadBuilders
 
   updateTestedCount();
-
-  // Setup new navbar categories and home search
-  try {
-    setupNavbarCategories();
-    setupHomeSearch();
-  } catch (err) {
-    console.warn('Navbar categories / home search setup failed:', err);
-  }
 
   const hash = window.location.hash;
 
@@ -2890,6 +2820,9 @@ function setupHomeSearch() {
   // Restore logged-in user
   const savedUser = localStorage.getItem("ultratiers_user");
   if (savedUser) setLoggedInUser(JSON.parse(savedUser));
+
+  // Populate the centered home search dropdown
+  populateHomeSearchDropdown();
 })();
 
 

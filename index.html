@@ -53,34 +53,34 @@
     </div>
 
     <div class="nav-center">
-    <div class="nav-center">
       <div class="nav-categories dropdown-container">
-        <button class="dropdown-trigger">Categories <i class="fas fa-chevron-down"></i></button>
-        <div class="dropdown-menu">
-          <ul class="categories-list">
-            <li data-category="main" class="category-item">Main</li>
-            <li data-category="sub" class="category-item">Sub</li>
-            <li data-category="extra" class="category-item">Extra</li>
-            <li data-category="bonus" class="category-item">Bonus</li>
-          </ul>
+        <button class="dropdown-trigger">Categories ▾</button>
+        <div class="dropdown-menu nav-categories-menu">
+          <div class="nav-category" data-category="main">Main</div>
+          <div class="nav-category" data-category="sub">Sub</div>
+          <div class="nav-category" data-category="extra">Extra</div>
+          <div class="nav-category" data-category="bonus">Bonus</div>
         </div>
       </div>
     </div>
 
 <div class="nav-right">
-  <div class="auth-buttons" id="auth-buttons">
-    <button id="login-btn">
-      <i class="fas fa-sign-in"></i>
-    </button>
-  </div>
-  <div class="user-profile-dropdown hidden" id="user-profile-dropdown">
-    <img id="user-avatar" src="" alt="Avatar" class="user-avatar">
+<div class="auth-buttons" id="auth-buttons">
+  <button id="login-btn">
+    <i class="fas fa-sign-in"></i>
+  </button>
+</div>
+<div class="user-profile-dropdown hidden" id="user-profile-dropdown">
+  <img id="user-avatar" src="" alt="Avatar" class="user-avatar">
 
-    <div class="profile-menu" id="profile-menu">
-      <div id="settings-btn"><i class="fas fa-cog"></i> Settings</div>
-      <div id="logout-btn"><i class="fas fa-sign-out-alt"></i> Logout</div>
-    </div>
-  </div>
+<div class="profile-menu" id="profile-menu">
+  <div id="settings-btn"><i class="fas fa-cog"></i> Settings</div>
+  <div id="logout-btn"><i class="fas fa-sign-out-alt"></i> Logout</div>
+</div>
+</div>
+
+
+</div>
 </div>
 </nav>
 </header>
@@ -95,88 +95,49 @@
       </h1>
       <p class="hero-subtitle">Track the best Minecraft PvP & Building performance</p>
     </div>
-    <div class="home-search-wrapper">
-      <input id="home-search" class="home-search" placeholder="Search players (fighters & builders)...">
-      <div id="search-dropdown" class="search-dropdown hidden"></div>
+
+    <!-- Centered big search with dropdown (players + builders) -->
+    <div class="home-search">
+      <div class="big-search-wrapper">
+        <input id="home-search-input" class="big-search" placeholder="Search player or builder..." autocomplete="off">
+        <ul id="home-search-results" class="search-results hidden"></ul>
+      </div>
     </div>
   </div>
 
   <div class="home-grid">
-    <!-- Removed fighters / leaderboards / modes quick-cards — replaced by central search + navbar categories -->
-
-    <!-- Testers Card -->
-    <div class="home-card testers-card" data-section="testers">
-      <div class="card-icon">🧪</div>
-      <h3 class="card-title">Official Testers</h3>
-      <p class="card-description">Meet the official UltraTiers testers</p>
-      <div class="card-stats">
-        Filter by mode & region
-      </div>
-      <button class="card-button">View Testers</button>
+    <!-- Keep only a minimal set of actions on the homepage -->
+    <div class="home-card fighters-card" data-section="rankings">
+      <div class="card-icon">⚔️</div>
+      <h3 class="card-title">Fighters</h3>
+      <p class="card-description">Top PvP fighters</p>
+      <div class="card-stats"><span id="home-fighter-count">0</span> Tested</div>
+      <button class="card-button">View</button>
     </div>
 
-    <!-- BUILDING SECTION -->
-    <!-- Builders Card -->
     <div class="home-card builders-card" data-section="builders">
       <div class="card-icon">🏗️</div>
       <h3 class="card-title">Builders</h3>
-      <p class="card-description">Explore the best builders by subject and region</p>
-      <div class="card-stats">
-        <span id="home-builder-count">0</span> Tested
-      </div>
-      <button class="card-button">View Builders</button>
+      <p class="card-description">Top builders</p>
+      <div class="card-stats"><span id="home-builder-count">0</span> Tested</div>
+      <button class="card-button">View</button>
     </div>
 
-    <!-- Builder Leaderboards Card -->
-    <div class="home-card builder-leaderboards-card" data-section="builder-leaderboards">
-      <div class="card-icon">📊</div>
-      <h3 class="card-title">Builder Leaderboards</h3>
-      <p class="card-description">Browse leaderboards for each individual building subject</p>
-      <div class="card-stats">
-        Per-subject rankings
-      </div>
-      <button class="card-button">View Leaderboards</button>
-    </div>
     <div class="home-card docs-card" data-section="docs">
       <div class="card-icon">📚</div>
       <h3 class="card-title">Documentation</h3>
-      <p class="card-description">Learn about tier system and points</p>
-      <div class="card-stats">
-        Tiers 1-5
-      </div>
-      <button class="card-button">Read Docs</button>
+      <p class="card-description">Learn about tiers & points</p>
+      <div class="card-stats">Tiers 1-5</div>
+      <button class="card-button">Read</button>
     </div>
 
-    <!-- Application Card -->
     <div class="home-card application-card" data-section="application">
       <div class="card-icon">📝</div>
-      <h3 class="card-title">Apply Now</h3>
-      <p class="card-description">Become an official UltraTiers tester</p>
-      <div class="card-stats">
-        Quick & Easy
-      </div>
-      <button class="card-button">Apply Today</button>
+      <h3 class="card-title">Apply</h3>
+      <p class="card-description">Become a tester</p>
+      <div class="card-stats">Quick & Easy</div>
+      <button class="card-button">Apply</button>
     </div>
-
-      <!-- Statistics Card -->
-<div class="home-card stats-card" data-section="stats">
-  <div class="card-icon">📊</div>
-  <h3 class="card-title">Statistics</h3>
-  <p class="card-description">Global UltraTiers analytics</p>
-  <div class="card-stats">Live data</div>
-  <button class="card-button">View Stats</button>
-</div>
-
-<!-- Kits Card -->
-<div class="home-card kits-card" data-section="kits">
-  <div class="card-icon">🧰</div>
-  <h3 class="card-title">Kits</h3>
-  <p class="card-description">Browse all official PvP kits</p>
-  <div class="card-stats">
-    View all kits
-  </div>
-  <button class="card-button">View Kits</button>
-</div>
   </div>
 
   <div class="home-footer">
