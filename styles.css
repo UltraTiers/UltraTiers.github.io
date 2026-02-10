@@ -1065,6 +1065,23 @@ body {
     color: #fff;
 }
 
+/* Ensure new mode-category-btns match existing leaderboard button styles */
+.mode-category-btn {
+  padding: 10px 15px;
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.15);
+  color: rgba(255,255,255,0.95);
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+.mode-category-btn:hover { background: rgba(255,255,255,0.12); border-color: rgba(255,255,255,0.25); }
+.mode-category-btn.active { background: rgba(255,255,255,0.18); border-color: rgba(255,255,255,0.3); color: #fff; }
+
+.overall-btn { padding: 10px 15px; border-radius: 6px; }
+
 .leaderboards-container {
     display: flex;
     flex-direction: column;

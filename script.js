@@ -844,7 +844,17 @@ function generateRegionStats() {
     regionCounts[p.region] = (regionCounts[p.region] || 0) + 1;
   });
 
-  new Chart(regionChart, {
+  const regionChartEl = document.getElementById('regionChart');
+  if (typeof Chart === 'undefined' || !regionChartEl) {
+    // fallback: render a simple list
+    if (regionChartEl) {
+      const parent = regionChartEl.parentElement;
+      parent.innerHTML = `<div style="padding:12px;color:var(--text);">${Object.entries(regionCounts).map(r=>`<div>${r[0]}: ${r[1]}</div>`).join('')}</div>`;
+    }
+    return;
+  }
+
+  new Chart(regionChartEl, {
     type: "doughnut",
     data: {
       labels: Object.keys(regionCounts),
@@ -863,7 +873,16 @@ function generateTierStats() {
     });
   });
 
-  new Chart(tierChart, {
+  const tierChartEl = document.getElementById('tierChart');
+  if (typeof Chart === 'undefined' || !tierChartEl) {
+    if (tierChartEl) {
+      const parent = tierChartEl.parentElement;
+      parent.innerHTML = `<div style="padding:12px;color:var(--text);">${Object.entries(tierCounts).map(t=>`<div>${t[0]}: ${t[1]}</div>`).join('')}</div>`;
+    }
+    return;
+  }
+
+  new Chart(tierChartEl, {
     type: "bar",
     data: {
       labels: Object.keys(tierCounts),
@@ -886,7 +905,16 @@ function generateModeStats() {
     .sort((a, b) => b[1] - a[1])
     .slice(0, 10);
 
-  new Chart(modeChart, {
+  const modeChartEl = document.getElementById('modeChart');
+  if (typeof Chart === 'undefined' || !modeChartEl) {
+    if (modeChartEl) {
+      const parent = modeChartEl.parentElement;
+      parent.innerHTML = `<div style="padding:12px;color:var(--text);">${top.map(e=>`<div>${e[0]}: ${e[1]}</div>`).join('')}</div>`;
+    }
+    return;
+  }
+
+  new Chart(modeChartEl, {
     type: "line",
     data: {
       labels: top.map(e => e[0]),
@@ -896,7 +924,16 @@ function generateModeStats() {
 }
 
 function generateTypeStats() {
-  new Chart(typeChart, {
+  const typeChartEl = document.getElementById('typeChart');
+  if (typeof Chart === 'undefined' || !typeChartEl) {
+    if (typeChartEl) {
+      const parent = typeChartEl.parentElement;
+      parent.innerHTML = `<div style="padding:12px;color:var(--text);">Fighters: ${players.length}<br>Builders: ${builders.length}</div>`;
+    }
+    return;
+  }
+
+  new Chart(typeChartEl, {
     type: "pie",
     data: {
       labels: ["Fighters", "Builders"],
@@ -906,6 +943,30 @@ function generateTypeStats() {
 }
 
 function generateStatsPage() {
+  const chartAvailable = (typeof Chart !== 'undefined');
+  if (!chartAvailable) {
+    // Fallback simple stats view
+    const regionCounts = {};
+    const tierCounts = {};
+    const modeCounts = {};
+
+    [...players, ...builders].forEach(p => { if (p.region) regionCounts[p.region] = (regionCounts[p.region]||0)+1; });
+    players.forEach(p => p.tiers?.forEach(t => { if (t.tier && t.tier!=='Unknown') tierCounts[t.tier]=(tierCounts[t.tier]||0)+1; }));
+    players.forEach(p => p.tiers?.forEach(t => { if (t.gamemode && t.tier && t.tier!=='Unknown') modeCounts[t.gamemode]=(modeCounts[t.gamemode]||0)+1; }));
+
+    statsSection.innerHTML = `
+      <h1 class="stats-title">📊 UltraTiers Statistics</h1>
+      <p class="stats-subtitle">Generated from live player & builder data</p>
+      <div class="stats-grid">
+        <div class="stats-card"><h3>Players by Region</h3><div style="padding:12px;color:var(--text);">${Object.entries(regionCounts).map(r=>`<div>${r[0]}: ${r[1]}</div>`).join('')}</div></div>
+        <div class="stats-card"><h3>Fighters vs Builders</h3><div style="padding:12px;color:var(--text);">Fighters: ${players.length}<br>Builders: ${builders.length}</div></div>
+        <div class="stats-card"><h3>Tier Distribution</h3><div style="padding:12px;color:var(--text);">${Object.entries(tierCounts).map(t=>`<div>${t[0]}: ${t[1]}</div>`).join('')}</div></div>
+        <div class="stats-card"><h3>Most Played Modes</h3><div style="padding:12px;color:var(--text);">${Object.entries(modeCounts).sort((a,b)=>b[1]-a[1]).slice(0,10).map(m=>`<div>${m[0]}: ${m[1]}</div>`).join('')}</div></div>
+      </div>
+    `;
+    return;
+  }
+
   statsSection.innerHTML = `
     <h1 class="stats-title">📊 UltraTiers Statistics</h1>
     <p class="stats-subtitle">Generated from live player & builder data</p>
@@ -942,7 +1003,7 @@ function handleCardNavigation(section) {
         tableHeader.style.display = "grid";
         const fightRegionTabs = document.querySelector(".fighters-region-tabs");
         const leaderboardModeTabs = document.querySelector(".leaderboard-mode-tabs");
-        if (fightRegionTabs) fightRegionTabs.style.display = "block";
+        if (fightRegionTabs) fightRegionTabs.style.display = "";
         if (leaderboardModeTabs) leaderboardModeTabs.style.display = "none";
         generatePlayers("global", "main");
       } else if (section === "builders") {
@@ -1557,6 +1618,10 @@ function generatePlayers(region = "global", modeCategory = "main") {
   tableHeader.style.display = "grid";
   playersContainer.innerHTML = "";
 
+  // show fighters region tabs for overall/category listings (clear inline hide)
+  const fightersTabs = document.querySelector('.fighters-region-tabs');
+  if (fightersTabs) fightersTabs.style.display = '';
+
   // Sort by points (global order)
   const sorted = [...players].sort((a, b) => b.points - a.points);
 
@@ -1646,6 +1711,9 @@ function showBuildersSection(region = "global") {
 
 function generateModeLeaderboard(mode) {
   tableHeader.style.display = "none"; // hide header
+  // hide fighters region tabs (per-mode view doesn't use them)
+  const fightersTabs = document.querySelector('.fighters-region-tabs');
+  if (fightersTabs) fightersTabs.style.display = 'none';
 
   playersContainer.innerHTML = `
     <div class="mode-wrapper">
@@ -1760,6 +1828,9 @@ function renderTesters() {
 
     testersContainer.appendChild(card);
   });
+
+    // ensure leaderboards section is visible
+    showSection(leaderboardSection);
 }
 
 function populateTesterModes() {
