@@ -53,27 +53,33 @@
     </div>
 
     <div class="nav-center">
+    <div class="nav-center">
+      <div class="nav-categories dropdown-container">
+        <button class="dropdown-trigger">Categories <i class="fas fa-chevron-down"></i></button>
+        <div class="dropdown-menu">
+          <ul class="categories-list">
+            <li data-category="main" class="category-item">Main</li>
+            <li data-category="sub" class="category-item">Sub</li>
+            <li data-category="extra" class="category-item">Extra</li>
+            <li data-category="bonus" class="category-item">Bonus</li>
+          </ul>
+        </div>
+      </div>
     </div>
 
 <div class="nav-right">
-<div class="auth-buttons" id="auth-buttons">
-  <button id="login-btn">
-    <i class="fas fa-sign-in"></i>
-  </button>
-</div>
-<div class="user-profile-dropdown hidden" id="user-profile-dropdown">
-  <img id="user-avatar" src="" alt="Avatar" class="user-avatar">
+  <div class="auth-buttons" id="auth-buttons">
+    <button id="login-btn">
+      <i class="fas fa-sign-in"></i>
+    </button>
+  </div>
+  <div class="user-profile-dropdown hidden" id="user-profile-dropdown">
+    <img id="user-avatar" src="" alt="Avatar" class="user-avatar">
 
-<div class="profile-menu" id="profile-menu">
-  <div id="settings-btn"><i class="fas fa-cog"></i> Settings</div>
-  <div id="logout-btn"><i class="fas fa-sign-out-alt"></i> Logout</div>
-</div>
-</div>
-
-
-  <div class="search-wrapper">
-    <i class="fas fa-search"></i>
-    <input class="searchbar" placeholder="Search fighter..." id="search-input">
+    <div class="profile-menu" id="profile-menu">
+      <div id="settings-btn"><i class="fas fa-cog"></i> Settings</div>
+      <div id="logout-btn"><i class="fas fa-sign-out-alt"></i> Logout</div>
+    </div>
   </div>
 </div>
 </nav>
@@ -89,42 +95,14 @@
       </h1>
       <p class="hero-subtitle">Track the best Minecraft PvP & Building performance</p>
     </div>
+    <div class="home-search-wrapper">
+      <input id="home-search" class="home-search" placeholder="Search players (fighters & builders)...">
+      <div id="search-dropdown" class="search-dropdown hidden"></div>
+    </div>
   </div>
 
   <div class="home-grid">
-    <!-- PvP SECTION -->
-    <!-- Fighters Card -->
-    <div class="home-card fighters-card" data-section="rankings">
-      <div class="card-icon">⚔️</div>
-      <h3 class="card-title">Fighters</h3>
-      <p class="card-description">View the top PvP fighters across all modes and regions</p>
-      <div class="card-stats">
-        <span id="home-fighter-count">0</span> Tested
-      </div>
-      <button class="card-button">View Rankings</button>
-    </div>
-
-    <!-- Leaderboards Card -->
-    <div class="home-card leaderboards-card" data-section="leaderboards">
-      <div class="card-icon">📊</div>
-      <h3 class="card-title">Fighter Leaderboards</h3>
-      <p class="card-description">Browse leaderboards for each individual PvP mode</p>
-      <div class="card-stats">
-        Per-mode rankings
-      </div>
-      <button class="card-button">View Leaderboards</button>
-    </div>
-
-    <!-- Modes Card -->
-    <div class="home-card modes-card" data-section="modes">
-      <div class="card-icon">🎮</div>
-      <h3 class="card-title">Gamemodes</h3>
-      <p class="card-description">Browse all 4 Categories of PvP</p>
-      <div class="card-stats">
-        <span>27</span> Modes
-      </div>
-      <button class="card-button">Explore Modes</button>
-    </div>
+    <!-- Removed fighters / leaderboards / modes quick-cards — replaced by central search + navbar categories -->
 
     <!-- Testers Card -->
     <div class="home-card testers-card" data-section="testers">

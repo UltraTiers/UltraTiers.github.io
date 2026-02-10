@@ -2097,6 +2097,44 @@ body {
     box-shadow: 0 0 12px rgba(255,255,255,0.08); /* optional for emphasis */
 }
 
+/* Ensure dropdown sits above other header elements */
+.dropdown-menu {
+  z-index: 1200;
+}
+
+/* Style category list inside dropdown */
+.categories-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.categories-list .category-item {
+  padding: 8px 10px;
+  border-radius: 8px;
+  color: var(--text);
+  cursor: pointer;
+  font-weight: 700;
+  transition: background 0.15s ease;
+}
+
+.categories-list .category-item:hover {
+  background: rgba(255,255,255,0.04);
+}
+
+.dropdown-container .dropdown-trigger {
+  background: transparent;
+  border: 1px solid transparent;
+  padding: 8px 12px;
+  border-radius: 8px;
+  color: var(--text);
+  font-weight: 700;
+  cursor: pointer;
+}
+
 /* ============================= */
 /* MODE CATEGORIES */
 /* ============================= */
@@ -2181,6 +2219,58 @@ body {
     padding: 8px 0;
     margin-bottom: 8px;
 }
+
+/* HOME SEARCH */
+.home-search-wrapper {
+  margin-top: 18px;
+  display: flex;
+  justify-content: center;
+  position: relative;
+}
+
+.home-search {
+  width: min(760px, 92%);
+  padding: 14px 16px;
+  border-radius: 12px;
+  border: 1px solid rgba(255,255,255,0.12);
+  background: rgba(255,255,255,0.03);
+  color: var(--text);
+  font-size: 16px;
+  outline: none;
+}
+
+.home-search::placeholder { color: rgba(255,255,255,0.5); }
+
+.search-dropdown {
+  position: absolute;
+  top: calc(100% + 8px);
+  width: min(760px, 92%);
+  max-height: 320px;
+  overflow: auto;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: rgba(17,24,39,0.98);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+  z-index: 1300;
+  display: none;
+}
+
+.search-dropdown.hidden { display: none; }
+.search-dropdown .search-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 14px;
+  border-bottom: 1px solid rgba(255,255,255,0.03);
+  cursor: pointer;
+}
+
+.search-dropdown .search-item:hover { background: rgba(255,255,255,0.03); }
+.search-dropdown .search-name { font-weight: 700; color: var(--text); }
+.search-dropdown .search-type { font-size: 12px; color: rgba(255,255,255,0.6); font-weight: 600; }
+
+/* Make sure leaderboards mode buttons are visible and clickable */
+.leaderboards-mode-buttons { z-index: 1000; position: relative; }
 
 .mode-category-items {
     display: flex;
