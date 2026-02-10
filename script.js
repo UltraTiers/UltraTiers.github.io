@@ -1502,34 +1502,41 @@ function populateHomeSearchDropdown() {
 }
 
 function populateCategoryButtons(category) {
-  const container = document.getElementById('leaderboards-mode-buttons');
-  if (!container) return;
-  container.innerHTML = '';
+  const targetContainers = [];
+  const c1 = document.getElementById('leaderboards-mode-buttons');
+  const c2 = document.querySelector('.leaderboard-mode-tabs');
+  if (c1) targetContainers.push(c1);
+  if (c2) targetContainers.push(c2);
+  if (targetContainers.length === 0) return;
 
   const modes = modeCategories[category] || modeCategories[category === 'overall' ? 'overall' : category] || [];
 
-  // Overall button
-  const overallBtn = document.createElement('button');
-  overallBtn.className = 'mode-category-btn overall-btn';
-  overallBtn.textContent = 'Overall';
-  overallBtn.addEventListener('click', () => {
-    // Show overall (category) leaderboard using generatePlayers
-    showSection(leaderboardsSection);
-    generatePlayers('global', category === 'overall' ? 'overall' : category);
-  });
-  container.appendChild(overallBtn);
+  // Helper to build buttons into a container
+  function buildInto(container) {
+    container.innerHTML = '';
 
-  // Per-mode buttons
-  modes.forEach(m => {
-    const b = document.createElement('button');
-    b.className = 'mode-category-btn';
-    b.textContent = m;
-    b.addEventListener('click', () => {
-      showSection(leaderboardsSection);
-      generateModeLeaderboard(m);
+    const overallBtn = document.createElement('button');
+    overallBtn.className = 'mode-category-btn overall-btn';
+    overallBtn.textContent = 'Overall';
+    overallBtn.addEventListener('click', () => {
+      showSection(leaderboardSection); // ensure fighters leaderboard area is visible
+      generatePlayers('global', category === 'overall' ? 'overall' : category);
     });
-    container.appendChild(b);
-  });
+    container.appendChild(overallBtn);
+
+    modes.forEach(m => {
+      const b = document.createElement('button');
+      b.className = 'mode-category-btn';
+      b.textContent = m;
+      b.addEventListener('click', () => {
+        showSection(leaderboardSection);
+        generateModeLeaderboard(m);
+      });
+      container.appendChild(b);
+    });
+  }
+
+  targetContainers.forEach(buildInto);
 }
 
 // Nav categories (navbar dropdown items)
@@ -1537,7 +1544,7 @@ document.querySelectorAll('.nav-category').forEach(el => {
   el.addEventListener('click', () => {
     const cat = el.dataset.category;
     populateCategoryButtons(cat);
-    showSection(leaderboardsSection);
+    showSection(leaderboardSection);
   });
 });
 
