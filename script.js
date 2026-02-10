@@ -55,7 +55,7 @@ const modal = document.getElementById("modal");
 const modalTitle = document.getElementById("modal-title");
 const modalContent = document.getElementById("modal-content");
 const closeModalBtn = document.getElementById("close-modal");
-const searchInput = null; // navbar search removed; use centered home search instead
+const searchInput = document.getElementById("search-input");
 const tableHeader = document.querySelector(".table-header");
 const testersSection = document.getElementById("testers-section");
 const testersContainer = document.getElementById("testers-container");
@@ -844,17 +844,7 @@ function generateRegionStats() {
     regionCounts[p.region] = (regionCounts[p.region] || 0) + 1;
   });
 
-  const regionChartEl = document.getElementById('regionChart');
-  if (typeof Chart === 'undefined' || !regionChartEl) {
-    // fallback: render a simple list
-    if (regionChartEl) {
-      const parent = regionChartEl.parentElement;
-      parent.innerHTML = `<div style="padding:12px;color:var(--text);">${Object.entries(regionCounts).map(r=>`<div>${r[0]}: ${r[1]}</div>`).join('')}</div>`;
-    }
-    return;
-  }
-
-  new Chart(regionChartEl, {
+  new Chart(regionChart, {
     type: "doughnut",
     data: {
       labels: Object.keys(regionCounts),
@@ -873,16 +863,7 @@ function generateTierStats() {
     });
   });
 
-  const tierChartEl = document.getElementById('tierChart');
-  if (typeof Chart === 'undefined' || !tierChartEl) {
-    if (tierChartEl) {
-      const parent = tierChartEl.parentElement;
-      parent.innerHTML = `<div style="padding:12px;color:var(--text);">${Object.entries(tierCounts).map(t=>`<div>${t[0]}: ${t[1]}</div>`).join('')}</div>`;
-    }
-    return;
-  }
-
-  new Chart(tierChartEl, {
+  new Chart(tierChart, {
     type: "bar",
     data: {
       labels: Object.keys(tierCounts),
@@ -905,16 +886,7 @@ function generateModeStats() {
     .sort((a, b) => b[1] - a[1])
     .slice(0, 10);
 
-  const modeChartEl = document.getElementById('modeChart');
-  if (typeof Chart === 'undefined' || !modeChartEl) {
-    if (modeChartEl) {
-      const parent = modeChartEl.parentElement;
-      parent.innerHTML = `<div style="padding:12px;color:var(--text);">${top.map(e=>`<div>${e[0]}: ${e[1]}</div>`).join('')}</div>`;
-    }
-    return;
-  }
-
-  new Chart(modeChartEl, {
+  new Chart(modeChart, {
     type: "line",
     data: {
       labels: top.map(e => e[0]),
@@ -924,16 +896,7 @@ function generateModeStats() {
 }
 
 function generateTypeStats() {
-  const typeChartEl = document.getElementById('typeChart');
-  if (typeof Chart === 'undefined' || !typeChartEl) {
-    if (typeChartEl) {
-      const parent = typeChartEl.parentElement;
-      parent.innerHTML = `<div style="padding:12px;color:var(--text);">Fighters: ${players.length}<br>Builders: ${builders.length}</div>`;
-    }
-    return;
-  }
-
-  new Chart(typeChartEl, {
+  new Chart(typeChart, {
     type: "pie",
     data: {
       labels: ["Fighters", "Builders"],
@@ -943,30 +906,6 @@ function generateTypeStats() {
 }
 
 function generateStatsPage() {
-  const chartAvailable = (typeof Chart !== 'undefined');
-  if (!chartAvailable) {
-    // Fallback simple stats view
-    const regionCounts = {};
-    const tierCounts = {};
-    const modeCounts = {};
-
-    [...players, ...builders].forEach(p => { if (p.region) regionCounts[p.region] = (regionCounts[p.region]||0)+1; });
-    players.forEach(p => p.tiers?.forEach(t => { if (t.tier && t.tier!=='Unknown') tierCounts[t.tier]=(tierCounts[t.tier]||0)+1; }));
-    players.forEach(p => p.tiers?.forEach(t => { if (t.gamemode && t.tier && t.tier!=='Unknown') modeCounts[t.gamemode]=(modeCounts[t.gamemode]||0)+1; }));
-
-    statsSection.innerHTML = `
-      <h1 class="stats-title">📊 UltraTiers Statistics</h1>
-      <p class="stats-subtitle">Generated from live player & builder data</p>
-      <div class="stats-grid">
-        <div class="stats-card"><h3>Players by Region</h3><div style="padding:12px;color:var(--text);">${Object.entries(regionCounts).map(r=>`<div>${r[0]}: ${r[1]}</div>`).join('')}</div></div>
-        <div class="stats-card"><h3>Fighters vs Builders</h3><div style="padding:12px;color:var(--text);">Fighters: ${players.length}<br>Builders: ${builders.length}</div></div>
-        <div class="stats-card"><h3>Tier Distribution</h3><div style="padding:12px;color:var(--text);">${Object.entries(tierCounts).map(t=>`<div>${t[0]}: ${t[1]}</div>`).join('')}</div></div>
-        <div class="stats-card"><h3>Most Played Modes</h3><div style="padding:12px;color:var(--text);">${Object.entries(modeCounts).sort((a,b)=>b[1]-a[1]).slice(0,10).map(m=>`<div>${m[0]}: ${m[1]}</div>`).join('')}</div></div>
-      </div>
-    `;
-    return;
-  }
-
   statsSection.innerHTML = `
     <h1 class="stats-title">📊 UltraTiers Statistics</h1>
     <p class="stats-subtitle">Generated from live player & builder data</p>
@@ -1003,7 +942,7 @@ function handleCardNavigation(section) {
         tableHeader.style.display = "grid";
         const fightRegionTabs = document.querySelector(".fighters-region-tabs");
         const leaderboardModeTabs = document.querySelector(".leaderboard-mode-tabs");
-        if (fightRegionTabs) fightRegionTabs.style.display = "";
+        if (fightRegionTabs) fightRegionTabs.style.display = "block";
         if (leaderboardModeTabs) leaderboardModeTabs.style.display = "none";
         generatePlayers("global", "main");
       } else if (section === "builders") {
@@ -1495,132 +1434,12 @@ document.querySelector(".application-form").addEventListener("submit", async (e)
 });
 
 /* =============================
-   HOME SEARCH (centered) + NAV-CATEGORIES wiring
-============================= */
-
-function populateHomeSearchDropdown() {
-  const input = document.getElementById('home-search-input');
-  const results = document.getElementById('home-search-results');
-  if (!input || !results) return;
-
-  function hide() { results.classList.add('hidden'); results.innerHTML = ''; }
-  function showList(items) {
-    results.innerHTML = items.map(it => `
-      <li class="search-item" data-name="${it.name}" data-type="${it.type}">
-        <strong>${it.name}</strong> <span class="muted">— ${it.type}</span>
-      </li>
-    `).join('');
-    results.classList.remove('hidden');
-  }
-
-  input.addEventListener('input', () => {
-    const q = input.value.trim().toLowerCase();
-    if (!q) { hide(); return; }
-
-    const combined = [];
-    players.forEach(p => combined.push({ name: p.name || p.uuid, type: 'Fighter' }));
-    builders.forEach(b => combined.push({ name: b.name || b.uuid, type: 'Builder' }));
-
-    const filtered = combined.filter(c => c.name && c.name.toLowerCase().includes(q)).slice(0, 20);
-    if (!filtered.length) { hide(); return; }
-    showList(filtered);
-  });
-
-  results.addEventListener('click', (e) => {
-    const li = e.target.closest('.search-item');
-    if (!li) return;
-    const name = li.dataset.name;
-    const type = li.dataset.type;
-    input.value = name;
-    hide();
-
-    if (type === 'Fighter') {
-      const player = players.find(p => p.name === name || p.uuid === name);
-      if (player) showPlayerModal(player);
-    } else {
-      const builder = builders.find(b => b.name === name || b.uuid === name);
-      if (builder) {
-        // Minimal builder modal
-        modalTitle.textContent = builder.name || 'Builder';
-        modalContent.innerHTML = `
-          <div class="modal-header">
-            <img class="modal-avatar" src="https://render.crafty.gg/3d/bust/${builder.uuid}">
-          </div>
-          <div class="modal-section">
-            <div>Region: ${builder.region || 'Unknown'}</div>
-            <div>Total Points: ${builder.points || calculatePoints(builder, 'builder')}</div>
-          </div>
-        `;
-        modal.classList.add('show');
-      }
-    }
-  });
-
-  // hide on outside click
-  document.addEventListener('click', (e) => {
-    if (!input.contains(e.target) && !results.contains(e.target)) hide();
-  });
-}
-
-function populateCategoryButtons(category) {
-  const targetContainers = [];
-  const c1 = document.getElementById('leaderboards-mode-buttons');
-  const c2 = document.querySelector('.leaderboard-mode-tabs');
-  if (c1) targetContainers.push(c1);
-  if (c2) targetContainers.push(c2);
-  if (targetContainers.length === 0) return;
-
-  const modes = modeCategories[category] || modeCategories[category === 'overall' ? 'overall' : category] || [];
-
-  // Helper to build buttons into a container
-  function buildInto(container) {
-    container.innerHTML = '';
-
-    const overallBtn = document.createElement('button');
-    overallBtn.className = 'mode-category-btn overall-btn';
-    overallBtn.textContent = 'Overall';
-    overallBtn.addEventListener('click', () => {
-      showSection(leaderboardSection); // ensure fighters leaderboard area is visible
-      generatePlayers('global', category === 'overall' ? 'overall' : category);
-    });
-    container.appendChild(overallBtn);
-
-    modes.forEach(m => {
-      const b = document.createElement('button');
-      b.className = 'mode-category-btn';
-      b.textContent = m;
-      b.addEventListener('click', () => {
-        showSection(leaderboardSection);
-        generateModeLeaderboard(m);
-      });
-      container.appendChild(b);
-    });
-  }
-
-  targetContainers.forEach(buildInto);
-}
-
-// Nav categories (navbar dropdown items)
-document.querySelectorAll('.nav-category').forEach(el => {
-  el.addEventListener('click', () => {
-    const cat = el.dataset.category;
-    populateCategoryButtons(cat);
-    showSection(leaderboardSection);
-  });
-});
-
-
-/* =============================
    NORMAL LEADERBOARD (TOP 3 BORDERS)
 ============================= */
 
 function generatePlayers(region = "global", modeCategory = "main") {
   tableHeader.style.display = "grid";
   playersContainer.innerHTML = "";
-
-  // show fighters region tabs for overall/category listings (clear inline hide)
-  const fightersTabs = document.querySelector('.fighters-region-tabs');
-  if (fightersTabs) fightersTabs.style.display = '';
 
   // Sort by points (global order)
   const sorted = [...players].sort((a, b) => b.points - a.points);
@@ -1711,9 +1530,6 @@ function showBuildersSection(region = "global") {
 
 function generateModeLeaderboard(mode) {
   tableHeader.style.display = "none"; // hide header
-  // hide fighters region tabs (per-mode view doesn't use them)
-  const fightersTabs = document.querySelector('.fighters-region-tabs');
-  if (fightersTabs) fightersTabs.style.display = 'none';
 
   playersContainer.innerHTML = `
     <div class="mode-wrapper">
@@ -1828,9 +1644,6 @@ function renderTesters() {
 
     testersContainer.appendChild(card);
   });
-
-    // ensure leaderboards section is visible
-    showSection(leaderboardSection);
 }
 
 function populateTesterModes() {
@@ -1955,25 +1768,28 @@ generateDocs();
 
 
 /* =============================
-   SEARCH (centered home search)
+   SEARCH
 ============================= */
 
-const homeSearchInput = document.getElementById('home-search-input');
-if (homeSearchInput) {
-  homeSearchInput.addEventListener('keydown', function(e) {
-    if (e.key === 'Enter') {
-      const q = homeSearchInput.value.trim().toLowerCase();
-      const player = players.find(p => (p.name || '').toLowerCase() === q);
-      if (!player) return alert('Player not found!');
+searchInput.addEventListener("keydown", function(e) {
+  if (e.key === "Enter") {
+    const searchValue = searchInput.value.trim().toLowerCase();
+    const player = players.find(p => p.name.toLowerCase() === searchValue);
+    if (!player) return alert("Player not found!");
 
-      const sortedTiers = sortPlayerTiers(player.tiers, player.retired_modes);
-      const tiersHTML = sortedTiers.map(t => {
-        const tierMatch = t.tier?.match(/\d+/);
-        if (!tierMatch) return `<div class="tier empty"></div>`;
-        const tierNumber = t.tier.match(/\d+/)?.[0];
-        const tierRank = t.tier.startsWith('HT') ? 'HT' : 'LT';
-        return `
-<div class="tier ${player.retired_modes?.includes(t.gamemode) ? 'retired' : ''}"
+    // Use same modal format as clicking a player
+    modalTitle.textContent = ""; // same as click modal
+
+const sortedTiers = sortPlayerTiers(player.tiers, player.retired_modes);
+const tiersHTML = sortedTiers
+  .map(t => {
+        const tierMatch = t.tier.match(/\d+/);
+if (!tierMatch) return `<div class="tier empty"></div>`; // fallback for invalid tier
+const tierNumber = t.tier.match(/\d+/)?.[0];
+const tierRank = t.tier.startsWith("HT") ? "HT" : "LT";
+
+return `
+<div class="tier ${player.retired_modes?.includes(t.gamemode) ? "retired" : ""}"
   data-gamemode="${t.gamemode}"
   data-tier="${tierNumber}"
   data-rank="${tierRank}"
@@ -1982,29 +1798,48 @@ if (homeSearchInput) {
     <span>${tierRank}${tierNumber}</span>
 </div>
 `;
-      }).join('');
+      }).join("");
 
-      const nitroClass = player.nitro ? 'nitro' : '';
+const nitroClass = player.nitro ? "nitro" : "";
 
-      modalContent.innerHTML = `
-  <div class="modal-header" style="background-image: url(${player.banner || 'anime-style-stone.jpg'})">
+modalContent.innerHTML = `
+  <div class="modal-header"
+     style="background-image: url(${player.banner || 'anime-style-stone.jpg'})">
     <img class="modal-avatar ${nitroClass}" src="https://render.crafty.gg/3d/bust/${player.uuid}" alt="${player.name} Avatar">
-    <div class="modal-name ${nitroClass}">${player.name || 'Unknown Player'}</div>
+    <div class="modal-name ${nitroClass}">${player.name || "Unknown Player"}</div>
   </div>
+
   <div class="modal-section">
-    <div class="modal-info-row ${nitroClass}"><span class="modal-label">Placement:</span><span class="modal-value">#${getPlayerPlacement(player)}</span></div>
-    <div class="modal-info-row ${nitroClass}"><span class="modal-label">Region:</span><span class="modal-value">${player.region || 'Unknown'}</span></div>
-    <div class="modal-info-row ${nitroClass}"><span class="modal-label">Rank:</span><span class="modal-value">${getRankTitle(player.points)}</span></div>
-    <div class="modal-info-row ${nitroClass}"><span class="modal-label">Points:</span><span class="modal-value">${player.points.toLocaleString()}</span></div>
+    <div class="modal-info-row ${nitroClass}">
+      <span class="modal-label">Placement:</span>
+      <span class="modal-value">#${getPlayerPlacement(player)}</span>
+    </div>
+
+    <div class="modal-info-row ${nitroClass}">
+      <span class="modal-label">Region:</span>
+      <span class="modal-value">${player.region || "Unknown"}</span>
+    </div>
+
+    <div class="modal-info-row ${nitroClass}">
+      <span class="modal-label">Rank:</span>
+      <span class="modal-value">${getRankTitle(player.points)}</span>
+    </div>
+
+    <div class="modal-info-row ${nitroClass}">
+      <span class="modal-label">Points:</span>
+      <span class="modal-value">${player.points.toLocaleString()}</span>
+    </div>
   </div>
+
   <h3 class="modal-subtitle ${nitroClass}">Tier Progress</h3>
-  <div class="tiers-container">${tiersHTML}</div>
+  <div class="tiers-container">
+    ${tiersHTML}
+  </div>
 `;
 
-      modal.classList.add('show');
-    }
-  });
-}
+    modal.classList.add("show");
+  }
+});
 
 /* =============================
    FIGHTERS - ALL MODES COMBINED
@@ -2898,9 +2733,6 @@ function showBuildersBySubjectInTierGrid(subject) {
   // Restore logged-in user
   const savedUser = localStorage.getItem("ultratiers_user");
   if (savedUser) setLoggedInUser(JSON.parse(savedUser));
-
-  // Populate the centered home search dropdown
-  populateHomeSearchDropdown();
 })();
 
 
