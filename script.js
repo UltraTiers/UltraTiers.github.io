@@ -622,6 +622,7 @@ function showSection(sectionToShow) {
         leaderboardSection,
         modesSection,
         leaderboardsSection,
+        buildersSection,
         builderLeaderboardsSection,
         docsSection,
         applicationSection,
