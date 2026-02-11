@@ -422,21 +422,26 @@ function renderCategoryOverall(category) {
         const row = document.createElement('div');
         row.className = 'category-player-row';
         
-        // Rank with medal styling
-        const rankSection = document.createElement('div');
-        rankSection.className = 'rank-section';
+        // Combined rank + avatar section (integrated design)
+        const rankPlayerSection = document.createElement('div');
+        rankPlayerSection.className = 'rank-player-section';
+        
         const medal = getMedalRank(rank + 1);
-        rankSection.innerHTML = `<div class="rank-badge ${medal}">#${rank + 1}</div>`;
         
-        // Player section (skin + name)
-        const playerSection = document.createElement('div');
-        playerSection.className = 'player-section';
+        // Rank badge background
+        const rankBadge = document.createElement('div');
+        rankBadge.className = `rank-badge ${medal}`;
+        rankBadge.textContent = `#${rank + 1}`;
+        rankPlayerSection.appendChild(rankBadge);
         
+        // Avatar over the rank badge
         const avatar = getPlayerAvatarElement(player);
-        avatar.style.width = '56px';
-        avatar.style.height = '56px';
-        avatar.style.marginRight = '12px';
+        avatar.style.width = '64px';
+        avatar.style.height = '64px';
+        avatar.className = 'rank-avatar';
+        rankPlayerSection.appendChild(avatar);
         
+        // Player info section
         const playerInfo = document.createElement('div');
         playerInfo.className = 'player-info-section';
         
@@ -450,9 +455,6 @@ function renderCategoryOverall(category) {
         
         playerInfo.appendChild(nameDiv);
         playerInfo.appendChild(titleDiv);
-        
-        playerSection.appendChild(avatar);
-        playerSection.appendChild(playerInfo);
         
         // Region section
         const regionSection = document.createElement('div');
@@ -493,8 +495,8 @@ function renderCategoryOverall(category) {
         });
         
         // Assemble the row
-        row.appendChild(rankSection);
-        row.appendChild(playerSection);
+        row.appendChild(rankPlayerSection);
+        row.appendChild(playerInfo);
         row.appendChild(regionSection);
         row.appendChild(modesSection);
         
