@@ -226,19 +226,73 @@ body {
     min-height: 350px;
     display: flex;
     flex-direction: column;
-    background-clip: padding-box;
-    min-width: 240px;
-    flex-shrink: 0;
+.category-player-row {
+    display: grid;
+    /* columns: rank+avatar | player info | region | modes */
+    grid-template-columns: auto 1fr 90px minmax(220px, 420px);
+    gap: 24px;
+    align-items: center;
+    padding: 18px 20px;
+    background: linear-gradient(135deg, rgba(30, 58, 95, 0.4) 0%, rgba(26, 40, 71, 0.2) 100%);
+    border: 2px solid rgba(251, 191, 36, 0.08);
+    border-radius: 12px;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.45);
+    transition: box-shadow 0.25s ease, border-color 0.25s ease;
+    width: 100%;
+    overflow: hidden; /* prevent hover overflow */
 }
 
-.tier-card:hover {
-    border-color: rgba(251, 191, 36, 0.6);
-    background: linear-gradient(135deg, rgba(30, 58, 95, 0.8) 0%, rgba(26, 40, 71, 0.6) 100%);
-    box-shadow: 0 12px 32px rgba(251, 191, 36, 0.2);
-    transform: translateY(-4px);
+.category-player-row + .category-player-row {
+    margin-top: 18px;
 }
 
-.tier-header {
+.category-player-row:hover {
+    /* avoid translate/shift that causes overflow; only change border/shadow */
+    border-color: rgba(251, 191, 36, 0.18);
+    box-shadow: 0 10px 28px rgba(251, 191, 36, 0.10);
+}
+
+/* Ensure the left combined rank/avatar block does not overflow */
+.rank-player-section {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 12px;
+    padding-right: 6px;
+    background: transparent;
+}
+
+.rank-badge {
+    flex: 0 0 auto;
+    margin: 0;
+}
+
+/* Modes (right column) - keep icons tidy and prevent overflow */
+.modes-section {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 10px;
+    padding-left: 6px;
+    overflow: hidden;
+}
+
+.mode-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    min-width: 34px;
+}
+
+.mode-item .mode-icon {
+    width: 34px;
+    height: 34px;
+}
+
+.tier-badge-rounded {
+    position: relative;
+    margin-left: 4px;
+}
     display: flex;
     align-items: center;
     gap: 12px;
