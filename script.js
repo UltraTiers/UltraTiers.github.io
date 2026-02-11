@@ -365,12 +365,9 @@ function setupModeTabsForCategory(categoryName) {
             const modeName = this.getAttribute('data-mode');
             const categoryAttr = this.getAttribute('data-category');
             
-            // Check if this is the "All" button for category overall
-            if (categoryAttr && modeName !== 'sword' && modeName !== 'speed' && modeName !== 'axepot' && modeName !== 'bridge') {
+            // If button has data-category, it's the "All" button
+            if (categoryAttr) {
                 renderCategoryOverall(categoryAttr);
-            } else if (this.textContent === 'All') {
-                // "All" button shows category overall
-                renderCategoryOverall(categoryName);
             } else {
                 // Regular gamemode ranking
                 renderRankings(categoryName, modeName);
@@ -505,6 +502,8 @@ function renderRankings(category, mode) {
     const serverModeName = modeNameMap[mode] || mode;
     const data = tierData[category][serverModeName] || [];
 
+    console.log(`Rendering ${category} > ${mode} (${serverModeName})`, data);
+
     if (!data || data.length === 0) {
         // Generate empty tier structure
         for (let i = 1; i <= 5; i++) {
@@ -555,6 +554,9 @@ function createTierCard(tierNumber, players) {
             // Get player object for MC skin
             const playerObj = window.playerMap[playerName] || { name: playerName };
             const avatar = getPlayerAvatarElement(playerObj);
+            avatar.style.width = '32px';
+            avatar.style.height = '32px';
+            avatar.style.minWidth = '32px';
             
             const info = document.createElement('div');
             info.className = 'player-info';
