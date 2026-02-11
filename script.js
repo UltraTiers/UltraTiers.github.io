@@ -75,6 +75,9 @@ async function fetchAndOrganizePlayers() {
         const players = await response.json();
         console.log('Raw players from API:', players);
 
+        // Store all players for the overall view
+        window.allPlayers = players;
+
         // Initialize category structures with server gamemode names
         Object.keys(categoryMappings).forEach(category => {
             tierData[category] = {};
@@ -163,14 +166,87 @@ function switchMainTab(tabName) {
     });
     document.getElementById(`${tabName}-tab`).classList.add('active');
 
-    // Setup mode tabs for this category
-    setupModeTabsForCategory(tabName);
-    
-    // Show first mode
-    const firstMode = document.querySelector(`#${tabName}-tab .mode-tab-btn`);
-    if (firstMode) {
-        firstMode.click();
+    // Handle overall tab differently
+    if (tabName === 'overall') {
+        renderOverall();
+    } else {
+        // Setup mode tabs for other categories
+        setupModeTabsForCategory(tabName);
+        
+        // Show second mode button (skip the Overall button at index 0)
+        const modeButtons = document.querySelectorAll(`#${tabName}-tab .mode-tab-btn`);
+        if (modeButtons.length > 1) {
+            modeButtons[1].click();
+        } else if (modeButtons.length > 0) {
+            modeButtons[0].click();
+        }
     }
+}
+
+// Render overall view with all players and their tiers
+function renderOverall() {
+    const container = document.getElementById('overall-players-list');
+    container.innerHTML = '';
+
+    if (!window.allPlayers || window.allPlayers.length === 0) {
+        container.innerHTML = '<div style="text-align: center; padding: 40px; color: rgba(255,255,255,0.6);">No players found</div>';
+        return;
+    }
+
+    // Create a player overview card for each player
+    window.allPlayers.forEach(player => {
+        const card = document.createElement('div');
+        card.className = 'player-overview-card';
+        
+        // Player header with name
+        const header = document.createElement('div');
+        header.className = 'player-overview-header';
+        header.innerHTML = `<h3>${player.name}</h3>`;
+        
+        // Create sections for each category
+        const categoriesDiv = document.createElement('div');
+        categoriesDiv.className = 'player-tiers-summary';
+        
+        Object.keys(categoryMappings).forEach(category => {
+            const categorySection = document.createElement('div');
+            categorySection.className = 'tier-category-section';
+            
+            const categoryTitle = document.createElement('h4');
+            categoryTitle.textContent = category.charAt(0).toUpperCase() + category.slice(1);
+            categoryTitle.className = 'category-title';
+            
+            const tiersDiv = document.createElement('div');
+            tiersDiv.className = 'player-category-tiers';
+            
+            // Get tiers for this category
+            categoryMappings[category].forEach(gamemode => {
+                const tierInfo = player.tiers.find(t => t.gamemode === gamemode);
+                const tierValue = tierInfo ? tierInfo.tier : 'Unknown';
+                
+                // Parse tier value to get number
+                let tierNumber = 0;
+                if (typeof tierValue === 'string') {
+                    const match = tierValue.match(/\d+/);
+                    tierNumber = match ? parseInt(match[0]) : 0;
+                }
+                
+                const tierBadge = document.createElement('div');
+                tierBadge.className = `tier-badge ${tierNumber > 0 ? tierColors[tierNumber] : 'tier-unknown'}`;
+                tierBadge.title = gamemode;
+                tierBadge.innerHTML = `<span class="tier-icon">${tierNumber > 0 ? tierIcons[tierNumber] : '❓'}</span>`;
+                
+                tiersDiv.appendChild(tierBadge);
+            });
+            
+            categorySection.appendChild(categoryTitle);
+            categorySection.appendChild(tiersDiv);
+            categoriesDiv.appendChild(categorySection);
+        });
+        
+        card.appendChild(header);
+        card.appendChild(categoriesDiv);
+        container.appendChild(card);
+    });
 }
 
 function setupModeTabsForCategory(categoryName) {
@@ -180,13 +256,76 @@ function setupModeTabsForCategory(categoryName) {
     modeTabs.forEach(btn => {
         btn.addEventListener('click', function () {
             const modeName = this.getAttribute('data-mode');
-            renderRankings(categoryName, modeName);
+            const categoryAttr = this.getAttribute('data-category');
+            
+            // Check if this is a category overall button
+            if (categoryAttr && modeName.startsWith('overall-')) {
+                renderCategoryOverall(categoryAttr);
+            } else {
+                renderRankings(categoryName, modeName);
+            }
             
             // Update button state
             modeTabs.forEach(b => b.classList.remove('active'));
             this.classList.add('active');
         });
     });
+}
+
+// Render overall view for a specific category
+function renderCategoryOverall(category) {
+    const container = document.getElementById(`${category}-rankings`);
+    container.innerHTML = '';
+
+    if (!window.allPlayers || window.allPlayers.length === 0) {
+        container.innerHTML = '<div style="text-align: center; padding: 40px; color: rgba(255,255,255,0.6);">No players found</div>';
+        return;
+    }
+
+    // Create a grid of players showing all tiers for this category
+    const playerGrid = document.createElement('div');
+    playerGrid.className = 'category-overall-grid';
+
+    window.allPlayers.forEach(player => {
+        const playerCard = document.createElement('div');
+        playerCard.className = 'category-player-card';
+        
+        const playerName = document.createElement('h4');
+        playerName.className = 'category-player-name';
+        playerName.textContent = player.name;
+        
+        const tiersList = document.createElement('div');
+        tiersList.className = 'category-tiers-list';
+        
+        // Get all gamemodes for this category
+        categoryMappings[category].forEach(gamemode => {
+            const tierInfo = player.tiers.find(t => t.gamemode === gamemode);
+            const tierValue = tierInfo ? tierInfo.tier : 'Unknown';
+            
+            // Parse tier value to get number
+            let tierNumber = 0;
+            if (typeof tierValue === 'string') {
+                const match = tierValue.match(/\d+/);
+                tierNumber = match ? parseInt(match[0]) : 0;
+            }
+            
+            const tierItem = document.createElement('div');
+            tierItem.className = `category-tier-item ${tierNumber > 0 ? tierColors[tierNumber] : 'tier-unknown'}`;
+            tierItem.title = gamemode;
+            tierItem.innerHTML = `
+                <span class="mode-short">${gamemode.substring(0, 3)}</span>
+                <span class="tier-icon">${tierNumber > 0 ? tierIcons[tierNumber] : '❓'}</span>
+            `;
+            
+            tiersList.appendChild(tierItem);
+        });
+        
+        playerCard.appendChild(playerName);
+        playerCard.appendChild(tiersList);
+        playerGrid.appendChild(playerCard);
+    });
+
+    container.appendChild(playerGrid);
 }
 
 function renderRankings(category, mode) {
@@ -271,5 +410,5 @@ function createTierCard(tierNumber, players) {
 }
 
 function renderDefaultTab() {
-    switchMainTab('main');
+    switchMainTab('overall');
 }

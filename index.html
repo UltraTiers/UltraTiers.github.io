@@ -29,7 +29,8 @@
 
         <!-- Main Tabs Navigation -->
         <nav class="main-tabs">
-            <button class="main-tab-btn active" data-tab="main">Main Modes</button>
+            <button class="main-tab-btn active" data-tab="overall">Overall</button>
+            <button class="main-tab-btn" data-tab="main">Main Modes</button>
             <button class="main-tab-btn" data-tab="sub">Sub Modes</button>
             <button class="main-tab-btn" data-tab="extra">Extra Modes</button>
             <button class="main-tab-btn" data-tab="bonus">Bonus Modes</button>
@@ -37,10 +38,18 @@
 
         <!-- Tab Content -->
         <main class="content">
+            <!-- Overall Tab -->
+            <div class="tab-content active" id="overall-tab">
+                <div class="overall-container">
+                    <div id="overall-players-list"></div>
+                </div>
+            </div>
+
             <!-- Main Modes Tab -->
             <div class="tab-content active" id="main-tab">
                 <nav class="mode-tabs">
-                    <button class="mode-tab-btn active" data-mode="sword">Sword</button>
+                    <button class="mode-tab-btn active" data-mode="overall-main" data-category="main">Overall</button>
+                    <button class="mode-tab-btn" data-mode="sword">Sword</button>
                     <button class="mode-tab-btn" data-mode="axe">Axe</button>
                     <button class="mode-tab-btn" data-mode="vanilla">Vanilla</button>
                     <button class="mode-tab-btn" data-mode="pot">Pot</button>
@@ -55,6 +64,7 @@
             <!-- Sub Modes Tab -->
             <div class="tab-content" id="sub-tab">
                 <nav class="mode-tabs">
+                    <button class="mode-tab-btn" data-mode="overall-sub" data-category="sub">Overall</button>
                     <button class="mode-tab-btn active" data-mode="speed">Speed</button>
                     <button class="mode-tab-btn" data-mode="creeper">Creeper</button>
                     <button class="mode-tab-btn" data-mode="elytra">Elytra</button>
@@ -74,6 +84,7 @@
             <!-- Extra Modes Tab -->
             <div class="tab-content" id="extra-tab">
                 <nav class="mode-tabs">
+                    <button class="mode-tab-btn" data-mode="overall-extra" data-category="extra">Overall</button>
                     <button class="mode-tab-btn active" data-mode="axepot">AxePot</button>
                     <button class="mode-tab-btn" data-mode="sumo">Sumo</button>
                     <button class="mode-tab-btn" data-mode="op">OP</button>
@@ -86,6 +97,7 @@
             <!-- Bonus Modes Tab -->
             <div class="tab-content" id="bonus-tab">
                 <nav class="mode-tabs">
+                    <button class="mode-tab-btn" data-mode="overall-bonus" data-category="bonus">Overall</button>
                     <button class="mode-tab-btn active" data-mode="bridge">Bridge</button>
                     <button class="mode-tab-btn" data-mode="pearl">Pearl</button>
                 </nav>
@@ -95,369 +107,5 @@
     </div>
 
     <script src="script.js"></script>
-</body>
-</html>
-      <div class="card-stats">
-        <span id="home-fighter-count">0</span> Tested
-      </div>
-      <button class="card-button">View Rankings</button>
-    </div>
-
-    <!-- Leaderboards Card -->
-    <div class="home-card leaderboards-card" data-section="leaderboards">
-      <div class="card-icon">📊</div>
-      <h3 class="card-title">Fighter Leaderboards</h3>
-      <p class="card-description">Browse leaderboards for each individual PvP mode</p>
-      <div class="card-stats">
-        Per-mode rankings
-      </div>
-      <button class="card-button">View Leaderboards</button>
-    </div>
-
-    <!-- Modes Card -->
-    <div class="home-card modes-card" data-section="modes">
-      <div class="card-icon">🎮</div>
-      <h3 class="card-title">Gamemodes</h3>
-      <p class="card-description">Browse all 4 Categories of PvP</p>
-      <div class="card-stats">
-        <span>27</span> Modes
-      </div>
-      <button class="card-button">Explore Modes</button>
-    </div>
-
-    <!-- Testers Card -->
-    <div class="home-card testers-card" data-section="testers">
-      <div class="card-icon">🧪</div>
-      <h3 class="card-title">Official Testers</h3>
-      <p class="card-description">Meet the official UltraTiers testers</p>
-      <div class="card-stats">
-        Filter by mode & region
-      </div>
-      <button class="card-button">View Testers</button>
-    </div>
-
-    <!-- BUILDING SECTION -->
-    <!-- Builders Card -->
-    <div class="home-card builders-card" data-section="builders">
-      <div class="card-icon">🏗️</div>
-      <h3 class="card-title">Builders</h3>
-      <p class="card-description">Explore the best builders by subject and region</p>
-      <div class="card-stats">
-        <span id="home-builder-count">0</span> Tested
-      </div>
-      <button class="card-button">View Builders</button>
-    </div>
-
-    <!-- Builder Leaderboards Card -->
-    <div class="home-card builder-leaderboards-card" data-section="builder-leaderboards">
-      <div class="card-icon">📊</div>
-      <h3 class="card-title">Builder Leaderboards</h3>
-      <p class="card-description">Browse leaderboards for each individual building subject</p>
-      <div class="card-stats">
-        Per-subject rankings
-      </div>
-      <button class="card-button">View Leaderboards</button>
-    </div>
-    <div class="home-card docs-card" data-section="docs">
-      <div class="card-icon">📚</div>
-      <h3 class="card-title">Documentation</h3>
-      <p class="card-description">Learn about tier system and points</p>
-      <div class="card-stats">
-        Tiers 1-5
-      </div>
-      <button class="card-button">Read Docs</button>
-    </div>
-
-    <!-- Application Card -->
-    <div class="home-card application-card" data-section="application">
-      <div class="card-icon">📝</div>
-      <h3 class="card-title">Apply Now</h3>
-      <p class="card-description">Become an official UltraTiers tester</p>
-      <div class="card-stats">
-        Quick & Easy
-      </div>
-      <button class="card-button">Apply Today</button>
-    </div>
-
-      <!-- Statistics Card -->
-<div class="home-card stats-card" data-section="stats">
-  <div class="card-icon">📊</div>
-  <h3 class="card-title">Statistics</h3>
-  <p class="card-description">Global UltraTiers analytics</p>
-  <div class="card-stats">Live data</div>
-  <button class="card-button">View Stats</button>
-</div>
-
-<!-- Kits Card -->
-<div class="home-card kits-card" data-section="kits">
-  <div class="card-icon">🧰</div>
-  <h3 class="card-title">Kits</h3>
-  <p class="card-description">Browse all official PvP kits</p>
-  <div class="card-stats">
-    View all kits
-  </div>
-  <button class="card-button">View Kits</button>
-</div>
-  </div>
-
-  <div class="home-footer">
-    <p>Join our <a href="https://discord.gg/Bvebb7RwaG" target="_blank" class="discord-link"><i class="fab fa-discord"></i> Discord</a> for updates and community</p>
-  </div>
-</div>
-
-<div id="leaderboard-section" class="leaderboard hidden-section">
-        <div class="header-container">
-    <div colspan="4" class="header-message">
-        Join our discord for more updates!
-    </div>
-    </div>
-
-    <!-- Fighter Region Tabs -->
-    <div class="fighters-region-tabs">
-      <button class="fighters-region-tab-btn active" data-fighter-region="global">🌍 Global</button>
-      <button class="fighters-region-tab-btn" data-fighter-region="NA">🌍 North America</button>
-      <button class="fighters-region-tab-btn" data-fighter-region="EU">🌍 Europe</button>
-      <button class="fighters-region-tab-btn" data-fighter-region="AS">🌏 Asia</button>
-      <button class="fighters-region-tab-btn" data-fighter-region="SA">🌎 South America</button>
-      <button class="fighters-region-tab-btn" data-fighter-region="ME">🌍 Middle East</button>
-      <button class="fighters-region-tab-btn" data-fighter-region="AU">🌍 Australia</button>
-      <button class="fighters-region-tab-btn" data-fighter-region="AF">🌍 Africa</button>
-    </div>
-
-    <!-- Mode Category Tabs -->
-    <div class="leaderboard-mode-tabs">
-      <button class="leaderboard-mode-tab-btn" data-mode-category="overall">Overall</button>
-      <button class="leaderboard-mode-tab-btn active" data-mode-category="main">Main</button>
-      <button class="leaderboard-mode-tab-btn" data-mode-category="sub">Sub</button>
-      <button class="leaderboard-mode-tab-btn" data-mode-category="extra">Extra</button>
-      <button class="leaderboard-mode-tab-btn" data-mode-category="bonus">Bonus</button>
-    </div>
-
-<div class="table-header">
-    <!-- players generated -->
-</div>
-
-    <div id="players-container"></div>
-</div>
-
-<!-- KITS SECTION -->
-<section id="kits-section" class="kits-section hidden-section">
-  <h1 class="kits-title">🧰 PvP Kits</h1>
-  <p class="kits-subtitle">All official UltraTiers kits</p>
-
-  <div class="kits-grid" id="kits-grid">
-    <!-- Kit cards generated here -->
-  </div>
-</section>
-
-
-<!-- Builders section -->
-<section id="builders-section" class="builders-section hidden-section">
-          <div class="header-container">
-    <div colspan="4" class="header-message">
-        Join our discord for more updates!
-    </div>
-    </div>
-
-    <!-- Builder Region Tabs -->
-    <div class="builders-region-tabs">
-      <button class="builders-region-tab-btn active" data-builder-region="global">🌍 Global</button>
-      <button class="builders-region-tab-btn" data-builder-region="NA">🌍 North America</button>
-      <button class="builders-region-tab-btn" data-builder-region="EU">🌍 Europe</button>
-      <button class="builders-region-tab-btn" data-builder-region="AS">🌏 Asia</button>
-      <button class="builders-region-tab-btn" data-builder-region="SA">🌎 South America</button>
-      <button class="builders-region-tab-btn" data-builder-region="ME">🌍 Middle East</button>
-      <button class="builders-region-tab-btn" data-builder-region="AU">🌍 Australia</button>
-      <button class="builders-region-tab-btn" data-builder-region="AF">🌍 Africa</button>
-    </div>
-
-    <div class="builders-table-header">
-        <!-- builders generated -->
-    </div>
-    <!-- ADD THIS DIV -->
-    <div id="builders-container" class="builders-grid"></div>
-</section>
-
-<section id="stats-section" class="stats-section hidden-section"></section>
-
-<!-- TESTERS SECTION -->
-<div id="testers-section" class="testers-section hidden-section">
-
-  <h1 class="testers-title">🧪 Official Testers</h1>
-  <p class="testers-subtitle">
-    These players are official UltraTiers testers for each mode and region.
-  </p>
-
-  <!-- Filters (optional for scripts later) -->
-  <div class="testers-filters">
-    <select id="tester-mode-filter">
-      <option value="">All Modes</option>
-    </select>
-
-    <select id="tester-region-filter">
-      <option value="">All Regions</option>
-      <option value="NA">NA</option>
-      <option value="EU">EU</option>
-      <option value="AS">AS</option>
-      <option value="SA">SA</option>
-      <option value="ME">ME</option>
-      <option value="AU">AU</option>
-      <option value="AF">AF</option>
-    </select>
-  </div>
-
-  <!-- Testers Grid -->
-  <div id="testers-container" class="testers-grid">
-    <!-- testers generated by script -->
-  </div>
-
-</div>
-
-<div id="profile-designer-modal" class="modal">
-  <div class="modal-box profile-designer">
-
-    <div class="profile-card-preview" id="profile-card">
-      <div class="profile-banner" id="profile-banner">
-        <i class="fas fa-pencil edit-banner-btn" id="edit-banner-btn"></i>
-      </div>
-
-      <div class="profile-card-body">
-        <img id="designer-avatar" class="designer-avatar" />
-        <h3 id="designer-name">Player</h3>
-      </div>
-    </div>
-
-    <div class="banner-selector hidden" id="banner-selector">
-      <h4>Select Banner</h4>
-      <div class="banner-options">
-        <img src="anime-style-stone.jpg" data-banner="anime-style-stone.jpg">
-        <img src="anime-style-clouds.jpg" data-banner="anime-style-clouds.jpg">
-        <img src="anime-style-forest.jpg" data-banner="anime-style-forest.jpg">
-        <img src="anime-style-planet.jpg" data-banner="anime-style-planet.jpg">
-        <img src="anime-style-snow.jpg" data-banner="anime-style-snow.jpg">
-        <img src="anime-style-pumpkin.jpg" data-banner="anime-style-pumpkin.jpg">
-      </div>
-    </div>
-
-    <button id="close-designer">Close</button>
-  </div>
-</div>
-
-<section id="modes-section" class="modes-section hidden-section">
-    <h1>🎮 Gamemodes</h1>
-    <div class="modes-categories-container" id="modes-categories-container">
-        <!-- Mode categories will be generated here -->
-    </div>
-</section>
-
-<!-- LEADERBOARDS SECTION -->
-<div id="leaderboards-section" class="leaderboards-section hidden-section">
-    <div class="leaderboards-mode-buttons" id="leaderboards-mode-buttons">
-        <!-- Mode buttons will be generated here -->
-    </div>
-    <div id="leaderboards-container" class="leaderboards-container"></div>
-</div>
-
-<!-- BUILDER LEADERBOARDS SECTION -->
-<div id="builder-leaderboards-section" class="leaderboards-section hidden-section">
-    <div class="leaderboards-mode-buttons" id="builder-leaderboards-mode-buttons">
-        <!-- Subject buttons will be generated here -->
-    </div>
-    <div id="builder-leaderboards-container" class="leaderboards-container"></div>
-</div>
-
-<!-- DOCS SECTION -->
-<div id="docs-section" class="docs-section hidden-section">
-    <h1>📚 Minecraft Tiers Documentation</h1>
-    <p>This section explains all Minecraft tiers.</p>
-
-    <div id="tier-docs-container" class="tier-docs"></div>
-</div>
-
-<!-- APPLICATION SECTION -->
-<div id="application-section" class="application-section hidden-section">
-    <h1>📝 Tester Application</h1>
-    <p>Apply to become an UltraTiers tester by filling out the form below.</p>
-
-    <form class="application-form">
-        <!-- Discord Username -->
-        <div class="form-group">
-            <label for="discord">Discord Username</label>
-            <input type="text" id="discord" placeholder="username#0000" required>
-        </div>
-
-        <!-- Minecraft IGN -->
-        <div class="form-group">
-            <label for="ign">Minecraft IGN</label>
-            <input type="text" id="ign" placeholder="PlayerName" required>
-        </div>
-
-        <!-- Modes -->
-        <div class="form-group">
-            <label for="modes">Modes You Want to Test</label>
-            <input type="text" id="modes" placeholder="Axe, Sword, UHC, etc" required>
-        </div>
-
-        <!-- Explanation -->
-        <div class="form-group">
-            <label for="reason">Why do you want to be a tester?</label>
-            <textarea id="reason" rows="5" placeholder="Explain why you'd be a good tester..." required></textarea>
-        </div>
-
-        <!-- Region -->
-        <div class="form-group">
-            <label for="region">Your Region</label>
-            <select id="region" required>
-                <option value="">Select your region</option>
-                <option value="NA">North America</option>
-                <option value="EU">Europe</option>
-                <option value="AS">Asia</option>
-                <option value="ME">Middle East</option>
-                <option value="AU">Australia</option>
-                <option value="SA">South America</option>
-                <option value="AF">Africa</option>
-            </select>
-        </div>
-
-        <!-- Submit -->
-        <button type="submit" class="application-submit">
-            Submit Application
-        </button>
-    </form>
-</div>
-
-<!-- AUTH MODAL -->
-<div id="auth-modal" class="modal">
-  <div class="modal-box">
-    <h2 id="auth-title">Account Login</h2>
-<form class="auth-form">
-  <input id="auth-ign" placeholder="Minecraft IGN" required>
-  <input id="auth-code" placeholder="Login Code" required>
-  <div class="auth-button-container">
-    <button type="submit">Submit</button>
-    <button type="button" id="auth-cancel">Cancel</button>
-  </div>
-</form>
-  </div>
-</div>
-
-<!-- MODAL -->
-<div id="modal" class="modal">
-    <div class="modal-box">
-        <h2 id="modal-title">Player Name</h2>
-        <p id="modal-content">Points / Tiers info</p>
-        <button id="close-modal">Close</button>
-    </div>
-</div>
-
-<footer class="footer">
-    © Copyright 2025 UltraTiers
-    <br>
-    <span id="player-count" class="margin-top-playercount"></span>
-</footer>
-
-<!-- SCRIPT -->
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script type="module" src="script.js"></script>
 </body>
 </html>
