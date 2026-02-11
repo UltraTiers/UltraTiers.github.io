@@ -226,6 +226,7 @@ body {
     min-height: 350px;
     display: flex;
     flex-direction: column;
+}
 .category-player-row {
     display: grid;
     /* columns: rank+avatar | player info | region | modes */
@@ -279,26 +280,51 @@ body {
 
 .mode-item {
     display: inline-flex;
+    flex-direction: column;
     align-items: center;
     gap: 6px;
-    min-width: 34px;
+    min-width: 44px;
+    max-width: 60px;
 }
 
 .mode-item .mode-icon {
-    width: 34px;
-    height: 34px;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: contain;
+    background: linear-gradient(180deg, rgba(255,255,255,0.04), rgba(255,255,255,0.02));
+    padding: 6px;
+    border: 1px solid rgba(255,255,255,0.04);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.35);
 }
 
 .tier-badge-rounded {
-    position: relative;
-    margin-left: 4px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 4px 6px;
+    border-radius: 999px;
+    font-size: 11px;
+    height: 22px;
+    min-width: 28px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.35);
+    margin: 0;
 }
+
+/* Tier header (shared) */
+.tier-header {
     display: flex;
     align-items: center;
     gap: 12px;
     margin-bottom: 18px;
     padding-bottom: 14px;
     border-bottom: 2px solid rgba(251, 191, 36, 0.2);
+}
+
+/* Stronger separator for Tier 1 */
+.tier-card.tier-1 .tier-header {
+    padding-bottom: 12px;
+    border-bottom: 3px solid #fbbf24;
 }
 
 .tier-icon {
@@ -399,6 +425,15 @@ body {
     min-height: 250px;
 }
 
+/* Ensure long names inside tier lists truncate with ellipsis */
+.tier-card .players-list .player-name {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 100%;
+    display: block;
+}
+
 .player-item {
     display: flex;
     align-items: center;
@@ -457,6 +492,14 @@ body {
     font-size: 12px;
     font-weight: 600;
     color: var(--text-primary);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* Truncate names inside player-card (overall view) */
+.player-card .player-name {
+    max-width: 100%;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
@@ -4355,10 +4398,12 @@ body {
 }
 
 .modes-section {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
+    display: flex;
+    flex-wrap: nowrap;
     gap: 10px;
-    justify-items: center;
+    align-items: center;
+    justify-content: flex-end;
+    overflow: hidden;
 }
 
 .mode-item {

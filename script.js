@@ -391,6 +391,9 @@ function setupModeTabsForCategory(categoryName) {
 // Render category ranking with player details and mode icons
 function renderCategoryOverall(category) {
     const container = document.getElementById(`${category}-rankings`);
+    // ensure this container displays stacked overall rows instead of tier grid
+    container.classList.remove('rankings-grid');
+    container.classList.add('overall-container');
     container.innerHTML = '';
 
     if (!window.allPlayers || window.allPlayers.length === 0) {
@@ -506,6 +509,9 @@ function renderCategoryOverall(category) {
 
 function renderRankings(category, mode) {
     const container = document.getElementById(`${category}-rankings`);
+    // ensure this container uses the tier grid layout for columns
+    container.classList.remove('overall-container');
+    container.classList.add('rankings-grid');
     container.innerHTML = '';
 
     // Convert HTML mode name (lowercase) to server gamemode name (capitalized)
