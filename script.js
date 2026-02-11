@@ -420,8 +420,8 @@ function renderCategoryOverall(category) {
         };
     }).sort((a, b) => b.categoryPoints - a.categoryPoints);
 
-    // Render each player as a row
-    playersWithCategoryPoints.forEach((player, rank) => {
+    // Render each player as a row (capped at top 100)
+    playersWithCategoryPoints.slice(0, 100).forEach((player, rank) => {
         const row = document.createElement('div');
         row.className = 'category-player-row';
         
