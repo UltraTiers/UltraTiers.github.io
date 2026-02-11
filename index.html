@@ -1,102 +1,103 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <!-- Basic Page Settings -->
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Title and Description -->
     <title>UltraTiers</title>
-    <meta name="description" content="UltraTiers - Minecraft PvP Rankings">
-    <meta name="theme-color" content="#0f172a">
+    <meta name="description" content="UltraTiers lets you track Minecraft players PvP/Building skills and ranks with awesome tier leaderboards. See who's the best in every mode and subject!">
+    <meta name="keywords" content="Minecraft, PvP, tierlist, leaderboard, building, UltraTiers, rankings, performance">
+    <meta name="author" content="UltraTiers Team">
+
+    <!-- Theme Color (Browsers & Mobile) -->
+    <meta name="theme-color" content="#1e293b">
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:title" content="UltraTiers - Minecraft PvP Tierlist">
+    <meta property="og:description" content="Track the PvP/Building performance of every Minecraft player in UltraTiers and see the top rankings in every mode and subject.">
+    <meta property="og:image" content="Trophy_Icon.png">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://ultratiers.onrender.com/">
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="UltraTiers - Minecraft PvP Tierlist">
+    <meta name="twitter:description" content="Track the PvP/Building performance of every Minecraft player in UltraTiers and see the top rankings in every mode and subject.">
+    <meta name="twitter:image" content="Trophy_Icon.png">
+
+    <!-- Favicon -->
     <link rel="icon" type="image/png" href="Trophy_Icon.png">
+    <link rel="apple-touch-icon" href="Trophy_Icon.png">
+
+    <!-- Stylesheets -->
     <link rel="stylesheet" href="styles.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 </head>
 <body>
-    <div class="container">
-        <!-- Header -->
-        <header class="header">
-            <div class="header-content">
-                <div class="logo-section">
-                    <img src="UltraTiers_White.png" alt="UltraTiers" class="logo">
-                    <h1>ULTRATIERS</h1>
-                </div>
-                <div class="server-info">
-                    <span class="server-ip">mcpvp.club</span>
-                    <i class="fab fa-discord"></i>
-                </div>
-            </div>
-        </header>
 
-        <!-- Main Tabs Navigation -->
-        <nav class="main-tabs">
-            <button class="main-tab-btn active" data-tab="main">Main Modes</button>
-            <button class="main-tab-btn" data-tab="sub">Sub Modes</button>
-            <button class="main-tab-btn" data-tab="extra">Extra Modes</button>
-            <button class="main-tab-btn" data-tab="bonus">Bonus Modes</button>
-        </nav>
+<!-- LOADING SCREEN -->
+<div id="loading-screen" class="loading-screen">
+  <div class="loading-spinner">
+    <div class="spinner"></div>
+    <p>Loading...</p>
+  </div>
+</div>
 
-        <!-- Tab Content -->
-        <main class="content">
-            <!-- Main Modes Tab -->
-            <div class="tab-content active" id="main-tab">
-                <nav class="mode-tabs">
-                    <button class="mode-tab-btn active" data-mode="sword">Sword</button>
-                    <button class="mode-tab-btn" data-mode="axe">Axe</button>
-                    <button class="mode-tab-btn" data-mode="vanilla">Vanilla</button>
-                    <button class="mode-tab-btn" data-mode="pot">Pot</button>
-                    <button class="mode-tab-btn" data-mode="nethop">NethOP</button>
-                    <button class="mode-tab-btn" data-mode="uhc">UHC</button>
-                    <button class="mode-tab-btn" data-mode="smp">SMP</button>
-                    <button class="mode-tab-btn" data-mode="mace">Mace</button>
-                </nav>
-                <div class="rankings-grid" id="main-rankings"></div>
-            </div>
-
-            <!-- Sub Modes Tab -->
-            <div class="tab-content" id="sub-tab">
-                <nav class="mode-tabs">
-                    <button class="mode-tab-btn active" data-mode="speed">Speed</button>
-                    <button class="mode-tab-btn" data-mode="creeper">Creeper</button>
-                    <button class="mode-tab-btn" data-mode="elytra">Elytra</button>
-                    <button class="mode-tab-btn" data-mode="minecart">Minecart</button>
-                    <button class="mode-tab-btn" data-mode="trident">Trident</button>
-                    <button class="mode-tab-btn" data-mode="diamond-survival">Diamond Survival</button>
-                    <button class="mode-tab-btn" data-mode="diamond-smp">Diamond SMP</button>
-                    <button class="mode-tab-btn" data-mode="og-vanilla">OG Vanilla</button>
-                    <button class="mode-tab-btn" data-mode="debuff">DeBuff</button>
-                    <button class="mode-tab-btn" data-mode="bed">Bed</button>
-                    <button class="mode-tab-btn" data-mode="bow">Bow</button>
-                    <button class="mode-tab-btn" data-mode="manhunt">Manhunt</button>
-                </nav>
-                <div class="rankings-grid" id="sub-rankings"></div>
-            </div>
-
-            <!-- Extra Modes Tab -->
-            <div class="tab-content" id="extra-tab">
-                <nav class="mode-tabs">
-                    <button class="mode-tab-btn active" data-mode="axepot">AxePot</button>
-                    <button class="mode-tab-btn" data-mode="sumo">Sumo</button>
-                    <button class="mode-tab-btn" data-mode="op">OP</button>
-                    <button class="mode-tab-btn" data-mode="spear-mace">Spear Mace</button>
-                    <button class="mode-tab-btn" data-mode="spear-elytra">Spear Elytra</button>
-                </nav>
-                <div class="rankings-grid" id="extra-rankings"></div>
-            </div>
-
-            <!-- Bonus Modes Tab -->
-            <div class="tab-content" id="bonus-tab">
-                <nav class="mode-tabs">
-                    <button class="mode-tab-btn active" data-mode="bridge">Bridge</button>
-                    <button class="mode-tab-btn" data-mode="pearl">Pearl</button>
-                </nav>
-                <div class="rankings-grid" id="bonus-rankings"></div>
-            </div>
-        </main>
+<header>
+<nav class="navbar">
+    <div class="nav-left">
+        <img src="UltraTiers_White.png" class="logo-img" style="cursor: pointer;">
     </div>
 
-    <script src="script.js"></script>
-</body>
-</html>
+    <div class="nav-center">
+    </div>
+
+<div class="nav-right">
+<div class="auth-buttons" id="auth-buttons">
+  <button id="login-btn">
+    <i class="fas fa-sign-in"></i>
+  </button>
+</div>
+<div class="user-profile-dropdown hidden" id="user-profile-dropdown">
+  <img id="user-avatar" src="" alt="Avatar" class="user-avatar">
+
+<div class="profile-menu" id="profile-menu">
+  <div id="settings-btn"><i class="fas fa-cog"></i> Settings</div>
+  <div id="logout-btn"><i class="fas fa-sign-out-alt"></i> Logout</div>
+</div>
+</div>
+
+
+  <div class="search-wrapper">
+    <i class="fas fa-search"></i>
+    <input class="searchbar" placeholder="Search fighter..." id="search-input">
+  </div>
+</div>
+</nav>
+</header>
+
+<!-- LEADERBOARD SECTION -->
+<div id="home-section" class="home-section active-section">
+  <div class="home-hero">
+    <div class="hero-content">
+      <h1 class="hero-title">
+        <span class="title-icon">🏆</span>
+        UltraTiers
+      </h1>
+      <p class="hero-subtitle">Track the best Minecraft PvP & Building performance</p>
+    </div>
+  </div>
+
+  <div class="home-grid">
+    <!-- PvP SECTION -->
+    <!-- Fighters Card -->
+    <div class="home-card fighters-card" data-section="rankings">
+      <div class="card-icon">⚔️</div>
+      <h3 class="card-title">Fighters</h3>
+      <p class="card-description">View the top PvP fighters across all modes and regions</p>
       <div class="card-stats">
         <span id="home-fighter-count">0</span> Tested
       </div>
