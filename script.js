@@ -418,7 +418,10 @@ function renderCategoryOverall(category) {
             ...player,
             categoryPoints: categoryPoints
         };
-    }).sort((a, b) => b.categoryPoints - a.categoryPoints);
+    }).sort((a, b) => {
+        // Sort by category points descending (highest first)
+        return b.categoryPoints - a.categoryPoints;
+    });
 
     // Render each player as a row (capped at top 100)
     playersWithCategoryPoints.slice(0, 100).forEach((player, rank) => {

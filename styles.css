@@ -289,6 +289,8 @@ body {
     gap: 4px;
     min-width: 50px;
     max-width: 65px;
+    background: transparent;
+    border: none;
 }
 
 .mode-item .mode-icon {
@@ -4188,7 +4190,6 @@ body {
         height: 18px;
         font-size: 9px;
         bottom: -2px;
-        right: -2px;
     }
 }
 
@@ -4318,6 +4319,8 @@ body {
     letter-spacing: -2px;
     min-width: 90px;
     flex-shrink: 0;
+    border-top-left-radius: 16px;
+    border-bottom-left-radius: 16px;
 }
 
 .rank-badge.silver {
@@ -4416,7 +4419,8 @@ body {
     gap: 10px;
     align-items: center;
     justify-content: flex-end;
-    overflow: hidden;
+    overflow: visible;
+    min-width: 0;
 }
 
 .mode-item {
@@ -4446,7 +4450,6 @@ body {
 .tier-badge-rounded {
     position: absolute;
     bottom: -6px;
-    right: -6px;
     width: 22px;
     height: 22px;
     border-radius: 50%;
