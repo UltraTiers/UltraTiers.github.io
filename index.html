@@ -38,6 +38,51 @@
 </head>
 <body>
 
+<!-- LOGIN SCREEN -->
+<div id="site-lock">
+  <div class="lock-box">
+    <h2>UltraTiers Developer Login</h2>
+    <input type="text" id="dev-username" placeholder="Username">
+    <input type="password" id="dev-password" placeholder="Password">
+    <button onclick="login()">Login</button>
+    <p id="login-error"></p>
+  </div>
+</div>
+
+<div id="site-content" style="display:none;">
+
+<!-- Floating navbar (new) -->
+<div class="floating-navbar" id="floating-navbar">
+  <div class="floating-inner">
+    <div class="float-left">
+      <img src="UltraTiers_White.png" class="float-logo" alt="UltraTiers">
+    </div>
+
+    <div class="float-center">
+      <nav class="float-links">
+        <a href="#home-section">Home</a>
+        <a href="#leaderboard-section">Rankings</a>
+        <a href="#kits-section">Kits</a>
+        <a href="#builders-section">Builders</a>
+      </nav>
+    </div>
+
+    <div class="float-right">
+      <div class="float-search">
+        <i class="fas fa-search"></i>
+        <input placeholder="Search player..." id="float-search-input" />
+      </div>
+
+      <div class="float-menu" id="float-menu">
+        <button class="menu-btn" id="menu-btn-main">Main</button>
+        <button class="menu-btn" id="menu-btn-sub">Sub</button>
+        <button class="menu-btn" id="menu-btn-extra">Extra</button>
+        <button class="menu-btn" id="menu-btn-bonus">Bonus</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <!-- LOADING SCREEN -->
 <div id="loading-screen" class="loading-screen">
   <div class="loading-spinner">
@@ -204,6 +249,16 @@
   <div class="home-footer">
     <p>Join our <a href="https://discord.gg/Bvebb7RwaG" target="_blank" class="discord-link"><i class="fab fa-discord"></i> Discord</a> for updates and community</p>
   </div>
+</div>
+
+<!-- TIER PAGE SECTION -->
+<div id="tier-page-section" class="tier-page-section hidden-section">
+  <div class="tier-page-header">
+    <button class="tier-back-btn" id="tier-back-btn">← Back</button>
+    <h2 class="tier-page-title" id="tier-page-title">Main</h2>
+  </div>
+  <div class="tier-mode-buttons" id="tier-mode-buttons"></div>
+  <div class="tier-page-content" id="tier-page-content"></div>
 </div>
 
 <div id="leaderboard-section" class="leaderboard hidden-section">
@@ -457,8 +512,258 @@
     <span id="player-count" class="margin-top-playercount"></span>
 </footer>
 
+</div>
+
 <!-- SCRIPT -->
+<script>
+// Helper function to truncate player names
+function truncateName(name, maxLength = 15) {
+  if (name.length > maxLength) {
+    return name.substring(0, maxLength - 3) + '...';
+  }
+  return name;
+}
+
+// Get emoji for mode
+function getModeEmoji(mode) {
+  const modeEmojis = {
+    "Vanilla": "🎮",
+    "UHC": "❤️",
+    "Pot": "🧪",
+    "NethOP": "👾",
+    "SMP": "⚔️",
+    "Sword": "⚔️",
+    "Axe": "🪓",
+    "Mace": "🔨",
+    "Minecart": "🚂",
+    "Diamond Survival": "💎",
+    "DeBuff": "💜",
+    "Elytra": "🦅",
+    "Speed": "⚡",
+    "Creeper": "💥",
+    "Manhunt": "🏃",
+    "Diamond SMP": "💎",
+    "Bow": "🏹",
+    "Bed": "🛏️",
+    "OG Vanilla": "🎮",
+    "Trident": "🔱",
+    "Spear Elytra": "🦅",
+    "Spear Mace": "🔨",
+    "AxePot": "🪓",
+    "Sumo": "👊",
+    "OP": "💪",
+    "Bridge": "🌉",
+    "Pearl": "⚪"
+  };
+  return modeEmojis[mode] || "🎮";
+}
+
+// Menu button functionality with full-page tier display
+(function(){
+  const mainBtn = document.getElementById('menu-btn-main');
+  const subBtn = document.getElementById('menu-btn-sub');
+  const extraBtn = document.getElementById('menu-btn-extra');
+  const bonusBtn = document.getElementById('menu-btn-bonus');
+  const backBtn = document.getElementById('tier-back-btn');
+  const tierPageContent = document.getElementById('tier-page-content');
+  const tierPageTitle = document.getElementById('tier-page-title');
+  const tierModeButtons = document.getElementById('tier-mode-buttons');
+  const tierPageSection = document.getElementById('tier-page-section');
+  const homeSection = document.getElementById('home-section');
+
+  // Map category to modes from script.js
+  const modesCategoryMap = {
+    main: ["Vanilla", "UHC", "Pot", "NethOP", "SMP", "Sword", "Axe", "Mace"],
+    sub: ["Minecart", "Diamond Survival", "DeBuff", "Elytra", "Speed", "Creeper", "Manhunt", "Diamond SMP", "Bow", "Bed", "OG Vanilla", "Trident", "Spear Elytra", "Spear Mace"],
+    extra: ["AxePot", "Sumo", "OP"],
+    bonus: ["Bridge", "Pearl"]
+  };
+
+  function showTierPage() {
+    // Hide all sections
+    document.querySelectorAll('.active-section').forEach(s => s.classList.remove('active-section'));
+    document.querySelectorAll('[class*="section"]').forEach(s => s.classList.add('hidden-section'));
+    // Show tier page
+    tierPageSection.classList.remove('hidden-section');
+    tierPageSection.classList.add('active-section');
+    window.scrollTo(0, 0);
+  }
+
+  function showHomePage() {
+    // Hide all sections
+    document.querySelectorAll('.active-section').forEach(s => s.classList.remove('active-section'));
+    document.querySelectorAll('[class*="section"]').forEach(s => s.classList.add('hidden-section'));
+    // Show home
+    homeSection.classList.remove('hidden-section');
+    homeSection.classList.add('active-section');
+    window.scrollTo(0, 0);
+  }
+
+  function getPlayersByTier(category) {
+    if (!window.players || window.players.length === 0) return {};
+    
+    const modes = modesCategoryMap[category] || [];
+    
+    // Filter players that have tiers in this category
+    const filteredPlayers = window.players.filter(p => 
+      p.tiers && p.tiers.some(t => modes.includes(t.gamemode))
+    );
+
+    // Group players by tier (1, 2, 3, 4, 5)
+    const tierGroups = {
+      1: [],
+      2: [],
+      3: [],
+      4: [],
+      5: []
+    };
+
+    filteredPlayers.forEach(player => {
+      const playersMetTiers = new Set();
+      player.tiers.forEach(t => {
+        if (modes.includes(t.gamemode)) {
+          const tierNum = t.tier.match(/\d+/)?.[0];
+          if (tierNum) {
+            playersMetTiers.add(tierNum);
+          }
+        }
+      });
+      
+      // Add player to each tier they have
+      playersMetTiers.forEach(tier => {
+        if (tierGroups[tier]) {
+          tierGroups[tier].push(player);
+        }
+      });
+    });
+
+    // Remove duplicates and sort by points
+    Object.keys(tierGroups).forEach(tier => {
+      const seen = new Set();
+      tierGroups[tier] = tierGroups[tier]
+        .filter(p => {
+          if (seen.has(p.name)) return false;
+          seen.add(p.name);
+          return true;
+        })
+        .sort((a, b) => b.points - a.points)
+        .slice(0, 15); // Show up to 15 per tier
+    });
+
+    return tierGroups;
+  }
+
+  function renderModeButtons(category) {
+    tierModeButtons.innerHTML = '';
+    const modes = modesCategoryMap[category] || [];
+    
+    const modesContainer = document.createElement('div');
+    modesContainer.className = 'tier-modes-container';
+
+    modes.forEach(mode => {
+      const btn = document.createElement('button');
+      btn.className = 'tier-mode-btn';
+      btn.textContent = mode;
+      btn.title = mode;
+      modesContainer.appendChild(btn);
+    });
+
+    tierModeButtons.appendChild(modesContainer);
+  }
+
+  function renderTierView(category, categoryName) {
+    tierPageTitle.textContent = categoryName;
+    tierPageContent.innerHTML = '';
+    const tierGroups = getPlayersByTier(category);
+    
+    const tierContainer = document.createElement('div');
+    tierContainer.className = 'tier-display-full';
+
+    const tierColors = {
+      1: 'tier-1',
+      2: 'tier-2',
+      3: 'tier-3',
+      4: 'tier-4',
+      5: 'tier-5'
+    };
+
+    for (let i = 1; i <= 5; i++) {
+      const tierCol = document.createElement('div');
+      tierCol.className = `tier-column-full ${tierColors[i]}`;
+      
+      const tierHeader = document.createElement('div');
+      tierHeader.className = 'tier-header-full';
+      tierHeader.innerHTML = `🏆 Tier ${i}`;
+      tierCol.appendChild(tierHeader);
+
+      const playersList = document.createElement('div');
+      playersList.className = 'tier-players-full';
+
+      const players = tierGroups[i] || [];
+      if (players.length === 0) {
+        const empty = document.createElement('div');
+        empty.className = 'player-empty-full';
+        empty.textContent = 'No players';
+        playersList.appendChild(empty);
+      } else {
+        players.forEach(player => {
+          const playerEl = document.createElement('div');
+          playerEl.className = 'tier-player-item-full';
+          playerEl.innerHTML = `
+            <img src="https://render.crafty.gg/3d/bust/${player.uuid}" alt="${player.name}" class="tier-player-avatar-full">
+            <span class="tier-player-name-full" title="${player.name}">${truncateName(player.name)}</span>
+          `;
+          playersList.appendChild(playerEl);
+        });
+      }
+
+      tierCol.appendChild(playersList);
+      tierContainer.appendChild(tierCol);
+    }
+
+    tierPageContent.appendChild(tierContainer);
+  }
+
+  // Button click handlers
+  const buttons = [
+    { el: mainBtn, category: 'main', name: 'Main' },
+    { el: subBtn, category: 'sub', name: 'Sub' },
+    { el: extraBtn, category: 'extra', name: 'Extra' },
+    { el: bonusBtn, category: 'bonus', name: 'Bonus' }
+  ];
+
+  buttons.forEach(btn => {
+    if (btn.el) {
+      btn.el.addEventListener('click', function(e){
+        e.stopPropagation();
+        renderModeButtons(btn.category);
+        renderTierView(btn.category, btn.name);
+        showTierPage();
+      });
+    }
+  });
+
+  // Back button
+  if (backBtn) {
+    backBtn.addEventListener('click', function() {
+      showHomePage();
+    });
+  }
+})();
+
+// Simple search: mirror float search into main search input
+(function() {
+  const floatSearch = document.getElementById('float-search-input');
+  const mainSearch = document.getElementById('search-input');
+  if (floatSearch && mainSearch) {
+    floatSearch.addEventListener('input', function() {
+      mainSearch.value = floatSearch.value;
+    });
+  }
+})();
+</script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="lock.js"></script>
 <script type="module" src="script.js"></script>
 </body>
 </html>
