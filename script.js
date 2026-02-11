@@ -67,6 +67,75 @@ const modeNameMap = {
 // API endpoint URL
 const API_URL = '/players';
 
+// Gamemode icons mapping - use PNG files from gamemodes folder
+const gamemodeIcons = {
+    'Sword': 'gamemodes/Sword.png',
+    'Axe': 'gamemodes/Axe.png',
+    'Vanilla': 'gamemodes/Vanilla.png',
+    'Pot': 'gamemodes/Pot.png',
+    'NethOP': 'gamemodes/NethOP.png',
+    'UHC': 'gamemodes/UHC.png',
+    'SMP': 'gamemodes/SMP.png',
+    'Mace': 'gamemodes/Mace.png',
+    'Speed': 'gamemodes/Speed.png',
+    'Creeper': 'gamemodes/Creeper.png',
+    'Elytra': 'gamemodes/Elytra.png',
+    'Minecart': 'gamemodes/Minecart.png',
+    'Trident': 'gamemodes/Trident.png',
+    'Diamond Survival': 'gamemodes/Diamond Survival.png',
+    'Diamond SMP': 'gamemodes/Diamond SMP.png',
+    'OG Vanilla': 'gamemodes/OG Vanilla.png',
+    'DeBuff': 'gamemodes/DeBuff.png',
+    'Bed': 'gamemodes/Bed.png',
+    'Bow': 'gamemodes/Bow.png',
+    'Manhunt': 'gamemodes/Manhunt.png',
+    'AxePot': 'gamemodes/AxePot.png',
+    'Sumo': 'gamemodes/Sumo.png',
+    'OP': 'gamemodes/OP.png',
+    'Spear Mace': 'gamemodes/Spear Mace.png',
+    'Spear Elytra': 'gamemodes/Spear Elytra.png',
+    'Bridge': 'gamemodes/Bridge.png',
+    'Pearl': 'gamemodes/Pearl.png',
+};
+
+// Get MC skin image element
+function getPlayerAvatarElement(player) {
+    const avatar = document.createElement('div');
+    avatar.className = 'player-avatar';
+    
+    if (player.uuid) {
+        const img = document.createElement('img');
+        img.src = `https://render.crafty.gg/3d/bust/${player.uuid}`;
+        img.alt = player.name;
+        img.style.width = '100%';
+        img.style.height = '100%';
+        img.style.borderRadius = '12px';
+        img.style.objectFit = 'cover';
+        img.onerror = function() {
+            // Fallback to initial if image fails to load
+            img.style.display = 'none';
+            avatar.textContent = player.name.charAt(0).toUpperCase();
+            avatar.style.background = 'linear-gradient(135deg, #fbbf24, #f59e0b)';
+            avatar.style.display = 'flex';
+            avatar.style.alignItems = 'center';
+            avatar.style.justifyContent = 'center';
+            avatar.style.color = '#000';
+            avatar.style.fontWeight = '700';
+        };
+        avatar.appendChild(img);
+    } else {
+        avatar.textContent = player.name.charAt(0).toUpperCase();
+        avatar.style.background = 'linear-gradient(135deg, #fbbf24, #f59e0b)';
+        avatar.style.display = 'flex';
+        avatar.style.alignItems = 'center';
+        avatar.style.justifyContent = 'center';
+        avatar.style.color = '#000';
+        avatar.style.fontWeight = '700';
+    }
+    
+    return avatar;
+}
+
 const tierIcons = {
     1: '🥇',
     2: '🥈',
@@ -83,6 +152,9 @@ const tierColors = {
     5: 'tier-5',
 };
 
+// Map of player names to full player objects for quick lookup
+window.playerMap = {};
+
 // Fetch players from Supabase and organize them by tier
 async function fetchAndOrganizePlayers() {
     try {
@@ -96,6 +168,12 @@ async function fetchAndOrganizePlayers() {
 
         // Store all players for the overall view
         window.allPlayers = players;
+
+        // Create lookup map from player names to full player objects
+        window.playerMap = {};
+        players.forEach(player => {
+            window.playerMap[player.name] = player;
+        });
 
         // Initialize category structures with server gamemode names
         Object.keys(categoryMappings).forEach(category => {
@@ -185,20 +263,13 @@ function switchMainTab(tabName) {
     });
     document.getElementById(`${tabName}-tab`).classList.add('active');
 
-    // Handle overall tab differently
-    if (tabName === 'overall') {
-        renderOverall();
-    } else {
-        // Setup mode tabs for other categories
-        setupModeTabsForCategory(tabName);
-        
-        // Show second mode button (skip the Overall button at index 0)
-        const modeButtons = document.querySelectorAll(`#${tabName}-tab .mode-tab-btn`);
-        if (modeButtons.length > 1) {
-            modeButtons[1].click();
-        } else if (modeButtons.length > 0) {
-            modeButtons[0].click();
-        }
+    // Setup mode tabs for the category
+    setupModeTabsForCategory(tabName);
+    
+    // Click the "All" button (first button) which shows category overall
+    const modeButtons = document.querySelectorAll(`#${tabName}-tab .mode-tab-btn`);
+    if (modeButtons.length > 0) {
+        modeButtons[0].click();
     }
 }
 
@@ -230,19 +301,10 @@ function renderOverall() {
         rankDiv.className = 'rank';
         rankDiv.textContent = `#${rank + 1}`;
         
-        // Avatar
-        const avatar = document.createElement('div');
-        avatar.className = 'player-avatar';
-        avatar.textContent = player.name.charAt(0).toUpperCase();
-        avatar.style.background = 'linear-gradient(135deg, #fbbf24, #f59e0b)';
-        avatar.style.display = 'flex';
-        avatar.style.alignItems = 'center';
-        avatar.style.justifyContent = 'center';
-        avatar.style.color = '#000';
-        avatar.style.fontWeight = '700';
+        // Avatar with MC skin
+        const avatar = getPlayerAvatarElement(player);
         avatar.style.width = '48px';
         avatar.style.height = '48px';
-        avatar.style.borderRadius = '12px';
         
         // Player info
         const info = document.createElement('div');
@@ -303,10 +365,14 @@ function setupModeTabsForCategory(categoryName) {
             const modeName = this.getAttribute('data-mode');
             const categoryAttr = this.getAttribute('data-category');
             
-            // Check if this is a category overall button
-            if (categoryAttr && modeName.startsWith('overall-')) {
+            // Check if this is the "All" button for category overall
+            if (categoryAttr && modeName !== 'sword' && modeName !== 'speed' && modeName !== 'axepot' && modeName !== 'bridge') {
                 renderCategoryOverall(categoryAttr);
+            } else if (this.textContent === 'All') {
+                // "All" button shows category overall
+                renderCategoryOverall(categoryName);
             } else {
+                // Regular gamemode ranking
                 renderRankings(categoryName, modeName);
             }
             
@@ -317,7 +383,7 @@ function setupModeTabsForCategory(categoryName) {
     });
 }
 
-// Render overall view for a specific category
+// Render category ranking with player details and mode icons
 function renderCategoryOverall(category) {
     const container = document.getElementById(`${category}-rankings`);
     container.innerHTML = '';
@@ -346,46 +412,51 @@ function renderCategoryOverall(category) {
         };
     }).sort((a, b) => b.categoryPoints - a.categoryPoints);
 
-    // Render as leaderboard-style cards
+    // Render each player as a row
     playersWithCategoryPoints.forEach((player, rank) => {
+        const row = document.createElement('div');
+        row.className = 'category-player-row';
+        
+        // Rank with medal styling
+        const rankSection = document.createElement('div');
+        rankSection.className = 'rank-section';
         const medal = getMedalRank(rank + 1);
-        const card = document.createElement('div');
-        card.className = `player-card ${medal}`;
+        rankSection.innerHTML = `<div class="rank-badge ${medal}">#${rank + 1}</div>`;
         
-        // Rank
-        const rankDiv = document.createElement('div');
-        rankDiv.className = 'rank';
-        rankDiv.textContent = `#${rank + 1}`;
+        // Player section (skin + name)
+        const playerSection = document.createElement('div');
+        playerSection.className = 'player-section';
         
-        // Avatar
-        const avatar = document.createElement('div');
-        avatar.className = 'player-avatar';
-        avatar.textContent = player.name.charAt(0).toUpperCase();
-        avatar.style.background = 'linear-gradient(135deg, #fbbf24, #f59e0b)';
-        avatar.style.display = 'flex';
-        avatar.style.alignItems = 'center';
-        avatar.style.justifyContent = 'center';
-        avatar.style.color = '#000';
-        avatar.style.fontWeight = '700';
-        avatar.style.width = '48px';
-        avatar.style.height = '48px';
-        avatar.style.borderRadius = '12px';
+        const avatar = getPlayerAvatarElement(player);
+        avatar.style.width = '56px';
+        avatar.style.height = '56px';
+        avatar.style.marginRight = '12px';
         
-        // Info
-        const info = document.createElement('div');
-        info.className = 'player-info';
+        const playerInfo = document.createElement('div');
+        playerInfo.className = 'player-info-section';
+        
         const nameDiv = document.createElement('div');
         nameDiv.className = 'player-name';
         nameDiv.textContent = player.name;
-        const pointsDiv = document.createElement('div');
-        pointsDiv.className = 'player-sub';
-        pointsDiv.textContent = `${player.categoryPoints} points`;
-        info.appendChild(nameDiv);
-        info.appendChild(pointsDiv);
         
-        // Tiers for this category
-        const tiersDiv = document.createElement('div');
-        tiersDiv.className = 'category-tiers-display';
+        const titleDiv = document.createElement('div');
+        titleDiv.className = 'player-title';
+        titleDiv.textContent = `Combat Grandmaster (${player.categoryPoints} points)`;
+        
+        playerInfo.appendChild(nameDiv);
+        playerInfo.appendChild(titleDiv);
+        
+        playerSection.appendChild(avatar);
+        playerSection.appendChild(playerInfo);
+        
+        // Region section
+        const regionSection = document.createElement('div');
+        regionSection.className = 'region-section';
+        regionSection.textContent = player.region || 'Unknown';
+        
+        // Modes section with icons and tier badges
+        const modesSection = document.createElement('div');
+        modesSection.className = 'modes-section';
         
         categoryMappings[category].forEach(gamemode => {
             const tierInfo = player.tiers.find(t => t.gamemode === gamemode);
@@ -398,19 +469,31 @@ function renderCategoryOverall(category) {
                 tierNumber = match ? parseInt(match[0]) : 0;
             }
             
-            const tierBadge = document.createElement('div');
-            tierBadge.className = `tier-badge-small ${tierNumber > 0 ? tierColors[tierNumber] : 'tier-unknown'}`;
-            tierBadge.title = gamemode;
-            tierBadge.innerHTML = tierNumber > 0 ? tierIcons[tierNumber] : '❓';
+            const modeItem = document.createElement('div');
+            modeItem.className = 'mode-item';
             
-            tiersDiv.appendChild(tierBadge);
+            const icon = document.createElement('img');
+            icon.className = 'mode-icon';
+            icon.src = gamemodeIcons[gamemode] || 'gamemodes/Vanilla.png';
+            icon.alt = gamemode;
+            icon.title = gamemode;
+            
+            const tierBadge = document.createElement('div');
+            tierBadge.className = `tier-badge-rounded ${tierNumber > 0 ? tierColors[tierNumber] : 'tier-unknown'}`;
+            tierBadge.textContent = tierValue !== 'Unknown' ? tierValue : '?';
+            
+            modeItem.appendChild(icon);
+            modeItem.appendChild(tierBadge);
+            modesSection.appendChild(modeItem);
         });
         
-        card.appendChild(rankDiv);
-        card.appendChild(avatar);
-        card.appendChild(info);
-        card.appendChild(tiersDiv);
-        container.appendChild(card);
+        // Assemble the row
+        row.appendChild(rankSection);
+        row.appendChild(playerSection);
+        row.appendChild(regionSection);
+        row.appendChild(modesSection);
+        
+        container.appendChild(row);
     });
 }
 
@@ -469,9 +552,9 @@ function createTierCard(tierNumber, players) {
             rank.className = 'player-rank';
             rank.textContent = `#${index + 1}`;
             
-            const avatar = document.createElement('div');
-            avatar.className = 'player-avatar';
-            avatar.textContent = playerName.charAt(0).toUpperCase();
+            // Get player object for MC skin
+            const playerObj = window.playerMap[playerName] || { name: playerName };
+            const avatar = getPlayerAvatarElement(playerObj);
             
             const info = document.createElement('div');
             info.className = 'player-info';
@@ -496,5 +579,5 @@ function createTierCard(tierNumber, players) {
 }
 
 function renderDefaultTab() {
-    switchMainTab('overall');
+    switchMainTab('main');
 }
