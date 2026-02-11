@@ -155,6 +155,14 @@ const tierColors = {
 // Map of player names to full player objects for quick lookup
 window.playerMap = {};
 
+// Initialize tierData object to store game rankings
+const tierData = {
+    main: {},
+    sub: {},
+    extra: {},
+    bonus: {}
+};
+
 // Fetch players from Supabase and organize them by tier
 async function fetchAndOrganizePlayers() {
     try {

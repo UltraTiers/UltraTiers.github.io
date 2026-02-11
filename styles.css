@@ -4019,58 +4019,68 @@ body {
 
     /* Category Player Row responsive */
     .category-player-row {
-        grid-template-columns: 60px 1fr;
+        grid-template-columns: 1fr;
+        gap: 16px;
+        padding: 18px 16px;
+        margin: 0 0 14px 0;
+    }
+
+    .rank-section {
+        display: flex;
+        align-items: center;
         gap: 12px;
-        padding: 12px 15px;
+        margin-right: 0;
     }
 
     .rank-badge {
-        width: 50px;
-        height: 50px;
-        font-size: 18px;
+        width: 70px;
+        height: 70px;
+        font-size: 28px;
+        flex-shrink: 0;
     }
 
     .player-section {
-        grid-column: 1 / -1;
-    }
-
-    .region-section {
-        grid-column: 1 / -1;
-        min-width: auto;
-        padding: 4px 8px;
-        font-size: 12px;
-    }
-
-    .modes-section {
-        grid-column: 1 / -1;
-        justify-content: flex-start;
-        gap: 6px;
+        flex: 1;
+        gap: 12px;
     }
 
     .player-avatar {
-        width: 44px;
-        height: 44px;
+        width: 56px;
+        height: 56px;
     }
 
     .player-info-section .player-name {
-        font-size: 14px;
+        font-size: 16px;
     }
 
     .player-title {
-        font-size: 11px;
+        font-size: 12px;
+    }
+
+    .region-section {
+        width: 100%;
+        padding: 6px 12px;
+        font-size: 13px;
+    }
+
+    .modes-section {
+        display: grid;
+        grid-template-columns: repeat(6, 1fr);
+        gap: 8px;
+        width: 100%;
     }
 
     .mode-icon {
-        font-size: 16px;
-        width: 24px;
-        height: 24px;
+        font-size: 18px;
+        width: 28px;
+        height: 28px;
         object-fit: contain;
     }
 
     .tier-badge-rounded {
-        width: 16px;
-        height: 16px;
-        font-size: 8px;
+        width: 18px;
+        height: 18px;
+        font-size: 9px;
         bottom: -2px;
         right: -2px;
     }
@@ -4152,111 +4162,127 @@ body {
 /* Category Player Row Layout */
 .category-player-row {
     display: grid;
-    grid-template-columns: 80px 1fr 120px 1fr;
-    gap: 20px;
+    grid-template-columns: 100px auto 100px 1fr;
+    gap: 24px;
     align-items: center;
-    padding: 16px 20px;
-    background: rgba(255, 255, 255, 0.02);
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    border-radius: 12px;
-    margin: 0 0 12px 0;
+    padding: 24px 28px;
+    background: linear-gradient(135deg, rgba(30, 58, 95, 0.4) 0%, rgba(26, 40, 71, 0.2) 100%);
+    border: 2px solid rgba(251, 191, 36, 0.15);
+    border-radius: 16px;
+    margin: 0 0 16px 0;
     transition: all 0.3s ease;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
 }
 
 .category-player-row:hover {
-    background: rgba(255, 255, 255, 0.04);
-    border-color: rgba(255, 255, 255, 0.12);
+    background: linear-gradient(135deg, rgba(30, 58, 95, 0.6) 0%, rgba(26, 40, 71, 0.4) 100%);
+    border-color: rgba(251, 191, 36, 0.3);
+    transform: translateY(-2px);
+    box-shadow: 0 12px 32px rgba(251, 191, 36, 0.15);
 }
 
 .rank-section {
     display: flex;
     align-items: center;
     justify-content: center;
+    margin-right: -12px;
 }
 
 .rank-badge {
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 60px;
-    height: 60px;
-    border-radius: 12px;
-    font-size: 24px;
-    font-weight: 700;
-    background: linear-gradient(135deg, #fbbf24, #f59e0b);
+    width: 80px;
+    height: 80px;
+    border-radius: 16px;
+    font-size: 32px;
+    font-weight: 800;
+    background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
     color: #000;
-    box-shadow: 0 4px 12px rgba(251, 191, 36, 0.3);
+    box-shadow: 0 8px 20px rgba(251, 191, 36, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.3);
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    letter-spacing: -1px;
 }
 
 .rank-badge.silver {
-    background: linear-gradient(135deg, #e5e7eb, #d1d5db);
-    color: #000;
-    box-shadow: 0 4px 12px rgba(229, 231, 235, 0.3);
+    background: linear-gradient(135deg, #e5e7eb 0%, #d1d5db 100%);
+    color: #1f2937;
+    box-shadow: 0 8px 20px rgba(229, 231, 235, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.5);
 }
 
 .rank-badge.bronze {
-    background: linear-gradient(135deg, #f97316, #ea580c);
+    background: linear-gradient(135deg, #f97316 0%, #ea580c 100%);
     color: #fff;
-    box-shadow: 0 4px 12px rgba(249, 115, 22, 0.3);
+    box-shadow: 0 8px 20px rgba(249, 115, 22, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
 }
 
 .player-section {
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: 16px;
+    min-width: 0;
 }
 
 .player-avatar {
-    width: 56px;
-    height: 56px;
-    border-radius: 12px;
+    width: 64px;
+    height: 64px;
+    border-radius: 14px;
     overflow: hidden;
     flex-shrink: 0;
     display: flex;
     align-items: center;
     justify-content: center;
-    background: rgba(255, 255, 255, 0.05);
+    background: linear-gradient(135deg, rgba(251, 191, 36, 0.2) 0%, rgba(30, 58, 95, 0.4) 100%);
+    border: 2px solid rgba(251, 191, 36, 0.2);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
 }
 
 .player-avatar img {
     width: 100%;
     height: 100%;
     object-fit: cover;
+    display: block;
 }
 
 .player-info-section {
     display: flex;
     flex-direction: column;
-    gap: 2px;
+    gap: 4px;
+    min-width: 0;
 }
 
 .player-info-section .player-name {
-    font-size: 16px;
-    font-weight: 600;
+    font-size: 18px;
+    font-weight: 700;
     color: #fff;
+    letter-spacing: 0.5px;
 }
 
 .player-title {
     font-size: 13px;
-    color: rgba(255, 255, 255, 0.6);
+    color: rgba(251, 191, 36, 0.8);
+    font-weight: 500;
 }
 
 .region-section {
-    font-size: 14px;
-    font-weight: 600;
-    color: rgba(255, 255, 255, 0.8);
-    padding: 6px 12px;
-    background: rgba(255, 255, 255, 0.08);
-    border-radius: 6px;
+    font-size: 15px;
+    font-weight: 700;
+    color: #fff;
+    padding: 8px 14px;
+    background: linear-gradient(135deg, rgba(251, 191, 36, 0.2) 0%, rgba(251, 191, 36, 0.05) 100%);
+    border: 1px solid rgba(251, 191, 36, 0.3);
+    border-radius: 8px;
     text-align: center;
     min-width: 80px;
+    letter-spacing: 0.5px;
 }
 
 .modes-section {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-    justify-content: flex-end;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+    justify-items: center;
 }
 
 .mode-item {
@@ -4264,61 +4290,75 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
+    cursor: pointer;
+    transition: transform 0.2s ease;
+}
+
+.mode-item:hover {
+    transform: scale(1.1);
 }
 
 .mode-icon {
     font-size: 20px;
-    width: 28px;
-    height: 28px;
+    width: 32px;
+    height: 32px;
     display: flex;
     align-items: center;
     justify-content: center;
     object-fit: contain;
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
 }
 
 .tier-badge-rounded {
     position: absolute;
-    bottom: -4px;
-    right: -4px;
-    width: 20px;
-    height: 20px;
+    bottom: -6px;
+    right: -6px;
+    width: 22px;
+    height: 22px;
     border-radius: 50%;
-    font-size: 10px;
+    font-size: 11px;
     font-weight: 700;
     display: flex;
     align-items: center;
     justify-content: center;
     color: #000;
-    border: 2px solid rgba(15, 23, 42, 0.9);
+    border: 2px solid rgba(15, 23, 42, 0.95);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
 }
 
 .tier-badge-rounded.tier-1 {
     background-color: #fbbf24;
     color: #000;
+    box-shadow: 0 2px 6px rgba(251, 191, 36, 0.4);
 }
 
 .tier-badge-rounded.tier-2 {
-    background-color: #d4af37;
-    color: #000;
+    background-color: #e5e7eb;
+    color: #1f2937;
+    box-shadow: 0 2px 6px rgba(229, 231, 235, 0.4);
 }
 
 .tier-badge-rounded.tier-3 {
-    background-color: #cd7f32;
+    background-color: #f97316;
     color: #fff;
+    box-shadow: 0 2px 6px rgba(249, 115, 22, 0.4);
 }
 
 .tier-badge-rounded.tier-4 {
-    background-color: #888888;
+    background-color: #6b7280;
     color: #fff;
+    box-shadow: 0 2px 6px rgba(107, 114, 128, 0.4);
 }
 
 .tier-badge-rounded.tier-5 {
-    background-color: #a9927d;
+    background-color: #9b8b7e;
     color: #fff;
+    box-shadow: 0 2px 6px rgba(155, 139, 126, 0.4);
 }
 
 .tier-badge-rounded.tier-unknown {
     background-color: rgba(255, 255, 255, 0.1);
     border: 1px solid rgba(255, 255, 255, 0.3);
     color: rgba(255, 255, 255, 0.5);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
 }
