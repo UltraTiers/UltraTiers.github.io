@@ -1,10 +1,29 @@
-﻿// Tier data structure - will be populated from Supabase API
-let tierData = {
-    main: {},
-    sub: {},
-    extra: {},
-    bonus: {},
+﻿// Point system mapping
+const tierPointsMap = { 
+    'LT5': 1, 'HT5': 2, 
+    'LT4': 4, 'HT4': 6, 
+    'LT3': 9, 'HT3': 12, 
+    'LT2': 16, 'HT2': 20, 
+    'LT1': 25, 'HT1': 30 
 };
+
+// Calculate points for a player
+function calculatePlayerPoints(player) {
+    if (!Array.isArray(player.tiers)) return 0;
+    
+    return player.tiers.reduce((sum, tierInfo) => {
+        const tierValue = tierInfo.tier;
+        return sum + (tierPointsMap[tierValue] || 0);
+    }, 0);
+}
+
+// Get medal rank styling
+function getMedalRank(rank) {
+    if (rank === 1) return 'gold';
+    if (rank === 2) return 'silver';
+    if (rank === 3) return 'bronze';
+    return '';
+}
 
 // Category mappings for gamemodes (match server.js capitalization)
 const categoryMappings = {
@@ -193,32 +212,58 @@ function renderOverall() {
         return;
     }
 
-    // Create a player overview card for each player
-    window.allPlayers.forEach(player => {
+    // Calculate points for each player and sort
+    const playersWithPoints = window.allPlayers.map((player, index) => ({
+        ...player,
+        totalPoints: calculatePlayerPoints(player),
+        index: index
+    })).sort((a, b) => b.totalPoints - a.totalPoints);
+
+    // Render player cards in leaderboard style
+    playersWithPoints.forEach((player, rank) => {
+        const medal = getMedalRank(rank + 1);
         const card = document.createElement('div');
-        card.className = 'player-overview-card';
+        card.className = `player-card ${medal}`;
         
-        // Player header with name
-        const header = document.createElement('div');
-        header.className = 'player-overview-header';
-        header.innerHTML = `<h3>${player.name}</h3>`;
+        // Rank number
+        const rankDiv = document.createElement('div');
+        rankDiv.className = 'rank';
+        rankDiv.textContent = `#${rank + 1}`;
         
-        // Create sections for each category
-        const categoriesDiv = document.createElement('div');
-        categoriesDiv.className = 'player-tiers-summary';
+        // Avatar
+        const avatar = document.createElement('div');
+        avatar.className = 'player-avatar';
+        avatar.textContent = player.name.charAt(0).toUpperCase();
+        avatar.style.background = 'linear-gradient(135deg, #fbbf24, #f59e0b)';
+        avatar.style.display = 'flex';
+        avatar.style.alignItems = 'center';
+        avatar.style.justifyContent = 'center';
+        avatar.style.color = '#000';
+        avatar.style.fontWeight = '700';
+        avatar.style.width = '48px';
+        avatar.style.height = '48px';
+        avatar.style.borderRadius = '12px';
+        
+        // Player info
+        const info = document.createElement('div');
+        info.className = 'player-info';
+        const nameDiv = document.createElement('div');
+        nameDiv.className = 'player-name';
+        nameDiv.textContent = player.name;
+        const pointsDiv = document.createElement('div');
+        pointsDiv.className = 'player-sub';
+        pointsDiv.textContent = `${player.totalPoints} points`;
+        info.appendChild(nameDiv);
+        info.appendChild(pointsDiv);
+        
+        // Tiers grid for all categories
+        const tiersContainer = document.createElement('div');
+        tiersContainer.className = 'overall-tiers-display';
         
         Object.keys(categoryMappings).forEach(category => {
-            const categorySection = document.createElement('div');
-            categorySection.className = 'tier-category-section';
+            const categoryGroup = document.createElement('div');
+            categoryGroup.className = 'tier-category-group';
             
-            const categoryTitle = document.createElement('h4');
-            categoryTitle.textContent = category.charAt(0).toUpperCase() + category.slice(1);
-            categoryTitle.className = 'category-title';
-            
-            const tiersDiv = document.createElement('div');
-            tiersDiv.className = 'player-category-tiers';
-            
-            // Get tiers for this category
             categoryMappings[category].forEach(gamemode => {
                 const tierInfo = player.tiers.find(t => t.gamemode === gamemode);
                 const tierValue = tierInfo ? tierInfo.tier : 'Unknown';
@@ -231,20 +276,20 @@ function renderOverall() {
                 }
                 
                 const tierBadge = document.createElement('div');
-                tierBadge.className = `tier-badge ${tierNumber > 0 ? tierColors[tierNumber] : 'tier-unknown'}`;
+                tierBadge.className = `tier-badge-small ${tierNumber > 0 ? tierColors[tierNumber] : 'tier-unknown'}`;
                 tierBadge.title = gamemode;
-                tierBadge.innerHTML = `<span class="tier-icon">${tierNumber > 0 ? tierIcons[tierNumber] : '❓'}</span>`;
+                tierBadge.innerHTML = tierNumber > 0 ? tierIcons[tierNumber] : '❓';
                 
-                tiersDiv.appendChild(tierBadge);
+                categoryGroup.appendChild(tierBadge);
             });
             
-            categorySection.appendChild(categoryTitle);
-            categorySection.appendChild(tiersDiv);
-            categoriesDiv.appendChild(categorySection);
+            tiersContainer.appendChild(categoryGroup);
         });
         
-        card.appendChild(header);
-        card.appendChild(categoriesDiv);
+        card.appendChild(rankDiv);
+        card.appendChild(avatar);
+        card.appendChild(info);
+        card.appendChild(tiersContainer);
         container.appendChild(card);
     });
 }
@@ -282,22 +327,66 @@ function renderCategoryOverall(category) {
         return;
     }
 
-    // Create a grid of players showing all tiers for this category
-    const playerGrid = document.createElement('div');
-    playerGrid.className = 'category-overall-grid';
+    // Calculate category-specific points
+    const playersWithCategoryPoints = window.allPlayers.map(player => {
+        let categoryPoints = 0;
+        
+        if (Array.isArray(player.tiers)) {
+            categoryMappings[category].forEach(gamemode => {
+                const tierInfo = player.tiers.find(t => t.gamemode === gamemode);
+                if (tierInfo) {
+                    categoryPoints += tierPointsMap[tierInfo.tier] || 0;
+                }
+            });
+        }
+        
+        return {
+            ...player,
+            categoryPoints: categoryPoints
+        };
+    }).sort((a, b) => b.categoryPoints - a.categoryPoints);
 
-    window.allPlayers.forEach(player => {
-        const playerCard = document.createElement('div');
-        playerCard.className = 'category-player-card';
+    // Render as leaderboard-style cards
+    playersWithCategoryPoints.forEach((player, rank) => {
+        const medal = getMedalRank(rank + 1);
+        const card = document.createElement('div');
+        card.className = `player-card ${medal}`;
         
-        const playerName = document.createElement('h4');
-        playerName.className = 'category-player-name';
-        playerName.textContent = player.name;
+        // Rank
+        const rankDiv = document.createElement('div');
+        rankDiv.className = 'rank';
+        rankDiv.textContent = `#${rank + 1}`;
         
-        const tiersList = document.createElement('div');
-        tiersList.className = 'category-tiers-list';
+        // Avatar
+        const avatar = document.createElement('div');
+        avatar.className = 'player-avatar';
+        avatar.textContent = player.name.charAt(0).toUpperCase();
+        avatar.style.background = 'linear-gradient(135deg, #fbbf24, #f59e0b)';
+        avatar.style.display = 'flex';
+        avatar.style.alignItems = 'center';
+        avatar.style.justifyContent = 'center';
+        avatar.style.color = '#000';
+        avatar.style.fontWeight = '700';
+        avatar.style.width = '48px';
+        avatar.style.height = '48px';
+        avatar.style.borderRadius = '12px';
         
-        // Get all gamemodes for this category
+        // Info
+        const info = document.createElement('div');
+        info.className = 'player-info';
+        const nameDiv = document.createElement('div');
+        nameDiv.className = 'player-name';
+        nameDiv.textContent = player.name;
+        const pointsDiv = document.createElement('div');
+        pointsDiv.className = 'player-sub';
+        pointsDiv.textContent = `${player.categoryPoints} points`;
+        info.appendChild(nameDiv);
+        info.appendChild(pointsDiv);
+        
+        // Tiers for this category
+        const tiersDiv = document.createElement('div');
+        tiersDiv.className = 'category-tiers-display';
+        
         categoryMappings[category].forEach(gamemode => {
             const tierInfo = player.tiers.find(t => t.gamemode === gamemode);
             const tierValue = tierInfo ? tierInfo.tier : 'Unknown';
@@ -309,23 +398,20 @@ function renderCategoryOverall(category) {
                 tierNumber = match ? parseInt(match[0]) : 0;
             }
             
-            const tierItem = document.createElement('div');
-            tierItem.className = `category-tier-item ${tierNumber > 0 ? tierColors[tierNumber] : 'tier-unknown'}`;
-            tierItem.title = gamemode;
-            tierItem.innerHTML = `
-                <span class="mode-short">${gamemode.substring(0, 3)}</span>
-                <span class="tier-icon">${tierNumber > 0 ? tierIcons[tierNumber] : '❓'}</span>
-            `;
+            const tierBadge = document.createElement('div');
+            tierBadge.className = `tier-badge-small ${tierNumber > 0 ? tierColors[tierNumber] : 'tier-unknown'}`;
+            tierBadge.title = gamemode;
+            tierBadge.innerHTML = tierNumber > 0 ? tierIcons[tierNumber] : '❓';
             
-            tiersList.appendChild(tierItem);
+            tiersDiv.appendChild(tierBadge);
         });
         
-        playerCard.appendChild(playerName);
-        playerCard.appendChild(tiersList);
-        playerGrid.appendChild(playerCard);
+        card.appendChild(rankDiv);
+        card.appendChild(avatar);
+        card.appendChild(info);
+        card.appendChild(tiersDiv);
+        container.appendChild(card);
     });
-
-    container.appendChild(playerGrid);
 }
 
 function renderRankings(category, mode) {
