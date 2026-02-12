@@ -63,9 +63,7 @@ body {
 
 .logo-section {
     display: flex;
-    align-items: center;
     gap: 12px;
-    cursor: pointer;
 }
 
 .logo {
@@ -326,6 +324,11 @@ body {
     margin-bottom: 18px;
     padding-bottom: 14px;
     border-bottom: 2px solid rgba(14, 165, 233, 0.2);
+    position: sticky;
+    top: 0;
+    background: linear-gradient(135deg, rgba(30, 58, 95, 0.95) 0%, rgba(26, 40, 71, 0.85) 100%);
+    z-index: 10;
+    padding-top: 10px;
 }
 
 /* Stronger separator for Tier 1 */
@@ -556,7 +559,6 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
-    order: -1;
 }
 
 .empty-state-icon {
@@ -1156,6 +1158,7 @@ body {
     align-items: center;
     gap: 6px;
     font-weight: 700;
+    cursor: pointer;
 }
 
 .discord-link:hover {

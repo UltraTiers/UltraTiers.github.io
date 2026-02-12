@@ -650,7 +650,8 @@ function createTierCard(tierNumber, players) {
             
             const rank = document.createElement('div');
             rank.className = 'player-rank';
-            rank.innerHTML = `${indicator}<div>#${index + 1}</div>`;
+            const icon = tierPrefix === 'HT' ? '<i class="fa-solid fa-angles-up"></i>' : '<i class="fa-solid fa-angle-up"></i>';
+            rank.innerHTML = `${indicator}<div>${icon}</div>`;
             
             // Get player object for MC skin
             const playerObj = window.playerMap[playerName] || { name: playerName };
@@ -675,7 +676,7 @@ function createTierCard(tierNumber, players) {
             // Add click handler to open player modal
             item.style.cursor = 'pointer';
             item.addEventListener('click', () => {
-                showPlayerModal(playerObj, tierNumber, tierValue);
+                showPlayerModal(playerObj, tierNumber);
             });
             
             list.appendChild(item);
@@ -687,7 +688,7 @@ function createTierCard(tierNumber, players) {
     return card;
 }
 
-function showPlayerModal(player, tierNumber, tierValue) {
+function showPlayerModal(player, tierNumber) {
     // Remove existing modal if present
     const existingModal = document.getElementById('player-modal');
     if (existingModal) existingModal.remove();
