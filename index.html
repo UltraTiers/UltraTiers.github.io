@@ -112,6 +112,7 @@
 
         <!-- Main Tabs Navigation -->
         <nav class="main-tabs">
+            <button class="main-tab-btn" data-tab="all-modes">All Modes</button>
             <button class="main-tab-btn active" data-tab="main">Main Modes</button>
             <button class="main-tab-btn" data-tab="sub">Sub Modes</button>
             <button class="main-tab-btn" data-tab="extra">Extra Modes</button>
@@ -120,6 +121,14 @@
 
         <!-- Tab Content -->
         <main class="content">
+            <!-- All Modes Tab -->
+            <div class="tab-content" id="all-modes-tab">
+                <nav class="mode-tabs" id="region-tabs">
+                    <!-- Region buttons will be populated here -->
+                </nav>
+                <div class="rankings-grid" id="all-modes-rankings"></div>
+            </div>
+
             <!-- Main Modes Tab -->
             <div class="tab-content active" id="main-tab">
                 <nav class="mode-tabs">
