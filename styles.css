@@ -2040,6 +2040,8 @@ body {
     cursor: pointer;
     transition: all 0.3s ease;
     font-weight: 600;
+    background: transparent;
+    border: none;
 }
 
 .mode-item:hover {
@@ -4445,6 +4447,8 @@ body {
     justify-content: center;
     cursor: pointer;
     transition: transform 0.2s ease;
+    background: transparent;
+    border: none;
 }
 
 .mode-item:hover {
