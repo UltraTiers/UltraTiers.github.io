@@ -962,8 +962,9 @@ function showPlayerModal(player, tierNumber, category = 'main') {
             tierItem.appendChild(icon);
             
             const badge = document.createElement('div');
-            badge.className = `player-modal-tier-badge tier-${tierNumber}`;
-            badge.textContent = tierInfo.tier;
+            const isUnknown = tierInfo.tier === 'unknown' || tierInfo.tier === 'Unknown';
+            badge.className = isUnknown ? 'player-modal-tier-badge tier-unknown' : `player-modal-tier-badge tier-${tierNumber}`;
+            badge.textContent = isUnknown ? '?' : tierInfo.tier;
             tierItem.appendChild(badge);
             
             tiersGrid.appendChild(tierItem);
