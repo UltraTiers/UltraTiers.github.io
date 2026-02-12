@@ -142,6 +142,7 @@ const tierIcons = {
     3: '🥉',
     4: '⭐',
     5: '💫',
+    'Unknown': '❓',
 };
 
 const tierColors = {
@@ -150,6 +151,7 @@ const tierColors = {
     3: 'tier-3',
     4: 'tier-4',
     5: 'tier-5',
+    'Unknown': 'tier-unknown',
 };
 
 // Map of player names to full player objects for quick lookup
@@ -193,6 +195,7 @@ async function fetchAndOrganizePlayers() {
                     { tier: 3, players: [] },
                     { tier: 4, players: [] },
                     { tier: 5, players: [] },
+                    { tier: 'Unknown', players: [] },
                 ];
             });
         });
@@ -212,8 +215,10 @@ async function fetchAndOrganizePlayers() {
                         tierValue = parseInt(tierValue);
                     }
 
-                    if (!tierValue || tierValue < 1 || tierValue > 5) {
-                        return; // Skip if tier is invalid or "Unknown"
+                    if (tierValue === null || tierValue === undefined) {
+                        tierValue = 'Unknown'; // Mark unknown tiers
+                    } else if (tierValue < 1 || tierValue > 5) {
+                        tierValue = 'Unknown'; // Mark out-of-range tiers as unknown
                     }
 
                     // Find which category this gamemode belongs to
@@ -532,8 +537,14 @@ function renderRankings(category, mode) {
         return;
     }
 
-    // Render existing data
-    data.forEach(tierInfo => {
+    // Sort tiers: 1-5 first (left to right), then Unknown on the far right
+    const sortedData = [...data].sort((a, b) => {
+        const tierOrder = { 1: 0, 2: 1, 3: 2, 4: 3, 5: 4, 'Unknown': 5 };
+        return (tierOrder[a.tier] ?? 6) - (tierOrder[b.tier] ?? 6);
+    });
+
+    // Render sorted tiers
+    sortedData.forEach(tierInfo => {
         const card = createTierCard(tierInfo.tier, tierInfo.players);
         container.appendChild(card);
     });

@@ -421,6 +421,19 @@ body {
     border-bottom-color: rgba(169, 146, 125, 0.4);
 }
 
+.tier-card.tier-unknown {
+    border-color: rgba(107, 114, 128, 0.6);
+    background: linear-gradient(135deg, rgba(107, 114, 128, 0.08) 0%, rgba(30, 58, 95, 0.4) 100%);
+}
+
+.tier-card.tier-unknown .tier-title {
+    color: #6b7280;
+}
+
+.tier-card.tier-unknown .tier-header {
+    border-bottom-color: rgba(107, 114, 128, 0.4);
+}
+
 /* Players List */
 .players-list {
     display: flex;
@@ -4269,7 +4282,7 @@ body {
 /* Category Player Row Layout */
 .category-player-row {
     display: grid;
-    grid-template-columns: auto 1fr 100px 1fr;
+    grid-template-columns: auto minmax(150px, 1fr) 100px minmax(280px, 1fr);
     gap: 24px;
     align-items: center;
     padding: 24px 28px;
@@ -4353,8 +4366,9 @@ body {
     flex-direction: column;
     justify-content: center;
     gap: 4px;
-    min-width: 0;
-    flex: 0 1 auto;
+    min-width: 150px;
+    flex: 1 1 auto;
+    overflow: hidden;
 }
 
 .player-avatar {
@@ -4420,7 +4434,8 @@ body {
     align-items: center;
     justify-content: flex-end;
     overflow: visible;
-    min-width: 0;
+    min-width: 280px;
+    max-width: 100%;
 }
 
 .mode-item {
