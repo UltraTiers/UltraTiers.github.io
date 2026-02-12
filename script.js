@@ -947,41 +947,45 @@ function showPlayerModal(player, tierNumber, category = 'main') {
             return false;
         });
         
-        // Sort tiers: highest (1) to lowest (5), HT before LT, retired at end
-        categoryTiers.sort((a, b) => {
-            const isRetiredA = a.tier === 'Retired' || a.tier === 'retired';
-            const isRetiredB = b.tier === 'Retired' || b.tier === 'retired';
+        // Prepare tiers with metadata for sorting
+        const tiersWithMetadata = categoryTiers.map(tierInfo => {
+            const isRetired = tierInfo.tier === 'Retired' || tierInfo.tier === 'retired';
+            const tierMatch = typeof tierInfo.tier === 'string' ? tierInfo.tier.match(/\d+/) : null;
+            const tierNumber = tierMatch ? parseInt(tierMatch[0]) : (tierInfo.tier === 'Unknown' || tierInfo.tier === 'unknown' ? 0 :999);
             
-            // Retired tiers go to the end
-            if (isRetiredA && !isRetiredB) return 1;
-            if (!isRetiredA && isRetiredB) return -1;
-            if (isRetiredA && isRetiredB) return 0;
+            return {
+                ...tierInfo,
+                tierNumber,
+                isRetired,
+                tierValue: tierInfo.tier
+            };
+        });
+        
+        // Sort: highest tier first (tier 1 = 1, tier 2 = 2, etc), Retired and Unknown last
+        tiersWithMetadata.sort((a, b) => {
+            if (a.isRetired && !b.isRetired) return 1;  // Retired goes to end
+            if (!a.isRetired && b.isRetired) return -1; // Retired goes to end
+            if (a.tierNumber === 0) return 1;  // Unknown goes to end
+            if (b.tierNumber === 0) return -1; // Unknown goes to end
             
-            // Extract tier numbers
-            const matchA = typeof a.tier === 'string' ? a.tier.match(/\d+/) : null;
-            const matchB = typeof b.tier === 'string' ? b.tier.match(/\d+/) : null;
-            const tierA = matchA ? parseInt(matchA[0]) : 999;
-            const tierB = matchB ? parseInt(matchB[0]) : 999;
+            // First sort by tier number
+            if (a.tierNumber !== b.tierNumber) {
+                return a.tierNumber - b.tierNumber; // Lower tier number comes first
+            }
             
-            // Sort by tier number (1 highest, comes first)
-            if (tierA !== tierB) return tierA - tierB;
-            
-            // Same tier number: HT before LT
-            const aIsHT = a.tier.startsWith('HT');
-            const bIsHT = b.tier.startsWith('HT');
-            if (aIsHT && !bIsHT) return -1;
-            if (!aIsHT && bIsHT) return 1;
-            
+            // Within the same tier, HT comes before LT
+            const aIsHT = typeof a.tierValue === 'string' && a.tierValue.startsWith('HT');
+            const bIsHT = typeof b.tierValue === 'string' && b.tierValue.startsWith('HT');
+            if (aIsHT && !bIsHT) return -1;  // HT comes first
+            if (!aIsHT && bIsHT) return 1;   // LT comes second
             return 0;
         });
         
-        categoryTiers.forEach(tierInfo => {
+        tiersWithMetadata.forEach(tierInfo => {
             const tierItem = document.createElement('div');
             tierItem.className = 'player-modal-tier-item';
             
             const gamemodeName = tierInfo.gamemode;
-            const tierMatch = typeof tierInfo.tier === 'string' ? tierInfo.tier.match(/\d+/) : null;
-            const tierNumber = tierMatch ? parseInt(tierMatch[0]) : tierInfo.tier;
             
             const icon = document.createElement('img');
             icon.className = 'player-modal-tier-icon';
@@ -990,18 +994,19 @@ function showPlayerModal(player, tierNumber, category = 'main') {
             tierItem.appendChild(icon);
             
             const badge = document.createElement('div');
-            const isUnknown = tierInfo.tier === 'unknown' || tierInfo.tier === 'Unknown';
-            const isRetired = tierInfo.tier === 'Retired' || tierInfo.tier === 'retired';
             let badgeClass = 'player-modal-tier-badge';
-            let badgeText = tierInfo.tier;
+            let badgeText = tierInfo.tierValue;
             
-            if (isUnknown) {
+            if (tierInfo.tierNumber === 0) {
+                // Unknown tier
                 badgeClass += ' tier-unknown';
                 badgeText = '?';
-            } else if (isRetired) {
+            } else if (tierInfo.isRetired) {
+                // Retired tier
                 badgeClass += ' tier-retired';
             } else {
-                badgeClass += ` tier-${tierNumber}`;
+                // Numbered tier (1-5)
+                badgeClass += ` tier-${tierInfo.tierNumber}`;
             }
             
             badge.className = badgeClass;
