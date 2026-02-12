@@ -166,7 +166,7 @@ const tierIcons = {
     2: '🥈',
     3: '🥉',
     4: '⭐',
-    5: '💫',
+    5: '⭐',
     'Unknown': '❓',
 };
 
@@ -587,13 +587,21 @@ function renderRankings(category, mode) {
         return;
     }
 
-    // Sort tiers: 1-5 first (left to right), then Unknown on the far right
-    const sortedData = [...data].sort((a, b) => {
-        const tierOrder = { 1: 0, 2: 1, 3: 2, 4: 3, 5: 4, 'Unknown': 5 };
+    // Sort tiers: empty (no players) first, then 1-5 with players
+    const sortedData = [...data].filter(t => t.tier !== 'Unknown').sort((a, b) => {
+        const aEmpty = a.players && a.players.length === 0;
+        const bEmpty = b.players && b.players.length === 0;
+        
+        // Empty tiers come first
+        if (aEmpty && !bEmpty) return -1;
+        if (!aEmpty && bEmpty) return 1;
+        
+        // Within empty or non-empty, sort by tier number
+        const tierOrder = { 1: 0, 2: 1, 3: 2, 4: 3, 5: 4 };
         return (tierOrder[a.tier] ?? 6) - (tierOrder[b.tier] ?? 6);
     });
 
-    // Render sorted tiers
+    // Render sorted tiers (unknown tier skipped, empty tiers at top)
     sortedData.forEach(tierInfo => {
         const card = createTierCard(tierInfo.tier, tierInfo.players);
         container.appendChild(card);
@@ -603,6 +611,15 @@ function renderRankings(category, mode) {
 function createTierCard(tierNumber, players) {
     const card = document.createElement('div');
     card.className = `tier-card ${tierColors[tierNumber]}`;
+    
+    // Sort players: HT first (higher tier prefixes), then LT
+    const sortedPlayers = [...players].sort((a, b) => {
+        const aIsHT = a.startsWith('HT');
+        const bIsHT = b.startsWith('HT');
+        if (aIsHT && !bIsHT) return -1;  // HT comes first
+        if (!aIsHT && bIsHT) return 1;   // LT comes second
+        return 0;
+    });
     
     const header = document.createElement('div');
     header.className = 'tier-header';
@@ -623,13 +640,24 @@ function createTierCard(tierNumber, players) {
         const list = document.createElement('div');
         list.className = 'players-list';
         
-        players.forEach((playerName, index) => {
+        sortedPlayers.forEach((playerName, index) => {
             const item = document.createElement('div');
             item.className = 'player-item';
             
+            // Determine tier prefix and arrow count
+            let tierPrefix = '';
+            let arrows = '';
+            if (playerName.startsWith('HT')) {
+                tierPrefix = 'HT';
+                arrows = '^^'; // 2 arrows for HT
+            } else if (playerName.startsWith('LT')) {
+                tierPrefix = 'LT';
+                arrows = '^';  // 1 arrow for LT
+            }
+            
             const rank = document.createElement('div');
             rank.className = 'player-rank';
-            rank.textContent = `#${index + 1}`;
+            rank.innerHTML = `${arrows}<div>#${index + 1}</div>`;
             
             // Get player object for MC skin
             const playerObj = window.playerMap[playerName] || { name: playerName };
