@@ -28,12 +28,28 @@
             </div>
         </header>
 
-        <!-- Login Banner -->
-        <div id="login-banner" class="login-banner">
-            <div class="login-banner-content">
-                <span class="login-banner-text">Have an account?</span>
-                <button id="login-btn" class="login-banner-btn">Sign In</button>
-                <button id="close-banner-btn" class="banner-close-btn">✕</button>
+        <!-- Profile/Login Section -->
+        <div id="profile-section" class="profile-section">
+            <!-- Login Prompt (shown when not logged in) -->
+            <div id="login-prompt" class="login-prompt">
+                <div class="login-prompt-content">
+                    <i class="fas fa-lock"></i>
+                    <span>Have an account? Click here to sign in</span>
+                </div>
+            </div>
+            
+            <!-- User Profile (shown when logged in) -->
+            <div id="user-profile" class="user-profile" style="display: none;">
+                <div class="profile-info">
+                    <div class="profile-main">
+                        <span class="profile-label">Account:</span>
+                        <span id="profile-ign" class="profile-ign"></span>
+                    </div>
+                    <div class="profile-actions">
+                        <button id="profile-edit-btn" class="profile-btn profile-edit">Edit</button>
+                        <button id="profile-logout-btn" class="profile-btn profile-logout">Logout</button>
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -41,17 +57,21 @@
         <div id="login-modal" class="login-modal-overlay" style="display: none;">
             <div class="login-modal-content">
                 <div class="login-modal-header">
-                    <h2>Sign In to your Account</h2>
+                    <h2>Sign In</h2>
                     <button id="close-login-modal" class="login-modal-close">✕</button>
                 </div>
                 <div class="login-modal-body">
+                    <div class="login-info-box">
+                        <p><strong>Need a login code?</strong></p>
+                        <p>Run <code>/code [Your IGN]</code> in Discord to get your code</p>
+                    </div>
                     <div class="login-form-group">
                         <label for="login-ign">Minecraft Username</label>
                         <input type="text" id="login-ign" placeholder="Enter your IGN" />
                     </div>
                     <div class="login-form-group">
                         <label for="login-code">Login Code</label>
-                        <input type="text" id="login-code" placeholder="Enter your code" />
+                        <input type="text" id="login-code" placeholder="Enter your code from Discord" />
                     </div>
                     <button id="submit-login" class="login-submit-btn">Sign In</button>
                     <div id="login-error" class="login-error" style="display: none;"></div>
@@ -59,11 +79,25 @@
             </div>
         </div>
 
-        <!-- Account Info Section (shown when logged in) -->
-        <div id="account-info" class="account-info" style="display: none;">
-            <div class="account-info-content">
-                <span id="account-username" class="account-username"></span>
-                <button id="logout-btn" class="logout-btn">Log Out</button>
+        <!-- Edit Profile Modal -->
+        <div id="edit-profile-modal" class="login-modal-overlay" style="display: none;">
+            <div class="login-modal-content">
+                <div class="login-modal-header">
+                    <h2>Edit Account</h2>
+                    <button id="close-edit-modal" class="login-modal-close">✕</button>
+                </div>
+                <div class="login-modal-body">
+                    <div class="login-form-group">
+                        <label for="edit-ign">Minecraft Username</label>
+                        <input type="text" id="edit-ign" placeholder="Your IGN" readonly/>
+                    </div>
+                    <div class="login-form-group">
+                        <label for="edit-code">Your Login Code</label>
+                        <input type="text" id="edit-code" placeholder="Your code" readonly/>
+                        <small>Contact an admin to regenerate your code</small>
+                    </div>
+                    <button id="close-edit-btn" class="login-submit-btn">Close</button>
+                </div>
             </div>
         </div>
 

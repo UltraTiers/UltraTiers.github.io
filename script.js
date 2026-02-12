@@ -650,23 +650,32 @@ function createTierCard(tierNumber, players) {
             // Determine tier prefix and indicator
             let tierPrefix = '';
             let indicator = '';
+            let cleanName = playerName;
+            
             if (playerName.startsWith('HT')) {
                 tierPrefix = 'HT';
-                indicator = '+'; // + for HT (high tier)
+                indicator = '+';
+                cleanName = playerName.substring(2); // Remove HT prefix
             } else if (playerName.startsWith('LT')) {
                 tierPrefix = 'LT';
-                indicator = '-'; // - for LT (low tier)
+                indicator = '-';
+                cleanName = playerName.substring(2); // Remove LT prefix
             }
             
             const rank = document.createElement('div');
             rank.className = 'player-rank';
-            const icon = tierPrefix === 'HT' ? '<i class="fa-solid fa-angles-up"></i>' : '<i class="fa-solid fa-angle-up"></i>';
+            let icon = '';
+            if (tierPrefix === 'HT') {
+                icon = '<i class="fa-solid fa-angles-up"></i>';
+            } else if (tierPrefix === 'LT') {
+                icon = '<i class="fa-solid fa-angle-up"></i>';
+            }
             rank.innerHTML = `${indicator}<div>${icon}</div>`;
             
-            // Get player object for MC skin
-            const playerObj = window.playerMap[playerName] || { name: playerName };
+            // Get player object for MC skin using clean name
+            const playerObj = window.playerMap[cleanName] || { name: cleanName };
             const avatar = getPlayerAvatarElement(playerObj);
-            avatar.style.width = '32px';
+            avatar.style.width cleanx';
             avatar.style.height = '32px';
             avatar.style.minWidth = '32px';
             
@@ -736,27 +745,88 @@ function showPlayerModal(player, tierNumber) {
     header.appendChild(playerInfo);
     modal.appendChild(header);
     
-    // Player tiers
+    // Player tiers organized by category
     const tiersSection = document.createElement('div');
     tiersSection.className = 'modal-section';
-    tiersSection.innerHTML = '<h3>Tiers</h3>';
     
-    const tiersList = document.createElement('div');
-    tiersList.className = 'modal-tiers-list';
-    
+    const tiersTitle = document.createElement('h3');
+    tiersTitle.style.marginBottom = '16px';
+    tiersTitle.textContent = 'Tiers';
+    tiersSection.appendChild(tiersTitle);
+
     if (player.tiers && Array.isArray(player.tiers)) {
+        // Organize tiers by category
+        const tiersByCategory = {};
         player.tiers.forEach(tierInfo => {
-            const tierItem = document.createElement('div');
-            tierItem.className = 'modal-tier-item';
-            tierItem.innerHTML = `
-                <span class="tier-name">${tierInfo.gamemode}</span>
-                <span class="tier-badge">${tierInfo.tier}</span>
-            `;
-            tiersList.appendChild(tierItem);
+            // Find which category this gamemode belongs to
+            for (const [category, modes] of Object.entries(categoryMappings)) {
+                if (modes.includes(tierInfo.gamemode)) {
+                    if (!tiersByCategory[category]) {
+                        tiersByCategory[category] = [];
+                    }
+                    tiersByCategory[category].push(tierInfo);
+                    break;
+                }
+            }
         });
+
+        // Display tiers by category
+        for (const [category, tiers] of Object.entries(tiersByCategory)) {
+            const categoryDiv = document.createElement('div');
+            categoryDiv.style.marginBottom = '18px';
+
+            const categoryTitle = document.createElement('div');
+            categoryTitle.style.fontSize = '12px';
+            categoryTitle.style.fontWeight = '700';
+            categoryTitle.style.color = 'rgba(255, 255, 255, 0.7)';
+            categoryTitle.style.textTransform = 'uppercase';
+            categoryTitle.style.marginBottom = '10px';
+            categoryTitle.textContent = category.charAt(0).toUpperCase() + category.slice(1) + ' Modes';
+            categoryDiv.appendChild(categoryTitle);
+
+            const tiersGrid = document.createElement('div');
+            tiersGrid.style.display = 'grid';
+            tiersGrid.style.gridTemplateColumns = 'repeat(auto-fill, minmax(100px, 1fr))';
+            tiersGrid.style.gap = '8px';
+
+            tiers.forEach(tierInfo => {
+                const tierItem = document.createElement('div');
+                tierItem.style.background = 'rgba(100, 116, 139, 0.15)';
+                tierItem.style.border = '1px solid rgba(14, 165, 233, 0.2)';
+                tierItem.style.borderRadius = '6px';
+                tierItem.style.padding = '8px 10px';
+                tierItem.style.textAlign = 'center';
+                tierItem.style.fontSize = '12px';
+                tierItem.style.minHeight = '60px';
+                tierItem.style.display = 'flex';
+                tierItem.style.flexDirection = 'column';
+                tierItem.style.justifyContent = 'center';
+                tierItem.style.gap = '6px';
+
+                const modeName = document.createElement('div');
+                modeName.style.fontWeight = '600';
+                modeName.style.color = 'rgba(255, 255, 255, 0.85)';
+                modeName.textContent = tierInfo.gamemode;
+
+                const tierBadge = document.createElement('div');
+                tierBadge.style.padding = '4px 8px';
+                tierBadge.style.borderRadius = '4px';
+                tierBadge.style.fontSize = '11px';
+                tierBadge.style.fontWeight = '700';
+                tierBadge.style.background = 'rgba(14, 165, 233, 0.3)';
+                tierBadge.style.color = '#0ea5e9';
+                tierBadge.textContent = tierInfo.tier;
+
+                tierItem.appendChild(modeName);
+                tierItem.appendChild(tierBadge);
+                tiersGrid.appendChild(tierItem);
+            });
+
+            categoryDiv.appendChild(tiersGrid);
+            tiersSection.appendChild(categoryDiv);
+        }
     }
     
-    tiersSection.appendChild(tiersList);
     modal.appendChild(tiersSection);
     
     // Close button
@@ -784,67 +854,83 @@ function initLoginSystem() {
     // Check if user is already logged in
     const loggedInUser = localStorage.getItem('ultratiers_user');
     if (loggedInUser) {
-        showAccountInfo(JSON.parse(loggedInUser));
+        showUserProfile(JSON.parse(loggedInUser));
     } else {
-        showLoginBanner();
+        showLoginPrompt();
     }
 
-    // Login banner button
-    const loginBtn = document.getElementById('login-btn');
-    if (loginBtn) {
-        loginBtn.addEventListener('click', openLoginModal);
+    // Login prompt click
+    const loginPrompt = document.getElementById('login-prompt');
+    if (loginPrompt) {
+        loginPrompt.addEventListener('click', openLoginModal);
     }
 
-    // Close banner
-    const closeBannerBtn = document.getElementById('close-banner-btn');
-    if (closeBannerBtn) {
-        closeBannerBtn.addEventListener('click', () => {
-            const banner = document.getElementById('login-banner');
-            if (banner) banner.style.display = 'none';
-        });
+    // Close login modal
+    const closeLoginModalBtn = document.getElementById('close-login-modal');
+    if (closeLoginModalBtn) {
+        closeLoginModalBtn.addEventListener('click', closeLoginModal);
     }
 
-    // Login modal
     const loginModal = document.getElementById('login-modal');
-    const closeModalBtn = document.getElementById('close-login-modal');
-    const submitBtn = document.getElementById('submit-login');
-
-    if (closeModalBtn) {
-        closeModalBtn.addEventListener('click', closeLoginModal);
-    }
-
     if (loginModal) {
         loginModal.addEventListener('click', (e) => {
             if (e.target === loginModal) closeLoginModal();
         });
     }
 
+    // Submit login
+    const submitBtn = document.getElementById('submit-login');
     if (submitBtn) {
         submitBtn.addEventListener('click', handleLogin);
     }
 
-    // Logout button
-    const logoutBtn = document.getElementById('logout-btn');
+    // Enter key to submit
+    const igninput = document.getElementById('login-ign');
+    const codeInput = document.getElementById('login-code');
+    if (igninput) igninput.addEventListener('keypress', (e) => e.key === 'Enter' && handleLogin());
+    if (codeInput) codeInput.addEventListener('keypress', (e) => e.key === 'Enter' && handleLogin());
+
+    // Edit profile
+    const editBtn = document.getElementById('profile-edit-btn');
+    if (editBtn) {
+        editBtn.addEventListener('click', openEditModal);
+    }
+
+    // Close edit modal
+    const closeEditBtn = document.getElementById('close-edit-modal');
+    const closeEditBtnBottom = document.getElementById('close-edit-btn');
+    if (closeEditBtn) closeEditBtn.addEventListener('click', closeEditModal);
+    if (closeEditBtnBottom) closeEditBtnBottom.addEventListener('click', closeEditModal);
+
+    const editModal = document.getElementById('edit-profile-modal');
+    if (editModal) {
+        editModal.addEventListener('click', (e) => {
+            if (e.target === editModal) closeEditModal();
+        });
+    }
+
+    // Logout
+    const logoutBtn = document.getElementById('profile-logout-btn');
     if (logoutBtn) {
         logoutBtn.addEventListener('click', handleLogout);
     }
 }
 
-function showLoginBanner() {
-    const banner = document.getElementById('login-banner');
-    if (banner) banner.style.display = 'flex';
-    const accountInfo = document.getElementById('account-info');
-    if (accountInfo) accountInfo.style.display = 'none';
+function showLoginPrompt() {
+    const prompt = document.getElementById('login-prompt');
+    const profile = document.getElementById('user-profile');
+    if (prompt) prompt.style.display = 'flex';
+    if (profile) profile.style.display = 'none';
 }
 
-function showAccountInfo(user) {
-    const banner = document.getElementById('login-banner');
-    if (banner) banner.style.display = 'none';
-    const accountInfo = document.getElementById('account-info');
-    if (accountInfo) {
-        accountInfo.style.display = 'block';
-        const usernameEl = document.getElementById('account-username');
-        if (usernameEl) usernameEl.textContent = `Logged in as: ${user.ign}`;
+function showUserProfile(user) {
+    const prompt = document.getElementById('login-prompt');
+    const profile = document.getElementById('user-profile');
+    if (prompt) prompt.style.display = 'none';
+    if (profile) {
+        profile.style.display = 'block';
+        const ignEl = document.getElementById('profile-ign');
+        if (ignEl) ignEl.textContent = user.ign;
     }
 }
 
@@ -852,14 +938,13 @@ function openLoginModal() {
     const modal = document.getElementById('login-modal');
     if (modal) {
         modal.style.display = 'flex';
-        document.getElementById('login-ign').focus();
+        setTimeout(() => document.getElementById('login-ign').focus(), 100);
     }
 }
 
 function closeLoginModal() {
     const modal = document.getElementById('login-modal');
     if (modal) modal.style.display = 'none';
-    // Clear input fields
     document.getElementById('login-ign').value = '';
     document.getElementById('login-code').value = '';
     const errorEl = document.getElementById('login-error');
@@ -900,7 +985,7 @@ async function handleLogin() {
         const user = { ign: data.ign, uuid: data.uuid };
         localStorage.setItem('ultratiers_user', JSON.stringify(user));
         closeLoginModal();
-        showAccountInfo(user);
+        showUserProfile(user);
     } catch (err) {
         console.error('Login error:', err);
         if (errorEl) {
@@ -910,7 +995,23 @@ async function handleLogin() {
     }
 }
 
+function openEditModal() {
+    const user = localStorage.getItem('ultratiers_user');
+    if (!user) return;
+
+    const userData = JSON.parse(user);
+    document.getElementById('edit-ign').value = userData.ign;
+    
+    const modal = document.getElementById('edit-profile-modal');
+    if (modal) modal.style.display = 'flex';
+}
+
+function closeEditModal() {
+    const modal = document.getElementById('edit-profile-modal');
+    if (modal) modal.style.display = 'none';
+}
+
 function handleLogout() {
     localStorage.removeItem('ultratiers_user');
-    showLoginBanner();
+    showLoginPrompt();
 }
