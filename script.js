@@ -279,10 +279,81 @@ async function fetchAndOrganizePlayers() {
     }
 }
 
+// Search System Functions
+function initSearchSystem() {
+    const searchInput = document.getElementById('player-search-input');
+    const searchDropdown = document.getElementById('search-results-dropdown');
+    
+    if (!searchInput) return;
+    
+    // Handle input and filtering
+    searchInput.addEventListener('input', function() {
+        const query = this.value.trim().toLowerCase();
+        
+        if (query.length === 0) {
+            searchDropdown.style.display = 'none';
+            return;
+        }
+        
+        // Filter players based on search query
+        const results = window.allPlayers.filter(player => 
+            player.name.toLowerCase().includes(query)
+        ).slice(0, 8); // Limit to 8 results
+        
+        if (results.length === 0) {
+            searchDropdown.innerHTML = '<div class="search-no-results">No players found</div>';
+            searchDropdown.style.display = 'block';
+            return;
+        }
+        
+        // Populate dropdown with results
+        searchDropdown.innerHTML = results.map(player => `
+            <div class="search-result-item" data-player-name="${player.name}">
+                <img src="https://mc-heads.net/avatar/${player.uuid}/32" alt="${player.name}" class="search-result-avatar">
+                <div class="search-result-info">
+                    <div class="search-result-name">${player.name}</div>
+                    <div class="search-result-region">${player.region || 'Unknown'}</div>
+                </div>
+            </div>
+        `).join('');
+        
+        searchDropdown.style.display = 'block';
+        
+        // Add click handlers to result items
+        document.querySelectorAll('.search-result-item').forEach(item => {
+            item.addEventListener('click', function() {
+                const playerName = this.getAttribute('data-player-name');
+                const player = window.playerMap[playerName];
+                if (player) {
+                    showPlayerModal(player, 0);
+                    searchInput.value = '';
+                    searchDropdown.style.display = 'none';
+                }
+            });
+        });
+    });
+    
+    // Close dropdown when clicking outside
+    document.addEventListener('click', function(e) {
+        if (!e.target.closest('.search-container')) {
+            searchDropdown.style.display = 'none';
+        }
+    });
+    
+    // Close dropdown on escape key
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            searchDropdown.style.display = 'none';
+            searchInput.value = '';
+        }
+    });
+}
+
 // Initialize
 document.addEventListener('DOMContentLoaded', async function () {
     await fetchAndOrganizePlayers();
     initLoginSystem();
+    initSearchSystem();
     setupTabHandlers();
     renderDefaultTab();
 });
@@ -1054,7 +1125,14 @@ const AVAILABLE_BANNERS = [
     { name: 'Forest', file: 'anime-style-forest.jpg' },
     { name: 'Ocean', file: 'anime-style-ocean.jpg' },
     { name: 'Sunset', file: 'anime-style-sunset.jpg' },
-    { name: 'Night', file: 'anime-style-night.jpg' }
+    { name: 'Night', file: 'anime-style-night.jpg' },
+    { name: 'Mountains', file: 'anime-style-mountains.jpg' },
+    { name: 'City', file: 'anime-style-city.jpg' },
+    { name: 'Desert', file: 'anime-style-desert.jpg' },
+    { name: 'Sakura', file: 'anime-style-sakura.jpg' },
+    { name: 'Temple', file: 'anime-style-temple.jpg' },
+    { name: 'Space', file: 'anime-style-space.jpg' },
+    { name: 'Aurora', file: 'anime-style-aurora.jpg' }
 ];
 
 function openEditModal() {
@@ -1062,7 +1140,6 @@ function openEditModal() {
     if (!user) return;
 
     const userData = JSON.parse(user);
-    document.getElementById('edit-ign').value = userData.ign;
     
     // Populate banner grid
     const bannerGrid = document.getElementById('banner-grid');
