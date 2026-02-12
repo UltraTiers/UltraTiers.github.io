@@ -605,6 +605,7 @@ function renderCategoryOverall(category) {
         const modesWithTiers = categoryMappings[category].map(gamemode => {
             const tierInfo = player.tiers.find(t => t.gamemode === gamemode);
             const tierValue = tierInfo ? tierInfo.tier : 'Unknown';
+            const isRetired = tierInfo && tierInfo.retired;
             
             // Parse tier value to get number for sorting
             let tierNumber = 0;
@@ -613,20 +614,22 @@ function renderCategoryOverall(category) {
                 tierNumber = match ? parseInt(match[0]) : 0;
             }
             
-            return { gamemode, tierValue, tierNumber };
+            return { gamemode, tierValue, tierNumber, isRetired };
         });
         
-        // Sort: highest tier first (tier 1 = 1, tier 2 = 2, etc), Unknown last (tier 0)
+        // Sort: highest tier first (tier 1 = 1, tier 2 = 2, etc), Retired and Unknown last
         modesWithTiers.sort((a, b) => {
+            if (a.isRetired && !b.isRetired) return 1;  // Retired goes to end
+            if (!a.isRetired && b.isRetired) return -1; // Retired goes to end
             if (a.tierNumber === 0) return 1;  // Unknown goes to end
             if (b.tierNumber === 0) return -1; // Unknown goes to end
             return a.tierNumber - b.tierNumber; // Lower tier number comes first
         });
         
         // Render sorted modes
-        modesWithTiers.forEach(({ gamemode, tierValue, tierNumber }) => {
+        modesWithTiers.forEach(({ gamemode, tierValue, tierNumber, isRetired }) => {
             const modeItem = document.createElement('div');
-            modeItem.className = 'mode-item';
+            modeItem.className = `mode-item${isRetired ? ' retired-tier' : ''}`;
             
             const icon = document.createElement('img');
             icon.className = 'mode-icon';
