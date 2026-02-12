@@ -21,37 +21,38 @@
                     <img src="UltraLogo.png" alt="UltraTiers" class="logo">
                     <h1>ULTRATIERS</h1>
                 </div>
+
+                <!-- Profile/Login Section (centered) -->
+                <div id="profile-section" class="profile-section">
+                    <!-- Login Prompt (shown when not logged in) -->
+                    <div id="login-prompt" class="login-prompt">
+                        <div class="login-prompt-content">
+                            <i class="fas fa-lock"></i>
+                            <span>Have an account? Click here to sign in</span>
+                        </div>
+                    </div>
+                    
+                    <!-- User Profile (shown when logged in) -->
+                    <div id="user-profile" class="user-profile" style="display: none;">
+                        <div class="profile-info">
+                            <div class="profile-main">
+                                <span class="profile-label">Account:</span>
+                                <span id="profile-ign" class="profile-ign"></span>
+                            </div>
+                            <div class="profile-actions">
+                                <button id="profile-edit-btn" class="profile-btn profile-edit">Edit</button>
+                                <button id="profile-logout-btn" class="profile-btn profile-logout">Logout</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 <div class="server-info">
                     <span class="server-ip">UltraTiers</span>
                     <i class="fab fa-discord"></i>
                 </div>
             </div>
         </header>
-
-        <!-- Profile/Login Section -->
-        <div id="profile-section" class="profile-section">
-            <!-- Login Prompt (shown when not logged in) -->
-            <div id="login-prompt" class="login-prompt">
-                <div class="login-prompt-content">
-                    <i class="fas fa-lock"></i>
-                    <span>Have an account? Click here to sign in</span>
-                </div>
-            </div>
-            
-            <!-- User Profile (shown when logged in) -->
-            <div id="user-profile" class="user-profile" style="display: none;">
-                <div class="profile-info">
-                    <div class="profile-main">
-                        <span class="profile-label">Account:</span>
-                        <span id="profile-ign" class="profile-ign"></span>
-                    </div>
-                    <div class="profile-actions">
-                        <button id="profile-edit-btn" class="profile-btn profile-edit">Edit</button>
-                        <button id="profile-logout-btn" class="profile-btn profile-logout">Logout</button>
-                    </div>
-                </div>
-            </div>
-        </div>
 
         <!-- Login Modal -->
         <div id="login-modal" class="login-modal-overlay" style="display: none;">

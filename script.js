@@ -654,11 +654,9 @@ function createTierCard(tierNumber, players) {
             
             if (playerName.startsWith('HT')) {
                 tierPrefix = 'HT';
-                indicator = '+';
                 cleanName = playerName.substring(2); // Remove HT prefix
             } else if (playerName.startsWith('LT')) {
                 tierPrefix = 'LT';
-                indicator = '-';
                 cleanName = playerName.substring(2); // Remove LT prefix
             }
             
@@ -670,7 +668,7 @@ function createTierCard(tierNumber, players) {
             } else if (tierPrefix === 'LT') {
                 icon = '<i class="fa-solid fa-angle-up"></i>';
             }
-            rank.innerHTML = `${indicator}<div>${icon}</div>`;
+            rank.innerHTML = `<div>${icon}</div>`;
             
             // Get player object for MC skin using clean name
             const playerObj = window.playerMap[cleanName] || { name: cleanName };
@@ -724,34 +722,82 @@ function showPlayerModal(player, tierNumber) {
     const modal = document.createElement('div');
     modal.className = 'modal-content';
     
-    // Player header with avatar
+    // Banner with anime background
+    const bannerImg = player.banner || 'anime-style-stone.jpg';
     const header = document.createElement('div');
     header.className = 'modal-header';
+    header.style.backgroundImage = `url(${bannerImg})`;
+    header.style.backgroundSize = 'cover';
+    header.style.backgroundPosition = 'center';
+    header.style.height = '200px';
+    header.style.display = 'flex';
+    header.style.alignItems = 'center';
+    header.style.justifyContent = 'center';
+    header.style.position = 'relative';
     
+    // Dark overlay on background
+    const overlay2 = document.createElement('div');
+    overlay2.style.position = 'absolute';
+    overlay2.style.inset = '0';
+    overlay2.style.background = 'linear-gradient(180deg, rgba(0,0,0,0.3) 0%, rgba(0,0,0,0.5) 100%)';
+    header.appendChild(overlay2);
+    
+    // Centered avatar
     const avatar = getPlayerAvatarElement(player);
-    avatar.style.width = '80px';
-    avatar.style.height = '80px';
-    avatar.style.borderRadius = '8px';
-    
-    const playerInfo = document.createElement('div');
-    playerInfo.className = 'modal-player-info';
-    playerInfo.innerHTML = `
-        <h2>${player.name}</h2>
-        <p><strong>UUID:</strong> ${player.uuid || 'N/A'}</p>
-        <p><strong>Region:</strong> ${player.region || 'Unknown'}</p>
-    `;
-    
+    avatar.style.width = '100px';
+    avatar.style.height = '100px';
+    avatar.style.borderRadius = '12px';
+    avatar.style.border = '4px solid rgba(255,255,255,0.95)';
+    avatar.style.boxShadow = '0 8px 24px rgba(0,0,0,0.4)';
+    avatar.style.position = 'relative';
+    avatar.style.zIndex = '2';
     header.appendChild(avatar);
-    header.appendChild(playerInfo);
+    
+    // Player title
+    const playerTitle = document.createElement('div');
+    playerTitle.style.position = 'absolute';
+    playerTitle.style.bottom = '16px';
+    playerTitle.style.left = '0';
+    playerTitle.style.right = '0';
+    playerTitle.style.textAlign = 'center';
+    playerTitle.style.color = '#fff';
+    playerTitle.style.fontSize = '18px';
+    playerTitle.style.fontWeight = '700';
+    playerTitle.style.textShadow = '0 2px 8px rgba(0,0,0,0.7)';
+    playerTitle.textContent = player.name;
+    header.appendChild(playerTitle);
+    
     modal.appendChild(header);
+    
+    // Player info section
+    const infoSection = document.createElement('div');
+    infoSection.className = 'modal-section';
+    infoSection.style.padding = '20px';
+    infoSection.innerHTML = `
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px;">
+            <div>
+                <div style="font-size: 11px; color: rgba(255,255,255,0.5); text-transform: uppercase; font-weight: 700; margin-bottom: 6px;">UUID</div>
+                <div style="font-size: 13px; color: rgba(255,255,255,0.9); font-family: monospace;">${player.uuid || 'N/A'}</div>
+            </div>
+            <div>
+                <div style="font-size: 11px; color: rgba(255,255,255,0.5); text-transform: uppercase; font-weight: 700; margin-bottom: 6px;">Region</div>
+                <div style="font-size: 13px; color: rgba(255,255,255,0.9);">${player.region || 'Unknown'}</div>
+            </div>
+        </div>
+    `;
+    modal.appendChild(infoSection);
     
     // Player tiers organized by category
     const tiersSection = document.createElement('div');
     tiersSection.className = 'modal-section';
+    tiersSection.style.padding = '20px';
     
     const tiersTitle = document.createElement('h3');
+    tiersTitle.style.marginTop = '0';
     tiersTitle.style.marginBottom = '16px';
-    tiersTitle.textContent = 'Tiers';
+    tiersTitle.style.fontSize = '16px';
+    tiersTitle.style.fontWeight = '700';
+    tiersTitle.textContent = 'Tier Progress';
     tiersSection.appendChild(tiersTitle);
 
     if (player.tiers && Array.isArray(player.tiers)) {
@@ -778,7 +824,7 @@ function showPlayerModal(player, tierNumber) {
             const categoryTitle = document.createElement('div');
             categoryTitle.style.fontSize = '12px';
             categoryTitle.style.fontWeight = '700';
-            categoryTitle.style.color = 'rgba(255, 255, 255, 0.7)';
+            categoryTitle.style.color = 'rgba(255, 255, 255, 0.6)';
             categoryTitle.style.textTransform = 'uppercase';
             categoryTitle.style.marginBottom = '10px';
             categoryTitle.textContent = category.charAt(0).toUpperCase() + category.slice(1) + ' Modes';
@@ -786,7 +832,7 @@ function showPlayerModal(player, tierNumber) {
 
             const tiersGrid = document.createElement('div');
             tiersGrid.style.display = 'grid';
-            tiersGrid.style.gridTemplateColumns = 'repeat(auto-fill, minmax(100px, 1fr))';
+            tiersGrid.style.gridTemplateColumns = 'repeat(auto-fill, minmax(90px, 1fr))';
             tiersGrid.style.gap = '8px';
 
             tiers.forEach(tierInfo => {
@@ -794,10 +840,10 @@ function showPlayerModal(player, tierNumber) {
                 tierItem.style.background = 'rgba(100, 116, 139, 0.15)';
                 tierItem.style.border = '1px solid rgba(14, 165, 233, 0.2)';
                 tierItem.style.borderRadius = '6px';
-                tierItem.style.padding = '8px 10px';
+                tierItem.style.padding = '10px';
                 tierItem.style.textAlign = 'center';
                 tierItem.style.fontSize = '12px';
-                tierItem.style.minHeight = '60px';
+                tierItem.style.minHeight = '70px';
                 tierItem.style.display = 'flex';
                 tierItem.style.flexDirection = 'column';
                 tierItem.style.justifyContent = 'center';
@@ -806,6 +852,7 @@ function showPlayerModal(player, tierNumber) {
                 const modeName = document.createElement('div');
                 modeName.style.fontWeight = '600';
                 modeName.style.color = 'rgba(255, 255, 255, 0.85)';
+                modeName.style.fontSize = '12px';
                 modeName.textContent = tierInfo.gamemode;
 
                 const tierBadge = document.createElement('div');

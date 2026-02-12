@@ -51,15 +51,23 @@
     display: flex;
     gap: 20px;
     align-items: flex-start;
-    margin-bottom: 25px;
-    padding-bottom: 20px;
-    border-bottom: 2px solid rgba(14, 165, 233, 0.2);
+    margin-bottom: 0;
+    padding-bottom: 0;
+    border-bottom: none;
+    background-size: cover;
+    background-position: center;
+    position: relative;
 }
 
 .modal-header img {
-    border-radius: 8px;
-    box-shadow: 0 4px 12px rgba(14, 165, 233, 0.3);
+    border-radius: 12px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
     flex-shrink: 0;
+}
+
+.modal-header div {
+    position: relative;
+    z-index: 2;
 }
 
 .modal-player-info h2 {

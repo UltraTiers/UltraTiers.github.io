@@ -59,6 +59,7 @@ body {
     max-width: 1800px;
     margin: 0 auto;
     width: 100%;
+    gap: 20px;
 }
 
 .logo-section {
@@ -619,6 +620,11 @@ body {
         font-size: 20px;
     }
 
+    .profile-section {
+        width: 100%;
+        flex: none;
+    }
+
     .server-info {
         width: 100%;
         justify-content: center;
@@ -692,6 +698,28 @@ body {
 
     .server-ip {
         font-size: 12px;
+    }
+
+    .login-prompt-content span {
+        display: none;
+    }
+
+    .profile-info {
+        gap: 6px;
+        padding: 6px 12px;
+    }
+
+    .profile-label {
+        display: none;
+    }
+
+    .profile-ign {
+        font-size: 12px;
+    }
+
+    .profile-btn {
+        padding: 4px 8px;
+        font-size: 10px;
     }
 
     .main-tabs, .mode-tabs {
@@ -4548,18 +4576,20 @@ body {
 ======================================== */
 
 .profile-section {
-    background: linear-gradient(135deg, rgba(14, 165, 233, 0.12) 0%, rgba(6, 182, 212, 0.08) 100%);
-    border-bottom: 2px solid rgba(14, 165, 233, 0.3);
-    padding: 14px 20px;
-    min-height: 50px;
+    flex: 1;
     display: flex;
     align-items: center;
     justify-content: center;
+    background: none;
+    border: none;
+    padding: 0;
+    min-height: auto;
 }
 
 /* Login Prompt */
 .login-prompt {
     width: 100%;
+    max-width: 350px;
     cursor: pointer;
 }
 
@@ -4567,43 +4597,46 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 12px;
-    padding: 12px 20px;
-    background: linear-gradient(135deg, rgba(14, 165, 233, 0.2) 0%, rgba(6, 182, 212, 0.15) 100%);
+    gap: 10px;
+    padding: 10px 16px;
+    background: rgba(14, 165, 233, 0.15);
     border: 1px solid rgba(14, 165, 233, 0.4);
     border-radius: 8px;
     transition: all 0.3s ease;
+    font-size: 13px;
+    white-space: nowrap;
 }
 
 .login-prompt-content:hover {
-    background: linear-gradient(135deg, rgba(14, 165, 233, 0.3) 0%, rgba(6, 182, 212, 0.25) 100%);
+    background: rgba(14, 165, 233, 0.25);
     border-color: rgba(14, 165, 233, 0.6);
-    transform: translateY(-2px);
+    transform: translateY(-1px);
 }
 
 .login-prompt-content i {
-    font-size: 18px;
+    font-size: 16px;
     color: #0ea5e9;
 }
 
 .login-prompt-content span {
     color: rgba(255, 255, 255, 0.85);
-    font-size: 14px;
+    font-size: 13px;
     font-weight: 500;
 }
 
 /* User Profile */
 .user-profile {
     width: 100%;
+    max-width: 420px;
 }
 
 .profile-info {
     display: flex;
     align-items: center;
-    justify-content: space-between;
-    gap: 20px;
-    padding: 12px 20px;
-    background: linear-gradient(135deg, rgba(16, 185, 129, 0.15) 0%, rgba(34, 197, 94, 0.1) 100%);
+    justify-content: center;
+    gap: 12px;
+    padding: 8px 16px;
+    background: rgba(16, 185, 129, 0.15);
     border: 1px solid rgba(34, 197, 94, 0.3);
     border-radius: 8px;
 }
@@ -4611,34 +4644,35 @@ body {
 .profile-main {
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 8px;
 }
 
 .profile-label {
     color: rgba(255, 255, 255, 0.6);
-    font-size: 13px;
+    font-size: 12px;
     font-weight: 600;
+    white-space: nowrap;
 }
 
 .profile-ign {
     color: rgba(255, 255, 255, 0.95);
-    font-size: 15px;
+    font-size: 13px;
     font-weight: 700;
-    padding: 4px 10px;
+    padding: 3px 8px;
     background: rgba(34, 197, 94, 0.2);
     border-radius: 4px;
 }
 
 .profile-actions {
     display: flex;
-    gap: 8px;
+    gap: 6px;
 }
 
 .profile-btn {
-    padding: 6px 14px;
+    padding: 5px 11px;
     border: none;
     border-radius: 6px;
-    font-size: 12px;
+    font-size: 11px;
     font-weight: 600;
     cursor: pointer;
     transition: all 0.2s ease;
