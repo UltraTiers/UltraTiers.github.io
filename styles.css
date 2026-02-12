@@ -321,6 +321,29 @@ body {
     background: #000 !important;
     color: #fff !important;
     box-shadow: none;
+    border: 1px solid #fff;
+}
+
+@keyframes nitro-gradient {
+    0% {
+        background-position: 0% 50%;
+    }
+    50% {
+        background-position: 100% 50%;
+    }
+    100% {
+        background-position: 0% 50%;
+    }
+}
+
+.player-name.nitro {
+    background: linear-gradient(90deg, #8b5cf6, #3b82f6, #8b5cf6);
+    background-size: 200% 200%;
+    animation: nitro-gradient 3s ease infinite;
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    font-weight: 600;
 }
 
 /* Tier header (shared) */
@@ -4338,6 +4361,16 @@ body {
     .tier-badge-rounded.tier-retired {
         background: #000 !important;
         color: #fff !important;
+        border: 1px solid #fff;
+    }
+    
+    .player-name.nitro {
+        background: linear-gradient(90deg, #8b5cf6, #3b82f6, #8b5cf6);
+        background-size: 200% 200%;
+        animation: nitro-gradient 3s ease infinite;
+        -webkit-background-clip: text;
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
     }
 
     .tier-header {

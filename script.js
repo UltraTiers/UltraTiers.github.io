@@ -572,7 +572,7 @@ function renderCategoryOverall(category) {
         playerInfo.className = 'player-info-section';
         
         const nameDiv = document.createElement('div');
-        nameDiv.className = 'player-name';
+        nameDiv.className = `player-name${player.nitro ? ' nitro' : ''}`;
         nameDiv.textContent = player.name;
         
         // Calculate category rank
