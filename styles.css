@@ -295,6 +295,7 @@ body {
     gap: 6px;
     min-width: 65px;
     max-width: 80px;
+    flex-shrink: 0;
     background: transparent;
     border: none;
 }
