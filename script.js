@@ -253,7 +253,16 @@ async function fetchAndOrganizePlayers() {
                                 // Find the tier array and add the player
                                 const tierArray = tierData[category][gamemode].find(t => t.tier === tierValue);
                                 if (tierArray) {
-                                    tierArray.players.push(player.name);
+                                    // Determine HT/LT prefix from tierInfo.tier
+                                    let prefixedName = player.name;
+                                    if (typeof tierInfo.tier === 'string') {
+                                        if (tierInfo.tier.startsWith('HT')) {
+                                            prefixedName = 'HT' + player.name;
+                                        } else if (tierInfo.tier.startsWith('LT')) {
+                                            prefixedName = 'LT' + player.name;
+                                        }
+                                    }
+                                    tierArray.players.push(prefixedName);
                                 }
                             }
                             break;
@@ -273,6 +282,7 @@ async function fetchAndOrganizePlayers() {
 // Initialize
 document.addEventListener('DOMContentLoaded', async function () {
     await fetchAndOrganizePlayers();
+    initLoginSystem();
     setupTabHandlers();
     renderDefaultTab();
 });
@@ -762,4 +772,145 @@ function showPlayerModal(player, tierNumber) {
 
 function renderDefaultTab() {
     switchMainTab('main');
+}
+
+// ========================================
+// LOGIN SYSTEM
+// ========================================
+
+const API_BASE = 'https://ultratiers.onrender.com';
+
+function initLoginSystem() {
+    // Check if user is already logged in
+    const loggedInUser = localStorage.getItem('ultratiers_user');
+    if (loggedInUser) {
+        showAccountInfo(JSON.parse(loggedInUser));
+    } else {
+        showLoginBanner();
+    }
+
+    // Login banner button
+    const loginBtn = document.getElementById('login-btn');
+    if (loginBtn) {
+        loginBtn.addEventListener('click', openLoginModal);
+    }
+
+    // Close banner
+    const closeBannerBtn = document.getElementById('close-banner-btn');
+    if (closeBannerBtn) {
+        closeBannerBtn.addEventListener('click', () => {
+            const banner = document.getElementById('login-banner');
+            if (banner) banner.style.display = 'none';
+        });
+    }
+
+    // Login modal
+    const loginModal = document.getElementById('login-modal');
+    const closeModalBtn = document.getElementById('close-login-modal');
+    const submitBtn = document.getElementById('submit-login');
+
+    if (closeModalBtn) {
+        closeModalBtn.addEventListener('click', closeLoginModal);
+    }
+
+    if (loginModal) {
+        loginModal.addEventListener('click', (e) => {
+            if (e.target === loginModal) closeLoginModal();
+        });
+    }
+
+    if (submitBtn) {
+        submitBtn.addEventListener('click', handleLogin);
+    }
+
+    // Logout button
+    const logoutBtn = document.getElementById('logout-btn');
+    if (logoutBtn) {
+        logoutBtn.addEventListener('click', handleLogout);
+    }
+}
+
+function showLoginBanner() {
+    const banner = document.getElementById('login-banner');
+    if (banner) banner.style.display = 'flex';
+    const accountInfo = document.getElementById('account-info');
+    if (accountInfo) accountInfo.style.display = 'none';
+}
+
+function showAccountInfo(user) {
+    const banner = document.getElementById('login-banner');
+    if (banner) banner.style.display = 'none';
+    const accountInfo = document.getElementById('account-info');
+    if (accountInfo) {
+        accountInfo.style.display = 'block';
+        const usernameEl = document.getElementById('account-username');
+        if (usernameEl) usernameEl.textContent = `Logged in as: ${user.ign}`;
+    }
+}
+
+function openLoginModal() {
+    const modal = document.getElementById('login-modal');
+    if (modal) {
+        modal.style.display = 'flex';
+        document.getElementById('login-ign').focus();
+    }
+}
+
+function closeLoginModal() {
+    const modal = document.getElementById('login-modal');
+    if (modal) modal.style.display = 'none';
+    // Clear input fields
+    document.getElementById('login-ign').value = '';
+    document.getElementById('login-code').value = '';
+    const errorEl = document.getElementById('login-error');
+    if (errorEl) errorEl.style.display = 'none';
+}
+
+async function handleLogin() {
+    const ign = document.getElementById('login-ign').value.trim();
+    const code = document.getElementById('login-code').value.trim();
+    const errorEl = document.getElementById('login-error');
+
+    if (!ign || !code) {
+        if (errorEl) {
+            errorEl.textContent = 'Please enter both IGN and code';
+            errorEl.style.display = 'block';
+        }
+        return;
+    }
+
+    try {
+        const response = await fetch(`${API_BASE}/auth/login`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ ign, code })
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+            if (errorEl) {
+                errorEl.textContent = data.error || 'Invalid login code';
+                errorEl.style.display = 'block';
+            }
+            return;
+        }
+
+        // Login successful
+        const user = { ign: data.ign, uuid: data.uuid };
+        localStorage.setItem('ultratiers_user', JSON.stringify(user));
+        closeLoginModal();
+        showAccountInfo(user);
+    } catch (err) {
+        console.error('Login error:', err);
+        if (errorEl) {
+            errorEl.textContent = 'An error occurred. Please try again.';
+            errorEl.style.display = 'block';
+        }
+    }
+}
+
+function handleLogout() {
+    localStorage.removeItem('ultratiers_user');
+    showLoginBanner();
 }
