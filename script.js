@@ -845,14 +845,10 @@ function showPlayerModal(player, tierNumber) {
     infoSection.className = 'modal-section';
     infoSection.style.padding = '20px';
     infoSection.innerHTML = `
-        <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; margin-bottom: 20px;">
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px;">
             <div>
                 <div style="font-size: 11px; color: rgba(255,255,255,0.5); text-transform: uppercase; font-weight: 700; margin-bottom: 6px;">Region</div>
                 <div style="font-size: 13px; color: rgba(255,255,255,0.9);">${player.region || 'Unknown'}</div>
-            </div>
-            <div>
-                <div style="font-size: 11px; color: rgba(255,255,255,0.5); text-transform: uppercase; font-weight: 700; margin-bottom: 6px;">Global Rank</div>
-                <div style="font-size: 13px; color: #0ea5e9; font-weight: 600;">#${player.global_placement || 'N/A'}</div>
             </div>
             <div>
                 <div style="font-size: 11px; color: rgba(255,255,255,0.5); text-transform: uppercase; font-weight: 700; margin-bottom: 6px;">Points</div>
@@ -1190,11 +1186,10 @@ async function saveProfileChanges() {
 
     try {
         // Send update to backend
-        const response = await fetch(`${API_BASE}/update-profile`, {
+        const response = await fetch(`${API_BASE}/profile/banner`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
-                ign: userData.ign,
                 uuid: userData.uuid,
                 banner: bannerFile
             })
