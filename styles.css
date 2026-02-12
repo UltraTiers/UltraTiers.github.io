@@ -4220,20 +4220,22 @@ body {
     .category-player-row {
         display: flex;
         flex-direction: column;
-        gap: 10px;
-        padding: 10px;
-        margin: 0 0 10px 0;
+        gap: 8px;
+        padding: 8px;
+        margin: 0 0 8px 0;
         border-radius: 8px;
-        width: 100%;
+        width: calc(100% - 16px);
         box-sizing: border-box;
+        background: linear-gradient(135deg, rgba(30, 58, 95, 0.4) 0%, rgba(26, 40, 71, 0.2) 100%);
+        border: 2px solid rgba(14, 165, 233, 0.08);
     }
 
     .rank-player-section {
         display: flex;
-        align-items: center;
+        align-items: flex-start;
         gap: 8px;
         width: 100%;
-        flex-wrap: wrap;
+        flex-wrap: nowrap;
     }
 
     .rank-badge {
@@ -4242,15 +4244,14 @@ body {
         font-size: 24px;
         flex-shrink: 0;
         border-radius: 50%;
+        min-width: 50px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
     }
 
     .rank-avatar {
-        width: 40px !important;
-        height: 40px !important;
-        border-radius: 4px;
-        margin-left: -10px;
-        z-index: 2;
-        flex-shrink: 0;
+        display: none;
     }
 
     .player-identity-section {
@@ -4258,38 +4259,49 @@ body {
         min-width: 0;
         display: flex;
         flex-direction: column;
-        gap: 4px;
+        justify-content: center;
+        gap: 2px;
+    }
+
+    .player-info-section {
+        min-width: 0;
     }
 
     .player-info-section .player-name {
-        font-size: 13px;
+        font-size: 14px;
         font-weight: 600;
         word-break: break-word;
         overflow-wrap: break-word;
+        margin: 0;
     }
 
     .player-title {
-        font-size: 10px;
+        font-size: 11px;
         word-break: break-word;
         overflow-wrap: break-word;
+        margin: 0;
     }
 
     .region-section {
-        font-size: 10px;
-        color: rgba(255, 255, 255, 0.5);
+        font-size: 11px;
+        color: rgba(255, 255, 255, 0.7);
         word-break: break-word;
         overflow-wrap: break-word;
-        flex-shrink: 0;
+        padding: 4px 8px;
+        background: rgba(14, 165, 233, 0.15);
+        border-radius: 4px;
+        width: fit-content;
+        margin-top: 4px;
     }
 
     .modes-section {
         display: flex;
-        gap: 3px;
+        gap: 4px;
         width: 100%;
         overflow-x: auto;
         -webkit-overflow-scrolling: touch;
-        padding: 6px 0;
-        flex-wrap: wrap;
+        padding: 4px 0;
+        flex-wrap: nowrap;
     }
 
     .mode-item {
@@ -4909,17 +4921,24 @@ body {
 }
 
 .login-modal-close {
-    background: none;
-    border: none;
-    color: rgba(255, 255, 255, 0.6);
-    font-size: 26px;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: #fff;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    font-size: 24px;
     cursor: pointer;
     padding: 0;
-    transition: color 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
 }
 
 .login-modal-close:hover {
-    color: rgba(255, 255, 255, 0.9);
+    background: rgba(255, 255, 255, 0.2);
+    border-color: rgba(14, 165, 233, 0.5);
 }
 
 .login-modal-body {
