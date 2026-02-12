@@ -1,11 +1,22 @@
 ﻿// Point system mapping
 const tierPointsMap = { 
-    'LT5': 1, 'HT5': 2, 
-    'LT4': 4, 'HT4': 6, 
-    'LT3': 9, 'HT3': 12, 
-    'LT2': 16, 'HT2': 20, 
-    'LT1': 25, 'HT1': 30 
+    'HT1': 60, 'LT1': 45,
+    'HT2': 30, 'LT2': 20,
+    'HT3': 10, 'LT3': 6,
+    'HT4': 4, 'LT4': 3,
+    'HT5': 2, 'LT5': 1
 };
+
+// Combat tag thresholds based on category
+const combatTagThresholds = {
+    main: { 'Combat Grandmaster': 380, 'Combat Master': 300, 'Combat Ace': 200, 'Combat Specialist': 120, 'Combat Cadet': 60, 'Combat Novice': 20, 'Combat Rookie': 0 },
+    sub: { 'Combat Grandmaster': 550, 'Combat Master': 420, 'Combat Ace': 280, 'Combat Specialist': 160, 'Combat Cadet': 80, 'Combat Novice': 20, 'Combat Rookie': 0 },
+    extra: { 'Combat Grandmaster': 240, 'Combat Master': 180, 'Combat Ace': 120, 'Combat Specialist': 70, 'Combat Cadet': 30, 'Combat Novice': 10, 'Combat Rookie': 0 },
+    bonus: { 'Combat Grandmaster': 100, 'Combat Master': 75, 'Combat Ace': 50, 'Combat Specialist': 30, 'Combat Cadet': 15, 'Combat Novice': 5, 'Combat Rookie': 0 }
+};
+
+// Combat tag order from best to worst
+const combatTags = ['Combat Grandmaster', 'Combat Master', 'Combat Ace', 'Combat Specialist', 'Combat Cadet', 'Combat Novice', 'Combat Rookie'];
 
 // Calculate points for a player
 function calculatePlayerPoints(player) {
@@ -15,6 +26,17 @@ function calculatePlayerPoints(player) {
         const tierValue = tierInfo.tier;
         return sum + (tierPointsMap[tierValue] || 0);
     }, 0);
+}
+
+// Get combat tag based on points and category
+function getCombatTag(points, category = 'main') {
+    const thresholds = combatTagThresholds[category] || combatTagThresholds.main;
+    for (const tag of combatTags) {
+        if (points >= thresholds[tag]) {
+            return tag;
+        }
+    }
+    return 'Combat Rookie';
 }
 
 // Get medal rank styling
@@ -1288,6 +1310,11 @@ function showPlayerModal(player, tierNumber, category = 'main') {
     valueDiv.textContent = `${categoryPoints} points`;
     positionInfo.appendChild(valueDiv);
     
+    const combatTagDiv = document.createElement('div');
+    combatTagDiv.className = 'player-modal-position-tag';
+    combatTagDiv.textContent = getCombatTag(categoryPoints, category);
+    positionInfo.appendChild(combatTagDiv);
+    
     positionBox.appendChild(positionInfo);
     
     // Region badge (far right)
@@ -1528,6 +1555,11 @@ function showAllModesModal(player) {
         pointsDiv.className = 'player-modal-category-points';
         pointsDiv.textContent = `${categoryPoints} pts`;
         categoryInfo.appendChild(pointsDiv);
+        
+        const tagDiv = document.createElement('div');
+        tagDiv.className = 'player-modal-category-tag';
+        tagDiv.textContent = getCombatTag(categoryPoints, category);
+        categoryInfo.appendChild(tagDiv);
         
         categoryBox.appendChild(categoryInfo);
         categoriesGrid.appendChild(categoryBox);

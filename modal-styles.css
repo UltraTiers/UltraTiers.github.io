@@ -230,6 +230,15 @@
     margin-top: 2px;
 }
 
+.player-modal-position-tag {
+    font-size: 11px;
+    color: rgba(255, 193, 7, 0.9);
+    font-weight: 600;
+    margin-top: 4px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
 /* Tiers section */
 .player-modal-tiers {
     display: flex;
@@ -404,4 +413,13 @@
     font-size: 12px;
     color: rgba(255, 255, 255, 0.6);
     font-weight: 500;
+}
+
+.player-modal-category-tag {
+    font-size: 11px;
+    color: rgba(255, 193, 7, 0.85);
+    font-weight: 600;
+    margin-top: 3px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
 }
