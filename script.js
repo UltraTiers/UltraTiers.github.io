@@ -562,8 +562,8 @@ function renderCategoryOverall(category) {
         
         // Avatar over the rank badge
         const avatar = getPlayerAvatarElement(player);
-        avatar.style.width = '64px';
-        avatar.style.height = '64px';
+        avatar.style.width = '80px';
+        avatar.style.height = '80px';
         avatar.className = 'rank-avatar';
         rankPlayerSection.appendChild(avatar);
         
