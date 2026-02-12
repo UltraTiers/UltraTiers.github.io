@@ -27,12 +27,18 @@ function getMedalRank(rank) {
 
 // Calculate category rank (Master/Advanced/Rookie)
 function getCategoryRank(points, allPoints) {
-    if (allPoints.length === 0) return 'Rookie';
+    // Exclude players with 0 points
+    const activePoints = allPoints.filter(p => p > 0);
+    
+    if (activePoints.length === 0) return 'Rookie';
+    
+    // If this player has 0 points, they're automatically Rookie
+    if (points === 0) return 'Rookie';
     
     // Count how many players have MORE points (rank is 1 + count of players with more points)
-    const playersWithMorePoints = allPoints.filter(p => p > points).length;
+    const playersWithMorePoints = activePoints.filter(p => p > points).length;
     const playerRank = playersWithMorePoints + 1;
-    const percentile = ((playerRank - 1) / allPoints.length) * 100;
+    const percentile = ((playerRank - 1) / activePoints.length) * 100;
     
     // Ranking thresholds: top 20% = Master, top 60% = Advanced, rest = Rookie
     if (percentile <= 20) return 'Master';
