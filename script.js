@@ -7,14 +7,6 @@ const tierPointsMap = {
     'HT5': 2, 'LT5': 1
 };
 
-// Combat tag thresholds based on category
-const combatTagThresholds = {
-    main: { 'Combat Grandmaster': 380, 'Combat Master': 300, 'Combat Ace': 200, 'Combat Specialist': 120, 'Combat Cadet': 60, 'Combat Novice': 20, 'Combat Rookie': 0 },
-    sub: { 'Combat Grandmaster': 550, 'Combat Master': 420, 'Combat Ace': 280, 'Combat Specialist': 160, 'Combat Cadet': 80, 'Combat Novice': 20, 'Combat Rookie': 0 },
-    extra: { 'Combat Grandmaster': 240, 'Combat Master': 180, 'Combat Ace': 120, 'Combat Specialist': 70, 'Combat Cadet': 30, 'Combat Novice': 10, 'Combat Rookie': 0 },
-    bonus: { 'Combat Grandmaster': 100, 'Combat Master': 75, 'Combat Ace': 50, 'Combat Specialist': 30, 'Combat Cadet': 15, 'Combat Novice': 5, 'Combat Rookie': 0 }
-};
-
 // Combat tag order from best to worst
 const combatTags = ['Combat Grandmaster', 'Combat Master', 'Combat Ace', 'Combat Specialist', 'Combat Cadet', 'Combat Novice', 'Combat Rookie'];
 
@@ -30,11 +22,23 @@ function calculatePlayerPoints(player) {
 
 // Get combat tag based on points and category
 function getCombatTag(points, category = 'main') {
-    const thresholds = combatTagThresholds[category] || combatTagThresholds.main;
+    // Compute thresholds dynamically based on number of modes in the category
+    const modesCount = (categoryMappings[category] || []).length || 1;
+    const maxPerMode = tierPointsMap['HT1'] || 60;
+    const maxPoints = modesCount * maxPerMode;
+
+    const thresholds = {
+        'Combat Grandmaster': Math.ceil(maxPoints * 0.80),
+        'Combat Master': Math.ceil(maxPoints * 0.60),
+        'Combat Ace': Math.ceil(maxPoints * 0.40),
+        'Combat Specialist': Math.ceil(maxPoints * 0.25),
+        'Combat Cadet': Math.ceil(maxPoints * 0.12),
+        'Combat Novice': Math.ceil(maxPoints * 0.04),
+        'Combat Rookie': 0
+    };
+
     for (const tag of combatTags) {
-        if (points >= thresholds[tag]) {
-            return tag;
-        }
+        if (points >= thresholds[tag]) return tag;
     }
     return 'Combat Rookie';
 }
