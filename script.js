@@ -99,6 +99,7 @@ const modeNameMap = {
 const regionNameMap = {
     'AF': 'Africa',
     'AS': 'Asia',
+    'AU': 'Australia',
     'EU': 'Europe',
     'NA': 'North America',
     'SA': 'South America',
@@ -768,8 +769,8 @@ function renderAllModesRegion(region) {
     // Get all points for rank calculation
     const allPoints = playersWithPoints.map(p => p.totalPoints);
 
-    // Render each player as a row
-    playersWithPoints.forEach((player, rank) => {
+    // Render each player as a row (capped at top 100)
+    playersWithPoints.slice(0, 100).forEach((player, rank) => {
         const row = document.createElement('div');
         row.className = 'category-player-row';
         
