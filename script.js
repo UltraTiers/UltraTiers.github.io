@@ -322,7 +322,7 @@ function initSearchSystem() {
                     <img src="https://mc-heads.net/avatar/${player.uuid}/32" alt="${player.name}" class="search-result-avatar">
                     <div class="search-result-info">
                         <div class="search-result-name">${player.name}</div>
-                        <div class="search-result-category">${categoryLabels[category]}</div>
+                        <div class="search-result-category">${player.region || 'Unknown'} • ${categoryLabels[category]}</div>
                     </div>
                 </div>
             `).join('');
