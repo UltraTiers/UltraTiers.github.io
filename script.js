@@ -10,6 +10,55 @@ const tierPointsMap = {
 // Combat tag order from best to worst
 const combatTags = ['Combat Grandmaster', 'Combat Master', 'Combat Ace', 'Combat Specialist', 'Combat Cadet', 'Combat Novice', 'Combat Rookie'];
 
+// Fixed combat tag thresholds (points) per category
+const combatTagThresholds = {
+    main: {
+        'Combat Grandmaster': 384,
+        'Combat Master': 288,
+        'Combat Ace': 192,
+        'Combat Specialist': 120,
+        'Combat Cadet': 58,
+        'Combat Novice': 20,
+        'Combat Rookie': 0
+    },
+    sub: {
+        'Combat Grandmaster': 576,
+        'Combat Master': 432,
+        'Combat Ace': 288,
+        'Combat Specialist': 180,
+        'Combat Cadet': 86,
+        'Combat Novice': 29,
+        'Combat Rookie': 0
+    },
+    extra: {
+        'Combat Grandmaster': 240,
+        'Combat Master': 180,
+        'Combat Ace': 120,
+        'Combat Specialist': 75,
+        'Combat Cadet': 36,
+        'Combat Novice': 12,
+        'Combat Rookie': 0
+    },
+    bonus: {
+        'Combat Grandmaster': 96,
+        'Combat Master': 72,
+        'Combat Ace': 48,
+        'Combat Specialist': 30,
+        'Combat Cadet': 14,
+        'Combat Novice': 5,
+        'Combat Rookie': 0
+    },
+    all: {
+        'Combat Grandmaster': 1296,
+        'Combat Master': 972,
+        'Combat Ace': 648,
+        'Combat Specialist': 405,
+        'Combat Cadet': 195,
+        'Combat Novice': 65,
+        'Combat Rookie': 0
+    }
+};
+
 // Calculate points for a player
 function calculatePlayerPoints(player) {
     if (!Array.isArray(player.tiers)) return 0;
@@ -22,26 +71,8 @@ function calculatePlayerPoints(player) {
 
 // Get combat tag based on points and category
 function getCombatTag(points, category = 'main') {
-    // Compute thresholds dynamically based on number of modes in the category
-    let modesCount;
-    if (category === 'all' || category === 'all-modes') {
-        modesCount = Object.values(categoryMappings).reduce((s, arr) => s + arr.length, 0) || 1;
-    } else {
-        modesCount = (categoryMappings[category] || []).length || 1;
-    }
-    const maxPerMode = tierPointsMap['HT1'] || 60;
-    const maxPoints = modesCount * maxPerMode;
-
-    const thresholds = {
-        'Combat Grandmaster': Math.ceil(maxPoints * 0.80),
-        'Combat Master': Math.ceil(maxPoints * 0.60),
-        'Combat Ace': Math.ceil(maxPoints * 0.40),
-        'Combat Specialist': Math.ceil(maxPoints * 0.25),
-        'Combat Cadet': Math.ceil(maxPoints * 0.12),
-        'Combat Novice': Math.ceil(maxPoints * 0.04),
-        'Combat Rookie': 0
-    };
-
+    const key = (category === 'all-modes') ? 'all' : (category || 'main');
+    const thresholds = combatTagThresholds[key] || combatTagThresholds.main;
     for (const tag of combatTags) {
         if (points >= thresholds[tag]) return tag;
     }
