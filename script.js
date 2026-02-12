@@ -615,6 +615,7 @@ function createTierCard(tierNumber, players) {
     
     const header = document.createElement('div');
     header.className = 'tier-header';
+    header.style.order = '0'; // Ensure header is always first
     header.innerHTML = `
         <span class="tier-icon">${tierIcons[tierNumber]}</span>
         <span class="tier-title">Tier ${tierNumber}</span>
@@ -671,6 +672,12 @@ function createTierCard(tierNumber, players) {
             item.appendChild(avatar);
             item.appendChild(info);
             
+            // Add click handler to open player modal
+            item.style.cursor = 'pointer';
+            item.addEventListener('click', () => {
+                showPlayerModal(playerObj, tierNumber, tierValue);
+            });
+            
             list.appendChild(item);
         });
         
@@ -678,6 +685,78 @@ function createTierCard(tierNumber, players) {
     }
     
     return card;
+}
+
+function showPlayerModal(player, tierNumber, tierValue) {
+    // Remove existing modal if present
+    const existingModal = document.getElementById('player-modal');
+    if (existingModal) existingModal.remove();
+    
+    // Create modal overlay
+    const overlay = document.createElement('div');
+    overlay.id = 'player-modal';
+    overlay.className = 'modal-overlay';
+    overlay.addEventListener('click', (e) => {
+        if (e.target === overlay) overlay.remove();
+    });
+    
+    // Create modal content
+    const modal = document.createElement('div');
+    modal.className = 'modal-content';
+    
+    // Player header with avatar
+    const header = document.createElement('div');
+    header.className = 'modal-header';
+    
+    const avatar = getPlayerAvatarElement(player);
+    avatar.style.width = '80px';
+    avatar.style.height = '80px';
+    avatar.style.borderRadius = '8px';
+    
+    const playerInfo = document.createElement('div');
+    playerInfo.className = 'modal-player-info';
+    playerInfo.innerHTML = `
+        <h2>${player.name}</h2>
+        <p><strong>UUID:</strong> ${player.uuid || 'N/A'}</p>
+        <p><strong>Region:</strong> ${player.region || 'Unknown'}</p>
+    `;
+    
+    header.appendChild(avatar);
+    header.appendChild(playerInfo);
+    modal.appendChild(header);
+    
+    // Player tiers
+    const tiersSection = document.createElement('div');
+    tiersSection.className = 'modal-section';
+    tiersSection.innerHTML = '<h3>Tiers</h3>';
+    
+    const tiersList = document.createElement('div');
+    tiersList.className = 'modal-tiers-list';
+    
+    if (player.tiers && Array.isArray(player.tiers)) {
+        player.tiers.forEach(tierInfo => {
+            const tierItem = document.createElement('div');
+            tierItem.className = 'modal-tier-item';
+            tierItem.innerHTML = `
+                <span class="tier-name">${tierInfo.gamemode}</span>
+                <span class="tier-badge">${tierInfo.tier}</span>
+            `;
+            tiersList.appendChild(tierItem);
+        });
+    }
+    
+    tiersSection.appendChild(tiersList);
+    modal.appendChild(tiersSection);
+    
+    // Close button
+    const closeBtn = document.createElement('button');
+    closeBtn.className = 'modal-close';
+    closeBtn.textContent = '\u00d7';
+    closeBtn.addEventListener('click', () => overlay.remove());
+    modal.appendChild(closeBtn);
+    
+    overlay.appendChild(modal);
+    document.body.appendChild(overlay);
 }
 
 function renderDefaultTab() {
