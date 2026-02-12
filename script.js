@@ -587,21 +587,13 @@ function renderRankings(category, mode) {
         return;
     }
 
-    // Sort tiers: empty (no players) first, then 1-5 with players
+    // Sort tiers: 1-5 only (skip Unknown)
     const sortedData = [...data].filter(t => t.tier !== 'Unknown').sort((a, b) => {
-        const aEmpty = a.players && a.players.length === 0;
-        const bEmpty = b.players && b.players.length === 0;
-        
-        // Empty tiers come first
-        if (aEmpty && !bEmpty) return -1;
-        if (!aEmpty && bEmpty) return 1;
-        
-        // Within empty or non-empty, sort by tier number
         const tierOrder = { 1: 0, 2: 1, 3: 2, 4: 3, 5: 4 };
         return (tierOrder[a.tier] ?? 6) - (tierOrder[b.tier] ?? 6);
     });
 
-    // Render sorted tiers (unknown tier skipped, empty tiers at top)
+    // Render sorted tiers (unknown tier skipped)
     sortedData.forEach(tierInfo => {
         const card = createTierCard(tierInfo.tier, tierInfo.players);
         container.appendChild(card);
@@ -644,20 +636,20 @@ function createTierCard(tierNumber, players) {
             const item = document.createElement('div');
             item.className = 'player-item';
             
-            // Determine tier prefix and arrow count
+            // Determine tier prefix and indicator
             let tierPrefix = '';
-            let arrows = '';
+            let indicator = '';
             if (playerName.startsWith('HT')) {
                 tierPrefix = 'HT';
-                arrows = '^^'; // 2 arrows for HT
+                indicator = '+'; // + for HT (high tier)
             } else if (playerName.startsWith('LT')) {
                 tierPrefix = 'LT';
-                arrows = '^';  // 1 arrow for LT
+                indicator = '-'; // - for LT (low tier)
             }
             
             const rank = document.createElement('div');
             rank.className = 'player-rank';
-            rank.innerHTML = `${arrows}<div>#${index + 1}</div>`;
+            rank.innerHTML = `${indicator}<div>#${index + 1}</div>`;
             
             // Get player object for MC skin
             const playerObj = window.playerMap[playerName] || { name: playerName };
