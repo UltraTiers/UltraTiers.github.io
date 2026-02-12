@@ -304,7 +304,7 @@ function initSearchSystem() {
         // Filter players based on search query
         const results = window.allPlayers.filter(player => 
             player.name.toLowerCase().includes(query)
-        ).slice(0, 8); // Limit to 8 results
+        ).slice(0, 8); // Limit to 8 players
         
         if (results.length === 0) {
             searchDropdown.innerHTML = '<div class="search-no-results">No players found</div>';
@@ -312,26 +312,34 @@ function initSearchSystem() {
             return;
         }
         
-        // Populate dropdown with results
-        searchDropdown.innerHTML = results.map(player => `
-            <div class="search-result-item" data-player-name="${player.name}">
-                <img src="https://mc-heads.net/avatar/${player.uuid}/32" alt="${player.name}" class="search-result-avatar">
-                <div class="search-result-info">
-                    <div class="search-result-name">${player.name}</div>
-                    <div class="search-result-region">${player.region || 'Unknown'}</div>
-                </div>
-            </div>
-        `).join('');
+        // Create category results for each player
+        const categories = ['main', 'sub', 'extra', 'bonus'];
+        const categoryLabels = { main: 'Main', sub: 'Sub', extra: 'Extra', bonus: 'Bonus' };
         
+        const resultsHTML = results.map(player => {
+            const categoryResults = categories.map(category => `
+                <div class="search-result-item" data-player-name="${player.name}" data-category="${category}">
+                    <img src="https://mc-heads.net/avatar/${player.uuid}/32" alt="${player.name}" class="search-result-avatar">
+                    <div class="search-result-info">
+                        <div class="search-result-name">${player.name}</div>
+                        <div class="search-result-category">${categoryLabels[category]}</div>
+                    </div>
+                </div>
+            `).join('');
+            return categoryResults;
+        }).join('');
+        
+        searchDropdown.innerHTML = resultsHTML;
         searchDropdown.style.display = 'block';
         
         // Add click handlers to result items
         document.querySelectorAll('.search-result-item').forEach(item => {
             item.addEventListener('click', function() {
                 const playerName = this.getAttribute('data-player-name');
+                const category = this.getAttribute('data-category');
                 const player = window.playerMap[playerName];
                 if (player) {
-                    showPlayerModal(player, 0, 'main');
+                    showPlayerModal(player, 0, category);
                     searchInput.value = '';
                     searchDropdown.style.display = 'none';
                 }

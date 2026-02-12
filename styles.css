@@ -5210,6 +5210,12 @@ body {
     font-size: 12px;
 }
 
+.search-result-category {
+    color: #0ea5e9;
+    font-size: 12px;
+    font-weight: 600;
+}
+
 .search-no-results {
     padding: 16px;
     text-align: center;
