@@ -274,14 +274,16 @@ body {
     position: relative;
 }
 
-/* Modes (right column) - keep icons tidy and prevent overflow */
+/* Modes (right column) - allow wrapping into 2 rows */
 .modes-section {
     display: flex;
+    flex-wrap: wrap;
     align-items: center;
     justify-content: flex-end;
     gap: 10px;
     padding-left: 6px;
-    overflow: hidden;
+    max-height: 150px;
+    align-content: flex-start;
 }
 
 .mode-item {

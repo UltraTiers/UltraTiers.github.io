@@ -95,6 +95,22 @@ const modeNameMap = {
     'pearl': 'Pearl',
 };
 
+// Region name mapping (abbreviations to full names)
+const regionNameMap = {
+    'AF': 'Africa',
+    'AS': 'Asia',
+    'EU': 'Europe',
+    'NA': 'North America',
+    'SA': 'South America',
+    'OC': 'Oceania',
+    'ME': 'Middle East',
+};
+
+// Get full region name
+function getFullRegionName(regionCode) {
+    return regionNameMap[regionCode] || regionCode;
+}
+
 // API endpoint URL
 const API_URL = '/players';
 
@@ -322,7 +338,7 @@ function initSearchSystem() {
                     <img src="https://mc-heads.net/avatar/${player.uuid}/32" alt="${player.name}" class="search-result-avatar">
                     <div class="search-result-info">
                         <div class="search-result-name">${player.name}</div>
-                        <div class="search-result-category">${player.region || 'Unknown'} • ${categoryLabels[category]}</div>
+                        <div class="search-result-category">${getFullRegionName(player.region) || 'Unknown'} • ${categoryLabels[category]}</div>
                     </div>
                 </div>
             `).join('');
@@ -403,7 +419,7 @@ function getAllRegions() {
         }
     });
     
-    return Array.from(regions).sort();
+    return Array.from(regions).sort((a, b) => getFullRegionName(a).localeCompare(getFullRegionName(b)));
 }
 
 function switchMainTab(tabName) {
@@ -565,7 +581,7 @@ function setupAllModesTab() {
         const btn = document.createElement('button');
         btn.className = 'mode-tab-btn';
         btn.dataset.region = region;
-        btn.textContent = region;
+        btn.textContent = getFullRegionName(region);
         btn.addEventListener('click', function() {
             renderAllModesRegion(region);
             document.querySelectorAll('#region-tabs .mode-tab-btn').forEach(b => b.classList.remove('active'));
@@ -645,7 +661,7 @@ function renderAllModesOverall() {
         // Region section
         const regionSection = document.createElement('div');
         regionSection.className = 'region-section';
-        regionSection.textContent = player.region || 'Unknown';
+        regionSection.textContent = getFullRegionName(player.region) || 'Unknown';
         
         // Combine name/title and region
         const playerIdentitySection = document.createElement('div');
@@ -956,7 +972,7 @@ function renderCategoryOverall(category) {
         // Region section
         const regionSection = document.createElement('div');
         regionSection.className = 'region-section';
-        regionSection.textContent = player.region || 'Unknown';
+        regionSection.textContent = getFullRegionName(player.region) || 'Unknown';
         
         // Combine name/title and region into one section
         const playerIdentitySection = document.createElement('div');
@@ -1289,7 +1305,7 @@ function showPlayerModal(player, tierNumber, category = 'main') {
     // Region badge (far right)
     const regionBadge = document.createElement('div');
     regionBadge.className = 'player-modal-position-region';
-    regionBadge.textContent = player.region || 'Unknown';
+    regionBadge.textContent = getFullRegionName(player.region) || 'Unknown';
     positionBox.appendChild(regionBadge);
     positionSection.appendChild(positionBox);
     modal.appendChild(positionSection);
