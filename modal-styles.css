@@ -347,3 +347,61 @@
 .modal-content::-webkit-scrollbar-thumb:hover {
     background: rgba(14, 165, 233, 0.5);
 }
+/* All Modes Modal - Categories section */
+.player-modal-categories {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+}
+
+.player-modal-category-box {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: rgba(14, 165, 233, 0.08);
+    padding: 14px 16px;
+    border-radius: 8px;
+    border: 1px solid rgba(14, 165, 233, 0.2);
+    transition: all 0.2s ease;
+}
+
+.player-modal-category-box:hover {
+    background: rgba(14, 165, 233, 0.12);
+    border-color: rgba(14, 165, 233, 0.4);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(14, 165, 233, 0.2);
+}
+
+.player-modal-category-rank {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    background: linear-gradient(135deg, #d4af37 0%, #c9a227 100%);
+    border-radius: 6px;
+    font-weight: 800;
+    font-size: 16px;
+    color: #0f172a;
+    flex-shrink: 0;
+}
+
+.player-modal-category-info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.player-modal-category-label {
+    font-size: 13px;
+    font-weight: 700;
+    color: #ffffff;
+    letter-spacing: 0.5px;
+}
+
+.player-modal-category-points {
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.6);
+    font-weight: 500;
+}

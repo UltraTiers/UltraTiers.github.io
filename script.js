@@ -329,21 +329,17 @@ function initSearchSystem() {
             return;
         }
         
-        // Create category results for each player
-        const categories = ['all-modes', 'main', 'sub', 'extra', 'bonus'];
-        const categoryLabels = { 'all-modes': 'All Modes', main: 'Main', sub: 'Sub', extra: 'Extra', bonus: 'Bonus' };
-        
+        // Create only all-modes results for each player
         const resultsHTML = results.map(player => {
-            const categoryResults = categories.map(category => `
-                <div class="search-result-item" data-player-name="${player.name}" data-category="${category}">
+            return `
+                <div class="search-result-item" data-player-name="${player.name}" data-category="all-modes">
                     <img src="https://mc-heads.net/avatar/${player.uuid}/32" alt="${player.name}" class="search-result-avatar">
                     <div class="search-result-info">
                         <div class="search-result-name">${player.name}</div>
-                        <div class="search-result-category">${getFullRegionName(player.region) || 'Unknown'} • ${categoryLabels[category]}</div>
+                        <div class="search-result-category">${getFullRegionName(player.region) || 'Unknown'} • Overall</div>
                     </div>
                 </div>
-            `).join('');
-            return categoryResults;
+            `;
         }).join('');
         
         searchDropdown.innerHTML = resultsHTML;
@@ -353,19 +349,10 @@ function initSearchSystem() {
         document.querySelectorAll('.search-result-item').forEach(item => {
             item.addEventListener('click', function() {
                 const playerName = this.getAttribute('data-player-name');
-                const category = this.getAttribute('data-category');
                 const player = window.playerMap[playerName];
                 if (player) {
-                    if (category === 'all-modes') {
-                        // For All Modes, switch to the All Modes tab first
-                        switchMainTab('all-modes');
-                        // Show the modal after tab switch
-                        setTimeout(() => {
-                            showPlayerModal(player, 0, 'main');
-                        }, 100);
-                    } else {
-                        showPlayerModal(player, 0, category);
-                    }
+                    // Show the all-modes modal
+                    showAllModesModal(player);
                     searchInput.value = '';
                     searchDropdown.style.display = 'none';
                 }
@@ -1403,6 +1390,151 @@ function showPlayerModal(player, tierNumber, category = 'main') {
     
     tiersSection.appendChild(tiersGrid);
     modal.appendChild(tiersSection);
+    
+    overlay.appendChild(modal);
+    document.body.appendChild(overlay);
+}
+
+// Show all modes/categories modal for a player
+function showAllModesModal(player) {
+    // Remove existing modal if present
+    const existingModal = document.getElementById('player-modal');
+    if (existingModal) existingModal.remove();
+    
+    // Create modal overlay
+    const overlay = document.createElement('div');
+    overlay.id = 'player-modal';
+    overlay.className = 'modal-overlay';
+    overlay.addEventListener('click', (e) => {
+        if (e.target === overlay) overlay.remove();
+    });
+    
+    // Create modal content
+    const modal = document.createElement('div');
+    modal.className = 'modal-content';
+    
+    // Banner background
+    const bannerImg = player.banner || 'anime-style-stone.jpg';
+    const banner = document.createElement('div');
+    banner.className = 'player-modal-banner';
+    banner.style.backgroundImage = `url(${bannerImg})`;
+    modal.appendChild(banner);
+    
+    // Close button
+    const closeBtn = document.createElement('button');
+    closeBtn.className = 'player-modal-close';
+    closeBtn.textContent = '×';
+    closeBtn.addEventListener('click', () => overlay.remove());
+    modal.appendChild(closeBtn);
+    
+    // Avatar section
+    const avatarSection = document.createElement('div');
+    avatarSection.className = 'player-modal-avatar-section';
+    
+    const avatar = getPlayerAvatarElement(player);
+    avatar.className = 'player-modal-avatar';
+    avatarSection.appendChild(avatar);
+    
+    const playerName = document.createElement('div');
+    playerName.className = 'player-modal-name';
+    playerName.textContent = player.name;
+    avatarSection.appendChild(playerName);
+    
+    modal.appendChild(avatarSection);
+    
+    // Categories section
+    const categoriesSection = document.createElement('div');
+    categoriesSection.className = 'player-modal-section';
+    
+    const categoriesTitle = document.createElement('div');
+    categoriesTitle.className = 'player-modal-section-title';
+    categoriesTitle.textContent = 'CATEGORIES';
+    categoriesSection.appendChild(categoriesTitle);
+    
+    const categoriesGrid = document.createElement('div');
+    categoriesGrid.className = 'player-modal-categories';
+    
+    const categoryLabels = { main: 'Main', sub: 'Sub', extra: 'Extra', bonus: 'Bonus' };
+    const categories = ['main', 'sub', 'extra', 'bonus'];
+    
+    categories.forEach(category => {
+        const categoryBox = document.createElement('div');
+        categoryBox.className = 'player-modal-category-box';
+        categoryBox.addEventListener('click', () => {
+            showPlayerModal(player, 0, category);
+        });
+        categoryBox.style.cursor = 'pointer';
+        
+        // Calculate category points and rank
+        const categoryPoints = (() => {
+            if (!player.tiers || !Array.isArray(player.tiers)) return 0;
+            const categoryTiers = player.tiers.filter(t => {
+                for (const [cat, modes] of Object.entries(categoryMappings)) {
+                    if (cat === category && modes.includes(t.gamemode)) return true;
+                }
+                return false;
+            });
+            return calculatePlayerPoints({tiers: categoryTiers});
+        })();
+        
+        const allCategoryPoints = (window.allPlayers || []).map(p => {
+            if (!p.tiers || !Array.isArray(p.tiers)) return 0;
+            const categoryTiers = p.tiers.filter(t => {
+                for (const [cat, modes] of Object.entries(categoryMappings)) {
+                    if (cat === category && modes.includes(t.gamemode)) return true;
+                }
+                return false;
+            });
+            return calculatePlayerPoints({tiers: categoryTiers});
+        });
+        
+        const categoryRank = getCategoryRank(categoryPoints, allCategoryPoints);
+        
+        // Find player's rank in category
+        const allPlayersPoints = (window.allPlayers || [])
+            .map(p => ({
+                name: p.name,
+                points: (() => {
+                    if (!p.tiers || !Array.isArray(p.tiers)) return 0;
+                    const categoryTiers = p.tiers.filter(t => {
+                        for (const [cat, modes] of Object.entries(categoryMappings)) {
+                            if (cat === category && modes.includes(t.gamemode)) return true;
+                        }
+                        return false;
+                    });
+                    return calculatePlayerPoints({tiers: categoryTiers});
+                })()
+            }))
+            .sort((a, b) => b.points - a.points);
+        
+        const playerRank = allPlayersPoints.findIndex(p => p.name === player.name) + 1;
+        
+        // Rank badge
+        const rankBadge = document.createElement('div');
+        rankBadge.className = 'player-modal-category-rank';
+        rankBadge.textContent = playerRank > 0 ? playerRank : '?';
+        categoryBox.appendChild(rankBadge);
+        
+        // Category info
+        const categoryInfo = document.createElement('div');
+        categoryInfo.className = 'player-modal-category-info';
+        
+        const categoryNameDiv = document.createElement('div');
+        categoryNameDiv.className = 'player-modal-category-label';
+        categoryNameDiv.textContent = categoryLabels[category];
+        categoryInfo.appendChild(categoryNameDiv);
+        
+        const pointsDiv = document.createElement('div');
+        pointsDiv.className = 'player-modal-category-points';
+        pointsDiv.textContent = `${categoryPoints} pts`;
+        categoryInfo.appendChild(pointsDiv);
+        
+        categoryBox.appendChild(categoryInfo);
+        categoriesGrid.appendChild(categoryBox);
+    });
+    
+    categoriesSection.appendChild(categoriesGrid);
+    modal.appendChild(categoriesSection);
     
     overlay.appendChild(modal);
     document.body.appendChild(overlay);
