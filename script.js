@@ -840,7 +840,18 @@ function showPlayerModal(player, tierNumber, category = 'main') {
     playerName.textContent = player.name;
     avatarSection.appendChild(playerName);
     
-    // Rank badge - calculate category rank
+    modal.appendChild(avatarSection);
+    
+    // Position section with region and rank badge
+    const positionSection = document.createElement('div');
+    positionSection.className = 'player-modal-section';
+    
+    const positionTitle = document.createElement('div');
+    positionTitle.className = 'player-modal-section-title';
+    positionTitle.textContent = 'POSITION';
+    positionSection.appendChild(positionTitle);
+    
+    // Calculate category points and rank
     const categoryPoints = (() => {
         if (!player.tiers || !Array.isArray(player.tiers)) return 0;
         const categoryTiers = player.tiers.filter(t => {
@@ -864,39 +875,6 @@ function showPlayerModal(player, tierNumber, category = 'main') {
     });
     
     const categoryRank = getCategoryRank(categoryPoints, allCategoryPoints);
-    const rankBadge = document.createElement('div');
-    rankBadge.className = 'player-modal-rank-badge';
-    rankBadge.textContent = categoryRank;
-    avatarSection.appendChild(rankBadge);
-    
-    modal.appendChild(avatarSection);
-    
-    // Info section
-    const infoSection = document.createElement('div');
-    infoSection.className = 'player-modal-info';
-    
-    const regionDiv = document.createElement('div');
-    regionDiv.className = 'player-modal-info-item';
-    regionDiv.innerHTML = `<strong>${player.region || 'Unknown'}</strong>`;
-    infoSection.appendChild(regionDiv);
-    
-    const namemcLink = document.createElement('a');
-    namemcLink.className = 'player-modal-namemc-link';
-    namemcLink.href = `https://namemc.com/profile/${player.uuid}`;
-    namemcLink.target = '_blank';
-    namemcLink.textContent = 'NameMC';
-    infoSection.appendChild(namemcLink);
-    
-    modal.appendChild(infoSection);
-    
-    // Position section
-    const positionSection = document.createElement('div');
-    positionSection.className = 'player-modal-section';
-    
-    const positionTitle = document.createElement('div');
-    positionTitle.className = 'player-modal-section-title';
-    positionTitle.textContent = 'POSITION';
-    positionSection.appendChild(positionTitle);
     
     // Find player's rank in category
     const allPlayersPoints = (window.allPlayers || [])
@@ -920,6 +898,13 @@ function showPlayerModal(player, tierNumber, category = 'main') {
     const positionBox = document.createElement('div');
     positionBox.className = 'player-modal-position';
     
+    // Region badge
+    const regionBadge = document.createElement('div');
+    regionBadge.className = 'player-modal-position-region';
+    regionBadge.textContent = player.region || 'Unknown';
+    positionBox.appendChild(regionBadge);
+    
+    // Rank badge
     const rankBadge2 = document.createElement('div');
     rankBadge2.className = 'player-modal-position-rank';
     rankBadge2.textContent = playerRank > 0 ? playerRank : '?';
@@ -970,12 +955,23 @@ function showPlayerModal(player, tierNumber, category = 'main') {
             const tierMatch = typeof tierInfo.tier === 'string' ? tierInfo.tier.match(/\d+/) : null;
             const tierNumber = tierMatch ? parseInt(tierMatch[0]) : tierInfo.tier;
             
+            // Create header with gamemode icon and name
+            const header = document.createElement('div');
+            header.className = 'player-modal-tier-header';
+            
             const icon = document.createElement('img');
             icon.className = 'player-modal-tier-icon';
             icon.src = gamemodeIcons[gamemodeName] || 'gamemodes/Vanilla.png';
             icon.alt = gamemodeName;
-            tierItem.appendChild(icon);
+            header.appendChild(icon);
             
+            const modeName = document.createElement('span');
+            modeName.textContent = gamemodeName;
+            header.appendChild(modeName);
+            
+            tierItem.appendChild(header);
+            
+            // Create badge
             const badge = document.createElement('div');
             badge.className = `player-modal-tier-badge tier-${tierNumber}`;
             badge.textContent = tierInfo.tier;
