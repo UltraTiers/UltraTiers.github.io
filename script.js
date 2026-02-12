@@ -605,7 +605,7 @@ function renderCategoryOverall(category) {
         const modesWithTiers = categoryMappings[category].map(gamemode => {
             const tierInfo = player.tiers.find(t => t.gamemode === gamemode);
             const tierValue = tierInfo ? tierInfo.tier : 'Unknown';
-            const isRetired = tierInfo && tierInfo.retired;
+            const isRetired = Array.isArray(player.retired_modes) && player.retired_modes.includes(gamemode);
             
             // Parse tier value to get number for sorting
             let tierNumber = 0;
@@ -638,7 +638,7 @@ function renderCategoryOverall(category) {
             icon.title = gamemode;
             
             const tierBadge = document.createElement('div');
-            tierBadge.className = `tier-badge-rounded ${tierNumber > 0 ? tierColors[tierNumber] : 'tier-unknown'}`;
+            tierBadge.className = `tier-badge-rounded ${isRetired ? 'tier-retired' : (tierNumber > 0 ? tierColors[tierNumber] : 'tier-unknown')}`;
             tierBadge.textContent = tierValue !== 'Unknown' ? tierValue : '?';
             
             modeItem.appendChild(icon);

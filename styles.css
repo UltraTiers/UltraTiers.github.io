@@ -313,9 +313,14 @@ body {
     font-size: 11px;
     height: 22px;
     min-width: 28px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.35);
     margin: 0;
-    background: transparent !important;
-    color: #000 !important;
+}
+
+.tier-badge-rounded.tier-retired {
+    background: #000 !important;
+    color: #fff !important;
+    box-shadow: none;
 }
 
 /* Tier header (shared) */
@@ -4328,8 +4333,11 @@ body {
         display: inline-flex;
         align-items: center;
         justify-content: center;
-        background: transparent !important;
-        color: #000 !important;
+    }
+    
+    .tier-badge-rounded.tier-retired {
+        background: #000 !important;
+        color: #fff !important;
     }
 
     .tier-header {
