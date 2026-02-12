@@ -23,7 +23,12 @@ function calculatePlayerPoints(player) {
 // Get combat tag based on points and category
 function getCombatTag(points, category = 'main') {
     // Compute thresholds dynamically based on number of modes in the category
-    const modesCount = (categoryMappings[category] || []).length || 1;
+    let modesCount;
+    if (category === 'all' || category === 'all-modes') {
+        modesCount = Object.values(categoryMappings).reduce((s, arr) => s + arr.length, 0) || 1;
+    } else {
+        modesCount = (categoryMappings[category] || []).length || 1;
+    }
     const maxPerMode = tierPointsMap['HT1'] || 60;
     const maxPoints = modesCount * maxPerMode;
 
@@ -664,10 +669,11 @@ function renderAllModesOverall() {
         // Calculate overall rank
         const overallRank = getCategoryRank(player.totalPoints, allPoints);
         const rankColor = getRankColor(overallRank);
-        
+
+        const overallCombatTag = getCombatTag(player.totalPoints, 'all');
         const titleDiv = document.createElement('div');
         titleDiv.className = 'player-title';
-        titleDiv.innerHTML = `<span style="color: ${rankColor}; font-weight: bold;">${overallRank}</span> • ${player.totalPoints} points`;
+        titleDiv.innerHTML = `<span style="color: ${rankColor}; font-weight: bold;">${overallCombatTag}</span> • ${player.totalPoints} points`;
         
         playerInfo.appendChild(nameDiv);
         playerInfo.appendChild(titleDiv);
