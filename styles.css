@@ -79,6 +79,8 @@ body {
     color: var(--accent);
     text-shadow: 0 2px 8px rgba(14, 165, 233, 0.3);
     letter-spacing: 1px;
+    display: flex;
+    align-items: center;
 }
 
 .server-info {
