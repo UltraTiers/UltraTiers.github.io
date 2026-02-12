@@ -11,9 +11,9 @@
     --border-color: rgba(100, 116, 139, 0.4);
     --text-primary: #e2e8f0;
     --text-secondary: #94a3b8;
-    --accent: #fbbf24;
-    --accent-hover: #f59e0b;
-    --tier1: #fbbf24;
+    --accent: #0ea5e9;
+    --accent-hover: #06b6d4;
+    --tier1: #0ea5e9;
     --tier2: #d4af37;
     --tier3: #cd7f32;
     --tier4: #888888;
@@ -44,7 +44,7 @@ body {
 /* Header */
 .header {
     background: linear-gradient(180deg, rgba(26, 40, 71, 0.8) 0%, rgba(15, 23, 42, 0.9) 100%);
-    border-bottom: 2px solid rgba(251, 191, 36, 0.2);
+    border-bottom: 2px solid rgba(14, 165, 233, 0.2);
     padding: 16px 40px;
     position: sticky;
     top: 0;
@@ -77,7 +77,7 @@ body {
     font-size: 26px;
     font-weight: 800;
     color: var(--accent);
-    text-shadow: 0 2px 8px rgba(251, 191, 36, 0.3);
+    text-shadow: 0 2px 8px rgba(14, 165, 233, 0.3);
     letter-spacing: 1px;
 }
 
@@ -85,10 +85,10 @@ body {
     display: flex;
     align-items: center;
     gap: 8px;
-    background: rgba(251, 191, 36, 0.08);
+    background: rgba(14, 165, 233, 0.08);
     padding: 8px 16px;
     border-radius: 6px;
-    border: 1px solid rgba(251, 191, 36, 0.2);
+    border: 1px solid rgba(14, 165, 233, 0.2);
 }
 
 .server-ip {
@@ -131,7 +131,7 @@ body {
 .main-tab-btn:hover {
     border-color: var(--accent);
     color: var(--accent);
-    background: rgba(251, 191, 36, 0.05);
+    background: rgba(14, 165, 233, 0.05);
     transform: translateY(-2px);
 }
 
@@ -139,7 +139,7 @@ body {
     background: var(--accent);
     color: #000;
     border-color: var(--accent);
-    box-shadow: 0 4px 12px rgba(251, 191, 36, 0.3);
+    box-shadow: 0 4px 12px rgba(14, 165, 233, 0.3);
 }
 
 /* Mode Tabs */
@@ -168,7 +168,7 @@ body {
 .mode-tab-btn:hover {
     border-color: var(--accent);
     color: var(--accent);
-    background: rgba(251, 191, 36, 0.03);
+    background: rgba(14, 165, 233, 0.03);
 }
 
 .mode-tab-btn.active {
@@ -237,7 +237,7 @@ body {
     align-items: center;
     padding: 16px 20px;
     background: linear-gradient(135deg, rgba(30, 58, 95, 0.4) 0%, rgba(26, 40, 71, 0.2) 100%);
-    border: 2px solid rgba(251, 191, 36, 0.08);
+    border: 2px solid rgba(14, 165, 233, 0.08);
     border-radius: 12px;
     box-shadow: 0 6px 18px rgba(0, 0, 0, 0.45);
     transition: box-shadow 0.25s ease, border-color 0.25s ease;
@@ -251,8 +251,8 @@ body {
 
 .category-player-row:hover {
     /* avoid translate/shift that causes overflow; only change border/shadow */
-    border-color: rgba(251, 191, 36, 0.18);
-    box-shadow: 0 10px 28px rgba(251, 191, 36, 0.10);
+    border-color: rgba(14, 165, 233, 0.18);
+    box-shadow: 0 10px 28px rgba(14, 165, 233, 0.10);
 }
 
 /* Ensure the left combined rank/avatar block does not overflow */
@@ -324,13 +324,13 @@ body {
     gap: 12px;
     margin-bottom: 18px;
     padding-bottom: 14px;
-    border-bottom: 2px solid rgba(251, 191, 36, 0.2);
+    border-bottom: 2px solid rgba(14, 165, 233, 0.2);
 }
 
 /* Stronger separator for Tier 1 */
 .tier-card.tier-1 .tier-header {
     padding-bottom: 12px;
-    border-bottom: 3px solid #fbbf24;
+    border-bottom: 3px solid #0ea5e9;
 }
 
 .tier-icon {
@@ -349,7 +349,7 @@ body {
     font-size: 13px;
     color: rgba(255, 255, 255, 0.7);
     margin-left: auto;
-    background: rgba(251, 191, 36, 0.15);
+    background: rgba(14, 165, 233, 0.15);
     padding: 4px 10px;
     border-radius: 4px;
     font-weight: 600;
@@ -357,16 +357,16 @@ body {
 
 /* Tier Colors */
 .tier-card.tier-1 {
-    border-color: rgba(251, 191, 36, 0.6);
-    background: linear-gradient(135deg, rgba(251, 191, 36, 0.08) 0%, rgba(30, 58, 95, 0.4) 100%);
+    border-color: rgba(14, 165, 233, 0.6);
+    background: linear-gradient(135deg, rgba(14, 165, 233, 0.08) 0%, rgba(30, 58, 95, 0.4) 100%);
 }
 
 .tier-card.tier-1 .tier-title {
-    color: #fbbf24;
+    color: #0ea5e9;
 }
 
 .tier-card.tier-1 .tier-header {
-    border-bottom-color: rgba(251, 191, 36, 0.4);
+    border-bottom-color: rgba(14, 165, 233, 0.4);
 }
 
 .tier-card.tier-2 {
@@ -466,15 +466,15 @@ body {
 }
 
 .player-item:hover {
-    background: rgba(251, 191, 36, 0.12);
-    border-color: rgba(251, 191, 36, 0.4);
+    background: rgba(14, 165, 233, 0.12);
+    border-color: rgba(14, 165, 233, 0.4);
     transform: translateX(2px);
 }
 
 .player-rank {
     font-weight: 700;
     font-size: 13px;
-    color: rgba(251, 191, 36, 0.8);
+    color: rgba(14, 165, 233, 0.8);
     min-width: 28px;
     text-align: center;
     flex-shrink: 0;
@@ -1122,7 +1122,7 @@ body {
 }
 
 .docs-card .card-icon {
-    filter: drop-shadow(0 2px 8px rgba(251, 191, 36, 0.3));
+    filter: drop-shadow(0 2px 8px rgba(14, 165, 233, 0.3));
 }
 
 .application-card .card-icon {
@@ -2045,8 +2045,6 @@ body {
 }
 
 .mode-item:hover {
-    background: rgba(255,255,255,0.1);
-    border-color: rgba(255,255,255,0.15);
     transform: translateX(5px);
 }
 
@@ -2226,7 +2224,7 @@ body {
 
 /* Match empty-tier size + add rarity-colored border */
 .tier[data-tier="1"] { border: 2px solid #f87171; } /* red */
-.tier[data-tier="2"] { border: 2px solid #fbbf24; } /* yellow */
+.tier[data-tier="2"] { border: 2px solid #0ea5e9; } /* cyan */
 .tier[data-tier="3"] { border: 2px solid #34d399; } /* green */
 .tier[data-tier="4"] { border: 2px solid #60a5fa; } /* blue */
 .tier[data-tier="5"] { border: 2px solid #a78bfa; } /* purple */
@@ -2377,7 +2375,7 @@ body {
 
 .builder-card.gold {
   border-left: 8px solid gold;
-  box-shadow: inset 0 0 20px rgba(251, 191, 36, 0.1);
+  box-shadow: inset 0 0 20px rgba(14, 165, 233, 0.1);
 }
 
 .builder-card.silver {
@@ -2721,7 +2719,7 @@ body {
 
 /* Background colors for tiers */
 .tier[data-tier="1"]:not(.retired) { background-color: #f87171; } /* red */
-.tier[data-tier="2"]:not(.retired) { background-color: #fbbf24; } /* yellow */
+.tier[data-tier="2"]:not(.retired) { background-color: #0ea5e9; } /* cyan */
 .tier[data-tier="3"]:not(.retired) { background-color: #34d399; } /* green */
 .tier[data-tier="4"]:not(.retired) { background-color: #60a5fa; } /* blue */
 .tier[data-tier="5"]:not(.retired) { background-color: #a78bfa; } /* purple */
@@ -3226,9 +3224,9 @@ body {
   display: block;
 }
 
-.gold   { border-left: 6px solid #fbbf24; box-shadow: inset 0 0 20px rgba(251, 191, 36, 0.1); }
+.gold   { border-left: 6px solid #0ea5e9; box-shadow: inset 0 0 20px rgba(14, 165, 233, 0.1); }
 .silver { border-left: 6px solid #e5e7eb; box-shadow: inset 0 0 20px rgba(229, 231, 235, 0.1); }
-.bronze { border-left: 6px solid #f97316; box-shadow: inset 0 0 20px rgba(249, 115, 22, 0.1); }
+.bronze { border-left: 6px solid #00d4ff; box-shadow: inset 0 0 20px rgba(249, 115, 22, 0.1); }
 
 .rank {
     font-size: 24px;
@@ -4007,9 +4005,9 @@ body {
 
 .category-player-card:hover {
     background: linear-gradient(135deg, rgba(30, 58, 95, 0.7) 0%, rgba(26, 40, 71, 0.6) 100%);
-    border-color: rgba(251, 191, 36, 0.6);
+    border-color: rgba(14, 165, 233, 0.6);
     transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(251, 191, 36, 0.2);
+    box-shadow: 0 6px 20px rgba(14, 165, 233, 0.2);
 }
 
 .category-player-name {
@@ -4018,7 +4016,7 @@ body {
     color: var(--text-primary);
     margin: 0 0 10px 0;
     padding-bottom: 8px;
-    border-bottom: 1px solid rgba(251, 191, 36, 0.2);
+    border-bottom: 1px solid rgba(14, 165, 233, 0.2);
 }
 
 .category-tiers-list {
@@ -4047,7 +4045,7 @@ body {
 }
 
 .category-tier-item.tier-1 {
-    background-color: #fbbf24;
+    background-color: #0ea5e9;
     color: #000;
 }
 
@@ -4243,7 +4241,7 @@ body {
 }
 
 .tier-badge-small.tier-1 {
-    background-color: #fbbf24;
+    background-color: #0ea5e9;
     color: #000;
 }
 
@@ -4284,12 +4282,12 @@ body {
 /* Category Player Row Layout */
 .category-player-row {
     display: grid;
-    grid-template-columns: auto minmax(150px, 1fr) 100px minmax(280px, 1fr);
+    grid-template-columns: auto 1fr minmax(280px, 1fr);
     gap: 24px;
     align-items: center;
     padding: 24px 28px;
     background: linear-gradient(135deg, rgba(30, 58, 95, 0.4) 0%, rgba(26, 40, 71, 0.2) 100%);
-    border: 2px solid rgba(251, 191, 36, 0.15);
+    border: 2px solid rgba(14, 165, 233, 0.15);
     border-radius: 16px;
     margin: 0 0 16px 0;
     transition: all 0.3s ease;
@@ -4300,9 +4298,9 @@ body {
 
 .category-player-row:hover {
     background: linear-gradient(135deg, rgba(30, 58, 95, 0.6) 0%, rgba(26, 40, 71, 0.4) 100%);
-    border-color: rgba(251, 191, 36, 0.3);
+    border-color: rgba(14, 165, 233, 0.3);
     transform: translateY(-2px);
-    box-shadow: 0 12px 32px rgba(251, 191, 36, 0.15);
+    box-shadow: 0 12px 32px rgba(14, 165, 233, 0.15);
 }
 
 .rank-player-section {
@@ -4327,15 +4325,22 @@ body {
     padding: 0 30px;
     font-size: 48px;
     font-weight: 900;
-    background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+    background: linear-gradient(135deg, #0ea5e9 0%, #06b6d4 100%);
     color: #000;
-    box-shadow: 0 4px 16px rgba(251, 191, 36, 0.4);
+    box-shadow: 0 4px 16px rgba(14, 165, 233, 0.4);
     text-shadow: 0 3px 6px rgba(0, 0, 0, 0.3);
     letter-spacing: -2px;
     min-width: 90px;
     flex-shrink: 0;
     border-top-left-radius: 16px;
     border-bottom-left-radius: 16px;
+}
+
+.rank-badge.gold {
+    background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+    color: #000;
+    box-shadow: 0 4px 16px rgba(251, 191, 36, 0.4);
+    text-shadow: 0 3px 6px rgba(0, 0, 0, 0.3);
 }
 
 .rank-badge.silver {
@@ -4363,12 +4368,20 @@ body {
     box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5);
 }
 
+.player-identity-section {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-width: 0;
+    flex: 1;
+}
+
 .player-info-section {
     display: flex;
     flex-direction: column;
     justify-content: center;
     gap: 4px;
-    min-width: 150px;
+    min-width: 0;
     flex: 1 1 auto;
     overflow: hidden;
 }
@@ -4410,23 +4423,23 @@ body {
 
 .player-title {
     font-size: 13px;
-    color: rgba(251, 191, 36, 0.8);
+    color: rgba(14, 165, 233, 0.8);
     font-weight: 500;
 }
 
 .region-section {
-    font-size: 14px;
+    font-size: 13px;
     font-weight: 700;
     color: #fff;
-    padding: 8px 12px;
-    background: linear-gradient(135deg, rgba(251, 191, 36, 0.2) 0%, rgba(251, 191, 36, 0.05) 100%);
-    border: 1px solid rgba(251, 191, 36, 0.3);
+    padding: 6px 10px;
+    background: linear-gradient(135deg, rgba(14, 165, 233, 0.2) 0%, rgba(14, 165, 233, 0.05) 100%);
+    border: 1px solid rgba(14, 165, 233, 0.3);
     border-radius: 8px;
     text-align: center;
-    min-width: 70px;
+    min-width: 65px;
     letter-spacing: 0.5px;
-    justify-self: start;
-    margin-left: -8px;
+    flex-shrink: 0;
+    white-space: nowrap;
 }
 
 .modes-section {
@@ -4483,9 +4496,9 @@ body {
 }
 
 .tier-badge-rounded.tier-1 {
-    background-color: #fbbf24;
+    background-color: #0ea5e9;
     color: #000;
-    box-shadow: 0 2px 6px rgba(251, 191, 36, 0.4);
+    box-shadow: 0 2px 6px rgba(14, 165, 233, 0.4);
 }
 
 .tier-badge-rounded.tier-2 {
@@ -4495,7 +4508,7 @@ body {
 }
 
 .tier-badge-rounded.tier-3 {
-    background-color: #f97316;
+    background-color: #00d4ff;
     color: #fff;
     box-shadow: 0 2px 6px rgba(249, 115, 22, 0.4);
 }

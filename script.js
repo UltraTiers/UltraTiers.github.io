@@ -25,6 +25,31 @@ function getMedalRank(rank) {
     return '';
 }
 
+// Calculate category rank (Master/Advanced/Rookie)
+function getCategoryRank(points, allPoints) {
+    if (allPoints.length === 0) return 'Rookie';
+    
+    // Sort points to calculate percentiles
+    const sortedPoints = [...allPoints].sort((a, b) => b - a);
+    const playerIndex = sortedPoints.indexOf(points);
+    const percentile = (playerIndex / sortedPoints.length) * 100;
+    
+    // Ranking thresholds: top 20% = Master, top 60% = Advanced, rest = Rookie
+    if (percentile <= 20) return 'Master';
+    if (percentile <= 60) return 'Advanced';
+    return 'Rookie';
+}
+
+// Get rank styling color
+function getRankColor(rank) {
+    switch(rank) {
+        case 'Master': return '#fbbf24'; // Gold
+        case 'Advanced': return '#60a5fa'; // Blue
+        case 'Rookie': return '#34d399'; // Green
+        default: return '#9ca3af'; // Gray
+    }
+}
+
 // Category mappings for gamemodes (match server.js capitalization)
 const categoryMappings = {
     main: ['Sword', 'Axe', 'Vanilla', 'Pot', 'NethOP', 'UHC', 'SMP', 'Mace'],
@@ -406,7 +431,7 @@ function renderCategoryOverall(category) {
         return;
     }
 
-    // Calculate category-specific points
+    // Calculate category-specific points for all players
     const playersWithCategoryPoints = window.allPlayers.map(player => {
         let categoryPoints = 0;
         
@@ -427,6 +452,9 @@ function renderCategoryOverall(category) {
         // Sort by category points descending (highest first)
         return b.categoryPoints - a.categoryPoints;
     });
+
+    // Get all category points for rank calculation
+    const allCategoryPoints = playersWithCategoryPoints.map(p => p.categoryPoints);
 
     // Render each player as a row (capped at top 100)
     playersWithCategoryPoints.slice(0, 100).forEach((player, rank) => {
@@ -460,9 +488,13 @@ function renderCategoryOverall(category) {
         nameDiv.className = 'player-name';
         nameDiv.textContent = player.name;
         
+        // Calculate category rank
+        const categoryRank = getCategoryRank(player.categoryPoints, allCategoryPoints);
+        const rankColor = getRankColor(categoryRank);
+        
         const titleDiv = document.createElement('div');
         titleDiv.className = 'player-title';
-        titleDiv.textContent = `Combat Grandmaster (${player.categoryPoints} points)`;
+        titleDiv.innerHTML = `<span style="color: ${rankColor}; font-weight: bold;">${categoryRank}</span> • ${player.categoryPoints} points`;
         
         playerInfo.appendChild(nameDiv);
         playerInfo.appendChild(titleDiv);
@@ -472,21 +504,40 @@ function renderCategoryOverall(category) {
         regionSection.className = 'region-section';
         regionSection.textContent = player.region || 'Unknown';
         
-        // Modes section with icons and tier badges
+        // Combine name/title and region into one section
+        const playerIdentitySection = document.createElement('div');
+        playerIdentitySection.className = 'player-identity-section';
+        playerIdentitySection.appendChild(playerInfo);
+        playerIdentitySection.appendChild(regionSection);
+        
+        // Modes section with icons and tier badges - sort by tier (highest first)
         const modesSection = document.createElement('div');
         modesSection.className = 'modes-section';
         
-        categoryMappings[category].forEach(gamemode => {
+        // Collect all modes with their tier info
+        const modesWithTiers = categoryMappings[category].map(gamemode => {
             const tierInfo = player.tiers.find(t => t.gamemode === gamemode);
             const tierValue = tierInfo ? tierInfo.tier : 'Unknown';
             
-            // Parse tier value to get number
+            // Parse tier value to get number for sorting
             let tierNumber = 0;
             if (typeof tierValue === 'string') {
                 const match = tierValue.match(/\d+/);
                 tierNumber = match ? parseInt(match[0]) : 0;
             }
             
+            return { gamemode, tierValue, tierNumber };
+        });
+        
+        // Sort: highest tier first (tier 1 = 1, tier 2 = 2, etc), Unknown last (tier 0)
+        modesWithTiers.sort((a, b) => {
+            if (a.tierNumber === 0) return 1;  // Unknown goes to end
+            if (b.tierNumber === 0) return -1; // Unknown goes to end
+            return a.tierNumber - b.tierNumber; // Lower tier number comes first
+        });
+        
+        // Render sorted modes
+        modesWithTiers.forEach(({ gamemode, tierValue, tierNumber }) => {
             const modeItem = document.createElement('div');
             modeItem.className = 'mode-item';
             
@@ -507,8 +558,7 @@ function renderCategoryOverall(category) {
         
         // Assemble the row
         row.appendChild(rankPlayerSection);
-        row.appendChild(playerInfo);
-        row.appendChild(regionSection);
+        row.appendChild(playerIdentitySection);
         row.appendChild(modesSection);
         
         container.appendChild(row);
