@@ -898,12 +898,6 @@ function showPlayerModal(player, tierNumber, category = 'main') {
     const positionBox = document.createElement('div');
     positionBox.className = 'player-modal-position';
     
-    // Region badge
-    const regionBadge = document.createElement('div');
-    regionBadge.className = 'player-modal-position-region';
-    regionBadge.textContent = player.region || 'Unknown';
-    positionBox.appendChild(regionBadge);
-    
     // Rank badge
     const rankBadge2 = document.createElement('div');
     rankBadge2.className = 'player-modal-position-rank';
@@ -924,6 +918,12 @@ function showPlayerModal(player, tierNumber, category = 'main') {
     positionInfo.appendChild(valueDiv);
     
     positionBox.appendChild(positionInfo);
+    
+    // Region badge (far right)
+    const regionBadge = document.createElement('div');
+    regionBadge.className = 'player-modal-position-region';
+    regionBadge.textContent = player.region || 'Unknown';
+    positionBox.appendChild(regionBadge);
     positionSection.appendChild(positionBox);
     modal.appendChild(positionSection);
     
