@@ -845,14 +845,18 @@ function showPlayerModal(player, tierNumber) {
     infoSection.className = 'modal-section';
     infoSection.style.padding = '20px';
     infoSection.innerHTML = `
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px;">
-            <div>
-                <div style="font-size: 11px; color: rgba(255,255,255,0.5); text-transform: uppercase; font-weight: 700; margin-bottom: 6px;">UUID</div>
-                <div style="font-size: 13px; color: rgba(255,255,255,0.9); font-family: monospace;">${player.uuid || 'N/A'}</div>
-            </div>
+        <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; margin-bottom: 20px;">
             <div>
                 <div style="font-size: 11px; color: rgba(255,255,255,0.5); text-transform: uppercase; font-weight: 700; margin-bottom: 6px;">Region</div>
                 <div style="font-size: 13px; color: rgba(255,255,255,0.9);">${player.region || 'Unknown'}</div>
+            </div>
+            <div>
+                <div style="font-size: 11px; color: rgba(255,255,255,0.5); text-transform: uppercase; font-weight: 700; margin-bottom: 6px;">Global Rank</div>
+                <div style="font-size: 13px; color: #0ea5e9; font-weight: 600;">#${player.global_placement || 'N/A'}</div>
+            </div>
+            <div>
+                <div style="font-size: 11px; color: rgba(255,255,255,0.5); text-transform: uppercase; font-weight: 700; margin-bottom: 6px;">Points</div>
+                <div style="font-size: 13px; color: rgba(255,255,255,0.9);">${player.points || 0}</div>
             </div>
         </div>
     `;
@@ -1123,16 +1127,10 @@ async function handleLogin() {
 const AVAILABLE_BANNERS = [
     { name: 'Stone', file: 'anime-style-stone.jpg' },
     { name: 'Forest', file: 'anime-style-forest.jpg' },
-    { name: 'Ocean', file: 'anime-style-ocean.jpg' },
-    { name: 'Sunset', file: 'anime-style-sunset.jpg' },
-    { name: 'Night', file: 'anime-style-night.jpg' },
-    { name: 'Mountains', file: 'anime-style-mountains.jpg' },
-    { name: 'City', file: 'anime-style-city.jpg' },
-    { name: 'Desert', file: 'anime-style-desert.jpg' },
-    { name: 'Sakura', file: 'anime-style-sakura.jpg' },
-    { name: 'Temple', file: 'anime-style-temple.jpg' },
-    { name: 'Space', file: 'anime-style-space.jpg' },
-    { name: 'Aurora', file: 'anime-style-aurora.jpg' }
+    { name: 'Clouds', file: 'anime-style-clouds.jpg' },
+    { name: 'Planet', file: 'anime-style-planet.jpg' },
+    { name: 'Pumpkin', file: 'anime-style-pumpkin.jpg' },
+    { name: 'Snow', file: 'anime-style-snow.jpg' }
 ];
 
 function openEditModal() {
