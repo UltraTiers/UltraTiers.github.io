@@ -675,7 +675,7 @@ function createTierCard(tierNumber, players) {
             // Get player object for MC skin using clean name
             const playerObj = window.playerMap[cleanName] || { name: cleanName };
             const avatar = getPlayerAvatarElement(playerObj);
-            avatar.style.width cleanx';
+            avatar.style.width = '32px';
             avatar.style.height = '32px';
             avatar.style.minWidth = '32px';
             
@@ -684,7 +684,7 @@ function createTierCard(tierNumber, players) {
             
             const name = document.createElement('div');
             name.className = 'player-name';
-            name.textContent = playerName;
+            name.textContent = cleanName;
             
             info.appendChild(name);
             
