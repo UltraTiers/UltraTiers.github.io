@@ -29,10 +29,10 @@ function getMedalRank(rank) {
 function getCategoryRank(points, allPoints) {
     if (allPoints.length === 0) return 'Rookie';
     
-    // Sort points to calculate percentiles
-    const sortedPoints = [...allPoints].sort((a, b) => b - a);
-    const playerIndex = sortedPoints.indexOf(points);
-    const percentile = (playerIndex / sortedPoints.length) * 100;
+    // Count how many players have MORE points (rank is 1 + count of players with more points)
+    const playersWithMorePoints = allPoints.filter(p => p > points).length;
+    const playerRank = playersWithMorePoints + 1;
+    const percentile = ((playerRank - 1) / allPoints.length) * 100;
     
     // Ranking thresholds: top 20% = Master, top 60% = Advanced, rest = Rookie
     if (percentile <= 20) return 'Master';
@@ -44,9 +44,9 @@ function getCategoryRank(points, allPoints) {
 function getRankColor(rank) {
     switch(rank) {
         case 'Master': return '#fbbf24'; // Gold
-        case 'Advanced': return '#60a5fa'; // Blue
-        case 'Rookie': return '#34d399'; // Green
-        default: return '#9ca3af'; // Gray
+        case 'Advanced': return '#fbbf24'; // Blue
+        case 'Rookie': return '#fbbf24'; // Green
+        default: return '#fbbf24'; // Gray
     }
 }
 
@@ -1205,6 +1205,17 @@ async function saveProfileChanges() {
         // Update local storage with new banner
         userData.banner = bannerFile;
         localStorage.setItem('ultratiers_user', JSON.stringify(userData));
+        
+        // Update player object in memory with new banner
+        if (window.playerMap && window.playerMap[userData.ign]) {
+            window.playerMap[userData.ign].banner = bannerFile;
+        }
+        if (window.allPlayers) {
+            const playerIndex = window.allPlayers.findIndex(p => p.uuid === userData.uuid);
+            if (playerIndex !== -1) {
+                window.allPlayers[playerIndex].banner = bannerFile;
+            }
+        }
         
         closeEditModal();
         alert('Profile updated successfully!');
