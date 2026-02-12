@@ -949,7 +949,7 @@ function showPlayerModal(player, tierNumber, category = 'main') {
         
         // Prepare tiers with metadata for sorting
         const tiersWithMetadata = categoryTiers.map(tierInfo => {
-            const isRetired = tierInfo.tier === 'Retired' || tierInfo.tier === 'retired';
+            const isRetired = Array.isArray(player.retired_modes) && player.retired_modes.includes(tierInfo.gamemode);
             const tierMatch = typeof tierInfo.tier === 'string' ? tierInfo.tier.match(/\d+/) : null;
             const tierNumber = tierMatch ? parseInt(tierMatch[0]) : (tierInfo.tier === 'Unknown' || tierInfo.tier === 'unknown' ? 0 :999);
             
@@ -1002,7 +1002,7 @@ function showPlayerModal(player, tierNumber, category = 'main') {
                 badgeClass += ' tier-unknown';
                 badgeText = '?';
             } else if (tierInfo.isRetired) {
-                // Retired tier
+                // Retired tier - show the tier value (e.g., "HT1")
                 badgeClass += ' tier-retired';
             } else {
                 // Numbered tier (1-5)
