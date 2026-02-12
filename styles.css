@@ -234,10 +234,10 @@ body {
 .category-player-row {
     display: grid;
     /* columns: rank+avatar | player info | region | modes */
-    grid-template-columns: 180px 1fr 100px 1fr;
-    gap: 16px;
+    grid-template-columns: 200px 1fr 120px 1fr;
+    gap: 20px;
     align-items: center;
-    padding: 16px 20px;
+    padding: 24px 28px;
     background: linear-gradient(135deg, rgba(30, 58, 95, 0.4) 0%, rgba(26, 40, 71, 0.2) 100%);
     border: 2px solid rgba(14, 165, 233, 0.08);
     border-radius: 12px;
@@ -262,8 +262,8 @@ body {
     display: flex;
     align-items: center;
     justify-content: flex-start;
-    gap: 12px;
-    padding-right: 6px;
+    gap: 16px;
+    padding-right: 8px;
     background: transparent;
 }
 
@@ -288,20 +288,20 @@ body {
     display: inline-flex;
     flex-direction: column;
     align-items: center;
-    gap: 4px;
-    min-width: 50px;
-    max-width: 65px;
+    gap: 6px;
+    min-width: 65px;
+    max-width: 80px;
     background: transparent;
     border: none;
 }
 
 .mode-item .mode-icon {
-    width: 40px;
-    height: 40px;
+    width: 50px;
+    height: 50px;
     border-radius: 50%;
     object-fit: contain;
     background: linear-gradient(180deg, rgba(255,255,255,0.04), rgba(255,255,255,0.02));
-    padding: 6px;
+    padding: 8px;
     border: 1px solid rgba(255,255,255,0.04);
     box-shadow: 0 4px 10px rgba(0,0,0,0.35);
 }
@@ -310,13 +310,14 @@ body {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    padding: 4px 6px;
+    padding: 5px 8px;
     border-radius: 999px;
-    font-size: 11px;
-    height: 22px;
-    min-width: 28px;
+    font-size: 13px;
+    height: 26px;
+    min-width: 32px;
     box-shadow: 0 2px 6px rgba(0,0,0,0.35);
     margin: 0;
+    font-weight: 600;
 }
 
 .tier-badge-rounded.tier-retired {
@@ -4510,15 +4511,15 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 0 30px;
-    font-size: 48px;
+    padding: 0 36px;
+    font-size: 56px;
     font-weight: 900;
     background: linear-gradient(135deg, #0ea5e9 0%, #06b6d4 100%);
     color: #000;
     box-shadow: 0 4px 16px rgba(14, 165, 233, 0.4);
     text-shadow: 0 3px 6px rgba(0, 0, 0, 0.3);
     letter-spacing: -2px;
-    min-width: 90px;
+    min-width: 110px;
     flex-shrink: 0;
     border-top-left-radius: 16px;
     border-bottom-left-radius: 16px;
@@ -4545,13 +4546,13 @@ body {
 }
 
 .rank-avatar {
-    width: 120px;
-    height: 120px;
-    margin-left: -40px;
+    width: 140px;
+    height: 140px;
+    margin-left: -50px;
     z-index: 2;
     flex-shrink: 0;
     object-fit: contain;
-    border-radius: 12px;
+    border-radius: 14px;
     overflow: hidden;
     box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5);
 }
@@ -4603,20 +4604,20 @@ body {
 }
 
 .player-info-section .player-name {
-    font-size: 18px;
+    font-size: 20px;
     font-weight: 700;
     color: #fff;
     letter-spacing: 0.5px;
 }
 
 .player-title {
-    font-size: 13px;
+    font-size: 15px;
     color: #f59e0b;
     font-weight: 500;
 }
 
 .region-section {
-    font-size: 13px;
+    font-size: 15px;
     font-weight: 700;
     color: #fff;
     padding: 6px 10px;

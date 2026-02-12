@@ -5,7 +5,7 @@
     left: 0;
     right: 0;
     bottom: 0;
-    background: rgba(0, 0, 0, 0.7);
+    background: rgba(0, 0, 0, 0.8);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -23,17 +23,17 @@
 }
 
 .modal-content {
-    background: linear-gradient(135deg, rgba(30, 58, 95, 0.95) 0%, rgba(26, 40, 71, 0.95) 100%);
-    border: 2px solid rgba(14, 165, 233, 0.3);
-    border-radius: 16px;
-    padding: 30px;
-    max-width: 600px;
+    background: linear-gradient(135deg, rgba(15, 23, 42, 0.98) 0%, rgba(10, 15, 31, 0.98) 100%);
+    border: 2px solid rgba(14, 165, 233, 0.2);
+    border-radius: 20px;
+    max-width: 520px;
     width: 90%;
     max-height: 90vh;
     overflow-y: auto;
-    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
+    box-shadow: 0 25px 80px rgba(0, 0, 0, 0.8);
     position: relative;
     animation: slideUp 0.3s ease;
+    background-attachment: fixed;
 }
 
 @media (max-width: 480px) {
@@ -41,8 +41,7 @@
         width: 95%;
         max-width: 100%;
         max-height: 95vh;
-        padding: 20px;
-        border-radius: 12px;
+        border-radius: 16px;
         margin: 16px;
     }
 }
@@ -58,115 +57,258 @@
     }
 }
 
-.modal-header {
-    display: flex;
-    gap: 20px;
-    align-items: flex-start;
-    margin-bottom: 0;
-    padding-bottom: 0;
-    border-bottom: none;
+/* Banner background */
+.player-modal-banner {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 220px;
     background-size: cover;
     background-position: center;
-    position: relative;
-}
-
-.modal-header img {
-    border-radius: 12px;
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
-    flex-shrink: 0;
-}
-
-.modal-header div {
-    position: relative;
-    z-index: 2;
-}
-
-.modal-player-info h2 {
-    font-size: 24px;
-    color: #fff;
-    margin-bottom: 10px;
-}
-
-.modal-player-info p {
-    color: rgba(255, 255, 255, 0.7);
-    font-size: 14px;
-    margin-bottom: 8px;
-}
-
-.modal-player-info strong {
-    color: #0ea5e9;
-}
-
-.modal-section {
-    margin-bottom: 20px;
-}
-
-.modal-section h3 {
-    color: #0ea5e9;
-    font-size: 16px;
-    margin-bottom: 12px;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-}
-
-.modal-tiers-list {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-    gap: 10px;
-}
-
-.modal-tier-item {
-    background: rgba(14, 165, 233, 0.1);
-    border: 1px solid rgba(14, 165, 233, 0.3);
-    border-radius: 8px;
-    padding: 12px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 10px;
-}
-
-.tier-name {
-    color: rgba(255, 255, 255, 0.8);
-    font-size: 13px;
-    flex: 1;
+    border-radius: 18px 18px 0 0;
     overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
 }
 
-.tier-badge {
-    background: rgba(217, 119, 6, 0.3);
-    border: 1px solid rgba(217, 119, 6, 0.5);
-    color: #f5a623;
-    padding: 4px 8px;
-    border-radius: 4px;
-    font-size: 12px;
-    font-weight: bold;
-    flex-shrink: 0;
-}
-
-.modal-close {
+.player-modal-banner::after {
+    content: '';
     position: absolute;
-    top: 15px;
-    right: 15px;
+    inset: 0;
+    background: linear-gradient(180deg, rgba(0, 0, 0, 0.2) 0%, rgba(0, 0, 0, 0.6) 100%);
+}
+
+/* Close button */
+.player-modal-close {
+    position: absolute;
+    top: 16px;
+    right: 16px;
     background: rgba(255, 255, 255, 0.1);
     border: 1px solid rgba(255, 255, 255, 0.2);
     color: #fff;
-    width: 32px;
-    height: 32px;
+    width: 40px;
+    height: 40px;
     border-radius: 50%;
-    font-size: 24px;
+    font-size: 28px;
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
     transition: all 0.2s ease;
+    z-index: 10;
 }
 
-.modal-close:hover {
-    background: rgba(255, 255, 255, 0.2);
-    border-color: rgba(14, 165, 233, 0.5);
+.player-modal-close:hover {
+    background: rgba(255, 255, 255, 0.15);
+    border-color: rgba(14, 165, 233, 0.6);
+}
+
+/* Avatar section */
+.player-modal-avatar-section {
+    position: relative;
+    z-index: 5;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 30px 20px 20px;
+}
+
+.player-modal-avatar {
+    width: 120px;
+    height: 120px;
+    border-radius: 16px;
+    border: 5px solid #d4af37;
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.6), 0 0 0 2px rgba(212, 175, 55, 0.3);
+    object-fit: cover;
+    background: rgba(100, 116, 139, 0.3);
+}
+
+.player-modal-name {
+    font-size: 28px;
+    font-weight: 800;
+    color: #0ea5e9;
+    margin-top: 16px;
+    text-align: center;
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+}
+
+.player-modal-rank-badge {
+    display: inline-block;
+    background: linear-gradient(135deg, rgba(212, 175, 55, 0.2) 0%, rgba(212, 175, 55, 0.1) 100%);
+    border: 1px solid rgba(212, 175, 55, 0.5);
+    color: #f5a623;
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    margin-top: 10px;
+    letter-spacing: 0.5px;
+}
+
+/* Info section */
+.player-modal-info {
+    position: relative;
+    z-index: 5;
+    padding: 0 24px 20px;
+    text-align: center;
+    border-bottom: 1px solid rgba(14, 165, 233, 0.1);
+}
+
+.player-modal-info-item {
+    font-size: 13px;
+    color: rgba(255, 255, 255, 0.7);
+    margin-bottom: 10px;
+}
+
+.player-modal-info-item strong {
+    color: rgba(255, 255, 255, 0.95);
+    font-weight: 600;
+}
+
+.player-modal-namemc-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    color: #0ea5e9;
+    text-decoration: none;
+    font-size: 13px;
+    font-weight: 600;
+    margin: 8px 0;
+}
+
+.player-modal-namemc-link:hover {
+    color: #06b6d4;
+}
+
+.player-modal-namemc-link::before {
+    content: '🔗';
+}
+
+/* Position section */
+.player-modal-section {
+    padding: 18px 24px;
+    border-bottom: 1px solid rgba(14, 165, 233, 0.1);
+}
+
+.player-modal-section:last-child {
+    border-bottom: none;
+}
+
+.player-modal-section-title {
+    font-size: 11px;
+    font-weight: 700;
+    color: rgba(255, 255, 255, 0.5);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 12px;
+}
+
+.player-modal-position {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: rgba(14, 165, 233, 0.08);
+    padding: 12px 14px;
+    border-radius: 8px;
+    border: 1px solid rgba(14, 165, 233, 0.2);
+}
+
+.player-modal-position-rank {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    background: linear-gradient(135deg, #d4af37 0%, #c9a227 100%);
+    border-radius: 8px;
+    font-weight: 800;
+    font-size: 18px;
+    color: #0f172a;
+    flex-shrink: 0;
+}
+
+.player-modal-position-info {
+    flex: 1;
+}
+
+.player-modal-position-label {
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.6);
+    font-weight: 500;
+}
+
+.player-modal-position-value {
+    font-size: 14px;
+    font-weight: 700;
+    color: #fff;
+    margin-top: 2px;
+}
+
+/* Tiers section */
+.player-modal-tiers {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.player-modal-tier-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 90px;
+    height: 100px;
+    background: rgba(100, 116, 139, 0.1);
+    border: 1px solid rgba(14, 165, 233, 0.2);
+    border-radius: 10px;
+    padding: 8px;
+    text-align: center;
+    transition: all 0.2s ease;
+}
+
+.player-modal-tier-item:hover {
+    background: rgba(14, 165, 233, 0.15);
+    border-color: rgba(14, 165, 233, 0.4);
+}
+
+.player-modal-tier-icon {
+    width: 40px;
+    height: 40px;
+    margin-bottom: 4px;
+    opacity: 0.9;
+}
+
+.player-modal-tier-badge {
+    font-size: 12px;
+    font-weight: 700;
+    padding: 4px 6px;
+    border-radius: 4px;
+    min-width: 35px;
+}
+
+.player-modal-tier-badge.tier-1 {
+    background: rgba(14, 165, 233, 0.3);
+    color: #0ea5e9;
+}
+
+.player-modal-tier-badge.tier-2 {
+    background: rgba(212, 175, 55, 0.3);
+    color: #d4af37;
+}
+
+.player-modal-tier-badge.tier-3 {
+    background: rgba(205, 127, 50, 0.3);
+    color: #cd7f32;
+}
+
+.player-modal-tier-badge.tier-4 {
+    background: rgba(136, 136, 136, 0.3);
+    color: #888888;
+}
+
+.player-modal-tier-badge.tier-5 {
+    background: rgba(169, 146, 125, 0.3);
+    color: #a9927d;
 }
 
 /* Scrollbar styling for modal */

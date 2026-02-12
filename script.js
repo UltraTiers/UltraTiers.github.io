@@ -331,7 +331,7 @@ function initSearchSystem() {
                 const playerName = this.getAttribute('data-player-name');
                 const player = window.playerMap[playerName];
                 if (player) {
-                    showPlayerModal(player, 0);
+                    showPlayerModal(player, 0, 'main');
                     searchInput.value = '';
                     searchDropdown.style.display = 'none';
                 }
@@ -623,7 +623,18 @@ function renderCategoryOverall(category) {
             if (!a.isRetired && b.isRetired) return -1; // Retired goes to end
             if (a.tierNumber === 0) return 1;  // Unknown goes to end
             if (b.tierNumber === 0) return -1; // Unknown goes to end
-            return a.tierNumber - b.tierNumber; // Lower tier number comes first
+            
+            // First sort by tier number
+            if (a.tierNumber !== b.tierNumber) {
+                return a.tierNumber - b.tierNumber; // Lower tier number comes first
+            }
+            
+            // Within the same tier, HT comes before LT
+            const aIsHT = typeof a.tierValue === 'string' && a.tierValue.startsWith('HT');
+            const bIsHT = typeof b.tierValue === 'string' && b.tierValue.startsWith('HT');
+            if (aIsHT && !bIsHT) return -1;  // HT comes first
+            if (!aIsHT && bIsHT) return 1;   // LT comes second
+            return 0;
         });
         
         // Render sorted modes
@@ -671,7 +682,7 @@ function renderRankings(category, mode) {
     if (!data || data.length === 0) {
         // Generate empty tier structure
         for (let i = 1; i <= 5; i++) {
-            const card = createTierCard(i, []);
+            const card = createTierCard(i, [], category);
             container.appendChild(card);
         }
         return;
@@ -685,12 +696,12 @@ function renderRankings(category, mode) {
 
     // Render sorted tiers (unknown tier skipped)
     sortedData.forEach(tierInfo => {
-        const card = createTierCard(tierInfo.tier, tierInfo.players);
+        const card = createTierCard(tierInfo.tier, tierInfo.players, category);
         container.appendChild(card);
     });
 }
 
-function createTierCard(tierNumber, players) {
+function createTierCard(tierNumber, players, category = 'main') {
     const card = document.createElement('div');
     card.className = `tier-card ${tierColors[tierNumber]}`;
     
@@ -773,7 +784,7 @@ function createTierCard(tierNumber, players) {
             // Add click handler to open player modal
             item.style.cursor = 'pointer';
             item.addEventListener('click', () => {
-                showPlayerModal(playerObj, tierNumber);
+                showPlayerModal(playerObj, tierNumber, category);
             });
             
             list.appendChild(item);
@@ -785,7 +796,7 @@ function createTierCard(tierNumber, players) {
     return card;
 }
 
-function showPlayerModal(player, tierNumber) {
+function showPlayerModal(player, tierNumber, category = 'main') {
     // Remove existing modal if present
     const existingModal = document.getElementById('player-modal');
     if (existingModal) existingModal.remove();
@@ -802,166 +813,181 @@ function showPlayerModal(player, tierNumber) {
     const modal = document.createElement('div');
     modal.className = 'modal-content';
     
-    // Banner with anime background
+    // Banner background
     const bannerImg = player.banner || 'anime-style-stone.jpg';
-    const header = document.createElement('div');
-    header.className = 'modal-header';
-    header.style.backgroundImage = `url(${bannerImg})`;
-    header.style.backgroundSize = 'cover';
-    header.style.backgroundPosition = 'center';
-    header.style.height = '200px';
-    header.style.display = 'flex';
-    header.style.alignItems = 'center';
-    header.style.justifyContent = 'center';
-    header.style.position = 'relative';
-    
-    // Dark overlay on background
-    const overlay2 = document.createElement('div');
-    overlay2.style.position = 'absolute';
-    overlay2.style.inset = '0';
-    overlay2.style.background = 'linear-gradient(180deg, rgba(0,0,0,0.3) 0%, rgba(0,0,0,0.5) 100%)';
-    header.appendChild(overlay2);
-    
-    // Centered avatar
-    const avatar = getPlayerAvatarElement(player);
-    avatar.style.width = '100px';
-    avatar.style.height = '100px';
-    avatar.style.borderRadius = '12px';
-    avatar.style.border = '4px solid rgba(255,255,255,0.95)';
-    avatar.style.boxShadow = '0 8px 24px rgba(0,0,0,0.4)';
-    avatar.style.position = 'relative';
-    avatar.style.zIndex = '2';
-    header.appendChild(avatar);
-    
-    // Player title
-    const playerTitle = document.createElement('div');
-    playerTitle.style.position = 'absolute';
-    playerTitle.style.bottom = '16px';
-    playerTitle.style.left = '0';
-    playerTitle.style.right = '0';
-    playerTitle.style.textAlign = 'center';
-    playerTitle.style.color = '#fff';
-    playerTitle.style.fontSize = '18px';
-    playerTitle.style.fontWeight = '700';
-    playerTitle.style.textShadow = '0 2px 8px rgba(0,0,0,0.7)';
-    playerTitle.textContent = player.name;
-    header.appendChild(playerTitle);
-    
-    modal.appendChild(header);
-    
-    // Player info section
-    const infoSection = document.createElement('div');
-    infoSection.className = 'modal-section';
-    infoSection.style.padding = '20px';
-    infoSection.innerHTML = `
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px;">
-            <div>
-                <div style="font-size: 11px; color: rgba(255,255,255,0.5); text-transform: uppercase; font-weight: 700; margin-bottom: 6px;">Region</div>
-                <div style="font-size: 13px; color: rgba(255,255,255,0.9);">${player.region || 'Unknown'}</div>
-            </div>
-            <div>
-                <div style="font-size: 11px; color: rgba(255,255,255,0.5); text-transform: uppercase; font-weight: 700; margin-bottom: 6px;">Points</div>
-                <div style="font-size: 13px; color: rgba(255,255,255,0.9);">${player.points || 0}</div>
-            </div>
-        </div>
-    `;
-    modal.appendChild(infoSection);
-    
-    // Player tiers organized by category
-    const tiersSection = document.createElement('div');
-    tiersSection.className = 'modal-section';
-    tiersSection.style.padding = '20px';
-    
-    const tiersTitle = document.createElement('h3');
-    tiersTitle.style.marginTop = '0';
-    tiersTitle.style.marginBottom = '16px';
-    tiersTitle.style.fontSize = '16px';
-    tiersTitle.style.fontWeight = '700';
-    tiersTitle.textContent = 'Tier Progress';
-    tiersSection.appendChild(tiersTitle);
-
-    if (player.tiers && Array.isArray(player.tiers)) {
-        // Organize tiers by category
-        const tiersByCategory = {};
-        player.tiers.forEach(tierInfo => {
-            // Find which category this gamemode belongs to
-            for (const [category, modes] of Object.entries(categoryMappings)) {
-                if (modes.includes(tierInfo.gamemode)) {
-                    if (!tiersByCategory[category]) {
-                        tiersByCategory[category] = [];
-                    }
-                    tiersByCategory[category].push(tierInfo);
-                    break;
-                }
-            }
-        });
-
-        // Display tiers by category
-        for (const [category, tiers] of Object.entries(tiersByCategory)) {
-            const categoryDiv = document.createElement('div');
-            categoryDiv.style.marginBottom = '18px';
-
-            const categoryTitle = document.createElement('div');
-            categoryTitle.style.fontSize = '12px';
-            categoryTitle.style.fontWeight = '700';
-            categoryTitle.style.color = 'rgba(255, 255, 255, 0.6)';
-            categoryTitle.style.textTransform = 'uppercase';
-            categoryTitle.style.marginBottom = '10px';
-            categoryTitle.textContent = category.charAt(0).toUpperCase() + category.slice(1) + ' Modes';
-            categoryDiv.appendChild(categoryTitle);
-
-            const tiersGrid = document.createElement('div');
-            tiersGrid.style.display = 'grid';
-            tiersGrid.style.gridTemplateColumns = 'repeat(auto-fill, minmax(90px, 1fr))';
-            tiersGrid.style.gap = '8px';
-
-            tiers.forEach(tierInfo => {
-                const tierItem = document.createElement('div');
-                tierItem.style.background = 'rgba(100, 116, 139, 0.15)';
-                tierItem.style.border = '1px solid rgba(14, 165, 233, 0.2)';
-                tierItem.style.borderRadius = '6px';
-                tierItem.style.padding = '10px';
-                tierItem.style.textAlign = 'center';
-                tierItem.style.fontSize = '12px';
-                tierItem.style.minHeight = '70px';
-                tierItem.style.display = 'flex';
-                tierItem.style.flexDirection = 'column';
-                tierItem.style.justifyContent = 'center';
-                tierItem.style.gap = '6px';
-
-                const modeName = document.createElement('div');
-                modeName.style.fontWeight = '600';
-                modeName.style.color = 'rgba(255, 255, 255, 0.85)';
-                modeName.style.fontSize = '12px';
-                modeName.textContent = tierInfo.gamemode;
-
-                const tierBadge = document.createElement('div');
-                tierBadge.style.padding = '4px 8px';
-                tierBadge.style.borderRadius = '4px';
-                tierBadge.style.fontSize = '11px';
-                tierBadge.style.fontWeight = '700';
-                tierBadge.style.background = 'rgba(14, 165, 233, 0.3)';
-                tierBadge.style.color = '#0ea5e9';
-                tierBadge.textContent = tierInfo.tier;
-
-                tierItem.appendChild(modeName);
-                tierItem.appendChild(tierBadge);
-                tiersGrid.appendChild(tierItem);
-            });
-
-            categoryDiv.appendChild(tiersGrid);
-            tiersSection.appendChild(categoryDiv);
-        }
-    }
-    
-    modal.appendChild(tiersSection);
+    const banner = document.createElement('div');
+    banner.className = 'player-modal-banner';
+    banner.style.backgroundImage = `url(${bannerImg})`;
+    modal.appendChild(banner);
     
     // Close button
     const closeBtn = document.createElement('button');
-    closeBtn.className = 'modal-close';
-    closeBtn.textContent = '\u00d7';
+    closeBtn.className = 'player-modal-close';
+    closeBtn.textContent = '×';
     closeBtn.addEventListener('click', () => overlay.remove());
     modal.appendChild(closeBtn);
+    
+    // Avatar section
+    const avatarSection = document.createElement('div');
+    avatarSection.className = 'player-modal-avatar-section';
+    
+    const avatar = getPlayerAvatarElement(player);
+    avatar.className = 'player-modal-avatar';
+    avatarSection.appendChild(avatar);
+    
+    const playerName = document.createElement('div');
+    playerName.className = 'player-modal-name';
+    playerName.textContent = player.name;
+    avatarSection.appendChild(playerName);
+    
+    // Rank badge - calculate category rank
+    const categoryPoints = (() => {
+        if (!player.tiers || !Array.isArray(player.tiers)) return 0;
+        const categoryTiers = player.tiers.filter(t => {
+            for (const [cat, modes] of Object.entries(categoryMappings)) {
+                if (cat === category && modes.includes(t.gamemode)) return true;
+            }
+            return false;
+        });
+        return calculatePlayerPoints({tiers: categoryTiers});
+    })();
+    
+    const allCategoryPoints = (window.allPlayers || []).map(p => {
+        if (!p.tiers || !Array.isArray(p.tiers)) return 0;
+        const categoryTiers = p.tiers.filter(t => {
+            for (const [cat, modes] of Object.entries(categoryMappings)) {
+                if (cat === category && modes.includes(t.gamemode)) return true;
+            }
+            return false;
+        });
+        return calculatePlayerPoints({tiers: categoryTiers});
+    });
+    
+    const categoryRank = getCategoryRank(categoryPoints, allCategoryPoints);
+    const rankBadge = document.createElement('div');
+    rankBadge.className = 'player-modal-rank-badge';
+    rankBadge.textContent = categoryRank;
+    avatarSection.appendChild(rankBadge);
+    
+    modal.appendChild(avatarSection);
+    
+    // Info section
+    const infoSection = document.createElement('div');
+    infoSection.className = 'player-modal-info';
+    
+    const regionDiv = document.createElement('div');
+    regionDiv.className = 'player-modal-info-item';
+    regionDiv.innerHTML = `<strong>${player.region || 'Unknown'}</strong>`;
+    infoSection.appendChild(regionDiv);
+    
+    const namemcLink = document.createElement('a');
+    namemcLink.className = 'player-modal-namemc-link';
+    namemcLink.href = `https://namemc.com/profile/${player.uuid}`;
+    namemcLink.target = '_blank';
+    namemcLink.textContent = 'NameMC';
+    infoSection.appendChild(namemcLink);
+    
+    modal.appendChild(infoSection);
+    
+    // Position section
+    const positionSection = document.createElement('div');
+    positionSection.className = 'player-modal-section';
+    
+    const positionTitle = document.createElement('div');
+    positionTitle.className = 'player-modal-section-title';
+    positionTitle.textContent = 'POSITION';
+    positionSection.appendChild(positionTitle);
+    
+    // Find player's rank in category
+    const allPlayersPoints = (window.allPlayers || [])
+        .map(p => ({
+            name: p.name,
+            points: (() => {
+                if (!p.tiers || !Array.isArray(p.tiers)) return 0;
+                const categoryTiers = p.tiers.filter(t => {
+                    for (const [cat, modes] of Object.entries(categoryMappings)) {
+                        if (cat === category && modes.includes(t.gamemode)) return true;
+                    }
+                    return false;
+                });
+                return calculatePlayerPoints({tiers: categoryTiers});
+            })()
+        }))
+        .sort((a, b) => b.points - a.points);
+    
+    const playerRank = allPlayersPoints.findIndex(p => p.name === player.name) + 1;
+    
+    const positionBox = document.createElement('div');
+    positionBox.className = 'player-modal-position';
+    
+    const rankBadge2 = document.createElement('div');
+    rankBadge2.className = 'player-modal-position-rank';
+    rankBadge2.textContent = playerRank > 0 ? playerRank : '?';
+    positionBox.appendChild(rankBadge2);
+    
+    const positionInfo = document.createElement('div');
+    positionInfo.className = 'player-modal-position-info';
+    
+    const labelDiv = document.createElement('div');
+    labelDiv.className = 'player-modal-position-label';
+    labelDiv.textContent = `${category.toUpperCase()} CATEGORY`;
+    positionInfo.appendChild(labelDiv);
+    
+    const valueDiv = document.createElement('div');
+    valueDiv.className = 'player-modal-position-value';
+    valueDiv.textContent = `${categoryPoints} points`;
+    positionInfo.appendChild(valueDiv);
+    
+    positionBox.appendChild(positionInfo);
+    positionSection.appendChild(positionBox);
+    modal.appendChild(positionSection);
+    
+    // Tiers section
+    const tiersSection = document.createElement('div');
+    tiersSection.className = 'player-modal-section';
+    
+    const tiersTitle = document.createElement('div');
+    tiersTitle.className = 'player-modal-section-title';
+    tiersTitle.textContent = 'TIERS';
+    tiersSection.appendChild(tiersTitle);
+    
+    const tiersGrid = document.createElement('div');
+    tiersGrid.className = 'player-modal-tiers';
+    
+    if (player.tiers && Array.isArray(player.tiers)) {
+        const categoryTiers = player.tiers.filter(t => {
+            for (const [cat, modes] of Object.entries(categoryMappings)) {
+                if (cat === category && modes.includes(t.gamemode)) return true;
+            }
+            return false;
+        });
+        
+        categoryTiers.forEach(tierInfo => {
+            const tierItem = document.createElement('div');
+            tierItem.className = 'player-modal-tier-item';
+            
+            const gamemodeName = tierInfo.gamemode;
+            const tierNumber = typeof tierInfo.tier === 'string' ? 
+                parseInt(tierInfo.tier.match(/\d+/)[0]) : 
+                tierInfo.tier;
+            
+            const icon = document.createElement('img');
+            icon.className = 'player-modal-tier-icon';
+            icon.src = gamemodeIcons[gamemodeName] || 'gamemodes/Vanilla.png';
+            icon.alt = gamemodeName;
+            tierItem.appendChild(icon);
+            
+            const badge = document.createElement('div');
+            badge.className = `player-modal-tier-badge tier-${tierNumber}`;
+            badge.textContent = tierInfo.tier;
+            tierItem.appendChild(badge);
+            
+            tiersGrid.appendChild(tierItem);
+        });
+    }
+    
+    tiersSection.appendChild(tiersGrid);
+    modal.appendChild(tiersSection);
     
     overlay.appendChild(modal);
     document.body.appendChild(overlay);
