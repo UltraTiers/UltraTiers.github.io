@@ -955,23 +955,12 @@ function showPlayerModal(player, tierNumber, category = 'main') {
             const tierMatch = typeof tierInfo.tier === 'string' ? tierInfo.tier.match(/\d+/) : null;
             const tierNumber = tierMatch ? parseInt(tierMatch[0]) : tierInfo.tier;
             
-            // Create header with gamemode icon and name
-            const header = document.createElement('div');
-            header.className = 'player-modal-tier-header';
-            
             const icon = document.createElement('img');
             icon.className = 'player-modal-tier-icon';
             icon.src = gamemodeIcons[gamemodeName] || 'gamemodes/Vanilla.png';
             icon.alt = gamemodeName;
-            header.appendChild(icon);
+            tierItem.appendChild(icon);
             
-            const modeName = document.createElement('span');
-            modeName.textContent = gamemodeName;
-            header.appendChild(modeName);
-            
-            tierItem.appendChild(header);
-            
-            // Create badge
             const badge = document.createElement('div');
             badge.className = `player-modal-tier-badge tier-${tierNumber}`;
             badge.textContent = tierInfo.tier;
