@@ -947,6 +947,34 @@ function showPlayerModal(player, tierNumber, category = 'main') {
             return false;
         });
         
+        // Sort tiers: highest (1) to lowest (5), HT before LT, retired at end
+        categoryTiers.sort((a, b) => {
+            const isRetiredA = a.tier === 'Retired' || a.tier === 'retired';
+            const isRetiredB = b.tier === 'Retired' || b.tier === 'retired';
+            
+            // Retired tiers go to the end
+            if (isRetiredA && !isRetiredB) return 1;
+            if (!isRetiredA && isRetiredB) return -1;
+            if (isRetiredA && isRetiredB) return 0;
+            
+            // Extract tier numbers
+            const matchA = typeof a.tier === 'string' ? a.tier.match(/\d+/) : null;
+            const matchB = typeof b.tier === 'string' ? b.tier.match(/\d+/) : null;
+            const tierA = matchA ? parseInt(matchA[0]) : 999;
+            const tierB = matchB ? parseInt(matchB[0]) : 999;
+            
+            // Sort by tier number (1 highest, comes first)
+            if (tierA !== tierB) return tierA - tierB;
+            
+            // Same tier number: HT before LT
+            const aIsHT = a.tier.startsWith('HT');
+            const bIsHT = b.tier.startsWith('HT');
+            if (aIsHT && !bIsHT) return -1;
+            if (!aIsHT && bIsHT) return 1;
+            
+            return 0;
+        });
+        
         categoryTiers.forEach(tierInfo => {
             const tierItem = document.createElement('div');
             tierItem.className = 'player-modal-tier-item';
@@ -963,8 +991,21 @@ function showPlayerModal(player, tierNumber, category = 'main') {
             
             const badge = document.createElement('div');
             const isUnknown = tierInfo.tier === 'unknown' || tierInfo.tier === 'Unknown';
-            badge.className = isUnknown ? 'player-modal-tier-badge tier-unknown' : `player-modal-tier-badge tier-${tierNumber}`;
-            badge.textContent = isUnknown ? '?' : tierInfo.tier;
+            const isRetired = tierInfo.tier === 'Retired' || tierInfo.tier === 'retired';
+            let badgeClass = 'player-modal-tier-badge';
+            let badgeText = tierInfo.tier;
+            
+            if (isUnknown) {
+                badgeClass += ' tier-unknown';
+                badgeText = '?';
+            } else if (isRetired) {
+                badgeClass += ' tier-retired';
+            } else {
+                badgeClass += ` tier-${tierNumber}`;
+            }
+            
+            badge.className = badgeClass;
+            badge.textContent = badgeText;
             tierItem.appendChild(badge);
             
             tiersGrid.appendChild(tierItem);
