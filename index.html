@@ -82,22 +82,40 @@
 
         <!-- Edit Profile Modal -->
         <div id="edit-profile-modal" class="login-modal-overlay" style="display: none;">
-            <div class="login-modal-content">
+            <div class="login-modal-content" style="max-width: 600px;">
                 <div class="login-modal-header">
                     <h2>Edit Account</h2>
                     <button id="close-edit-modal" class="login-modal-close">✕</button>
                 </div>
                 <div class="login-modal-body">
-                    <div class="login-form-group">
-                        <label for="edit-ign">Minecraft Username</label>
-                        <input type="text" id="edit-ign" placeholder="Your IGN" readonly/>
+                    <!-- Account Info Section -->
+                    <div class="edit-section">
+                        <h3>Account Information</h3>
+                        <div class="login-form-group">
+                            <label for="edit-ign">Minecraft Username</label>
+                            <input type="text" id="edit-ign" placeholder="Your IGN" readonly/>
+                        </div>
+                        <div class="login-form-group">
+                            <label for="edit-code">Your Login Code</label>
+                            <input type="text" id="edit-code" placeholder="Your code" readonly/>
+                            <small>Contact an admin to regenerate your code</small>
+                        </div>
                     </div>
-                    <div class="login-form-group">
-                        <label for="edit-code">Your Login Code</label>
-                        <input type="text" id="edit-code" placeholder="Your code" readonly/>
-                        <small>Contact an admin to regenerate your code</small>
+
+                    <!-- Banner Selection Section -->
+                    <div class="edit-section">
+                        <h3>Profile Banner</h3>
+                        <p class="edit-description">Choose an anime background for your profile banner</p>
+                        <div class="banner-grid" id="banner-grid">
+                            <!-- Banners will be populated here via JS -->
+                        </div>
                     </div>
-                    <button id="close-edit-btn" class="login-submit-btn">Close</button>
+
+                    <!-- Action Buttons -->
+                    <div style="display: flex; gap: 10px; margin-top: 20px;">
+                        <button id="save-profile-btn" class="login-submit-btn" style="flex: 1;">Save Changes</button>
+                        <button id="close-edit-btn" class="login-submit-btn" style="flex: 1; background: rgba(100,116,139,0.4); color: rgba(255,255,255,0.8);">Cancel</button>
+                    </div>
                 </div>
             </div>
         </div>

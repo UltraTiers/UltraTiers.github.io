@@ -4700,6 +4700,91 @@ body {
     border-color: rgba(239, 68, 68, 0.6);
 }
 
+/* Edit Profile Sections */
+.edit-section {
+    margin-bottom: 24px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid rgba(14, 165, 233, 0.15);
+}
+
+.edit-section:last-of-type {
+    border-bottom: none;
+}
+
+.edit-section h3 {
+    font-size: 14px;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.85);
+    margin-bottom: 12px;
+    letter-spacing: 0.5px;
+}
+
+.edit-description {
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.6);
+    margin-bottom: 16px;
+}
+
+/* Banner Grid */
+.banner-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    gap: 12px;
+}
+
+.banner-option {
+    position: relative;
+    cursor: pointer;
+    border-radius: 8px;
+    overflow: hidden;
+    border: 2px solid rgba(14, 165, 233, 0.2);
+    transition: all 0.2s ease;
+    aspect-ratio: 16/9;
+    background-size: cover;
+    background-position: center;
+}
+
+.banner-option:hover {
+    border-color: rgba(14, 165, 233, 0.5);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(14, 165, 233, 0.2);
+}
+
+.banner-option.selected {
+    border-color: #0ea5e9;
+    box-shadow: 0 0 16px rgba(14, 165, 233, 0.5), inset 0 0 16px rgba(14, 165, 233, 0.3);
+}
+
+.banner-option::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.3);
+    transition: background 0.2s ease;
+}
+
+.banner-option:hover::after {
+    background: rgba(0, 0, 0, 0.2);
+}
+
+.banner-option.selected::after {
+    background: rgba(14, 165, 233, 0.2);
+}
+
+.banner-label {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 6px 8px;
+    background: rgba(0, 0, 0, 0.6);
+    color: #fff;
+    font-size: 11px;
+    font-weight: 600;
+    z-index: 2;
+}
+
 /* Login Modal */
 .login-modal-overlay {
     position: fixed;

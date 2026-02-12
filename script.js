@@ -949,6 +949,12 @@ function initLoginSystem() {
     if (closeEditBtn) closeEditBtn.addEventListener('click', closeEditModal);
     if (closeEditBtnBottom) closeEditBtnBottom.addEventListener('click', closeEditModal);
 
+    // Save profile changes
+    const saveProfileBtn = document.getElementById('save-profile-btn');
+    if (saveProfileBtn) {
+        saveProfileBtn.addEventListener('click', saveProfileChanges);
+    }
+
     const editModal = document.getElementById('edit-profile-modal');
     if (editModal) {
         editModal.addEventListener('click', (e) => {
@@ -1042,12 +1048,47 @@ async function handleLogin() {
     }
 }
 
+// Available banner options
+const AVAILABLE_BANNERS = [
+    { name: 'Stone', file: 'anime-style-stone.jpg' },
+    { name: 'Forest', file: 'anime-style-forest.jpg' },
+    { name: 'Ocean', file: 'anime-style-ocean.jpg' },
+    { name: 'Sunset', file: 'anime-style-sunset.jpg' },
+    { name: 'Night', file: 'anime-style-night.jpg' }
+];
+
 function openEditModal() {
     const user = localStorage.getItem('ultratiers_user');
     if (!user) return;
 
     const userData = JSON.parse(user);
     document.getElementById('edit-ign').value = userData.ign;
+    
+    // Populate banner grid
+    const bannerGrid = document.getElementById('banner-grid');
+    if (bannerGrid) {
+        bannerGrid.innerHTML = '';
+        AVAILABLE_BANNERS.forEach(banner => {
+            const bannerOption = document.createElement('div');
+            bannerOption.className = 'banner-option';
+            bannerOption.style.backgroundImage = `url(${banner.file})`;
+            bannerOption.dataset.banner = banner.file;
+            
+            const label = document.createElement('div');
+            label.className = 'banner-label';
+            label.textContent = banner.name;
+            bannerOption.appendChild(label);
+            
+            bannerOption.addEventListener('click', () => {
+                document.querySelectorAll('.banner-option').forEach(el => {
+                    el.classList.remove('selected');
+                });
+                bannerOption.classList.add('selected');
+            });
+            
+            bannerGrid.appendChild(bannerOption);
+        });
+    }
     
     const modal = document.getElementById('edit-profile-modal');
     if (modal) modal.style.display = 'flex';
@@ -1056,6 +1097,51 @@ function openEditModal() {
 function closeEditModal() {
     const modal = document.getElementById('edit-profile-modal');
     if (modal) modal.style.display = 'none';
+}
+
+async function saveProfileChanges() {
+    const user = localStorage.getItem('ultratiers_user');
+    if (!user) return;
+
+    const userData = JSON.parse(user);
+    const selectedBanner = document.querySelector('.banner-option.selected');
+    
+    if (!selectedBanner) {
+        alert('Please select a banner');
+        return;
+    }
+
+    const bannerFile = selectedBanner.dataset.banner;
+
+    try {
+        // Send update to backend
+        const response = await fetch(`${API_BASE}/update-profile`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                ign: userData.ign,
+                uuid: userData.uuid,
+                banner: bannerFile
+            })
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+            alert(data.error || 'Failed to save changes');
+            return;
+        }
+
+        // Update local storage with new banner
+        userData.banner = bannerFile;
+        localStorage.setItem('ultratiers_user', JSON.stringify(userData));
+        
+        closeEditModal();
+        alert('Profile updated successfully!');
+    } catch (err) {
+        console.error('Save profile error:', err);
+        alert('An error occurred. Please try again.');
+    }
 }
 
 function handleLogout() {
