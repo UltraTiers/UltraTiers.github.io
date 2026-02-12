@@ -967,9 +967,8 @@ function showPlayerModal(player, tierNumber, category = 'main') {
             tierItem.className = 'player-modal-tier-item';
             
             const gamemodeName = tierInfo.gamemode;
-            const tierNumber = typeof tierInfo.tier === 'string' ? 
-                parseInt(tierInfo.tier.match(/\d+/)[0]) : 
-                tierInfo.tier;
+            const tierMatch = typeof tierInfo.tier === 'string' ? tierInfo.tier.match(/\d+/) : null;
+            const tierNumber = tierMatch ? parseInt(tierMatch[0]) : tierInfo.tier;
             
             const icon = document.createElement('img');
             icon.className = 'player-modal-tier-icon';
