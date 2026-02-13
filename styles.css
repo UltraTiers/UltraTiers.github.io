@@ -4133,6 +4133,7 @@ body {
         flex-wrap: wrap;
         justify-content: center;
         min-width: inherit;
+        margin: 0 !important;
     }
 }
 
@@ -4414,6 +4415,7 @@ body {
         padding: 6px 0;
         flex-wrap: wrap;
         justify-content: flex-start;
+        margin: 0 !important;
     }
 
     .mode-item {
