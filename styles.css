@@ -4085,7 +4085,8 @@ body {
         display: flex;
         flex-direction: column;
         align-items: center;
-        margin-right: 0;
+        margin: auto !important;
+        margin-right: inherit;
         border-radius: 12px;
     }
 
@@ -4130,7 +4131,6 @@ body {
         width: 100%;
         flex-wrap: wrap;
         justify-content: center;
-        min-width: 0;
         min-width: inherit;
     }
 }
@@ -4345,6 +4345,7 @@ body {
         width: 100%;
         flex-wrap: nowrap;
         margin-right: inherit;
+        flex-direction: column !important;
     }
 
     .rank-badge {
