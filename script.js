@@ -10,18 +10,53 @@ const tierPointsMap = {
 // Combat tag order from best to worst
 const combatTags = ['Combat Grandmaster', 'Combat Master', 'Combat Ace', 'Combat Specialist', 'Combat Cadet', 'Combat Novice', 'Combat Rookie'];
 
-// Base (overall) combat tag thresholds — this is the source of truth.
-// Other category thresholds are scaled from these values according to
-// how many modes each category contains (so categories with fewer modes
-// have proportionally lower point requirements).
-const baseAllCombatTagThresholds = {
-    'Combat Grandmaster': 1296,
-    'Combat Master': 972,
-    'Combat Ace': 648,
-    'Combat Specialist': 405,
-    'Combat Cadet': 195,
-    'Combat Novice': 65,
-    'Combat Rookie': 0
+// Fixed combat tag thresholds (points) per category
+const combatTagThresholds = {
+    main: {
+        'Combat Grandmaster': 384,
+        'Combat Master': 288,
+        'Combat Ace': 192,
+        'Combat Specialist': 120,
+        'Combat Cadet': 58,
+        'Combat Novice': 20,
+        'Combat Rookie': 0
+    },
+    sub: {
+        'Combat Grandmaster': 576,
+        'Combat Master': 432,
+        'Combat Ace': 288,
+        'Combat Specialist': 180,
+        'Combat Cadet': 86,
+        'Combat Novice': 29,
+        'Combat Rookie': 0
+    },
+    extra: {
+        'Combat Grandmaster': 240,
+        'Combat Master': 180,
+        'Combat Ace': 120,
+        'Combat Specialist': 75,
+        'Combat Cadet': 36,
+        'Combat Novice': 12,
+        'Combat Rookie': 0
+    },
+    bonus: {
+        'Combat Grandmaster': 96,
+        'Combat Master': 72,
+        'Combat Ace': 48,
+        'Combat Specialist': 30,
+        'Combat Cadet': 14,
+        'Combat Novice': 5,
+        'Combat Rookie': 0
+    },
+    all: {
+        'Combat Grandmaster': 1296,
+        'Combat Master': 972,
+        'Combat Ace': 648,
+        'Combat Specialist': 405,
+        'Combat Cadet': 195,
+        'Combat Novice': 65,
+        'Combat Rookie': 0
+    }
 };
 
 // Calculate points for a player
@@ -37,33 +72,10 @@ function calculatePlayerPoints(player) {
 // Get combat tag based on points and category
 function getCombatTag(points, category = 'main') {
     const key = (category === 'all-modes') ? 'all' : (category || 'main');
-
-    // If asking for overall, use the base thresholds directly
-    if (key === 'all') {
-        for (const tag of combatTags) {
-            if (points >= baseAllCombatTagThresholds[tag]) return tag;
-        }
-        return 'Combat Rookie';
-    }
-
-    // If category mappings aren't defined yet, fall back to overall thresholds
-    if (typeof categoryMappings === 'undefined' || !categoryMappings) {
-        for (const tag of combatTags) {
-            if (points >= baseAllCombatTagThresholds[tag]) return tag;
-        }
-        return 'Combat Rookie';
-    }
-
-    // Compute scaled thresholds for the requested category based on mode counts
-    const totalModes = Object.values(categoryMappings).reduce((s, arr) => s + arr.length, 0) || 1;
-    const categoryModes = (categoryMappings[key] && categoryMappings[key].length) ? categoryMappings[key].length : 0;
-    const factor = categoryModes / totalModes;
-
+    const thresholds = combatTagThresholds[key] || combatTagThresholds.main;
     for (const tag of combatTags) {
-        const threshold = Math.round(baseAllCombatTagThresholds[tag] * factor);
-        if (points >= threshold) return tag;
+        if (points >= thresholds[tag]) return tag;
     }
-
     return 'Combat Rookie';
 }
 
