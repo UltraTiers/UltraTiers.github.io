@@ -4068,7 +4068,7 @@ body {
 
     /* Category Player Row - Stack vertically on phone */
     .category-player-row {
-        display: flex;
+        display: flex !important;
         flex-direction: column !important;
         align-items: center;
         gap: 16px;
@@ -4103,6 +4103,7 @@ body {
         height: 100px;
         margin-left: 0;
         border-radius: 12px;
+        margin: auto !important;
     }
 
     .player-identity-section {
