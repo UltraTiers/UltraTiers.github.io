@@ -447,6 +447,56 @@ document.addEventListener('DOMContentLoaded', async function () {
     renderDefaultTab();
 });
 
+// --- Peak tooltip (delegated) ---
+(() => {
+    const tooltip = document.createElement('div');
+    tooltip.className = 'mode-peak-tooltip';
+    tooltip.style.position = 'fixed';
+    tooltip.style.zIndex = '99999';
+    tooltip.style.pointerEvents = 'none';
+    tooltip.style.opacity = '0';
+    tooltip.style.transition = 'opacity 0.12s ease, transform 0.12s ease';
+    document.body.appendChild(tooltip);
+
+    let hideTimeout = null;
+
+    function show(target, peak) {
+        if (!peak) return;
+        tooltip.textContent = `Peak • ${peak}`;
+        tooltip.style.opacity = '1';
+        tooltip.style.transform = 'translateY(0px)';
+        const rect = target.getBoundingClientRect();
+        // position centered above the icon
+        const left = rect.left + rect.width / 2 - tooltip.offsetWidth / 2;
+        const top = rect.top - tooltip.offsetHeight - 10;
+        tooltip.style.left = `${Math.max(8, left)}px`;
+        tooltip.style.top = `${Math.max(8, top)}px`;
+    }
+
+    function hide() {
+        tooltip.style.opacity = '0';
+        tooltip.style.transform = 'translateY(-4px)';
+    }
+
+    document.addEventListener('mouseover', (e) => {
+        const icon = e.target.closest('.mode-icon');
+        if (!icon) return;
+        const peak = icon.dataset.peak;
+        if (!peak || peak === 'Unknown') return;
+        if (hideTimeout) { clearTimeout(hideTimeout); hideTimeout = null; }
+        // small delay to avoid flicker from fast mouse movements
+        show(icon, peak);
+    }, true);
+
+    document.addEventListener('mouseout', (e) => {
+        const icon = e.target.closest('.mode-icon');
+        if (!icon) return;
+        // delay hide slightly to make tooltip easier to read
+        if (hideTimeout) clearTimeout(hideTimeout);
+        hideTimeout = setTimeout(() => hide(), 80);
+    }, true);
+})();
+
 function setupTabHandlers() {
     // Main tab handlers
     const mainTabs = document.querySelectorAll('.main-tab-btn');
@@ -773,6 +823,7 @@ function renderAllModesOverall() {
             icon.src = gamemodeIcons[gamemode] || 'gamemodes/Vanilla.png';
             icon.alt = gamemode;
             icon.title = gamemode;
+            icon.dataset.peak = peak || 'Unknown';
             
             const tierBadge = document.createElement('div');
             tierBadge.className = `tier-badge-rounded ${isRetired ? 'tier-retired' : (tierNumber > 0 ? tierColors[tierNumber] : 'tier-unknown')}`;
@@ -925,6 +976,7 @@ function renderAllModesRegion(region) {
             icon.src = gamemodeIcons[gamemode] || 'gamemodes/Vanilla.png';
             icon.alt = gamemode;
             icon.title = gamemode;
+            icon.dataset.peak = peak || 'Unknown';
             
             const tierBadge = document.createElement('div');
             tierBadge.className = `tier-badge-rounded ${isRetired ? 'tier-retired' : (tierNumber > 0 ? tierColors[tierNumber] : 'tier-unknown')}`;
@@ -1089,6 +1141,7 @@ function renderCategoryOverall(category) {
             icon.src = gamemodeIcons[gamemode] || 'gamemodes/Vanilla.png';
             icon.alt = gamemode;
             icon.title = gamemode;
+            icon.dataset.peak = peak || 'Unknown';
             
             const tierBadge = document.createElement('div');
             tierBadge.className = `tier-badge-rounded ${isRetired ? 'tier-retired' : (tierNumber > 0 ? tierColors[tierNumber] : 'tier-unknown')}`;
