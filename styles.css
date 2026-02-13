@@ -4884,6 +4884,7 @@ body {
     width: 100%;
     max-width: 350px;
     cursor: pointer;
+    justify-content: center;
 }
 
 .login-prompt-content {
