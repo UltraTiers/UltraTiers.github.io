@@ -4062,6 +4062,73 @@ body {
     .mode-tier-column {
         padding: 8px;
     }
+
+    /* Category Player Row - Stack vertically on phone */
+    .category-player-row {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 16px;
+        padding: 16px;
+        border-radius: 16px;
+    }
+
+    .category-player-row:hover {
+        transform: none;
+    }
+
+    .rank-player-section {
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        margin-right: 0;
+        border-radius: 12px;
+    }
+
+    .rank-badge {
+        border-radius: 12px;
+        padding: 0 20px;
+        font-size: 32px;
+        min-width: auto;
+        margin-bottom: 8px;
+    }
+
+    .rank-avatar {
+        width: 100px;
+        height: 100px;
+        margin-left: 0;
+        border-radius: 12px;
+    }
+
+    .player-identity-section {
+        flex-direction: column;
+        align-items: center;
+        gap: 12px;
+        width: 100%;
+        text-align: center;
+    }
+
+    .player-info-section {
+        margin: 0;
+        align-items: center;
+    }
+
+    .player-info-section .player-name {
+        font-size: 16px;
+    }
+
+    .region-section {
+        width: 100%;
+        min-width: auto;
+    }
+
+    .modes-section {
+        width: 100%;
+        flex-wrap: wrap;
+        justify-content: center;
+        min-width: 0;
+    }
 }
 
 /* ===== OVERALL VIEW STYLES ===== */
