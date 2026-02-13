@@ -851,13 +851,14 @@ function renderAllModesRegion(region) {
         nameDiv.className = `player-name${player.nitro ? ' nitro' : ''}`;
         nameDiv.textContent = player.name;
         
-        // Calculate rank in region
+        // Calculate rank in region (for color) and show combat tag text instead
         const regionRank = getCategoryRank(player.totalPoints, allPoints);
         const rankColor = getRankColor(regionRank);
-        
+        const regionCombatTag = getCombatTag(player.totalPoints, 'all');
+
         const titleDiv = document.createElement('div');
         titleDiv.className = 'player-title';
-        titleDiv.innerHTML = `<span style="color: ${rankColor}; font-weight: bold;">${regionRank}</span> • ${player.totalPoints} points`;
+        titleDiv.innerHTML = `<span style="color: ${rankColor}; font-weight: bold;">${regionCombatTag}</span> • ${player.totalPoints} points`;
         
         playerInfo.appendChild(nameDiv);
         playerInfo.appendChild(titleDiv);
@@ -1009,13 +1010,14 @@ function renderCategoryOverall(category) {
         nameDiv.className = `player-name${player.nitro ? ' nitro' : ''}`;
         nameDiv.textContent = player.name;
         
-        // Calculate category rank
+        // Calculate category rank (for color) and show category combat tag text instead
         const categoryRank = getCategoryRank(player.categoryPoints, allCategoryPoints);
         const rankColor = getRankColor(categoryRank);
-        
+        const categoryCombatTag = getCombatTag(player.categoryPoints, category);
+
         const titleDiv = document.createElement('div');
         titleDiv.className = 'player-title';
-        titleDiv.innerHTML = `<span style="color: ${rankColor}; font-weight: bold;">${categoryRank}</span> • ${player.categoryPoints} points`;
+        titleDiv.innerHTML = `<span style="color: ${rankColor}; font-weight: bold;">${categoryCombatTag}</span> • ${player.categoryPoints} points`;
         
         playerInfo.appendChild(nameDiv);
         playerInfo.appendChild(titleDiv);
