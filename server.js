@@ -217,13 +217,22 @@ async function saveOrUpdatePlayer(player) {
 
   if (error) throw error;
 
+  // Ensure tiers entries include a `peak` field defaulting to the current tier
+  const normalizedTiers = Array.isArray(tiers)
+    ? tiers.map(t => ({
+        gamemode: t.gamemode,
+        tier: t.tier,
+        peak: t.peak || t.tier
+      }))
+    : [];
+
   if (existing) {
     const { error: updateError } = await supabase
       .from("ultratiers")
       .update({
         name,
         region,
-        tiers,
+        tiers: normalizedTiers,
         points,
         nitro: nitro || false,
         banner: banner || existing.banner || "anime-style-stone.jpg"
@@ -238,11 +247,11 @@ async function saveOrUpdatePlayer(player) {
         uuid,
         name,
         region,
-        tiers,
+        tiers: normalizedTiers,
         points,
         nitro: nitro || false,
         banner: banner || "anime-style-stone.jpg"
-      }]);
+      }] );
 
     if (insertError) throw insertError;
   }
@@ -336,22 +345,27 @@ app.get("/players", async (req, res) => {
 
     const updatedPlayers = players.map(p => {
       const tiersMap = {};
+      const peakMap = {};
       if (Array.isArray(p.tiers)) {
-        p.tiers.forEach(t => { tiersMap[t.gamemode] = t.tier; });
+        p.tiers.forEach(t => {
+          tiersMap[t.gamemode] = t.tier;
+          peakMap[t.gamemode] = t.peak || t.tier;
+        });
       }
       const fullTiers = allGamemodes.map(g => ({
         gamemode: g,
-        tier: tiersMap[g] || "Unknown"
+        tier: tiersMap[g] || "Unknown",
+        peak: peakMap[g] || (tiersMap[g] || "Unknown")
       }));
       const points = fullTiers.reduce((sum, t) => sum + (tierPointsMap[t.tier] || 0), 0);
-return {
-  ...p,
-  tiers: fullTiers,
-  points,
-  nitro: p.nitro || false,
-  banner: p.banner || "anime-style-stone.jpg",
-  retired_modes: Array.isArray(p.retired_modes) ? p.retired_modes : []
-};
+      return {
+        ...p,
+        tiers: fullTiers,
+        points,
+        nitro: p.nitro || false,
+        banner: p.banner || "anime-style-stone.jpg",
+        retired_modes: Array.isArray(p.retired_modes) ? p.retired_modes : []
+      };
     });
 
     res.json(updatedPlayers);
@@ -408,20 +422,38 @@ app.post("/", async (req, res) => {
     if (!player) {
       const tiers = allGamemodes.map(g => ({
         gamemode: g,
-        tier: g === gamemode ? newTier : "Unknown"
+        tier: g === gamemode ? newTier : "Unknown",
+        peak: g === gamemode ? newTier : "Unknown"
       }));
       player = { uuid, name, region, tiers, points: tierPointsMap[newTier] || 0, nitro: false };
     } else {
       const tierObj = player.tiers.find(t => t.gamemode === gamemode);
-      if (tierObj) tierObj.tier = newTier;
-      else player.tiers.push({ gamemode, tier: newTier });
+      const newTierPoints = tierPointsMap[newTier] || 0;
+
+      if (tierObj) {
+        // update current tier
+        const prevTier = tierObj.tier;
+        tierObj.tier = newTier;
+
+        // existing peak (fallback to previous tier or current if missing)
+        const existingPeak = tierObj.peak || prevTier || newTier;
+        const existingPeakPoints = tierPointsMap[existingPeak] || 0;
+
+        // update peak only if this newTier is higher than existing peak
+        if (newTierPoints > existingPeakPoints) {
+          tierObj.peak = newTier;
+        }
+      } else {
+        // push new entry with peak equal to the tier
+        player.tiers.push({ gamemode, tier: newTier, peak: newTier });
+      }
 
       if (name) player.name = name;
       if (region) player.region = region;
 
       allGamemodes.forEach(g => {
         if (!player.tiers.find(t => t.gamemode === g)) {
-          player.tiers.push({ gamemode: g, tier: "Unknown" });
+          player.tiers.push({ gamemode: g, tier: "Unknown", peak: "Unknown" });
         }
       });
 
@@ -641,7 +673,7 @@ app.post("/nitro", async (req, res) => {
         uuid,
         name,
         region: "Unknown", // avoid null
-        tiers: allGamemodes.map(g => ({ gamemode: g, tier: "Unknown" })),
+        tiers: allGamemodes.map(g => ({ gamemode: g, tier: "Unknown", peak: "Unknown" })),
         points: 0,
         nitro: true
       };
@@ -651,7 +683,7 @@ app.post("/nitro", async (req, res) => {
 
       // Ensure tiers exist
       if (!Array.isArray(player.tiers) || player.tiers.length === 0) {
-        player.tiers = allGamemodes.map(g => ({ gamemode: g, tier: "Unknown" }));
+        player.tiers = allGamemodes.map(g => ({ gamemode: g, tier: "Unknown", peak: "Unknown" }));
       }
 
       // Ensure points are calculated
