@@ -4766,12 +4766,25 @@ body {
     position: absolute;
     left: 50%;
     transform: translateX(-50%);
-    bottom: -6px;
+    top: 100%;
     width: 0;
     height: 0;
     border-left: 6px solid transparent;
     border-right: 6px solid transparent;
-    border-top: 6px solid rgba(15, 23, 42, 0.98);
+    border-bottom: 6px solid rgba(15, 23, 42, 0.98);
+}
+
+/* Make modal mode icons interactive like row icons */
+.player-modal-tier-icon {
+    width: 32px;
+    height: 32px;
+    display: inline-block;
+    object-fit: contain;
+    transition: transform 0.12s ease;
+    cursor: pointer;
+}
+.player-modal-tier-icon:hover {
+    transform: scale(1.1);
 }
 
 .tier-badge-rounded {

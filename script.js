@@ -617,7 +617,6 @@ function renderOverall() {
                 
                 const tierBadge = document.createElement('div');
                 tierBadge.className = `tier-badge-small ${tierNumber > 0 ? tierColors[tierNumber] : 'tier-unknown'}`;
-                tierBadge.title = `${gamemode} • Peak: ${peakValue}`;
                 tierBadge.innerHTML = tierNumber > 0 ? tierIcons[tierNumber] : '❓';
                 
                 categoryGroup.appendChild(tierBadge);
@@ -828,7 +827,6 @@ function renderAllModesOverall() {
             const tierBadge = document.createElement('div');
             tierBadge.className = `tier-badge-rounded ${isRetired ? 'tier-retired' : (tierNumber > 0 ? tierColors[tierNumber] : 'tier-unknown')}`;
             tierBadge.textContent = tierValue !== 'Unknown' ? tierValue : '?';
-            tierBadge.title = `${gamemode} • Peak: ${peak || 'Unknown'}`;
             
             modeItem.appendChild(icon);
             modeItem.appendChild(tierBadge);
@@ -981,7 +979,6 @@ function renderAllModesRegion(region) {
             const tierBadge = document.createElement('div');
             tierBadge.className = `tier-badge-rounded ${isRetired ? 'tier-retired' : (tierNumber > 0 ? tierColors[tierNumber] : 'tier-unknown')}`;
             tierBadge.textContent = tierValue !== 'Unknown' ? tierValue : '?';
-            tierBadge.title = `${gamemode} • Peak: ${peak || 'Unknown'}`;
             
             modeItem.appendChild(icon);
             modeItem.appendChild(tierBadge);
@@ -1146,7 +1143,6 @@ function renderCategoryOverall(category) {
             const tierBadge = document.createElement('div');
             tierBadge.className = `tier-badge-rounded ${isRetired ? 'tier-retired' : (tierNumber > 0 ? tierColors[tierNumber] : 'tier-unknown')}`;
             tierBadge.textContent = tierValue !== 'Unknown' ? tierValue : '?';
-            tierBadge.title = `${gamemode} • Peak: ${peak || 'Unknown'}`;
             
             modeItem.appendChild(icon);
             modeItem.appendChild(tierBadge);
@@ -1491,9 +1487,12 @@ function showPlayerModal(player, tierNumber, category = 'main') {
             const gamemodeName = tierInfo.gamemode;
             
             const icon = document.createElement('img');
-            icon.className = 'player-modal-tier-icon';
+            // make modal icons behave like mode icons so tooltip + hover work
+            icon.className = 'player-modal-tier-icon mode-icon';
             icon.src = gamemodeIcons[gamemodeName] || 'gamemodes/Vanilla.png';
             icon.alt = gamemodeName;
+            // attach peak so the delegated tooltip will show when hovering
+            icon.dataset.peak = tierInfo.peak || tierInfo.peakValue || tierInfo.tier || 'Unknown';
             tierItem.appendChild(icon);
             
             const badge = document.createElement('div');
@@ -1514,7 +1513,6 @@ function showPlayerModal(player, tierNumber, category = 'main') {
             
             badge.className = badgeClass;
             badge.textContent = badgeText;
-            badge.title = `${gamemodeName} • Peak: ${tierInfo.peakValue || 'Unknown'}`;
             tierItem.appendChild(badge);
             
             tiersGrid.appendChild(tierItem);
