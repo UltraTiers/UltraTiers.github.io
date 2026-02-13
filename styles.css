@@ -4751,7 +4751,7 @@ body {
 
 /* Custom peak tooltip that appears above mode icons */
 .mode-peak-tooltip {
-    background: rgba(15, 23, 42, 0.98);
+    background: #1e3a5f;
     color: #fff;
     padding: 6px 10px;
     border-radius: 6px;
