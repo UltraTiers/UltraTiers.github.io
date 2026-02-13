@@ -468,7 +468,8 @@ document.addEventListener('DOMContentLoaded', async function () {
         const rect = target.getBoundingClientRect();
         // position centered above the icon
         const left = rect.left + rect.width / 2 - tooltip.offsetWidth / 2;
-        const top = rect.top - tooltip.offsetHeight - 10;
+        // reduce gap so arrow visually connects to the icon
+        const top = rect.top - tooltip.offsetHeight - 6;
         tooltip.style.left = `${Math.max(8, left)}px`;
         tooltip.style.top = `${Math.max(8, top)}px`;
     }
