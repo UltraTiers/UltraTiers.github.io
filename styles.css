@@ -4156,6 +4156,7 @@ body {
 @media (max-width: 768px) {
     .overall-container {
         grid-template-columns: 1fr;
+        margin: auto !important;
     }
 
     .player-overview-card {
@@ -4319,6 +4320,7 @@ body {
 
     .overall-container {
         padding: 10px;
+        margin: auto !important;
     }
 
     #overall-players-list {
