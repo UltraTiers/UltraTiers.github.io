@@ -751,6 +751,9 @@ body {
 
     .login-prompt-content {
         padding: 8px 12px;
+        width: 300px;
+        display: flex;
+        justify-content: center;
     }
 
     .login-prompt-content span {
@@ -4066,7 +4069,7 @@ body {
     /* Category Player Row - Stack vertically on phone */
     .category-player-row {
         display: flex;
-        flex-direction: column;
+        flex-direction: column !important;
         align-items: center;
         gap: 16px;
         padding: 16px;
@@ -4128,6 +4131,7 @@ body {
         flex-wrap: wrap;
         justify-content: center;
         min-width: 0;
+        min-width: inherit;
     }
 }
 
@@ -4326,7 +4330,7 @@ body {
         flex-direction: column;
         gap: 8px;
         padding: 8px;
-        margin: 0 0 8px 0;
+        margin: auto !important;
         border-radius: 8px;
         width: calc(100% - 16px);
         box-sizing: border-box;
@@ -4340,6 +4344,7 @@ body {
         gap: 8px;
         width: 100%;
         flex-wrap: nowrap;
+        margin-right: inherit;
     }
 
     .rank-badge {
@@ -4352,10 +4357,10 @@ body {
         display: flex;
         align-items: center;
         justify-content: center;
-    }
-
-    .rank-avatar {
-        display: none;
+        border-top-left-radius: 16px;
+        border-bottom-left-radius: 16px;
+        border-top-right-radius: 16px;
+        border-bottom-right-radius: 16px;
     }
 
     .player-identity-section {
@@ -4364,7 +4369,7 @@ body {
         display: flex;
         flex-direction: column;
         justify-content: center;
-        gap: 2px;
+        gap: 0px !important;
     }
 
     .player-info-section {
