@@ -4765,16 +4765,16 @@ body {
     z-index: 99999;
 }
 .mode-peak-tooltip::after {
+    /* use a rotated square for a consistently oriented arrow */
     content: '';
     position: absolute;
     left: 50%;
-    transform: translateX(-50%);
+    transform: translateX(-50%) rotate(45deg);
     top: 100%;
-    width: 0;
-    height: 0;
-    border-left: 6px solid transparent;
-    border-right: 6px solid transparent;
-    border-bottom: 6px solid #1e3a5f; /* match tooltip background */
+    width: 10px;
+    height: 10px;
+    background: #1e3a5f;
+    box-shadow: 0 6px 20px rgba(2,6,23,0.6);
     z-index: 99999;
 }
 
@@ -4798,6 +4798,17 @@ body {
 }
 .player-modal-tier-badge:hover {
     transform: scale(1.08);
+}
+
+/* hovered class used by JS to sync icon/badge hover state */
+.mode-icon.hovered,
+.player-modal-tier-icon.hovered {
+    transform: scale(1.12) !important;
+}
+.player-modal-tier-badge.hovered,
+.tier-badge-rounded.hovered,
+.tier-badge-small.hovered {
+    transform: scale(1.08) !important;
 }
 
 .tier-badge-rounded {

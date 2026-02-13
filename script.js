@@ -498,6 +498,42 @@ document.addEventListener('DOMContentLoaded', async function () {
     }, true);
 })();
 
+// --- Sync icon <-> badge hover (delegated) ---
+(function() {
+    let hoverTarget = null;
+
+    function addHover(modeItem) {
+        const icon = modeItem.querySelector('.mode-icon');
+        const badge = modeItem.querySelector('.tier-badge-rounded, .player-modal-tier-badge, .tier-badge-small');
+        if (icon) icon.classList.add('hovered');
+        if (badge) badge.classList.add('hovered');
+    }
+    function removeHover(modeItem) {
+        const icon = modeItem.querySelector('.mode-icon');
+        const badge = modeItem.querySelector('.tier-badge-rounded, .player-modal-tier-badge, .tier-badge-small');
+        if (icon) icon.classList.remove('hovered');
+        if (badge) badge.classList.remove('hovered');
+    }
+
+    document.addEventListener('mouseover', (e) => {
+        const modeItem = e.target.closest('.mode-item, .player-modal-tier-item');
+        if (!modeItem || modeItem === hoverTarget) return;
+        hoverTarget = modeItem;
+        addHover(modeItem);
+    }, true);
+
+    document.addEventListener('mouseout', (e) => {
+        const related = e.relatedTarget;
+        const leftItem = e.target.closest('.mode-item, .player-modal-tier-item');
+        // If leaving the same modeItem to somewhere outside it, remove hover
+        if (!leftItem) return;
+        if (leftItem && (!related || !leftItem.contains(related))) {
+            removeHover(leftItem);
+            if (hoverTarget === leftItem) hoverTarget = null;
+        }
+    }, true);
+})();
+
 function setupTabHandlers() {
     // Main tab handlers
     const mainTabs = document.querySelectorAll('.main-tab-btn');
