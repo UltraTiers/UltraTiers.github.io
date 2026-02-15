@@ -1387,38 +1387,6 @@ function showPlayerModal(player, tierNumber, category = 'main') {
     
     modal.appendChild(avatarSection);
     
-    // Show overall position at top of all-modes modal
-    (function addOverallPosition() {
-        const section = document.createElement('div');
-        section.className = 'player-modal-section';
-
-        // Overall rank (Everyone)
-        const allPlayers = (window.allPlayers || []).map(p => ({ name: p.name, points: calculatePlayerPoints(p) })).sort((a, b) => b.points - a.points);
-        const overallRank = allPlayers.findIndex(p => p.name === player.name) + 1 || '?';
-        const overallPoints = calculatePlayerPoints(player);
-        const box = document.createElement('div');
-        box.className = 'player-modal-position';
-        const rankEl = document.createElement('div');
-        rankEl.className = 'player-modal-position-rank';
-        rankEl.textContent = overallRank > 0 ? overallRank : '?';
-        box.appendChild(rankEl);
-        const info = document.createElement('div');
-        info.className = 'player-modal-position-info';
-        const label = document.createElement('div');
-        label.className = 'player-modal-position-label';
-        label.textContent = 'EVERYONE';
-        const value = document.createElement('div');
-        value.className = 'player-modal-position-value';
-        value.textContent = `${overallPoints} points`;
-        info.appendChild(label);
-        info.appendChild(value);
-        box.appendChild(info);
-        section.appendChild(box);
-        modal.appendChild(section);
-    })();
-    
-    
-    
     // Position section with region and rank badge
     const positionSection = document.createElement('div');
     positionSection.className = 'player-modal-section';
@@ -1677,7 +1645,7 @@ function showAllModesModal(player) {
         info.className = 'player-modal-position-info';
         const label = document.createElement('div');
         label.className = 'player-modal-position-label';
-        label.textContent = 'EVERYONE';
+        label.textContent = 'OVERALL';
         const value = document.createElement('div');
         value.className = 'player-modal-position-value';
         value.textContent = `${overallPoints} points`;
