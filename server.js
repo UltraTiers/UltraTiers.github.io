@@ -325,7 +325,7 @@ app.post("/apply", async (req, res) => {
 const allGamemodes = [
   "Axe","Sword","Bow","Vanilla","NethOP","Pot","UHC","SMP","Mace","Spear Mace","Diamond SMP",
   "OG Vanilla","Bed","DeBuff","Speed","Manhunt","Elytra","Spear Elytra","Diamond Survival","Minecart",
-  "Creeper","Trident","AxePot","Pearl","Bridge","Sumo","OP"
+  "Creeper","Trident","AxePot","Pearl","Bridge","Sumo","OP","Pufferfish",
 ];
 
 const tierPointsMap = { LT5:1, HT5:2, LT4:4, HT4:6, LT3:9, HT3:12, LT2:16, HT2:20, LT1:25, HT1:30 };
