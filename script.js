@@ -1387,90 +1387,34 @@ function showPlayerModal(player, tierNumber, category = 'main') {
     
     modal.appendChild(avatarSection);
     
-    // Show overall and specific-mode positions at top of all-modes modal
-    (function addOverallAndModePositions() {
-        const wrapper = document.createElement('div');
-        wrapper.className = 'player-modal-global-positions';
+    // Show overall position at top of all-modes modal
+    (function addOverallPosition() {
+        const section = document.createElement('div');
+        section.className = 'player-modal-section';
 
         // Overall rank (Everyone)
         const allPlayers = (window.allPlayers || []).map(p => ({ name: p.name, points: calculatePlayerPoints(p) })).sort((a, b) => b.points - a.points);
         const overallRank = allPlayers.findIndex(p => p.name === player.name) + 1 || '?';
         const overallPoints = calculatePlayerPoints(player);
-        const everyoneBox = document.createElement('div');
-        everyoneBox.className = 'player-modal-position';
-        const oRankEl = document.createElement('div');
-        oRankEl.className = 'player-modal-position-rank';
-        oRankEl.textContent = overallRank > 0 ? overallRank : '?';
-        everyoneBox.appendChild(oRankEl);
-        const oInfo = document.createElement('div');
-        oInfo.className = 'player-modal-position-info';
-        const oLabel = document.createElement('div');
-        oLabel.className = 'player-modal-position-label';
-        oLabel.textContent = 'EVERYONE';
-        const oValue = document.createElement('div');
-        oValue.className = 'player-modal-position-value';
-        oValue.textContent = `${overallPoints} points`;
-        oInfo.appendChild(oLabel);
-        oInfo.appendChild(oValue);
-        everyoneBox.appendChild(oInfo);
-
-        // Determine current active mode on the page (if any)
-        const activeModeBtn = document.querySelector('.mode-tab-btn.active');
-        let modeName = null;
-        if (activeModeBtn && activeModeBtn.dataset && activeModeBtn.dataset.mode) {
-            modeName = activeModeBtn.dataset.mode;
-        }
-
-        const modeBox = document.createElement('div');
-        modeBox.className = 'player-modal-position';
-        const mRankEl = document.createElement('div');
-        mRankEl.className = 'player-modal-position-rank';
-
-        if (modeName) {
-            // compute mode-specific points and rank
-            const playersModePoints = (window.allPlayers || []).map(p => {
-                const tierForMode = (p.tiers || []).find(t => t.gamemode === modeName);
-                const pts = calculatePlayerPoints({ tiers: tierForMode ? [tierForMode] : [] });
-                return { name: p.name, points: pts };
-            }).sort((a, b) => b.points - a.points);
-            const modeRank = playersModePoints.findIndex(p => p.name === player.name) + 1 || '?';
-            const playerModePoints = (() => {
-                const t = (player.tiers || []).find(ti => ti.gamemode === modeName);
-                return calculatePlayerPoints({ tiers: t ? [t] : [] });
-            })();
-            mRankEl.textContent = modeRank > 0 ? modeRank : '?';
-            modeBox.appendChild(mRankEl);
-            const mInfo = document.createElement('div');
-            mInfo.className = 'player-modal-position-info';
-            const mLabel = document.createElement('div');
-            mLabel.className = 'player-modal-position-label';
-            mLabel.textContent = (modeName || 'Mode').toUpperCase();
-            const mValue = document.createElement('div');
-            mValue.className = 'player-modal-position-value';
-            mValue.textContent = `${playerModePoints} points`;
-            mInfo.appendChild(mLabel);
-            mInfo.appendChild(mValue);
-            modeBox.appendChild(mInfo);
-        } else {
-            // No specific mode active — show placeholder
-            mRankEl.textContent = '?';
-            modeBox.appendChild(mRankEl);
-            const mInfo = document.createElement('div');
-            mInfo.className = 'player-modal-position-info';
-            const mLabel = document.createElement('div');
-            mLabel.className = 'player-modal-position-label';
-            mLabel.textContent = 'MODE';
-            const mValue = document.createElement('div');
-            mValue.className = 'player-modal-position-value';
-            mValue.textContent = 'N/A';
-            mInfo.appendChild(mLabel);
-            mInfo.appendChild(mValue);
-            modeBox.appendChild(mInfo);
-        }
-
-        wrapper.appendChild(everyoneBox);
-        wrapper.appendChild(modeBox);
-        modal.appendChild(wrapper);
+        const box = document.createElement('div');
+        box.className = 'player-modal-position';
+        const rankEl = document.createElement('div');
+        rankEl.className = 'player-modal-position-rank';
+        rankEl.textContent = overallRank > 0 ? overallRank : '?';
+        box.appendChild(rankEl);
+        const info = document.createElement('div');
+        info.className = 'player-modal-position-info';
+        const label = document.createElement('div');
+        label.className = 'player-modal-position-label';
+        label.textContent = 'EVERYONE';
+        const value = document.createElement('div');
+        value.className = 'player-modal-position-value';
+        value.textContent = `${overallPoints} points`;
+        info.appendChild(label);
+        info.appendChild(value);
+        box.appendChild(info);
+        section.appendChild(box);
+        modal.appendChild(section);
     })();
     
     
@@ -1528,95 +1472,42 @@ function showPlayerModal(player, tierNumber, category = 'main') {
     
     const playerRank = allPlayersPoints.findIndex(p => p.name === player.name) + 1;
 
-    // If viewing the modal in the overall context, show two position boxes: Everyone and Region
-    if (category === 'overall') {
-        const wrapper = document.createElement('div');
-        wrapper.className = 'player-modal-global-positions';
+    const positionBox = document.createElement('div');
+    positionBox.className = 'player-modal-position';
 
-        // Everyone box
-        const everyoneBox = document.createElement('div');
-        everyoneBox.className = 'player-modal-position';
-        const everyoneRank = document.createElement('div');
-        everyoneRank.className = 'player-modal-position-rank';
-        const overallPlayers = (window.allPlayers || []).map(p => ({ name: p.name, points: calculatePlayerPoints(p) })).sort((a, b) => b.points - a.points);
-        const overallRank = overallPlayers.findIndex(p => p.name === player.name) + 1 || '?';
-        everyoneRank.textContent = overallRank > 0 ? overallRank : '?';
-        everyoneBox.appendChild(everyoneRank);
-        const everyoneInfo = document.createElement('div');
-        everyoneInfo.className = 'player-modal-position-info';
-        const everyoneLabel = document.createElement('div');
-        everyoneLabel.className = 'player-modal-position-label';
-        everyoneLabel.textContent = 'EVERYONE';
-        const everyoneValue = document.createElement('div');
-        everyoneValue.className = 'player-modal-position-value';
-        everyoneValue.textContent = `${calculatePlayerPoints(player)} points`;
-        everyoneInfo.appendChild(everyoneLabel);
-        everyoneInfo.appendChild(everyoneValue);
-        everyoneBox.appendChild(everyoneInfo);
+    // Rank badge
+    const rankBadge2 = document.createElement('div');
+    rankBadge2.className = 'player-modal-position-rank';
+    rankBadge2.textContent = playerRank > 0 ? playerRank : '?';
+    positionBox.appendChild(rankBadge2);
 
-        // Region box
-        const regionBox = document.createElement('div');
-        regionBox.className = 'player-modal-position';
-        const regionRankEl = document.createElement('div');
-        regionRankEl.className = 'player-modal-position-rank';
-        const regionPlayers = (window.allPlayers || []).filter(p => p.region === player.region).map(p => ({ name: p.name, points: calculatePlayerPoints(p) })).sort((a, b) => b.points - a.points);
-        const regionRank = regionPlayers.findIndex(p => p.name === player.name) + 1 || '?';
-        regionRankEl.textContent = regionRank > 0 ? regionRank : '?';
-        regionBox.appendChild(regionRankEl);
-        const regionInfo = document.createElement('div');
-        regionInfo.className = 'player-modal-position-info';
-        const regionLabel = document.createElement('div');
-        regionLabel.className = 'player-modal-position-label';
-        regionLabel.textContent = `${getFullRegionName(player.region) || 'Region'}`.toUpperCase();
-        const regionValue = document.createElement('div');
-        regionValue.className = 'player-modal-position-value';
-        regionValue.textContent = `${calculatePlayerPoints(player)} points`;
-        regionInfo.appendChild(regionLabel);
-        regionInfo.appendChild(regionValue);
-        regionBox.appendChild(regionInfo);
+    const positionInfo = document.createElement('div');
+    positionInfo.className = 'player-modal-position-info';
 
-        wrapper.appendChild(everyoneBox);
-        wrapper.appendChild(regionBox);
-        positionSection.appendChild(wrapper);
-        modal.appendChild(positionSection);
-    } else {
-        const positionBox = document.createElement('div');
-        positionBox.className = 'player-modal-position';
+    const labelDiv = document.createElement('div');
+    labelDiv.className = 'player-modal-position-label';
+    labelDiv.textContent = `${category.toUpperCase()} CATEGORY`;
+    positionInfo.appendChild(labelDiv);
 
-        // Rank badge
-        const rankBadge2 = document.createElement('div');
-        rankBadge2.className = 'player-modal-position-rank';
-        rankBadge2.textContent = playerRank > 0 ? playerRank : '?';
-        positionBox.appendChild(rankBadge2);
+    const valueDiv = document.createElement('div');
+    valueDiv.className = 'player-modal-position-value';
+    valueDiv.textContent = `${categoryPoints} points`;
+    positionInfo.appendChild(valueDiv);
 
-        const positionInfo = document.createElement('div');
-        positionInfo.className = 'player-modal-position-info';
+    const combatTagDiv = document.createElement('div');
+    combatTagDiv.className = 'player-modal-position-tag';
+    combatTagDiv.textContent = getCombatTag(categoryPoints, category);
+    positionInfo.appendChild(combatTagDiv);
 
-        const labelDiv = document.createElement('div');
-        labelDiv.className = 'player-modal-position-label';
-        labelDiv.textContent = `${category.toUpperCase()} CATEGORY`;
-        positionInfo.appendChild(labelDiv);
+    positionBox.appendChild(positionInfo);
 
-        const valueDiv = document.createElement('div');
-        valueDiv.className = 'player-modal-position-value';
-        valueDiv.textContent = `${categoryPoints} points`;
-        positionInfo.appendChild(valueDiv);
-
-        const combatTagDiv = document.createElement('div');
-        combatTagDiv.className = 'player-modal-position-tag';
-        combatTagDiv.textContent = getCombatTag(categoryPoints, category);
-        positionInfo.appendChild(combatTagDiv);
-
-        positionBox.appendChild(positionInfo);
-
-        // Region badge (far right)
-        const regionBadge = document.createElement('div');
-        regionBadge.className = 'player-modal-position-region';
-        regionBadge.textContent = getFullRegionName(player.region) || 'Unknown';
-        positionBox.appendChild(regionBadge);
-        positionSection.appendChild(positionBox);
-        modal.appendChild(positionSection);
-    }
+    // Region badge (far right)
+    const regionBadge = document.createElement('div');
+    regionBadge.className = 'player-modal-position-region';
+    regionBadge.textContent = getFullRegionName(player.region) || 'Unknown';
+    positionBox.appendChild(regionBadge);
+    positionSection.appendChild(positionBox);
+    modal.appendChild(positionSection);
     
     // Tiers section
     const tiersSection = document.createElement('div');
