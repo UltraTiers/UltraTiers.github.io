@@ -1358,17 +1358,9 @@ function showPlayerModal(player, tierNumber, category = 'main') {
         e.stopPropagation();
         overlay.remove();
         try {
-            switchMainTab('all-modes');
-            setTimeout(() => {
-                const overallBtn = document.querySelector('#region-tabs button[data-region="overall"]');
-                if (overallBtn) {
-                    document.querySelectorAll('#region-tabs .mode-tab-btn').forEach(b => b.classList.remove('active'));
-                    overallBtn.classList.add('active');
-                    overallBtn.click();
-                }
-            }, 60);
+            showAllModesModal(player);
         } catch (err) {
-            console.warn('Unable to open overall view from modal', err);
+            console.warn('Unable to open all-modes modal for player', err);
         }
     });
     modal.appendChild(popoutBtn);
@@ -1394,6 +1386,92 @@ function showPlayerModal(player, tierNumber, category = 'main') {
     avatarSection.appendChild(playerName);
     
     modal.appendChild(avatarSection);
+    
+    // Show overall and specific-mode positions at top of all-modes modal
+    (function addOverallAndModePositions() {
+        const wrapper = document.createElement('div');
+        wrapper.className = 'player-modal-global-positions';
+
+        // Overall rank (Everyone)
+        const allPlayers = (window.allPlayers || []).map(p => ({ name: p.name, points: calculatePlayerPoints(p) })).sort((a, b) => b.points - a.points);
+        const overallRank = allPlayers.findIndex(p => p.name === player.name) + 1 || '?';
+        const overallPoints = calculatePlayerPoints(player);
+        const everyoneBox = document.createElement('div');
+        everyoneBox.className = 'player-modal-position';
+        const oRankEl = document.createElement('div');
+        oRankEl.className = 'player-modal-position-rank';
+        oRankEl.textContent = overallRank > 0 ? overallRank : '?';
+        everyoneBox.appendChild(oRankEl);
+        const oInfo = document.createElement('div');
+        oInfo.className = 'player-modal-position-info';
+        const oLabel = document.createElement('div');
+        oLabel.className = 'player-modal-position-label';
+        oLabel.textContent = 'EVERYONE';
+        const oValue = document.createElement('div');
+        oValue.className = 'player-modal-position-value';
+        oValue.textContent = `${overallPoints} points`;
+        oInfo.appendChild(oLabel);
+        oInfo.appendChild(oValue);
+        everyoneBox.appendChild(oInfo);
+
+        // Determine current active mode on the page (if any)
+        const activeModeBtn = document.querySelector('.mode-tab-btn.active');
+        let modeName = null;
+        if (activeModeBtn && activeModeBtn.dataset && activeModeBtn.dataset.mode) {
+            modeName = activeModeBtn.dataset.mode;
+        }
+
+        const modeBox = document.createElement('div');
+        modeBox.className = 'player-modal-position';
+        const mRankEl = document.createElement('div');
+        mRankEl.className = 'player-modal-position-rank';
+
+        if (modeName) {
+            // compute mode-specific points and rank
+            const playersModePoints = (window.allPlayers || []).map(p => {
+                const tierForMode = (p.tiers || []).find(t => t.gamemode === modeName);
+                const pts = calculatePlayerPoints({ tiers: tierForMode ? [tierForMode] : [] });
+                return { name: p.name, points: pts };
+            }).sort((a, b) => b.points - a.points);
+            const modeRank = playersModePoints.findIndex(p => p.name === player.name) + 1 || '?';
+            const playerModePoints = (() => {
+                const t = (player.tiers || []).find(ti => ti.gamemode === modeName);
+                return calculatePlayerPoints({ tiers: t ? [t] : [] });
+            })();
+            mRankEl.textContent = modeRank > 0 ? modeRank : '?';
+            modeBox.appendChild(mRankEl);
+            const mInfo = document.createElement('div');
+            mInfo.className = 'player-modal-position-info';
+            const mLabel = document.createElement('div');
+            mLabel.className = 'player-modal-position-label';
+            mLabel.textContent = (modeName || 'Mode').toUpperCase();
+            const mValue = document.createElement('div');
+            mValue.className = 'player-modal-position-value';
+            mValue.textContent = `${playerModePoints} points`;
+            mInfo.appendChild(mLabel);
+            mInfo.appendChild(mValue);
+            modeBox.appendChild(mInfo);
+        } else {
+            // No specific mode active — show placeholder
+            mRankEl.textContent = '?';
+            modeBox.appendChild(mRankEl);
+            const mInfo = document.createElement('div');
+            mInfo.className = 'player-modal-position-info';
+            const mLabel = document.createElement('div');
+            mLabel.className = 'player-modal-position-label';
+            mLabel.textContent = 'MODE';
+            const mValue = document.createElement('div');
+            mValue.className = 'player-modal-position-value';
+            mValue.textContent = 'N/A';
+            mInfo.appendChild(mLabel);
+            mInfo.appendChild(mValue);
+            modeBox.appendChild(mInfo);
+        }
+
+        wrapper.appendChild(everyoneBox);
+        wrapper.appendChild(modeBox);
+        modal.appendChild(wrapper);
+    })();
     
     
     
