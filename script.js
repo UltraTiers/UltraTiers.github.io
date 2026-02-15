@@ -1349,6 +1349,27 @@ function showPlayerModal(player, tierNumber, category = 'main') {
     banner.style.backgroundImage = `url(${bannerImg})`;
     modal.appendChild(banner);
     
+    // Pop-out (overall) button (top-left)
+    const popoutBtn = document.createElement('button');
+    popoutBtn.className = 'player-modal-popout';
+    popoutBtn.innerHTML = '<i class="fa-solid fa-up-right-from-square"></i>';
+    popoutBtn.title = 'Open overall view';
+    popoutBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        overlay.remove();
+        try {
+            switchMainTab('all-modes');
+            setTimeout(() => {
+                const overallBtn = document.querySelector('#region-tabs button[data-region="overall"]');
+                if (overallBtn) overallBtn.click();
+            }, 60);
+        } catch (err) {
+            // ignore if functions not available
+            console.warn('Unable to open overall view from modal', err);
+        }
+    });
+    modal.appendChild(popoutBtn);
+
     // Close button
     const closeBtn = document.createElement('button');
     closeBtn.className = 'player-modal-close';
@@ -1370,6 +1391,72 @@ function showPlayerModal(player, tierNumber, category = 'main') {
     avatarSection.appendChild(playerName);
     
     modal.appendChild(avatarSection);
+    
+    // GLOBAL section (shows overall & region positions)
+    const globalSection = document.createElement('div');
+    globalSection.className = 'player-modal-section';
+    const globalTitle = document.createElement('div');
+    globalTitle.className = 'player-modal-section-title';
+    globalTitle.textContent = 'GLOBAL';
+    globalSection.appendChild(globalTitle);
+
+    // Calculate overall rank (by total points)
+    const overallPlayers = (window.allPlayers || []).map(p => ({ name: p.name, points: calculatePlayerPoints(p) })).sort((a, b) => b.points - a.points);
+    const overallRank = overallPlayers.findIndex(p => p.name === player.name) + 1 || '?';
+
+    // Calculate region rank
+    const regionPlayers = (window.allPlayers || []).filter(p => p.region === player.region).map(p => ({ name: p.name, points: calculatePlayerPoints(p) })).sort((a, b) => b.points - a.points);
+    const regionRank = regionPlayers.findIndex(p => p.name === player.name) + 1 || '?';
+
+    const globalButtons = document.createElement('div');
+    globalButtons.className = 'player-modal-global-buttons';
+
+    const everyoneBtn = document.createElement('button');
+    everyoneBtn.className = 'player-modal-global-btn';
+    everyoneBtn.textContent = `Everyone: #${overallRank}`;
+    everyoneBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        overlay.remove();
+        try {
+            switchMainTab('all-modes');
+            setTimeout(() => {
+                const overallBtn = document.querySelector('#region-tabs button[data-region="overall"]');
+                if (overallBtn) {
+                    document.querySelectorAll('#region-tabs .mode-tab-btn').forEach(b => b.classList.remove('active'));
+                    overallBtn.classList.add('active');
+                    overallBtn.click();
+                }
+            }, 60);
+        } catch (err) {
+            console.warn('Unable to open overall view from global button', err);
+        }
+    });
+
+    const regionBtn = document.createElement('button');
+    regionBtn.className = 'player-modal-global-btn';
+    regionBtn.textContent = `${getFullRegionName(player.region) || 'Region'}: #${regionRank}`;
+    regionBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        overlay.remove();
+        try {
+            switchMainTab('all-modes');
+            setTimeout(() => {
+                const target = document.querySelector(`#region-tabs button[data-region="${player.region}"]`);
+                if (target) {
+                    document.querySelectorAll('#region-tabs .mode-tab-btn').forEach(b => b.classList.remove('active'));
+                    target.classList.add('active');
+                    target.click();
+                }
+            }, 60);
+        } catch (err) {
+            console.warn('Unable to open region view from global button', err);
+        }
+    });
+
+    globalButtons.appendChild(everyoneBtn);
+    globalButtons.appendChild(regionBtn);
+    globalSection.appendChild(globalButtons);
+    modal.appendChild(globalSection);
     
     // Position section with region and rank badge
     const positionSection = document.createElement('div');

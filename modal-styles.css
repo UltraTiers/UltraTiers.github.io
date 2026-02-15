@@ -423,3 +423,53 @@
     text-transform: uppercase;
     letter-spacing: 0.5px;
 }
+
+/* Popout button (top-left) */
+.player-modal-popout {
+    position: absolute;
+    top: 16px;
+    left: 16px;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    color: #fff;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    font-size: 16px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.15s ease;
+    z-index: 11;
+}
+
+.player-modal-popout:hover {
+    background: rgba(255,255,255,0.12);
+    border-color: rgba(14,165,233,0.5);
+}
+
+/* GLOBAL section buttons */
+.player-modal-global-buttons {
+    display: flex;
+    gap: 12px;
+    margin-top: 8px;
+}
+
+.player-modal-global-btn {
+    flex: 1;
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.04);
+    color: #fff;
+    padding: 10px 12px;
+    border-radius: 8px;
+    font-weight: 700;
+    cursor: default;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.player-modal-global-btn:hover {
+    background: rgba(255,255,255,0.04);
+}
