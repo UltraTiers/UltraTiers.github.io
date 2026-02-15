@@ -1357,15 +1357,11 @@ function showPlayerModal(player, tierNumber, category = 'main') {
     popoutBtn.addEventListener('click', (e) => {
         e.stopPropagation();
         overlay.remove();
+        // Open the player's modal in the overall context
         try {
-            switchMainTab('all-modes');
-            setTimeout(() => {
-                const overallBtn = document.querySelector('#region-tabs button[data-region="overall"]');
-                if (overallBtn) overallBtn.click();
-            }, 60);
+            showPlayerModal(player, 0, 'overall');
         } catch (err) {
-            // ignore if functions not available
-            console.warn('Unable to open overall view from modal', err);
+            console.warn('Unable to open overall modal for player', err);
         }
     });
     modal.appendChild(popoutBtn);
@@ -1392,71 +1388,69 @@ function showPlayerModal(player, tierNumber, category = 'main') {
     
     modal.appendChild(avatarSection);
     
-    // GLOBAL section (shows overall & region positions)
-    const globalSection = document.createElement('div');
-    globalSection.className = 'player-modal-section';
-    const globalTitle = document.createElement('div');
-    globalTitle.className = 'player-modal-section-title';
-    globalTitle.textContent = 'GLOBAL';
-    globalSection.appendChild(globalTitle);
+    // GLOBAL positions are shown only when viewing the modal in the overall context
+    if (category === 'overall') {
+        const globalSection = document.createElement('div');
+        globalSection.className = 'player-modal-section';
+        const globalTitle = document.createElement('div');
+        globalTitle.className = 'player-modal-section-title';
+        globalTitle.textContent = 'GLOBAL';
+        globalSection.appendChild(globalTitle);
 
-    // Calculate overall rank (by total points)
-    const overallPlayers = (window.allPlayers || []).map(p => ({ name: p.name, points: calculatePlayerPoints(p) })).sort((a, b) => b.points - a.points);
-    const overallRank = overallPlayers.findIndex(p => p.name === player.name) + 1 || '?';
+        // Calculate overall rank (by total points)
+        const overallPlayers = (window.allPlayers || []).map(p => ({ name: p.name, points: calculatePlayerPoints(p) })).sort((a, b) => b.points - a.points);
+        const overallRank = overallPlayers.findIndex(p => p.name === player.name) + 1 || '?';
 
-    // Calculate region rank
-    const regionPlayers = (window.allPlayers || []).filter(p => p.region === player.region).map(p => ({ name: p.name, points: calculatePlayerPoints(p) })).sort((a, b) => b.points - a.points);
-    const regionRank = regionPlayers.findIndex(p => p.name === player.name) + 1 || '?';
+        // Calculate region rank
+        const regionPlayers = (window.allPlayers || []).filter(p => p.region === player.region).map(p => ({ name: p.name, points: calculatePlayerPoints(p) })).sort((a, b) => b.points - a.points);
+        const regionRank = regionPlayers.findIndex(p => p.name === player.name) + 1 || '?';
 
-    const globalButtons = document.createElement('div');
-    globalButtons.className = 'player-modal-global-buttons';
+        const wrapper = document.createElement('div');
+        wrapper.className = 'player-modal-global-positions';
 
-    const everyoneBtn = document.createElement('button');
-    everyoneBtn.className = 'player-modal-global-btn';
-    everyoneBtn.textContent = `Everyone: #${overallRank}`;
-    everyoneBtn.addEventListener('click', (e) => {
-        e.stopPropagation();
-        overlay.remove();
-        try {
-            switchMainTab('all-modes');
-            setTimeout(() => {
-                const overallBtn = document.querySelector('#region-tabs button[data-region="overall"]');
-                if (overallBtn) {
-                    document.querySelectorAll('#region-tabs .mode-tab-btn').forEach(b => b.classList.remove('active'));
-                    overallBtn.classList.add('active');
-                    overallBtn.click();
-                }
-            }, 60);
-        } catch (err) {
-            console.warn('Unable to open overall view from global button', err);
-        }
-    });
+        // Everyone position box (uses player-modal-position styling)
+        const everyoneBox = document.createElement('div');
+        everyoneBox.className = 'player-modal-position';
+        const eRank = document.createElement('div');
+        eRank.className = 'player-modal-position-rank';
+        eRank.textContent = overallRank > 0 ? overallRank : '?';
+        everyoneBox.appendChild(eRank);
+        const eInfo = document.createElement('div');
+        eInfo.className = 'player-modal-position-info';
+        const eLabel = document.createElement('div');
+        eLabel.className = 'player-modal-position-label';
+        eLabel.textContent = 'EVERYONE';
+        const eValue = document.createElement('div');
+        eValue.className = 'player-modal-position-value';
+        eValue.textContent = `${calculatePlayerPoints(player)} points`;
+        eInfo.appendChild(eLabel);
+        eInfo.appendChild(eValue);
+        everyoneBox.appendChild(eInfo);
 
-    const regionBtn = document.createElement('button');
-    regionBtn.className = 'player-modal-global-btn';
-    regionBtn.textContent = `${getFullRegionName(player.region) || 'Region'}: #${regionRank}`;
-    regionBtn.addEventListener('click', (e) => {
-        e.stopPropagation();
-        overlay.remove();
-        try {
-            switchMainTab('all-modes');
-            setTimeout(() => {
-                const target = document.querySelector(`#region-tabs button[data-region="${player.region}"]`);
-                if (target) {
-                    document.querySelectorAll('#region-tabs .mode-tab-btn').forEach(b => b.classList.remove('active'));
-                    target.classList.add('active');
-                    target.click();
-                }
-            }, 60);
-        } catch (err) {
-            console.warn('Unable to open region view from global button', err);
-        }
-    });
+        // Region position box
+        const regionBox = document.createElement('div');
+        regionBox.className = 'player-modal-position';
+        const rRank = document.createElement('div');
+        rRank.className = 'player-modal-position-rank';
+        rRank.textContent = regionRank > 0 ? regionRank : '?';
+        regionBox.appendChild(rRank);
+        const rInfo = document.createElement('div');
+        rInfo.className = 'player-modal-position-info';
+        const rLabel = document.createElement('div');
+        rLabel.className = 'player-modal-position-label';
+        rLabel.textContent = `${getFullRegionName(player.region) || 'Region'}`.toUpperCase();
+        const rValue = document.createElement('div');
+        rValue.className = 'player-modal-position-value';
+        rValue.textContent = `${calculatePlayerPoints(player)} points`;
+        rInfo.appendChild(rLabel);
+        rInfo.appendChild(rValue);
+        regionBox.appendChild(rInfo);
 
-    globalButtons.appendChild(everyoneBtn);
-    globalButtons.appendChild(regionBtn);
-    globalSection.appendChild(globalButtons);
-    modal.appendChild(globalSection);
+        wrapper.appendChild(everyoneBox);
+        wrapper.appendChild(regionBox);
+        globalSection.appendChild(wrapper);
+        modal.appendChild(globalSection);
+    }
     
     // Position section with region and rank badge
     const positionSection = document.createElement('div');
