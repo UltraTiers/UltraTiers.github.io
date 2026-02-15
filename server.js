@@ -49,7 +49,7 @@ async function loadPlayers() {
 // -------------------
 // Add or update tester
 // -------------------
-async function addOrUpdateTester({ uuid, name, mode, region, category }) {
+async function addOrUpdateTester({ uuid, name, mode, region }) {
   try {
     // Fetch existing tester
     const { data: existing, error: fetchError } = await supabase
@@ -78,8 +78,7 @@ async function addOrUpdateTester({ uuid, name, mode, region, category }) {
         .update({
           name,
           region,
-          mode: mergedModes,   // ✅ FIXED
-          category: category || existing.category
+          mode: mergedModes   // ✅ FIXED
         })
         .eq("uuid", uuid);
 
@@ -92,8 +91,7 @@ async function addOrUpdateTester({ uuid, name, mode, region, category }) {
             uuid,
             name,
             region,
-            mode: newModes,     // ✅ FIXED
-            category: category || "subtester"  // default to subtester
+            mode: newModes     // ✅ FIXED
           }
         ]);
 
@@ -110,13 +108,13 @@ async function addOrUpdateTester({ uuid, name, mode, region, category }) {
 // -------------------
 app.post("/testers", async (req, res) => {
   try {
-    const { uuid, name, mode, region, category } = req.body;
+    const { uuid, name, mode, region } = req.body;
 
     if (!uuid || !name || !mode || !region) {
       return res.status(400).json({ error: "Missing fields" });
     }
 
-    await addOrUpdateTester({ uuid, name, mode, region, category });
+    await addOrUpdateTester({ uuid, name, mode, region });
     res.json({ success: true });
   } catch (err) {
     console.error("Error adding/updating tester:", err);
