@@ -122,8 +122,8 @@ function getRankColor(rank) {
 const categoryMappings = {
     main: ['Sword', 'Axe', 'Vanilla', 'Pot', 'NethOP', 'UHC', 'SMP', 'Mace'],
     sub: ['Speed', 'Creeper', 'Elytra', 'Minecart', 'Trident', 'Diamond Survival', 'Diamond SMP', 'OG Vanilla', 'DeBuff', 'Bed', 'Bow', 'Manhunt'],
-    extra: ['AxePot', 'Sumo', 'OP', 'Spear Mace', 'Spear Elytra'],
-    bonus: ['Bridge', 'Pearl'],
+    extra: ['AxePot', 'Pufferfish', 'OP', 'Spear Mace', 'Spear Elytra'],
+    bonus: ['Bridge', 'Pearl', 'Sumo'],
 };
 
 // Mode name mapping (HTML data-mode to server gamemode)
@@ -149,6 +149,7 @@ const modeNameMap = {
     'bow': 'Bow',
     'manhunt': 'Manhunt',
     'axepot': 'AxePot',
+    'pufferfish': 'Pufferfish',
     'sumo': 'Sumo',
     'op': 'OP',
     'spear-mace': 'Spear Mace',
@@ -200,6 +201,7 @@ const gamemodeIcons = {
     'Bow': 'gamemodes/Bow.png',
     'Manhunt': 'gamemodes/Manhunt.png',
     'AxePot': 'gamemodes/AxePot.png',
+    'Pufferfish': 'gamemodes/Pufferfish.png',
     'Sumo': 'gamemodes/Sumo.png',
     'OP': 'gamemodes/OP.png',
     'Spear Mace': 'gamemodes/Spear Mace.png',
