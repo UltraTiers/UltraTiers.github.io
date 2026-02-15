@@ -49,7 +49,7 @@ async function loadPlayers() {
 // -------------------
 // Add or update tester
 // -------------------
-async function addOrUpdateTester({ uuid, name, mode, region }) {
+async function addOrUpdateTester({ uuid, name, mode, region, category }) {
   try {
     // Fetch existing tester
     const { data: existing, error: fetchError } = await supabase
@@ -78,7 +78,8 @@ async function addOrUpdateTester({ uuid, name, mode, region }) {
         .update({
           name,
           region,
-          mode: mergedModes   // ✅ FIXED
+          mode: mergedModes,   // ✅ FIXED
+          category: category || existing.category
         })
         .eq("uuid", uuid);
 
@@ -91,7 +92,8 @@ async function addOrUpdateTester({ uuid, name, mode, region }) {
             uuid,
             name,
             region,
-            mode: newModes     // ✅ FIXED
+            mode: newModes,     // ✅ FIXED
+            category: category || "subtester"  // default to subtester
           }
         ]);
 
@@ -108,13 +110,13 @@ async function addOrUpdateTester({ uuid, name, mode, region }) {
 // -------------------
 app.post("/testers", async (req, res) => {
   try {
-    const { uuid, name, mode, region } = req.body;
+    const { uuid, name, mode, region, category } = req.body;
 
     if (!uuid || !name || !mode || !region) {
       return res.status(400).json({ error: "Missing fields" });
     }
 
-    await addOrUpdateTester({ uuid, name, mode, region });
+    await addOrUpdateTester({ uuid, name, mode, region, category });
     res.json({ success: true });
   } catch (err) {
     console.error("Error adding/updating tester:", err);
@@ -325,7 +327,7 @@ app.post("/apply", async (req, res) => {
 const allGamemodes = [
   "Axe","Sword","Bow","Vanilla","NethOP","Pot","UHC","SMP","Mace","Spear Mace","Diamond SMP",
   "OG Vanilla","Bed","DeBuff","Speed","Manhunt","Elytra","Spear Elytra","Diamond Survival","Minecart",
-  "Creeper","Trident","AxePot","Pearl","Bridge","Sumo","OP","Pufferfish",
+  "Creeper","Trident","AxePot","Pearl","Bridge","Sumo","OP"
 ];
 
 const tierPointsMap = { LT5:1, HT5:2, LT4:4, HT4:6, LT3:9, HT3:12, LT2:16, HT2:20, LT1:25, HT1:30 };
