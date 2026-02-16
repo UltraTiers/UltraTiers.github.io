@@ -330,6 +330,16 @@ const allGamemodes = [
 
 const tierPointsMap = { LT5:1, HT5:2, LT4:4, HT4:6, LT3:9, HT3:12, LT2:16, HT2:20, LT1:25, HT1:30 };
 
+// Helper function to get points from a tier value (strips R prefix if retired)
+function getTierPoints(tierValue) {
+  if (!tierValue) return 0;
+  let tier = tierValue;
+  if (typeof tier === 'string' && tier.startsWith('R')) {
+    tier = tier.substring(1);
+  }
+  return tierPointsMap[tier] || 0;
+}
+
 function generateLoginCode() {
   return Math.floor(100000 + Math.random() * 900000).toString();
 }
@@ -357,14 +367,13 @@ app.get("/players", async (req, res) => {
         tier: tiersMap[g] || "Unknown",
         peak: peakMap[g] || (tiersMap[g] || "Unknown")
       }));
-      const points = fullTiers.reduce((sum, t) => sum + (tierPointsMap[t.tier] || 0), 0);
+      const points = fullTiers.reduce((sum, t) => sum + getTierPoints(t.tier), 0);
       return {
         ...p,
         tiers: fullTiers,
         points,
         nitro: p.nitro || false,
-        banner: p.banner || "anime-style-stone.jpg",
-        retired_modes: Array.isArray(p.retired_modes) ? p.retired_modes : []
+        banner: p.banner || "anime-style-stone.jpg"
       };
     });
 
@@ -382,25 +391,31 @@ app.post("/retire", async (req, res) => {
 
     const { data: player, error } = await supabase
       .from("ultratiers")
-      .select("retired_modes")
+      .select("tiers")
       .eq("name", ign)
       .maybeSingle();
 
     if (error) throw error;
     if (!player) return res.status(404).json({ error: "Player not found" });
 
-    const retired = Array.isArray(player.retired_modes) ? player.retired_modes : [];
+    const tiers = Array.isArray(player.tiers) ? player.tiers : [];
+    const tierObj = tiers.find(t => t.gamemode === mode);
 
-    if (!retired.includes(mode)) retired.push(mode);
+    if (tierObj && tierObj.tier && tierObj.tier !== 'Unknown') {
+      // Prepend 'R' if not already there
+      if (!tierObj.tier.startsWith('R')) {
+        tierObj.tier = 'R' + tierObj.tier;
+      }
+    }
 
     const { error: updateError } = await supabase
       .from("ultratiers")
-      .update({ retired_modes: retired })
+      .update({ tiers: tiers })
       .eq("name", ign);
 
     if (updateError) throw updateError;
 
-    res.json({ success: true, retired_modes: retired });
+    res.json({ success: true, tiers: tiers });
   } catch (err) {
     console.error("Retire failed:", err);
     res.status(500).json({ error: "Internal server error" });
@@ -425,10 +440,10 @@ app.post("/", async (req, res) => {
         tier: g === gamemode ? newTier : "Unknown",
         peak: g === gamemode ? newTier : "Unknown"
       }));
-      player = { uuid, name, region, tiers, points: tierPointsMap[newTier] || 0, nitro: false };
+      player = { uuid, name, region, tiers, points: getTierPoints(newTier), nitro: false };
     } else {
       const tierObj = player.tiers.find(t => t.gamemode === gamemode);
-      const newTierPoints = tierPointsMap[newTier] || 0;
+      const newTierPoints = getTierPoints(newTier);
 
       if (tierObj) {
         // update current tier
@@ -437,7 +452,7 @@ app.post("/", async (req, res) => {
 
         // existing peak (fallback to previous tier or current if missing)
         const existingPeak = tierObj.peak || prevTier || newTier;
-        const existingPeakPoints = tierPointsMap[existingPeak] || 0;
+        const existingPeakPoints = getTierPoints(existingPeak);
 
         // update peak only if this newTier is higher than existing peak
         if (newTierPoints > existingPeakPoints) {
@@ -457,7 +472,7 @@ app.post("/", async (req, res) => {
         }
       });
 
-      player.points = player.tiers.reduce((sum, t) => sum + (tierPointsMap[t.tier] || 0), 0);
+      player.points = player.tiers.reduce((sum, t) => sum + getTierPoints(t.tier), 0);
     }
 
     await saveOrUpdatePlayer(player);
@@ -576,9 +591,15 @@ app.post("/builders/rate", async (req, res) => {
 async function saveOrUpdateBuilderRatings({ uuid, name, region, ratings }) {
   const tierPointsMap = { LT5:1, HT5:2, LT4:4, HT4:6, LT3:9, HT3:12, LT2:16, HT2:20, LT1:25, HT1:30 };
 
-  // Calculate points from all 3 ratings
+  // Calculate points from all 3 ratings (strip R prefix if tier is retired)
   const points = Object.values(ratings).reduce(
-    (sum, tier) => sum + (tierPointsMap[tier] || 0),
+    (sum, tier) => {
+      let t = tier;
+      if (typeof t === 'string' && t.startsWith('R')) {
+        t = t.substring(1);
+      }
+      return sum + (tierPointsMap[t] || 0);
+    },
     0
   );
 
@@ -687,7 +708,7 @@ app.post("/nitro", async (req, res) => {
       }
 
       // Ensure points are calculated
-      player.points = player.tiers.reduce((sum, t) => sum + (tierPointsMap[t.tier] || 0), 0);
+      player.points = player.tiers.reduce((sum, t) => sum + getTierPoints(t.tier), 0);
     }
 
     await saveOrUpdatePlayer(player);
