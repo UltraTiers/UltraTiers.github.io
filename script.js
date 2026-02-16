@@ -865,7 +865,7 @@ function renderAllModesOverall() {
             
             const tierBadge = document.createElement('div');
             tierBadge.className = `tier-badge-rounded ${isRetired ? 'tier-retired' : (tierNumber > 0 ? tierColors[tierNumber] : 'tier-unknown')}`;
-            tierBadge.textContent = tierValue !== 'Unknown' ? tierValue : '?';
+            tierBadge.textContent = tierValue !== 'Unknown' ? (isRetired ? 'R' + tierValue : tierValue) : '?';
             
             modeItem.appendChild(icon);
             modeItem.appendChild(tierBadge);
@@ -1017,7 +1017,7 @@ function renderAllModesRegion(region) {
             
             const tierBadge = document.createElement('div');
             tierBadge.className = `tier-badge-rounded ${isRetired ? 'tier-retired' : (tierNumber > 0 ? tierColors[tierNumber] : 'tier-unknown')}`;
-            tierBadge.textContent = tierValue !== 'Unknown' ? tierValue : '?';
+            tierBadge.textContent = tierValue !== 'Unknown' ? (isRetired ? 'R' + tierValue : tierValue) : '?';
             
             modeItem.appendChild(icon);
             modeItem.appendChild(tierBadge);
@@ -1181,7 +1181,7 @@ function renderCategoryOverall(category) {
             
             const tierBadge = document.createElement('div');
             tierBadge.className = `tier-badge-rounded ${isRetired ? 'tier-retired' : (tierNumber > 0 ? tierColors[tierNumber] : 'tier-unknown')}`;
-            tierBadge.textContent = tierValue !== 'Unknown' ? tierValue : '?';
+            tierBadge.textContent = tierValue !== 'Unknown' ? (isRetired ? 'R' + tierValue : tierValue) : '?';
             
             modeItem.appendChild(icon);
             modeItem.appendChild(tierBadge);
@@ -1559,8 +1559,9 @@ function showPlayerModal(player, tierNumber, category = 'main') {
                 badgeClass += ' tier-unknown';
                 badgeText = '?';
             } else if (tierInfo.isRetired) {
-                // Retired tier - show the tier value (e.g., "HT1")
+                // Retired tier - show the tier value with R prefix (e.g., "RHT1")
                 badgeClass += ' tier-retired';
+                badgeText = 'R' + tierInfo.tierValue;
             } else {
                 // Numbered tier (1-5)
                 badgeClass += ` tier-${tierInfo.tierNumber}`;
