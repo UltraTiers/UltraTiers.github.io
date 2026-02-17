@@ -65,6 +65,10 @@ function calculatePlayerPoints(player) {
     
     return player.tiers.reduce((sum, tierInfo) => {
         let tierValue = tierInfo.tier;
+        // Handle both old format (R prefix) and new format (retired flag)
+        if (typeof tierValue === 'string' && tierValue.startsWith('R')) {
+            tierValue = tierValue.substring(1);
+        }
         return sum + (tierPointsMap[tierValue] || 0);
     }, 0);
 }
@@ -820,7 +824,7 @@ function renderAllModesOverall() {
             categoryMappings[category].forEach(gamemode => {
                 const tierInfo = player.tiers.find(t => t.gamemode === gamemode);
                 const tierValue = tierInfo ? tierInfo.tier : 'Unknown';
-                const isRetired = tierInfo ? tierInfo.retired : false;
+                const isRetired = tierInfo ? (tierInfo.retired || (typeof tierValue === 'string' && tierValue.startsWith('R'))) : false;
                 
                 let tierNumber = 0;
                 if (typeof tierValue === 'string') {
@@ -975,7 +979,7 @@ function renderAllModesRegion(region) {
             player.tiers.forEach(tierInfo => {
                 const gamemode = tierInfo.gamemode;
                 const tierValue = tierInfo.tier;
-                const isRetired = tierInfo.retired || false;
+                const isRetired = tierInfo.retired || (typeof tierValue === 'string' && tierValue.startsWith('R'));
                 
                 let tierNumber = 0;
                 if (typeof tierValue === 'string') {
@@ -1054,7 +1058,12 @@ function renderCategoryOverall(category) {
             categoryMappings[category].forEach(gamemode => {
                 const tierInfo = player.tiers.find(t => t.gamemode === gamemode);
                 if (tierInfo) {
-                    categoryPoints += tierPointsMap[tierInfo.tier] || 0;
+                    let tierValue = tierInfo.tier;
+                    // Handle both old format (R prefix) and new format (retired flag)
+                    if (typeof tierValue === 'string' && tierValue.startsWith('R')) {
+                        tierValue = tierValue.substring(1);
+                    }
+                    categoryPoints += tierPointsMap[tierValue] || 0;
                 }
             });
         }
@@ -1135,7 +1144,7 @@ function renderCategoryOverall(category) {
             const tierInfo = player.tiers.find(t => t.gamemode === gamemode);
             const tierValue = tierInfo ? tierInfo.tier : 'Unknown';
             const peakValue = tierInfo ? (tierInfo.peak || tierInfo.tier) : 'Unknown';
-            const isRetired = tierInfo ? tierInfo.retired : false;
+            const isRetired = tierInfo ? (tierInfo.retired || (typeof tierValue === 'string' && tierValue.startsWith('R'))) : false;
             
             // Parse tier value to get number for sorting
             let tierNumber = 0;
@@ -1501,7 +1510,8 @@ function showPlayerModal(player, tierNumber, category = 'main') {
         
         // Prepare tiers with metadata for sorting
         const tiersWithMetadata = categoryTiers.map(tierInfo => {
-            const isRetired = tierInfo.retired || false;
+            const tierValue = tierInfo.tier;
+            const isRetired = tierInfo.retired || (typeof tierValue === 'string' && tierValue.startsWith('R'));
             const tierMatch = typeof tierInfo.tier === 'string' ? tierInfo.tier.match(/\d+/) : null;
             const tierNumber = tierMatch ? parseInt(tierMatch[0]) : (tierInfo.tier === 'Unknown' || tierInfo.tier === 'unknown' ? 0 :999);
             const peakValue = tierInfo.peak || tierInfo.tier || 'Unknown';

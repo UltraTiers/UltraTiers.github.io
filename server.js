@@ -333,7 +333,12 @@ const tierPointsMap = { LT5:1, HT5:2, LT4:4, HT4:6, LT3:9, HT3:12, LT2:16, HT2:2
 // Helper function to get points from a tier value
 function getTierPoints(tierValue) {
   if (!tierValue) return 0;
-  return tierPointsMap[tierValue] || 0;
+  let tier = tierValue;
+  // Handle both old format (R prefix) and new format (retired flag)
+  if (typeof tier === 'string' && tier.startsWith('R')) {
+    tier = tier.substring(1);
+  }
+  return tierPointsMap[tier] || 0;
 }
 
 function generateLoginCode() {
@@ -588,7 +593,12 @@ async function saveOrUpdateBuilderRatings({ uuid, name, region, ratings }) {
   // Calculate points from all 3 ratings
   const points = Object.values(ratings).reduce(
     (sum, tier) => {
-      return sum + (tierPointsMap[tier] || 0);
+      let t = tier;
+      // Handle both old format (R prefix) and new format (retired flag)
+      if (typeof t === 'string' && t.startsWith('R')) {
+        t = t.substring(1);
+      }
+      return sum + (tierPointsMap[t] || 0);
     },
     0
   );
