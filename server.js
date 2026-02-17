@@ -330,14 +330,10 @@ const allGamemodes = [
 
 const tierPointsMap = { LT5:1, HT5:2, LT4:4, HT4:6, LT3:9, HT3:12, LT2:16, HT2:20, LT1:25, HT1:30 };
 
-// Helper function to get points from a tier value (strips R prefix if retired)
+// Helper function to get points from a tier value
 function getTierPoints(tierValue) {
   if (!tierValue) return 0;
-  let tier = tierValue;
-  if (typeof tier === 'string' && tier.startsWith('R')) {
-    tier = tier.substring(1);
-  }
-  return tierPointsMap[tier] || 0;
+  return tierPointsMap[tierValue] || 0;
 }
 
 function generateLoginCode() {
@@ -402,10 +398,8 @@ app.post("/retire", async (req, res) => {
     const tierObj = tiers.find(t => t.gamemode === mode);
 
     if (tierObj && tierObj.tier && tierObj.tier !== 'Unknown') {
-      // Prepend 'R' if not already there
-      if (!tierObj.tier.startsWith('R')) {
-        tierObj.tier = 'R' + tierObj.tier;
-      }
+      // Mark as retired instead of modifying the tier value
+      tierObj.retired = true;
     }
 
     const { error: updateError } = await supabase
@@ -591,14 +585,10 @@ app.post("/builders/rate", async (req, res) => {
 async function saveOrUpdateBuilderRatings({ uuid, name, region, ratings }) {
   const tierPointsMap = { LT5:1, HT5:2, LT4:4, HT4:6, LT3:9, HT3:12, LT2:16, HT2:20, LT1:25, HT1:30 };
 
-  // Calculate points from all 3 ratings (strip R prefix if tier is retired)
+  // Calculate points from all 3 ratings
   const points = Object.values(ratings).reduce(
     (sum, tier) => {
-      let t = tier;
-      if (typeof t === 'string' && t.startsWith('R')) {
-        t = t.substring(1);
-      }
-      return sum + (tierPointsMap[t] || 0);
+      return sum + (tierPointsMap[tier] || 0);
     },
     0
   );
