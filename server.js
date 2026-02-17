@@ -400,12 +400,17 @@ app.post("/retire", async (req, res) => {
     if (!player) return res.status(404).json({ error: "Player not found" });
 
     const tiers = Array.isArray(player.tiers) ? player.tiers : [];
-    const tierObj = tiers.find(t => t.gamemode === mode);
-
-    if (tierObj && tierObj.tier && tierObj.tier !== 'Unknown') {
-      // Mark as retired instead of modifying the tier value
-      tierObj.retired = true;
-    }
+    
+    // Handle multiple modes (comma-separated)
+    const modes = mode.split(',').map(m => m.trim());
+    
+    modes.forEach(modeToRetire => {
+      const tierObj = tiers.find(t => t.gamemode === modeToRetire);
+      if (tierObj && tierObj.tier && tierObj.tier !== 'Unknown') {
+        // Mark as retired instead of modifying the tier value
+        tierObj.retired = true;
+      }
+    });
 
     const { error: updateError } = await supabase
       .from("ultratiers")
