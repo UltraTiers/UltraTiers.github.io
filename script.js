@@ -64,11 +64,7 @@ function calculatePlayerPoints(player) {
     if (!Array.isArray(player.tiers)) return 0;
     
     return player.tiers.reduce((sum, tierInfo) => {
-        let tierValue = tierInfo.tier;
-        // Handle both old format (R prefix) and new format (retired flag)
-        if (typeof tierValue === 'string' && tierValue.startsWith('R')) {
-            tierValue = tierValue.substring(1);
-        }
+        const tierValue = tierInfo.tier;
         return sum + (tierPointsMap[tierValue] || 0);
     }, 0);
 }
@@ -819,13 +815,12 @@ function renderAllModesOverall() {
         
         // Collect all modes grouped by category
         const modesByCategory = {};
-        const retiredModes = player.retired_modes ? player.retired_modes.split(',').map(m => m.trim()) : [];
         Object.keys(categoryMappings).forEach(category => {
             modesByCategory[category] = [];
             categoryMappings[category].forEach(gamemode => {
                 const tierInfo = player.tiers.find(t => t.gamemode === gamemode);
                 const tierValue = tierInfo ? tierInfo.tier : 'Unknown';
-                const isRetired = retiredModes.includes(gamemode);
+                const isRetired = Array.isArray(player.retired_modes) && player.retired_modes.includes(gamemode);
                 
                 let tierNumber = 0;
                 if (typeof tierValue === 'string') {
@@ -870,7 +865,7 @@ function renderAllModesOverall() {
             
             const tierBadge = document.createElement('div');
             tierBadge.className = `tier-badge-rounded ${isRetired ? 'tier-retired' : (tierNumber > 0 ? tierColors[tierNumber] : 'tier-unknown')}`;
-            tierBadge.textContent = tierValue !== 'Unknown' ? (isRetired ? 'R' + tierValue : tierValue) : '?';
+            tierBadge.textContent = tierValue !== 'Unknown' ? tierValue : '?';
             
             modeItem.appendChild(icon);
             modeItem.appendChild(tierBadge);
@@ -976,12 +971,11 @@ function renderAllModesRegion(region) {
         
         // Collect all modes
         const allModes = [];
-        const retiredModes = player.retired_modes ? player.retired_modes.split(',').map(m => m.trim()) : [];
         if (Array.isArray(player.tiers)) {
             player.tiers.forEach(tierInfo => {
                 const gamemode = tierInfo.gamemode;
                 const tierValue = tierInfo.tier;
-                const isRetired = retiredModes.includes(gamemode);
+                const isRetired = Array.isArray(player.retired_modes) && player.retired_modes.includes(gamemode);
                 
                 let tierNumber = 0;
                 if (typeof tierValue === 'string') {
@@ -1023,7 +1017,7 @@ function renderAllModesRegion(region) {
             
             const tierBadge = document.createElement('div');
             tierBadge.className = `tier-badge-rounded ${isRetired ? 'tier-retired' : (tierNumber > 0 ? tierColors[tierNumber] : 'tier-unknown')}`;
-            tierBadge.textContent = tierValue !== 'Unknown' ? (isRetired ? 'R' + tierValue : tierValue) : '?';
+            tierBadge.textContent = tierValue !== 'Unknown' ? tierValue : '?';
             
             modeItem.appendChild(icon);
             modeItem.appendChild(tierBadge);
@@ -1060,12 +1054,7 @@ function renderCategoryOverall(category) {
             categoryMappings[category].forEach(gamemode => {
                 const tierInfo = player.tiers.find(t => t.gamemode === gamemode);
                 if (tierInfo) {
-                    let tierValue = tierInfo.tier;
-                    // Handle both old format (R prefix) and new format (retired flag)
-                    if (typeof tierValue === 'string' && tierValue.startsWith('R')) {
-                        tierValue = tierValue.substring(1);
-                    }
-                    categoryPoints += tierPointsMap[tierValue] || 0;
+                    categoryPoints += tierPointsMap[tierInfo.tier] || 0;
                 }
             });
         }
@@ -1142,12 +1131,11 @@ function renderCategoryOverall(category) {
         modesSection.className = 'modes-section';
         
         // Collect all modes with their tier info
-        const retiredModes = player.retired_modes ? player.retired_modes.split(',').map(m => m.trim()) : [];
         const modesWithTiers = categoryMappings[category].map(gamemode => {
             const tierInfo = player.tiers.find(t => t.gamemode === gamemode);
             const tierValue = tierInfo ? tierInfo.tier : 'Unknown';
             const peakValue = tierInfo ? (tierInfo.peak || tierInfo.tier) : 'Unknown';
-            const isRetired = retiredModes.includes(gamemode);
+            const isRetired = Array.isArray(player.retired_modes) && player.retired_modes.includes(gamemode);
             
             // Parse tier value to get number for sorting
             let tierNumber = 0;
@@ -1193,7 +1181,7 @@ function renderCategoryOverall(category) {
             
             const tierBadge = document.createElement('div');
             tierBadge.className = `tier-badge-rounded ${isRetired ? 'tier-retired' : (tierNumber > 0 ? tierColors[tierNumber] : 'tier-unknown')}`;
-            tierBadge.textContent = tierValue !== 'Unknown' ? (isRetired ? 'R' + tierValue : tierValue) : '?';
+            tierBadge.textContent = tierValue !== 'Unknown' ? tierValue : '?';
             
             modeItem.appendChild(icon);
             modeItem.appendChild(tierBadge);
@@ -1512,10 +1500,8 @@ function showPlayerModal(player, tierNumber, category = 'main') {
         });
         
         // Prepare tiers with metadata for sorting
-        const retiredModes = player.retired_modes ? player.retired_modes.split(',').map(m => m.trim()) : [];
         const tiersWithMetadata = categoryTiers.map(tierInfo => {
-            const tierValue = tierInfo.tier;
-            const isRetired = retiredModes.includes(tierInfo.gamemode);
+            const isRetired = Array.isArray(player.retired_modes) && player.retired_modes.includes(tierInfo.gamemode);
             const tierMatch = typeof tierInfo.tier === 'string' ? tierInfo.tier.match(/\d+/) : null;
             const tierNumber = tierMatch ? parseInt(tierMatch[0]) : (tierInfo.tier === 'Unknown' || tierInfo.tier === 'unknown' ? 0 :999);
             const peakValue = tierInfo.peak || tierInfo.tier || 'Unknown';
@@ -1573,7 +1559,7 @@ function showPlayerModal(player, tierNumber, category = 'main') {
                 badgeClass += ' tier-unknown';
                 badgeText = '?';
             } else if (tierInfo.isRetired) {
-                // Retired tier - tier value already includes R prefix from database (e.g., "RHT1")
+                // Retired tier - show the tier value (e.g., "HT1")
                 badgeClass += ' tier-retired';
             } else {
                 // Numbered tier (1-5)
