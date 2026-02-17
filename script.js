@@ -819,12 +819,13 @@ function renderAllModesOverall() {
         
         // Collect all modes grouped by category
         const modesByCategory = {};
+        const retiredModes = player.retired_modes ? player.retired_modes.split(',').map(m => m.trim()) : [];
         Object.keys(categoryMappings).forEach(category => {
             modesByCategory[category] = [];
             categoryMappings[category].forEach(gamemode => {
                 const tierInfo = player.tiers.find(t => t.gamemode === gamemode);
                 const tierValue = tierInfo ? tierInfo.tier : 'Unknown';
-                const isRetired = tierInfo ? (tierInfo.retired || (typeof tierValue === 'string' && tierValue.startsWith('R'))) : false;
+                const isRetired = retiredModes.includes(gamemode);
                 
                 let tierNumber = 0;
                 if (typeof tierValue === 'string') {
@@ -975,11 +976,12 @@ function renderAllModesRegion(region) {
         
         // Collect all modes
         const allModes = [];
+        const retiredModes = player.retired_modes ? player.retired_modes.split(',').map(m => m.trim()) : [];
         if (Array.isArray(player.tiers)) {
             player.tiers.forEach(tierInfo => {
                 const gamemode = tierInfo.gamemode;
                 const tierValue = tierInfo.tier;
-                const isRetired = tierInfo.retired || (typeof tierValue === 'string' && tierValue.startsWith('R'));
+                const isRetired = retiredModes.includes(gamemode);
                 
                 let tierNumber = 0;
                 if (typeof tierValue === 'string') {
@@ -1140,11 +1142,12 @@ function renderCategoryOverall(category) {
         modesSection.className = 'modes-section';
         
         // Collect all modes with their tier info
+        const retiredModes = player.retired_modes ? player.retired_modes.split(',').map(m => m.trim()) : [];
         const modesWithTiers = categoryMappings[category].map(gamemode => {
             const tierInfo = player.tiers.find(t => t.gamemode === gamemode);
             const tierValue = tierInfo ? tierInfo.tier : 'Unknown';
             const peakValue = tierInfo ? (tierInfo.peak || tierInfo.tier) : 'Unknown';
-            const isRetired = tierInfo ? (tierInfo.retired || (typeof tierValue === 'string' && tierValue.startsWith('R'))) : false;
+            const isRetired = retiredModes.includes(gamemode);
             
             // Parse tier value to get number for sorting
             let tierNumber = 0;
@@ -1509,9 +1512,10 @@ function showPlayerModal(player, tierNumber, category = 'main') {
         });
         
         // Prepare tiers with metadata for sorting
+        const retiredModes = player.retired_modes ? player.retired_modes.split(',').map(m => m.trim()) : [];
         const tiersWithMetadata = categoryTiers.map(tierInfo => {
             const tierValue = tierInfo.tier;
-            const isRetired = tierInfo.retired || (typeof tierValue === 'string' && tierValue.startsWith('R'));
+            const isRetired = retiredModes.includes(tierInfo.gamemode);
             const tierMatch = typeof tierInfo.tier === 'string' ? tierInfo.tier.match(/\d+/) : null;
             const tierNumber = tierMatch ? parseInt(tierMatch[0]) : (tierInfo.tier === 'Unknown' || tierInfo.tier === 'unknown' ? 0 :999);
             const peakValue = tierInfo.peak || tierInfo.tier || 'Unknown';

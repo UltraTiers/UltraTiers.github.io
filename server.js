@@ -392,34 +392,34 @@ app.post("/retire", async (req, res) => {
 
     const { data: player, error } = await supabase
       .from("ultratiers")
-      .select("tiers")
+      .select("retired_modes")
       .eq("name", ign)
       .maybeSingle();
 
     if (error) throw error;
     if (!player) return res.status(404).json({ error: "Player not found" });
 
-    const tiers = Array.isArray(player.tiers) ? player.tiers : [];
+    // Parse retired_modes (comma-separated array or empty)
+    let retiredModes = player.retired_modes ? player.retired_modes.split(',').map(m => m.trim()) : [];
     
     // Handle multiple modes (comma-separated)
     const modes = mode.split(',').map(m => m.trim());
     
+    // Add new modes to retired list (avoid duplicates)
     modes.forEach(modeToRetire => {
-      const tierObj = tiers.find(t => t.gamemode === modeToRetire);
-      if (tierObj && tierObj.tier && tierObj.tier !== 'Unknown') {
-        // Mark as retired instead of modifying the tier value
-        tierObj.retired = true;
+      if (!retiredModes.includes(modeToRetire)) {
+        retiredModes.push(modeToRetire);
       }
     });
 
     const { error: updateError } = await supabase
       .from("ultratiers")
-      .update({ tiers: tiers })
+      .update({ retired_modes: retiredModes.join(',') })
       .eq("name", ign);
 
     if (updateError) throw updateError;
 
-    res.json({ success: true, tiers: tiers });
+    res.json({ success: true, retired_modes: retiredModes });
   } catch (err) {
     console.error("Retire failed:", err);
     res.status(500).json({ error: "Internal server error" });
