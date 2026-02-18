@@ -5,11 +5,12 @@
     align-items: center;
     gap: 10px;
     position: relative;
+    width: auto;
 }
 .searchbar-left-icons {
     display: flex;
     align-items: center;
-    margin: 0;
+    margin-right: 6px;
 }
 .icon-btn {
     background: linear-gradient(135deg, var(--accent) 60%, var(--accent-hover) 100%);
