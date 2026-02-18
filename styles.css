@@ -44,7 +44,7 @@
     bottom: 0;
     background: rgba(0, 0, 0, 0.8);
     display: flex;
-    align-items: center;
+    align-items: flex-start !important;
     justify-content: center;
     z-index: 1000;
 }
@@ -52,15 +52,16 @@
     background: linear-gradient(135deg, rgba(15, 23, 42, 0.98) 0%, rgba(10, 15, 31, 0.98) 100%);
     border: 2px solid rgba(14, 165, 233, 0.2);
     border-radius: 20px;
-    max-width: 520px;
-    width: 90%;
-    max-height: 90vh;
+    max-width: 800px;
+    width: 95%;
+    max-height: 80vh;
     overflow-y: auto;
     box-shadow: 0 25px 80px rgba(0, 0, 0, 0.8);
     position: relative;
     animation: slideUp 0.3s ease;
     background-attachment: fixed;
     padding: 0;
+    margin-top: 80px;
 }
 #testers-modal .login-modal-header {
     display: flex;
@@ -101,10 +102,11 @@
 }
 #testers-list-container {
     display: flex;
-    flex-direction: column;
+    flex-wrap: wrap;
     gap: 24px;
-    align-items: center;
     justify-content: flex-start;
+    align-items: flex-start;
+    width: 100%;
 }
 .tester-card {
     background: linear-gradient(135deg, rgba(30,58,95,0.7) 0%, rgba(10,15,31,0.7) 100%);
@@ -112,8 +114,8 @@
     border-radius: 16px;
     padding: 28px 24px 20px 24px;
     min-width: 220px;
-    max-width: 320px;
-    width: 100%;
+    max-width: 240px;
+    flex: 1 1 220px;
     display: flex;
     flex-direction: column;
     align-items: center;
