@@ -1,4 +1,94 @@
-﻿// Point system mapping
+﻿// --- Testers Modal Logic ---
+function openTestersModal() {
+    const modal = document.getElementById('testers-modal');
+    if (modal) modal.style.display = 'flex';
+    loadAndRenderTesters();
+}
+
+function closeTestersModal() {
+    const modal = document.getElementById('testers-modal');
+    if (modal) modal.style.display = 'none';
+}
+
+async function loadAndRenderTesters() {
+    const container = document.getElementById('testers-list-container');
+    if (!container) return;
+    container.innerHTML = '<div style="color: #aaa; text-align: center; width: 100%;">Loading testers...</div>';
+    try {
+        const res = await fetch('/testers');
+        if (!res.ok) throw new Error('Failed to fetch testers');
+        const testers = await res.json();
+        if (!Array.isArray(testers) || testers.length === 0) {
+            container.innerHTML = '<div style="color: #aaa; text-align: center; width: 100%;">No testers found.</div>';
+            return;
+        }
+        container.innerHTML = '';
+        testers.forEach(tester => {
+            const card = document.createElement('div');
+            card.className = 'tester-card';
+
+            // Avatar
+            const avatar = document.createElement('img');
+            avatar.className = 'tester-avatar';
+            avatar.src = `https://render.crafty.gg/3d/bust/${tester.uuid}`;
+            avatar.alt = tester.name;
+            avatar.onerror = function() {
+                avatar.src = 'https://mc-heads.net/avatar/' + tester.uuid + '/72';
+            };
+            card.appendChild(avatar);
+
+            // Name
+            const name = document.createElement('div');
+            name.className = 'tester-name';
+            name.textContent = tester.name;
+            card.appendChild(name);
+
+            // Region
+            const region = document.createElement('div');
+            region.className = 'tester-region';
+            region.textContent = getFullRegionName(tester.region) || 'Unknown';
+            card.appendChild(region);
+
+            // Modes
+            const modes = Array.isArray(tester.mode) ? tester.mode : [tester.mode];
+            const modesDiv = document.createElement('div');
+            modesDiv.className = 'tester-modes';
+            modes.forEach(mode => {
+                if (!mode) return;
+                const badge = document.createElement('span');
+                badge.className = 'tester-mode-badge';
+                badge.textContent = mode;
+                modesDiv.appendChild(badge);
+            });
+            card.appendChild(modesDiv);
+
+            container.appendChild(card);
+        });
+    } catch (err) {
+        container.innerHTML = '<div style="color: #e57373; text-align: center; width: 100%;">Failed to load testers.</div>';
+    }
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    // Testers icon button
+    const testersBtn = document.getElementById('testers-icon-btn');
+    if (testersBtn) {
+        testersBtn.addEventListener('click', openTestersModal);
+    }
+    // Close modal button
+    const closeBtn = document.getElementById('close-testers-modal');
+    if (closeBtn) {
+        closeBtn.addEventListener('click', closeTestersModal);
+    }
+    // Click outside modal to close
+    const testersModal = document.getElementById('testers-modal');
+    if (testersModal) {
+        testersModal.addEventListener('click', function(e) {
+            if (e.target === testersModal) closeTestersModal();
+        });
+    }
+});
+// Point system mapping
 const tierPointsMap = { 
     'HT1': 60, 'LT1': 45,
     'HT2': 30, 'LT2': 20,
