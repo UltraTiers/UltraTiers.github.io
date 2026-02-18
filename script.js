@@ -2,12 +2,14 @@
 function openTestersModal() {
     const modal = document.getElementById('testers-modal');
     if (modal) modal.style.display = 'flex';
+    document.body.style.overflow = 'hidden'; // Prevent background scroll
     loadAndRenderTesters();
 }
 
 function closeTestersModal() {
     const modal = document.getElementById('testers-modal');
     if (modal) modal.style.display = 'none';
+    document.body.style.overflow = '';
 }
 
 async function loadAndRenderTesters() {

@@ -34,24 +34,40 @@
 }
 
 /* Testers Modal Styles */
+
+/* Testers Modal: match player modal style */
 #testers-modal {
-    align-items: flex-start !important;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.8);
+    display: flex;
+    align-items: center;
     justify-content: center;
+    z-index: 1000;
 }
 #testers-modal .login-modal-content {
-    max-width: 800px;
-    background: var(--bg-card);
-    border-radius: 16px;
-    box-shadow: 0 8px 32px rgba(0,0,0,0.25);
+    background: linear-gradient(135deg, rgba(15, 23, 42, 0.98) 0%, rgba(10, 15, 31, 0.98) 100%);
+    border: 2px solid rgba(14, 165, 233, 0.2);
+    border-radius: 20px;
+    max-width: 520px;
+    width: 90%;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: 0 25px 80px rgba(0, 0, 0, 0.8);
+    position: relative;
+    animation: slideUp 0.3s ease;
+    background-attachment: fixed;
     padding: 0;
-    margin-top: 80px;
 }
 #testers-modal .login-modal-header {
     display: flex;
     align-items: center;
     justify-content: space-between;
     padding: 24px 32px 12px 32px;
-    border-bottom: 1px solid var(--border-color);
+    border-bottom: 1px solid rgba(14, 165, 233, 0.1);
 }
 #testers-modal .login-modal-header h2 {
     font-size: 2rem;
@@ -59,15 +75,24 @@
     margin: 0;
 }
 #testers-modal .login-modal-close {
-    background: none;
-    border: none;
-    font-size: 2rem;
-    color: var(--text-secondary);
+    position: static;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: #fff;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    font-size: 28px;
     cursor: pointer;
-    transition: color 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+    z-index: 10;
 }
 #testers-modal .login-modal-close:hover {
-    color: var(--accent);
+    background: rgba(255, 255, 255, 0.15);
+    border-color: rgba(14, 165, 233, 0.6);
 }
 #testers-modal .login-modal-body {
     padding: 24px 32px 32px 32px;
@@ -76,46 +101,49 @@
 }
 #testers-list-container {
     display: flex;
-    flex-wrap: wrap;
+    flex-direction: column;
     gap: 24px;
+    align-items: center;
     justify-content: flex-start;
 }
 .tester-card {
-    background: rgba(30,58,95,0.7);
-    border: 1px solid var(--border-color);
-    border-radius: 12px;
-    padding: 20px 18px 16px 18px;
+    background: linear-gradient(135deg, rgba(30,58,95,0.7) 0%, rgba(10,15,31,0.7) 100%);
+    border: 1.5px solid rgba(14, 165, 233, 0.18);
+    border-radius: 16px;
+    padding: 28px 24px 20px 24px;
     min-width: 220px;
-    max-width: 240px;
-    flex: 1 1 220px;
+    max-width: 320px;
+    width: 100%;
     display: flex;
     flex-direction: column;
     align-items: center;
-    box-shadow: 0 2px 8px rgba(14,165,233,0.08);
+    box-shadow: 0 8px 32px rgba(14,165,233,0.10);
     transition: box-shadow 0.2s, border-color 0.2s;
 }
 .tester-card:hover {
     border-color: var(--accent);
-    box-shadow: 0 4px 16px rgba(14,165,233,0.18);
+    box-shadow: 0 8px 32px rgba(14,165,233,0.18);
 }
 .tester-avatar {
-    width: 72px;
-    height: 72px;
-    border-radius: 12px;
-    margin-bottom: 12px;
+    width: 100px;
+    height: 100px;
+    border-radius: 16px;
+    margin-bottom: 16px;
     background: #222;
     object-fit: cover;
     box-shadow: 0 2px 8px rgba(14,165,233,0.10);
+    border: 4px solid #0ea5e9;
 }
 .tester-name {
-    font-size: 1.2rem;
-    font-weight: 700;
-    color: var(--accent);
+    font-size: 1.4rem;
+    font-weight: 800;
+    color: #0ea5e9;
     margin-bottom: 4px;
     text-align: center;
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
 }
 .tester-region {
-    font-size: 0.95rem;
+    font-size: 1.05rem;
     color: var(--text-secondary);
     margin-bottom: 8px;
     text-align: center;
@@ -123,19 +151,20 @@
 .tester-modes {
     display: flex;
     flex-wrap: wrap;
-    gap: 6px;
+    gap: 8px;
     justify-content: center;
-    margin-top: 8px;
+    margin-top: 10px;
 }
 .tester-mode-badge {
     background: var(--accent);
     color: #fff;
-    font-size: 0.85rem;
-    padding: 3px 10px;
-    border-radius: 8px;
-    font-weight: 600;
+    font-size: 0.95rem;
+    padding: 5px 14px;
+    border-radius: 10px;
+    font-weight: 700;
     box-shadow: 0 1px 4px rgba(14,165,233,0.10);
     margin-bottom: 2px;
+    letter-spacing: 0.5px;
 }
 * {
     margin: 0;
