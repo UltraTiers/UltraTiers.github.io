@@ -2147,33 +2147,30 @@ function renderChatPage() {
         }
         out.forEach(r => {
             const el = document.createElement('div');
-            el.className = 'outgoing-row';
-            const meta = document.createElement('div');
-            meta.className = 'meta outgoing-meta';
-            meta.style.display = 'flex';
-            meta.style.alignItems = 'center';
-            meta.style.gap = '10px';
+            el.className = 'outgoing-player-row outgoing-row';
 
             const avatar = document.createElement('img');
             avatar.className = 'avatar';
             avatar.src = r.to_uuid ? `https://mc-heads.net/avatar/${r.to_uuid}/64` : 'UltraLogo.png';
+            avatar.alt = r.to_name || r.to_uuid;
             avatar.style.width = '40px';
             avatar.style.height = '40px';
             avatar.style.borderRadius = '50%';
+            avatar.style.flexShrink = '0';
 
-            const nameWrap = document.createElement('div');
-            nameWrap.style.flex = '1';
-            nameWrap.innerHTML = `<strong>${r.to_name || r.to_uuid}</strong>`;
+            const nameEl = document.createElement('div');
+            nameEl.className = 'player-name';
+            nameEl.textContent = r.to_name || r.to_uuid;
 
             const cancelBtn = document.createElement('button');
             cancelBtn.className = 'cancel-icon';
             cancelBtn.title = 'Cancel request';
             cancelBtn.dataset.id = r.id;
             cancelBtn.innerHTML = '✖';
+            cancelBtn.style.marginLeft = 'auto';
 
-            meta.appendChild(avatar);
-            meta.appendChild(nameWrap);
-            el.appendChild(meta);
+            el.appendChild(avatar);
+            el.appendChild(nameEl);
             el.appendChild(cancelBtn);
             container.appendChild(el);
 

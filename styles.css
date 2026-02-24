@@ -3616,6 +3616,22 @@ body {
 .modal.show {
     display: flex;
 }
+/* Outgoing friend request row: visually matches player rows but avoids player-row behaviors */
+.outgoing-player-row {
+    display: flex;
+    align-items: center;
+    padding: 12px 15px;
+    background: rgba(255,255,255,0.04);
+    border-left: 4px solid transparent;
+    border-radius: 8px;
+    gap: 15px;
+    cursor: default;
+    transition: all 0.3s ease;
+}
+.outgoing-player-row .player-name {
+    font-weight: 700;
+    color: rgba(255,255,255,0.95);
+}
 
 @keyframes modalBgFadeIn {
     from {
@@ -5761,7 +5777,7 @@ body {
 .friend-add input { flex:1; padding:10px 12px; border-radius:8px; color:#eaf6f2; border:1px solid rgba(255,255,255,0.03); background:rgba(255,255,255,0.02); }
 .friend-add .add-btn { width:36px; height:36px; border-radius:8px; background: var(--accent); color:#000; border:none; cursor:pointer; }
 
-.friends-list-items .friend-row, .incoming-list .incoming-row { display:flex; align-items:center; gap:12px; padding:4px 6px; border-radius:8px; cursor:pointer; border: 2px solid rgba(14,165,233,0.06); background: linear-gradient(180deg, rgba(26, 40, 71, 0.7) 0%, rgba(15, 23, 42, 0.85) 100%); }
+.friends-list-items .friend-row { display:flex; align-items:center; gap:12px; padding:4px 6px; border-radius:8px; cursor:pointer; border: 2px solid rgba(14,165,233,0.06); background: linear-gradient(180deg, rgba(26, 40, 71, 0.7) 0%, rgba(15, 23, 42, 0.85) 100%); }
 /* remove hover animation / visual change inside friends list */
 .friends-list-items .friend-row:hover { background: linear-gradient(180deg, rgba(26, 40, 71, 0.7) 0%, rgba(15, 23, 42, 0.85) 100%) !important; }
 .incoming-list .incoming-row:hover, .outgoing-list .outgoing-row:hover { background: transparent; }
