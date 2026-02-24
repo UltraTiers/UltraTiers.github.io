@@ -5596,10 +5596,10 @@ body {
 /* WhatsApp-like chat refinements */
 /* ============================= */
 /* Chat layout using UltraTiers palette (match tierlist styling) */
-.chat-navbar { display:flex; align-items:center; padding:12px 40px; border-bottom:1px solid var(--border-color); background: var(--bg-card); }
+.chat-navbar { display:flex; align-items:center; padding:12px 40px; border-bottom:1px solid var(--border-color); background: linear-gradient(180deg, rgba(26, 40, 71, 0.8) 0%, rgba(15, 23, 42, 0.9) 100%); border: 2px solid rgba(14, 165, 233, 0.2); }
 .chat-navbar .chat-logo { display:flex; align-items:center; gap:12px; cursor:pointer; }
-.chat-navbar .chat-logo .logo { height:36px; width:auto; border-radius:8px; }
-.chat-navbar .chat-logo h1 { font-size:20px; color:var(--accent); margin:0; font-weight:800; }
+.chat-navbar .chat-logo .logo { height:45px; width:auto; border-radius:12px; }
+.chat-navbar .chat-logo h1 { font-size:26px; color:var(--accent); margin:0; font-weight:800; letter-spacing:1px; }
 
 .chat-app { background: transparent; }
 .chat-sidebar { border: 1px solid var(--border-color); background: var(--bg-card); }
@@ -5688,11 +5688,11 @@ body {
 /* cloned header is sticky and flows above the chat app */
 
 /* Chat app full-bleed container */
-.chat-app { margin: 0 24px 24px 24px; display:flex; gap:18px; }
+.chat-app { margin: 24px; display:flex; gap:18px; }
 
 /* Sidebar and window layout for WhatsApp-like look */
-.chat-sidebar { width:320px; min-width:260px; max-width:34%; border-radius:12px; background: var(--bg-card); }
-.chat-window { flex:1; display:flex; flex-direction:column; border-radius:12px; background: var(--bg-darker); overflow:hidden; }
+.chat-sidebar { width:320px; min-width:260px; max-width:34%; border-radius:12px; background: linear-gradient(180deg, rgba(26, 40, 71, 0.8) 0%, rgba(15, 23, 42, 0.9) 100%); border: 2px solid rgba(14, 165, 233, 0.2); }
+.chat-window { flex:1; display:flex; flex-direction:column; border-radius:12px; background: linear-gradient(180deg, rgba(26, 40, 71, 0.8) 0%, rgba(15, 23, 42, 0.9) 100%); border: 2px solid rgba(14, 165, 233, 0.2); overflow:hidden; }
 .chat-body { flex:1; overflow:auto; padding:22px; }
 
 /* Message bubble layout */
@@ -5706,7 +5706,7 @@ body {
 .friend-add .add-btn { font-size:20px; }
 .friends-list-items div, .incoming-list div { padding:10px; background:transparent; border-radius:10px; }
 .friends-list-items div .avatar, .incoming-list div .avatar { width:36px; height:36px; border-radius:50%; background:#0b2730; flex-shrink:0; }
-.friends-list-items div .meta { display:flex; flex-direction:column; }
+.friends-list-items div .meta { display:flex; flex-direction:column; justify-content: center; }
 .friends-list-items div .meta .name { color:#e9f6f0; font-weight:700; }
 .friends-list-items div .meta .sub { color:#98a6ad; font-size:12px; }
 
@@ -5719,7 +5719,7 @@ body {
 .msg { padding:10px 12px; border-radius:16px; box-shadow: 0 4px 12px rgba(2,6,23,0.08); }
 .msg.me { background: rgba(14,165,233,0.06); color: var(--text-primary); }
 .msg.them { background: rgba(255,255,255,0.02); color: var(--text-primary); }
-.msg small { color: rgba(0,0,0,0.45); font-size:11px; display:block; margin-top:6px; }
+.msg small { color: lightslategray; font-size:11px; display:block; margin-top:6px; }
 
 /* Tail cleanup for small screens */
 .msg.me::after, .msg.them::after { display:none; }
@@ -5735,7 +5735,7 @@ body {
 @media (max-width: 900px) {
     #chat-header-clone { padding:8px 12px; }
     body #ultratier-chat-app { padding-top:64px; }
-    .chat-app { margin: 0 8px 8px 8px; }
+    .chat-app { margin: 8px; }
 }
 
 /* Overrides and improvements for chat layout */
@@ -5752,6 +5752,9 @@ body {
 
 /* Incoming requests placeholder */
 .no-requests { text-align:left; color:rgba(255,255,255,0.55); font-size:13px; padding:6px 4px; }
+
+/* No friends placeholder */
+.no-friends { text-align:left; color: var(--text-secondary); font-size:13px; padding:6px 4px; }
 
 .chat-input-area { position: relative; display:flex; align-items:center; gap:12px; padding:12px 18px; }
 .chat-input-area input { flex:1; width:100%; padding:12px 14px; border-radius:8px; border:1px solid rgba(0,0,0,0.06); box-sizing:border-box; }

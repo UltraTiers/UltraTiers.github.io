@@ -2179,6 +2179,11 @@ function renderChatPage() {
             el.appendChild(actions);
             container.appendChild(el);
         });
+
+        // show placeholder when user has no friends
+        if (!friends || (Array.isArray(friends) && friends.length === 0)) {
+            container.innerHTML = '<div class="no-friends">No friends added</div>';
+        }
     }
 
     let activeFriend = null;
