@@ -122,6 +122,147 @@ app.post("/testers", async (req, res) => {
   }
 });
 
+// -------------------
+// Friends & Chat API
+// -------------------
+
+// Send friend request by target name (must be existing account)
+app.post('/friend/request', async (req, res) => {
+  try {
+    if (!supabaseConfigured) return res.status(503).json({ error: 'Supabase not configured' });
+    const { from_uuid, to_name } = req.body;
+    if (!from_uuid || !to_name) return res.status(400).json({ error: 'Missing fields' });
+
+    // find target
+    const { data: target, error: tErr } = await supabase.from('ultratiers').select('*').eq('name', to_name).maybeSingle();
+    if (tErr) throw tErr;
+    if (!target) return res.status(404).json({ error: 'Target not found' });
+
+    // Prevent duplicate requests
+    const { data: existing, error: exErr } = await supabase.from('friend_requests').select('*').eq('from_uuid', from_uuid).eq('to_uuid', target.uuid);
+    if (exErr) throw exErr;
+    if (existing && existing.length > 0) return res.json({ success: true, message: 'Already requested' });
+
+    const { error: insertErr } = await supabase.from('friend_requests').insert([{ from_uuid, to_uuid: target.uuid, from_name: null, created_at: new Date().toISOString(), status: 'pending' }]);
+    if (insertErr) throw insertErr;
+
+    res.json({ success: true });
+  } catch (err) {
+    console.error('/friend/request error', err);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// Get incoming friend requests for a user
+app.get('/friend/requests/:uuid', async (req, res) => {
+  try {
+    if (!supabaseConfigured) return res.json([]);
+    const { uuid } = req.params;
+    const { data, error } = await supabase.from('friend_requests').select('*').eq('to_uuid', uuid).eq('status', 'pending');
+    if (error) throw error;
+    res.json(data || []);
+  } catch (err) {
+    console.error('/friend/requests error', err);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// Accept a friend request (by request id)
+app.post('/friend/accept', async (req, res) => {
+  try {
+    if (!supabaseConfigured) return res.status(503).json({ error: 'Supabase not configured' });
+    const { requestId } = req.body;
+    if (!requestId) return res.status(400).json({ error: 'Missing requestId' });
+
+    const { data: reqRow, error: rErr } = await supabase.from('friend_requests').select('*').eq('id', requestId).maybeSingle();
+    if (rErr) throw rErr;
+    if (!reqRow) return res.status(404).json({ error: 'Request not found' });
+
+    const a = reqRow.from_uuid;
+    const b = reqRow.to_uuid;
+
+    // Insert mutual friendship rows
+    const rows = [ { uuid: a, friend_uuid: b, created_at: new Date().toISOString() }, { uuid: b, friend_uuid: a, created_at: new Date().toISOString() } ];
+    const { error: frErr } = await supabase.from('friends').insert(rows);
+    if (frErr) throw frErr;
+
+    // mark request as accepted (or delete)
+    const { error: delErr } = await supabase.from('friend_requests').delete().eq('id', requestId);
+    if (delErr) console.warn('Failed to delete request after accept', delErr);
+
+    res.json({ success: true });
+  } catch (err) {
+    console.error('/friend/accept error', err);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// Get friends for a user (returns minimal info)
+app.get('/friends/:uuid', async (req, res) => {
+  try {
+    if (!supabaseConfigured) return res.json([]);
+    const { uuid } = req.params;
+    const { data, error } = await supabase.from('friends').select('*').eq('uuid', uuid);
+    if (error) throw error;
+    // try to attach names if possible
+    const friends = await Promise.all((data || []).map(async f => {
+      const { data: p } = await supabase.from('ultratiers').select('uuid,name').eq('uuid', f.friend_uuid).maybeSingle();
+      return { friend_uuid: f.friend_uuid, name: p ? p.name : null };
+    }));
+    res.json(friends || []);
+  } catch (err) {
+    console.error('/friends error', err);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// Send chat message
+app.post('/chat/send', async (req, res) => {
+  try {
+    if (!supabaseConfigured) return res.status(503).json({ error: 'Supabase not configured' });
+    const { from_uuid, to_uuid, message } = req.body;
+    if (!from_uuid || !to_uuid || !message) return res.status(400).json({ error: 'Missing fields' });
+
+    const convo = [from_uuid, to_uuid].sort().join('_');
+    const payload = { conversation_id: convo, from_uuid, to_uuid, message, created_at: new Date().toISOString() };
+    const { error } = await supabase.from('messages').insert([payload]);
+    if (error) throw error;
+    res.json({ success: true });
+  } catch (err) {
+    console.error('/chat/send error', err);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// Get chat history between two users; if last message older than 24h, clear the conversation
+app.get('/chat/history', async (req, res) => {
+  try {
+    if (!supabaseConfigured) return res.json([]);
+    const { user, friend } = req.query;
+    if (!user || !friend) return res.status(400).json({ error: 'Missing query params' });
+    const convo = [user, friend].sort().join('_');
+
+    const { data: msgs, error } = await supabase.from('messages').select('*').eq('conversation_id', convo).order('created_at', { ascending: true });
+    if (error) throw error;
+    if (!msgs || msgs.length === 0) return res.json([]);
+
+    const last = new Date(msgs[msgs.length - 1].created_at);
+    const ageMs = Date.now() - last.getTime();
+    const dayMs = 24 * 60 * 60 * 1000;
+    if (ageMs > dayMs) {
+      // clear conversation
+      const { error: delErr } = await supabase.from('messages').delete().eq('conversation_id', convo);
+      if (delErr) console.warn('Failed to delete old conversation', delErr);
+      return res.json([]);
+    }
+
+    res.json(msgs);
+  } catch (err) {
+    console.error('/chat/history error', err);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
 app.get("/testers", async (req, res) => {
   try {
     if (!supabaseConfigured) {

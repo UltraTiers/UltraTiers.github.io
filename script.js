@@ -1,95 +1,36 @@
-﻿// --- Testers Modal Logic ---
-function openTestersModal() {
-    const modal = document.getElementById('testers-modal');
-    if (modal) modal.style.display = 'flex';
-    document.body.style.overflow = 'hidden'; // Prevent background scroll
-    loadAndRenderTesters();
+﻿// --- Friends & Chat Routing / Client helpers ---
+function openChatPage() {
+    location.hash = '#ultratierchatting';
 }
 
-function closeTestersModal() {
-    const modal = document.getElementById('testers-modal');
-    if (modal) modal.style.display = 'none';
-    document.body.style.overflow = '';
+// Show maintenance page for root or unknown hashes
+function setupHashRouting() {
+    window.addEventListener('hashchange', handleHash);
+    handleHash();
 }
 
-async function loadAndRenderTesters() {
-    const container = document.getElementById('testers-list-container');
-    if (!container) return;
-    container.innerHTML = '<div style="color: #aaa; text-align: center; width: 100%;">Loading testers...</div>';
+function getCurrentUser() {
     try {
-        const res = await fetch('/testers');
-        if (!res.ok) throw new Error('Failed to fetch testers');
-        const testers = await res.json();
-        if (!Array.isArray(testers) || testers.length === 0) {
-            container.innerHTML = '<div style="color: #aaa; text-align: center; width: 100%;">No testers found.</div>';
-            return;
-        }
-        container.innerHTML = '';
-        testers.forEach(tester => {
-            const card = document.createElement('div');
-            card.className = 'tester-card';
-
-            // Avatar
-            const avatar = document.createElement('img');
-            avatar.className = 'tester-avatar';
-            avatar.src = `https://render.crafty.gg/3d/bust/${tester.uuid}`;
-            avatar.alt = tester.name;
-            avatar.onerror = function() {
-                avatar.src = 'https://mc-heads.net/avatar/' + tester.uuid + '/72';
-            };
-            card.appendChild(avatar);
-
-            // Name
-            const name = document.createElement('div');
-            name.className = 'tester-name';
-            name.textContent = tester.name;
-            card.appendChild(name);
-
-            // Region
-            const region = document.createElement('div');
-            region.className = 'tester-region';
-            region.textContent = getFullRegionName(tester.region) || 'Unknown';
-            card.appendChild(region);
-
-            // Modes
-            const modes = Array.isArray(tester.mode) ? tester.mode : [tester.mode];
-            const modesDiv = document.createElement('div');
-            modesDiv.className = 'tester-modes';
-            modes.forEach(mode => {
-                if (!mode) return;
-                const badge = document.createElement('span');
-                badge.className = 'tester-mode-badge';
-                badge.textContent = mode;
-                modesDiv.appendChild(badge);
-            });
-            card.appendChild(modesDiv);
-
-            container.appendChild(card);
-        });
-    } catch (err) {
-        container.innerHTML = '<div style="color: #e57373; text-align: center; width: 100%;">Failed to load testers.</div>';
-    }
+        const ls = localStorage.getItem('ultratiers_user') || localStorage.getItem('ultra_user');
+        if (ls) return JSON.parse(ls);
+    } catch (e) {}
+    return window.currentUser || null;
 }
 
-document.addEventListener('DOMContentLoaded', function() {
-    // Testers icon button
-    const testersBtn = document.getElementById('testers-icon-btn');
-    if (testersBtn) {
-        testersBtn.addEventListener('click', openTestersModal);
+function handleHash() {
+    const h = location.hash;
+    if (!h || (h !== '#ultratierlist' && h !== '#ultratierchatting')) {
+        document.body.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100vh;background:#0f172a;color:#fff;font-family: Arial, sans-serif;"><h1>The Website Is Getting Worked On</h1></div>';
+        return;
     }
-    // Close modal button
-    const closeBtn = document.getElementById('close-testers-modal');
-    if (closeBtn) {
-        closeBtn.addEventListener('click', closeTestersModal);
+    if (h === '#ultratierlist') {
+        // reload to show standard UI (keeps state simple)
+        if (!location.href.includes('#ultratierlist')) location.reload();
     }
-    // Click outside modal to close
-    const testersModal = document.getElementById('testers-modal');
-    if (testersModal) {
-        testersModal.addEventListener('click', function(e) {
-            if (e.target === testersModal) closeTestersModal();
-        });
+    if (h === '#ultratierchatting') {
+        renderChatPage();
     }
-});
+}
 // Point system mapping
 const tierPointsMap = { 
     'HT1': 60, 'LT1': 45,
@@ -534,6 +475,9 @@ function initSearchSystem() {
 
 // Initialize
 document.addEventListener('DOMContentLoaded', async function () {
+    setupHashRouting();
+    // If user requested the chat page, the router will render it; otherwise continue app init
+    if (location.hash === '#ultratierchatting') return;
     await fetchAndOrganizePlayers();
     initLoginSystem();
     initSearchSystem();
@@ -1862,6 +1806,145 @@ function renderDefaultTab() {
 // ========================================
 
 const API_BASE = 'https://ultratiers.onrender.com';
+
+// Chat / Friends API helpers
+async function sendFriendRequestAPI(from_uuid, to_name) {
+    return fetch('/friend/request', {
+        method: 'POST',
+        headers: {'Content-Type':'application/json'},
+        body: JSON.stringify({ from_uuid, to_name })
+    }).then(r => r.json());
+}
+
+async function getIncomingRequestsAPI(uuid) {
+    return fetch('/friend/requests/' + encodeURIComponent(uuid)).then(r => r.json());
+}
+
+async function acceptFriendAPI(requestId) {
+    return fetch('/friend/accept', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ requestId }) }).then(r=>r.json());
+}
+
+async function getFriendsAPI(uuid) {
+    return fetch('/friends/' + encodeURIComponent(uuid)).then(r=>r.json());
+}
+
+async function sendMessageAPI(from_uuid, to_uuid, message) {
+    return fetch('/chat/send', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ from_uuid, to_uuid, message }) }).then(r=>r.json());
+}
+
+async function getChatHistoryAPI(user, friend) {
+    return fetch('/chat/history?user=' + encodeURIComponent(user) + '&friend=' + encodeURIComponent(friend)).then(r=>r.json());
+}
+
+// Small chat UI renderer is called from handleHash() when hash is #ultratierchatting
+function renderChatPage() {
+    const user = getCurrentUser();
+    const root = document.querySelector('main.content') || document.body;
+    const existing = document.getElementById('ultratier-chat-app');
+    if (existing) existing.remove();
+
+    const app = document.createElement('div');
+    app.id = 'ultratier-chat-app';
+    app.style.padding = '16px';
+    app.style.color = '#fff';
+
+    if (!user) {
+        app.innerHTML = '<div style="color:#fff;font-family:Arial, sans-serif;">You must be signed in to use chat. Use the sign in button in the header.</div>';
+        root.parentNode.appendChild(app);
+        return;
+    }
+
+    app.innerHTML = `
+        <div style="display:flex;gap:16px;align-items:flex-start;">
+            <div style="width:280px;background:#071029;padding:12px;border-radius:8px;color:#fff;">
+                <h3 style="margin-top:0">Friends & Inbox</h3>
+                <div style="margin-bottom:8px;"><input id="friend-name-input" placeholder="Minecraft name" style="width:160px;padding:6px;border-radius:4px;border:1px solid #314" /> <button id="send-request-btn">Add</button></div>
+                <div id="incoming-requests"><h4 style="margin:6px 0">Incoming</h4><div id="incoming-list"></div></div>
+                <div id="friends-list"><h4 style="margin:6px 0">Friends</h4><div id="friends-list-items"></div></div>
+            </div>
+            <div style="flex:1;background:#071029;padding:12px;border-radius:8px;color:#fff;min-height:400px;">
+                <h3 id="chat-with">No conversation selected</h3>
+                <div id="chat-messages" style="height:320px;overflow:auto;background:#02101a;padding:8px;border-radius:6px;margin-bottom:8px;"></div>
+                <div style="display:flex;gap:8px;"><input id="chat-input" style="flex:1;padding:8px;border-radius:6px;border:1px solid #233" /> <button id="send-chat-btn">Send</button></div>
+            </div>
+        </div>
+    `;
+
+    root.parentNode.appendChild(app);
+
+    document.getElementById('send-request-btn').addEventListener('click', async () => {
+        const target = document.getElementById('friend-name-input').value.trim();
+        if (!target) return alert('Enter a name');
+        const res = await sendFriendRequestAPI(user.uuid, target);
+        if (res?.error) return alert(res.error || 'Failed');
+        alert('Request sent');
+        loadInbox();
+    });
+
+    async function loadInbox() {
+        const inc = await getIncomingRequestsAPI(user.uuid);
+        const container = document.getElementById('incoming-list');
+        container.innerHTML = '';
+        (inc || []).forEach(req => {
+            const el = document.createElement('div');
+            el.style.marginBottom = '6px';
+            el.innerHTML = `<strong>${req.from_name || req.from_uuid}</strong> <button data-id="${req.id}" class="accept-req">Accept</button>`;
+            container.appendChild(el);
+        });
+        container.querySelectorAll('.accept-req').forEach(btn => btn.addEventListener('click', async (e) => {
+            const id = e.currentTarget.dataset.id;
+            const res = await acceptFriendAPI(id);
+            if (res?.success) { loadFriends(); loadInbox(); }
+        }));
+    }
+
+    async function loadFriends() {
+        const friends = await getFriendsAPI(user.uuid);
+        const container = document.getElementById('friends-list-items');
+        container.innerHTML = '';
+        (friends || []).forEach(f => {
+            const el = document.createElement('div');
+            el.style.cursor = 'pointer';
+            el.style.padding = '6px 4px';
+            el.textContent = f.name || f.friend_uuid;
+            el.addEventListener('click', () => selectFriend(f));
+            container.appendChild(el);
+        });
+    }
+
+    let activeFriend = null;
+    async function selectFriend(f) {
+        activeFriend = f;
+        document.getElementById('chat-with').textContent = 'Chat with ' + (f.name || f.friend_uuid);
+        await loadHistory();
+    }
+
+    async function loadHistory() {
+        if (!activeFriend) return;
+        const msgEl = document.getElementById('chat-messages');
+        const history = await getChatHistoryAPI(user.uuid, activeFriend.friend_uuid || activeFriend.uuid);
+        msgEl.innerHTML = '';
+        (history || []).forEach(m => {
+            const d = document.createElement('div');
+            d.style.marginBottom = '6px';
+            d.textContent = `${m.from_uuid === user.uuid ? 'You' : (activeFriend.name||m.from_uuid)}: ${m.message}`;
+            msgEl.appendChild(d);
+        });
+        msgEl.scrollTop = msgEl.scrollHeight;
+    }
+
+    document.getElementById('send-chat-btn').addEventListener('click', async () => {
+        const txt = document.getElementById('chat-input').value.trim();
+        if (!txt || !activeFriend) return alert('Select friend and type a message');
+        await sendMessageAPI(user.uuid, activeFriend.friend_uuid || activeFriend.uuid, txt);
+        document.getElementById('chat-input').value = '';
+        await loadHistory();
+    });
+
+    loadInbox();
+    loadFriends();
+    setInterval(() => { if (document.getElementById('ultratier-chat-app')) { loadInbox(); loadFriends(); if (activeFriend) loadHistory(); } }, 5000);
+}
 
 function initLoginSystem() {
     // Check if user is already logged in
