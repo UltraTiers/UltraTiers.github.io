@@ -47,52 +47,10 @@ function handleHash() {
         // hide main site UI and render chat
         if (mainContainer) mainContainer.style.display = 'none';
         try {
-            const mainHeader = document.querySelector('.header');
-            if (mainHeader) {
-                const headerClone = mainHeader.cloneNode(true);
-                headerClone.id = 'chat-header-clone';
-                // remove searchbar from the cloned header
-                const searchRow = headerClone.querySelector('.searchbar-row');
-                if (searchRow) searchRow.remove();
-
-                // adjust the testers/friends button to act as 'back to list'
-                const btn = headerClone.querySelector('#testers-icon-btn, #friends-link-btn');
-                if (btn) {
-                    btn.id = 'chat-back-btn';
-                    btn.title = 'Back to Tierlist';
-                    btn.innerHTML = '<i class="fas fa-list"></i>';
-                    btn.addEventListener('click', () => { location.hash = '#ultratierlist'; });
-                }
-
-                // wire up login prompt in cloned header
-                const loginPrompt = headerClone.querySelector('#login-prompt');
-                if (loginPrompt) loginPrompt.addEventListener('click', openLoginModal);
-                const profileEdit = headerClone.querySelector('#profile-edit-btn');
-                if (profileEdit) profileEdit.addEventListener('click', openEditModal);
-                const logoutBtn = headerClone.querySelector('#profile-logout-btn');
-                if (logoutBtn) logoutBtn.addEventListener('click', handleLogout);
-
-                // add user's avatar to cloned header profile area
-                try {
-                    const profileSection = headerClone.querySelector('#profile-section');
-                    if (profileSection) {
-                        const userAvatar = document.createElement('img');
-                        userAvatar.className = 'chat-user-avatar';
-                        const u = user && user.uuid ? user.uuid : (window.currentUser && window.currentUser.uuid);
-                        userAvatar.src = u ? `https://mc-heads.net/avatar/${u}/64` : 'UltraLogo.png';
-                        userAvatar.style.width = '36px';
-                        userAvatar.style.height = '36px';
-                        userAvatar.style.borderRadius = '8px';
-                        userAvatar.style.objectFit = 'cover';
-                        profileSection.insertBefore(userAvatar, profileSection.firstChild);
-                    }
-                } catch (err) { /* non-critical */ }
-
-                // insert header clone at top of body
-                document.body.appendChild(headerClone);
-            }
+            // Render the chat page (renderChatPage handles cloning the header)
+            renderChatPage();
         } catch (e) {
-            console.warn('Header clone failed', e);
+            console.warn('renderChatPage failed', e);
         }
         
     }
@@ -1983,23 +1941,9 @@ function renderChatPage() {
                 btn.addEventListener('click', () => { location.hash = '#ultratierlist'; });
             }
 
-            // keep header appearance but disable profile actions on chat page
-            const loginPrompt = headerClone.querySelector('#login-prompt');
-            if (loginPrompt) {
-                // keep visible but disable clicks
-                loginPrompt.style.pointerEvents = 'none';
-            }
-            const profileEdit = headerClone.querySelector('#profile-edit-btn');
-            if (profileEdit) {
-                profileEdit.style.display = 'none';
-            }
-            const logoutBtn = headerClone.querySelector('#profile-logout-btn');
-            if (logoutBtn) {
-                logoutBtn.style.display = 'none';
-            }
-            // ensure profile area doesn't accept interactions
+            // remove profile area from the cloned header entirely (no profile/edit/logout on chat)
             const profileSection = headerClone.querySelector('#profile-section');
-            if (profileSection) profileSection.style.pointerEvents = 'none';
+            if (profileSection) profileSection.remove();
 
             // insert header clone at top of body
             document.body.appendChild(headerClone);
