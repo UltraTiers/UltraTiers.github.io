@@ -72,6 +72,10 @@ function handleHash() {
         
     }
 }
+
+
+// Tier points mapping (client-side copy)
+const tierPointsMap = { LT5:1, HT5:2, LT4:4, HT4:6, LT3:9, HT3:12, LT2:16, HT2:20, LT1:25, HT1:30 };
 // Combat tags ordered from highest to lowest
 const combatTags = ['Combat Grandmaster','Combat Master','Combat Ace','Combat Specialist','Combat Cadet','Combat Novice','Combat Rookie'];
 
