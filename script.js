@@ -23,11 +23,19 @@ function handleHash() {
         document.body.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100vh;background:#0f172a;color:#fff;font-family: Arial, sans-serif;"><h1>The Website Is Getting Worked On</h1></div>';
         return;
     }
+    const mainContainer = document.querySelector('.container');
     if (h === '#ultratierlist') {
-        // reload to show standard UI (keeps state simple)
-        if (!location.href.includes('#ultratierlist')) location.reload();
+        // show main site UI and remove chat UI if present
+        const app = document.getElementById('ultratier-chat-app');
+        if (app) app.remove();
+        if (mainContainer) mainContainer.style.display = '';
+        // ensure main content is rendered
+        try { renderDefaultTab(); } catch (e) {}
+        return;
     }
     if (h === '#ultratierchatting') {
+        // hide main site UI and render chat
+        if (mainContainer) mainContainer.style.display = 'none';
         renderChatPage();
     }
 }
@@ -1855,18 +1863,32 @@ function renderChatPage() {
     }
 
     app.innerHTML = `
-        <div style="display:flex;gap:16px;align-items:flex-start;">
-            <div style="width:280px;background:#071029;padding:12px;border-radius:8px;color:#fff;">
-                <h3 style="margin-top:0">Friends & Inbox</h3>
-                <div style="margin-bottom:8px;"><input id="friend-name-input" placeholder="Minecraft name" style="width:160px;padding:6px;border-radius:4px;border:1px solid #314" /> <button id="send-request-btn">Add</button></div>
-                <div id="incoming-requests"><h4 style="margin:6px 0">Incoming</h4><div id="incoming-list"></div></div>
-                <div id="friends-list"><h4 style="margin:6px 0">Friends</h4><div id="friends-list-items"></div></div>
-            </div>
-            <div style="flex:1;background:#071029;padding:12px;border-radius:8px;color:#fff;min-height:400px;">
-                <h3 id="chat-with">No conversation selected</h3>
-                <div id="chat-messages" style="height:320px;overflow:auto;background:#02101a;padding:8px;border-radius:6px;margin-bottom:8px;"></div>
-                <div style="display:flex;gap:8px;"><input id="chat-input" style="flex:1;padding:8px;border-radius:6px;border:1px solid #233" /> <button id="send-chat-btn">Send</button></div>
-            </div>
+        <div class="chat-app">
+            <aside class="chat-sidebar">
+                <div class="sidebar-header">
+                    <h3>UltraTiers Chat</h3>
+                </div>
+                <div class="friend-add">
+                    <input id="friend-name-input" placeholder="Minecraft name" />
+                    <button id="send-request-btn" class="add-btn">+</button>
+                </div>
+                <div class="sidebar-section">
+                    <h4>Incoming</h4>
+                    <div id="incoming-list" class="incoming-list"></div>
+                </div>
+                <div class="sidebar-section">
+                    <h4>Friends</h4>
+                    <div id="friends-list-items" class="friends-list-items"></div>
+                </div>
+            </aside>
+            <section class="chat-window">
+                <header class="chat-header" id="chat-with">No conversation selected</header>
+                <div class="chat-body" id="chat-messages"></div>
+                <div class="chat-input-area">
+                    <input id="chat-input" placeholder="Type a message" />
+                    <button id="send-chat-btn" class="send-btn">Send</button>
+                </div>
+            </section>
         </div>
     `;
 
@@ -1925,10 +1947,19 @@ function renderChatPage() {
         const history = await getChatHistoryAPI(user.uuid, activeFriend.friend_uuid || activeFriend.uuid);
         msgEl.innerHTML = '';
         (history || []).forEach(m => {
-            const d = document.createElement('div');
-            d.style.marginBottom = '6px';
-            d.textContent = `${m.from_uuid === user.uuid ? 'You' : (activeFriend.name||m.from_uuid)}: ${m.message}`;
-            msgEl.appendChild(d);
+            const bubble = document.createElement('div');
+            const isMe = (m.from_uuid === user.uuid);
+            bubble.className = 'msg ' + (isMe ? 'me' : 'them');
+            const text = document.createElement('div');
+            text.className = 'bubble-text';
+            // simple escape to avoid HTML injection
+            const safe = String(m.message).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+            text.innerHTML = safe;
+            const time = document.createElement('small');
+            time.textContent = new Date(m.created_at).toLocaleTimeString();
+            bubble.appendChild(text);
+            bubble.appendChild(time);
+            msgEl.appendChild(bubble);
         });
         msgEl.scrollTop = msgEl.scrollHeight;
     }

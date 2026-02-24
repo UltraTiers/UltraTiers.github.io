@@ -5591,3 +5591,47 @@ body {
         padding: 4px 8px;
     }
 }
+
+/* ============================= */
+/* WhatsApp-like chat refinements */
+/* ============================= */
+.chat-app { background: transparent; }
+.chat-sidebar { border: 1px solid rgba(255,255,255,0.03); }
+.sidebar-header { display:flex; align-items:center; gap:10px; }
+.sidebar-header h3 { font-size:18px; margin:0; }
+.friends-list-items div, .incoming-list div { background: rgba(255,255,255,0.02); }
+.friends-list-items div:hover, .incoming-list div:hover { background: rgba(255,255,255,0.04); }
+.friends-list-items div::before, .incoming-list div::before {
+    content: '';
+    width:36px; height:36px; border-radius:50%; background:#233; display:inline-block; margin-right:10px; flex-shrink:0;
+}
+.friends-list-items div { display:flex; align-items:center; gap:10px; }
+.friends-list-items div span { font-weight:600; color:#e6eef3; }
+
+.chat-window { position:relative; }
+.chat-header { position:sticky; top:0; z-index:5; display:flex; align-items:center; gap:12px; }
+.chat-header::after { content: ''; position:absolute; left:0; right:0; bottom:0; height:1px; background:rgba(0,0,0,0.15); }
+.chat-body { background-image: linear-gradient(180deg,#e6f7f1, #dff6ee); padding:20px; }
+
+/* Message bubble tails (simple) */
+.msg { position:relative; }
+.msg.me::after, .msg.them::after { content: ''; position:absolute; width:12px; height:12px; bottom:0; }
+.msg.me::after { right:-6px; background:linear-gradient(180deg,#dcf8c6,#dcf8c6); transform: rotate(45deg); border-bottom-right-radius:2px; }
+.msg.them::after { left:-6px; background:linear-gradient(180deg,#ffffff,#ffffff); transform: rotate(45deg); border-bottom-left-radius:2px; }
+
+.msg .bubble-text { white-space:pre-wrap; word-wrap:break-word; color:#111; }
+.msg.me .bubble-text { color:#111; }
+.msg.them .bubble-text { color:#111; }
+
+.chat-input-area { align-items:center; }
+.chat-input-area input { background:#fff; }
+.chat-input-area .send-btn { background:linear-gradient(90deg,#25D366,#128C7E); box-shadow:0 6px 12px rgba(18,140,126,0.18); }
+.chat-input-area .send-btn:active { transform:translateY(1px); }
+
+/* small screens: full screen chat */
+@media (max-width: 800px) {
+    .chat-app { padding:8px; }
+    .chat-window { width:100%; }
+    .chat-body { padding:12px; }
+    .msg { max-width:85%; }
+}
