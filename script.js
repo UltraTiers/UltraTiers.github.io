@@ -2250,40 +2250,71 @@ function renderChatPage() {
             menuBtn.textContent = '⋯';
             menuBtn.title = 'Actions';
 
-            const dropdown = document.createElement('div');
-            dropdown.className = 'dropdown-menu';
-            dropdown.style.display = 'none';
-            const rem = document.createElement('div');
-            rem.className = 'dropdown-item';
-            rem.textContent = 'Remove';
-            rem.style.cursor = 'pointer';
-            rem.addEventListener('click', async (e) => {
-                e.stopPropagation();
-                if (!confirm('Remove friend ' + (f.name || f.friend_uuid) + '?')) return;
-                const res = await removeFriendAPI(user.uuid, f.friend_uuid);
-                if (res?.success) {
-                    loadFriends();
-                    if (activeFriend && (activeFriend.friend_uuid === f.friend_uuid || activeFriend.uuid === f.friend_uuid)) {
-                        activeFriend = null;
-                        showNoConversation();
+            // show confirm modal (matching site modal styles) when actions or menu button clicked
+            function openFriendActionsModal() {
+                const overlay = document.createElement('div');
+                overlay.className = 'confirm-modal-overlay';
+
+                const dialog = document.createElement('div');
+                dialog.className = 'confirm-modal';
+
+                const title = document.createElement('h3');
+                title.textContent = 'Manage Friend';
+                title.style.margin = '0 0 8px 0';
+                title.style.color = 'var(--accent)';
+
+                const body = document.createElement('div');
+                body.textContent = 'Manage friend ' + (f.name || f.friend_uuid);
+                body.style.marginBottom = '12px';
+
+                const btnRow = document.createElement('div');
+                btnRow.style.display = 'flex';
+                btnRow.style.justifyContent = 'flex-end';
+                btnRow.style.gap = '8px';
+
+                const cancelBtn = document.createElement('button');
+                cancelBtn.className = 'modal-cancel-btn';
+                cancelBtn.textContent = 'Cancel';
+
+                const removeBtn = document.createElement('button');
+                removeBtn.className = 'modal-remove-btn';
+                removeBtn.textContent = 'Remove';
+
+                btnRow.appendChild(cancelBtn);
+                btnRow.appendChild(removeBtn);
+
+                dialog.appendChild(title);
+                dialog.appendChild(body);
+                dialog.appendChild(btnRow);
+                overlay.appendChild(dialog);
+                document.body.appendChild(overlay);
+
+                // prevent clicks inside dialog from closing
+                dialog.addEventListener('click', (ev) => ev.stopPropagation());
+                overlay.addEventListener('click', () => overlay.remove());
+                cancelBtn.addEventListener('click', () => overlay.remove());
+
+                removeBtn.addEventListener('click', async (ev) => {
+                    ev.stopPropagation();
+                    if (!confirm('Remove friend ' + (f.name || f.friend_uuid) + '?')) return;
+                    const res = await removeFriendAPI(user.uuid, f.friend_uuid);
+                    if (res?.success) {
+                        overlay.remove();
+                        loadFriends();
+                        if (activeFriend && (activeFriend.friend_uuid === f.friend_uuid || activeFriend.uuid === f.friend_uuid)) {
+                            activeFriend = null;
+                            showNoConversation();
+                        }
+                    } else {
+                        alert(res?.error || 'Failed to remove');
                     }
-                } else {
-                    alert(res?.error || 'Failed to remove');
-                }
-                dropdown.style.display = 'none';
-            });
-            dropdown.appendChild(rem);
+                });
+            }
 
-            menuBtn.addEventListener('click', (e) => {
-                e.stopPropagation();
-                dropdown.style.display = dropdown.style.display === 'none' ? 'block' : 'none';
-            });
-
-            // prevent clicks inside dropdown from bubbling to document
-            dropdown.addEventListener('click', (e) => { e.stopPropagation(); });
+            menuBtn.addEventListener('click', (e) => { e.stopPropagation(); openFriendActionsModal(); });
+            actions.addEventListener('click', (e) => { e.stopPropagation(); openFriendActionsModal(); });
 
             actions.appendChild(menuBtn);
-            actions.appendChild(dropdown);
 
             el.appendChild(left);
             el.appendChild(actions);
