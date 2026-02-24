@@ -439,30 +439,31 @@ async function fetchAndOrganizePlayers() {
 function initSearchSystem() {
     const searchInput = document.getElementById('player-search-input');
     const searchDropdown = document.getElementById('search-results-dropdown');
-    
-    if (!searchInput) return;
-    
-    // Handle input and filtering
-    searchInput.addEventListener('input', function() {
-        const query = this.value.trim().toLowerCase();
-        
-        if (query.length === 0) {
-            searchDropdown.style.display = 'none';
-            return;
-        }
-        
-        // Filter players based on search query
-        const results = window.allPlayers.filter(player => 
-            player.name.toLowerCase().includes(query)
-        ).slice(0, 8); // Limit to 8 players
-        
-        if (results.length === 0) {
+
+    if (!searchInput || !searchDropdown) return;
+
+    // Ensure we have player data available - try to populate if empty
+    async function ensurePlayers() {
+        if (Array.isArray(window.allPlayers) && window.allPlayers.length > 0) return;
+        try {
+            const res = await fetch(API_URL);
+            if (res.ok) {
+                const players = await res.json();
+                window.allPlayers = players || [];
+                window.playerMap = {};
+                (window.allPlayers || []).forEach(p => { try { window.playerMap[p.name] = p; } catch(e){} });
+            }
+        } catch (e) { /* ignore - search will handle empty list */ }
+    }
+
+    // Render a set of result objects into the dropdown
+    function renderResults(results) {
+        if (!results || results.length === 0) {
             searchDropdown.innerHTML = '<div class="search-no-results">No players found</div>';
             searchDropdown.style.display = 'block';
             return;
         }
-        
-        // Create only all-modes results for each player
+
         const resultsHTML = results.map(player => {
             return `
                 <div class="search-result-item" data-player-name="${player.name}" data-category="all-modes">
@@ -474,32 +475,46 @@ function initSearchSystem() {
                 </div>
             `;
         }).join('');
-        
+
         searchDropdown.innerHTML = resultsHTML;
         searchDropdown.style.display = 'block';
-        
-        // Add click handlers to result items
-        document.querySelectorAll('.search-result-item').forEach(item => {
+
+        // attach click listeners
+        searchDropdown.querySelectorAll('.search-result-item').forEach(item => {
             item.addEventListener('click', function() {
                 const playerName = this.getAttribute('data-player-name');
-                const player = window.playerMap[playerName];
+                const player = window.playerMap && window.playerMap[playerName];
                 if (player) {
-                    // Show the all-modes modal
                     showAllModesModal(player);
                     searchInput.value = '';
                     searchDropdown.style.display = 'none';
                 }
             });
         });
+    }
+
+    // Handle input and filtering
+    searchInput.addEventListener('input', async function() {
+        const query = this.value.trim().toLowerCase();
+        await ensurePlayers();
+
+        if (query.length === 0) {
+            searchDropdown.style.display = 'none';
+            return;
+        }
+
+        const list = Array.isArray(window.allPlayers) ? window.allPlayers : [];
+        const results = list.filter(player => (player.name || '').toLowerCase().includes(query)).slice(0, 8);
+        renderResults(results);
     });
-    
+
     // Close dropdown when clicking outside
     document.addEventListener('click', function(e) {
         if (!e.target.closest('.search-container')) {
             searchDropdown.style.display = 'none';
         }
     });
-    
+
     // Close dropdown on escape key
     document.addEventListener('keydown', function(e) {
         if (e.key === 'Escape') {
@@ -2066,6 +2081,8 @@ function renderChatPage() {
     } catch (e) { /* ignore */ }
 
     async function loadInbox() {
+        const user = getCurrentUser();
+        if (!user) return;
         const inc = await getIncomingRequestsAPI(user.uuid);
         const container = document.getElementById('incoming-list');
         container.innerHTML = '';
@@ -2138,6 +2155,8 @@ function renderChatPage() {
     }
 
     async function loadOutgoing() {
+        const user = getCurrentUser();
+        if (!user) return;
         const out = await getOutgoingRequestsAPI(user.uuid);
         const container = document.getElementById('outgoing-list');
         container.innerHTML = '';
@@ -2184,6 +2203,8 @@ function renderChatPage() {
     }
 
     async function loadFriends() {
+        const user = getCurrentUser();
+        if (!user) return;
         const friends = await getFriendsAPI(user.uuid);
         const container = document.getElementById('friends-list-items');
         container.innerHTML = '';
@@ -2345,6 +2366,8 @@ function renderChatPage() {
 
     async function loadHistory() {
         if (!activeFriend) return;
+        const user = getCurrentUser();
+        if (!user) { showNoConversation(); return; }
         const msgEl = document.getElementById('chat-messages');
         const history = await getChatHistoryAPI(user.uuid, activeFriend.friend_uuid || activeFriend.uuid);
         msgEl.innerHTML = '';
