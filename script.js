@@ -2106,7 +2106,15 @@ function renderChatPage() {
 
         valid.forEach(req => {
             const el = document.createElement('div');
-            el.className = 'incoming-row';
+            el.className = 'friend-row incoming-row';
+            el.style.display = 'flex';
+            el.style.alignItems = 'center';
+            el.style.justifyContent = 'space-between';
+
+            const left = document.createElement('div');
+            left.style.display = 'flex';
+            left.style.alignItems = 'center';
+            left.style.gap = '10px';
 
             const meta = document.createElement('div');
             meta.className = 'meta incoming-meta';
@@ -2122,9 +2130,25 @@ function renderChatPage() {
             avatar.style.height = '40px';
             avatar.style.borderRadius = '50%';
 
-            const nameWrap = document.createElement('div');
-            nameWrap.style.flex = '1';
-            nameWrap.innerHTML = `<strong>${req.from_name || req.from_uuid}</strong>`;
+            const textWrap = document.createElement('div');
+            textWrap.style.display = 'flex';
+            textWrap.style.flexDirection = 'column';
+            textWrap.style.flex = '1';
+
+            const nameEl = document.createElement('span');
+            nameEl.className = 'name';
+            nameEl.innerHTML = `<strong>${req.from_name || resolveName(req.from_uuid) || req.from_uuid}</strong>`;
+
+            const sub = document.createElement('span');
+            sub.className = 'sub';
+            sub.textContent = '';
+
+            textWrap.appendChild(nameEl);
+            textWrap.appendChild(sub);
+
+            meta.appendChild(avatar);
+            meta.appendChild(textWrap);
+            left.appendChild(meta);
 
             const actions = document.createElement('div');
             actions.style.display = 'flex';
@@ -2142,13 +2166,10 @@ function renderChatPage() {
             declineBtn.dataset.id = req.id;
             declineBtn.innerHTML = '✖';
 
-            meta.appendChild(avatar);
-            meta.appendChild(nameWrap);
-
             actions.appendChild(acceptBtn);
             actions.appendChild(declineBtn);
 
-            el.appendChild(meta);
+            el.appendChild(left);
             el.appendChild(actions);
             container.appendChild(el);
 
@@ -2173,7 +2194,7 @@ function renderChatPage() {
         const container = document.getElementById('outgoing-list');
         container.innerHTML = '';
         if (!out || out.length === 0) {
-            container.innerHTML = '<div class="no-requests">No friend requests send</div>';
+            container.innerHTML = '<div class="no-requests">No friend requests sent</div>';
             return;
         }
 
@@ -2188,6 +2209,9 @@ function renderChatPage() {
         out.forEach(r => {
             const el = document.createElement('div');
             el.className = 'friend-row outgoing-row';
+            el.style.display = 'flex';
+            el.style.alignItems = 'center';
+            el.style.justifyContent = 'space-between';
 
             const left = document.createElement('div');
             left.style.display = 'flex';
@@ -2211,6 +2235,7 @@ function renderChatPage() {
             const textWrap = document.createElement('div');
             textWrap.style.display = 'flex';
             textWrap.style.flexDirection = 'column';
+            textWrap.style.flex = '1';
 
             const nameEl = document.createElement('span');
             nameEl.className = 'name';
