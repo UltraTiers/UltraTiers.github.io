@@ -5595,37 +5595,32 @@ body {
 /* ============================= */
 /* WhatsApp-like chat refinements */
 /* ============================= */
+/* Chat layout using UltraTiers palette (match tierlist styling) */
+.chat-navbar { display:flex; align-items:center; padding:12px 40px; border-bottom:1px solid var(--border-color); background: linear-gradient(180deg, rgba(26,40,71,0.6), rgba(15,23,42,0.6)); }
+.chat-navbar .chat-logo { display:flex; align-items:center; gap:12px; cursor:pointer; }
+.chat-navbar .chat-logo .logo { height:36px; width:auto; border-radius:8px; }
+.chat-navbar .chat-logo h1 { font-size:20px; color:var(--accent); margin:0; font-weight:800; }
+
 .chat-app { background: transparent; }
-.chat-sidebar { border: 1px solid rgba(255,255,255,0.03); }
-.sidebar-header { display:flex; align-items:center; gap:10px; }
-.sidebar-header h3 { font-size:18px; margin:0; }
+.chat-sidebar { border: 1px solid var(--border-color); }
 .friends-list-items div, .incoming-list div { background: rgba(255,255,255,0.02); }
-.friends-list-items div:hover, .incoming-list div:hover { background: rgba(255,255,255,0.04); }
-.friends-list-items div::before, .incoming-list div::before {
-    content: '';
-    width:36px; height:36px; border-radius:50%; background:#233; display:inline-block; margin-right:10px; flex-shrink:0;
-}
+.friends-list-items div:hover, .incoming-list div:hover { background: rgba(255,255,255,0.03); }
 .friends-list-items div { display:flex; align-items:center; gap:10px; }
-.friends-list-items div span { font-weight:600; color:#e6eef3; }
+.friends-list-items div span { font-weight:600; color:var(--text-primary); }
 
 .chat-window { position:relative; }
-.chat-header { position:sticky; top:0; z-index:5; display:flex; align-items:center; gap:12px; }
-.chat-header::after { content: ''; position:absolute; left:0; right:0; bottom:0; height:1px; background:rgba(0,0,0,0.15); }
-.chat-body { background-image: linear-gradient(180deg,#e6f7f1, #dff6ee); padding:20px; }
+.chat-header { position:sticky; top:0; z-index:5; display:flex; align-items:center; gap:12px; padding:12px 16px; background: rgba(15,23,42,0.6); border-bottom:1px solid var(--border-color); }
+.chat-body { background: transparent; padding:20px; }
 
-/* Message bubble tails (simple) */
+/* Message bubbles use subtle cards and tierlist colors */
 .msg { position:relative; }
-.msg.me::after, .msg.them::after { content: ''; position:absolute; width:12px; height:12px; bottom:0; }
-.msg.me::after { right:-6px; background:linear-gradient(180deg,#dcf8c6,#dcf8c6); transform: rotate(45deg); border-bottom-right-radius:2px; }
-.msg.them::after { left:-6px; background:linear-gradient(180deg,#ffffff,#ffffff); transform: rotate(45deg); border-bottom-left-radius:2px; }
-
-.msg .bubble-text { white-space:pre-wrap; word-wrap:break-word; color:#111; }
-.msg.me .bubble-text { color:#111; }
-.msg.them .bubble-text { color:#111; }
+.msg .bubble-text { white-space:pre-wrap; word-wrap:break-word; color:var(--text-primary); }
+.msg.me { background: linear-gradient(180deg, rgba(14,165,233,0.12), rgba(14,165,233,0.06)); color: #000; }
+.msg.them { background: rgba(255,255,255,0.02); color: var(--text-primary); }
 
 .chat-input-area { align-items:center; }
-.chat-input-area input { background:#fff; }
-.chat-input-area .send-btn { background:linear-gradient(90deg,#25D366,#128C7E); box-shadow:0 6px 12px rgba(18,140,126,0.18); }
+.chat-input-area input { background: rgba(255,255,255,0.03); color: var(--text-primary); border:1px solid var(--border-color); }
+.chat-input-area .send-btn { background: var(--accent); color:#000; box-shadow: 0 6px 12px rgba(14,165,233,0.12); }
 .chat-input-area .send-btn:active { transform:translateY(1px); }
 
 /* small screens: full screen chat */

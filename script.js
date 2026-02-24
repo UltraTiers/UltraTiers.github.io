@@ -1908,11 +1908,14 @@ function renderChatPage() {
     }
 
     app.innerHTML = `
+        <div class="chat-navbar">
+            <div class="logo-section chat-logo">
+                <img class="logo" src="UltraLogo.png" alt="UltraTiers" />
+                <h1>UltraTiers</h1>
+            </div>
+        </div>
         <div class="chat-app">
             <aside class="chat-sidebar">
-                <div class="sidebar-header">
-                    <h3>UltraTiers Chat</h3>
-                </div>
                 <div class="friend-add">
                     <input id="friend-name-input" placeholder="Minecraft name" />
                     <button id="send-request-btn" class="add-btn">+</button>
@@ -1972,6 +1975,12 @@ function renderChatPage() {
 
     document.body.appendChild(app);
 
+    // make navbar logo/title navigate back to the tierlist
+    try {
+        const chatLogo = document.querySelector('.chat-navbar .chat-logo');
+        if (chatLogo) chatLogo.addEventListener('click', () => { location.hash = '#ultratierlist'; });
+    } catch (e) { /* ignore */ }
+
     // show placeholder when no conversation selected and disable input
     const msgEl = document.getElementById('chat-messages');
     function showNoConversation() {
@@ -2006,19 +2015,35 @@ function renderChatPage() {
         valid.forEach(req => {
             const el = document.createElement('div');
             el.className = 'incoming-row';
+
+            // meta contains avatar + name for cleaner single-profile rendering
+            const meta = document.createElement('div');
+            meta.className = 'meta incoming-meta';
+            meta.style.display = 'flex';
+            meta.style.alignItems = 'center';
+            meta.style.gap = '10px';
+
             const avatar = document.createElement('img');
             avatar.className = 'avatar';
             avatar.src = req.from_uuid ? `https://mc-heads.net/avatar/${req.from_uuid}/64` : 'UltraLogo.png';
             avatar.alt = req.from_name || req.from_uuid || '';
+            avatar.style.width = '40px';
+            avatar.style.height = '40px';
+            avatar.style.borderRadius = '50%';
+
             const nameWrap = document.createElement('div');
             nameWrap.style.flex = '1';
             nameWrap.innerHTML = `<strong>${req.from_name || req.from_uuid}</strong>`;
+
+            meta.appendChild(avatar);
+            meta.appendChild(nameWrap);
+
             const btn = document.createElement('button');
             btn.className = 'accept-req';
             btn.dataset.id = req.id;
             btn.textContent = 'Accept';
-            el.appendChild(avatar);
-            el.appendChild(nameWrap);
+
+            el.appendChild(meta);
             el.appendChild(btn);
             container.appendChild(el);
         });
@@ -2046,6 +2071,13 @@ function renderChatPage() {
             left.style.alignItems = 'center';
             left.style.gap = '10px';
 
+            // build meta with avatar + textual meta to avoid duplicate empty profile elements
+            const meta = document.createElement('div');
+            meta.className = 'meta';
+            meta.style.display = 'flex';
+            meta.style.alignItems = 'center';
+            meta.style.gap = '10px';
+
             const avatar = document.createElement('img');
             avatar.className = 'avatar';
             avatar.src = f.friend_uuid ? `https://mc-heads.net/avatar/${f.friend_uuid}/64` : 'UltraLogo.png';
@@ -2054,18 +2086,23 @@ function renderChatPage() {
             avatar.style.height = '40px';
             avatar.style.borderRadius = '50%';
 
-            const meta = document.createElement('div');
-            meta.className = 'meta';
+            const textWrap = document.createElement('div');
+            textWrap.style.display = 'flex';
+            textWrap.style.flexDirection = 'column';
+
             const nameEl = document.createElement('span');
             nameEl.className = 'name';
             nameEl.textContent = f.name || f.friend_uuid;
             const sub = document.createElement('span');
             sub.className = 'sub';
             sub.textContent = '';
-            meta.appendChild(nameEl);
-            meta.appendChild(sub);
 
-            left.appendChild(avatar);
+            textWrap.appendChild(nameEl);
+            textWrap.appendChild(sub);
+
+            meta.appendChild(avatar);
+            meta.appendChild(textWrap);
+
             left.appendChild(meta);
             // clicking the left area opens the conversation
             left.style.cursor = 'pointer';

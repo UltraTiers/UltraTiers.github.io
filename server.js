@@ -143,6 +143,14 @@ app.post('/friend/request', async (req, res) => {
     if (exErr) throw exErr;
     if (existing && existing.length > 0) return res.json({ success: true, message: 'Already requested' });
 
+    // Prevent sending requests if users are already friends
+    const { data: f1, error: f1Err } = await supabase.from('friends').select('*').eq('uuid', from_uuid).eq('friend_uuid', target.uuid);
+    if (f1Err) throw f1Err;
+    if (f1 && f1.length > 0) return res.status(400).json({ error: 'Users are already friends' });
+    const { data: f2, error: f2Err } = await supabase.from('friends').select('*').eq('uuid', target.uuid).eq('friend_uuid', from_uuid);
+    if (f2Err) throw f2Err;
+    if (f2 && f2.length > 0) return res.status(400).json({ error: 'Users are already friends' });
+
     const { error: insertErr } = await supabase.from('friend_requests').insert([{ from_uuid, to_uuid: target.uuid, from_name: null, created_at: new Date().toISOString(), status: 'pending' }]);
     if (insertErr) throw insertErr;
 
@@ -160,7 +168,13 @@ app.get('/friend/requests/:uuid', async (req, res) => {
     const { uuid } = req.params;
     const { data, error } = await supabase.from('friend_requests').select('*').eq('to_uuid', uuid).eq('status', 'pending');
     if (error) throw error;
-    res.json(data || []);
+
+    // Filter out requests from users who are already friends
+    const { data: friends, error: fErr } = await supabase.from('friends').select('friend_uuid').eq('uuid', uuid);
+    if (fErr) throw fErr;
+    const friendSet = new Set((friends || []).map(f => f.friend_uuid));
+    const filtered = (data || []).filter(r => !friendSet.has(r.from_uuid));
+    res.json(filtered);
   } catch (err) {
     console.error('/friend/requests error', err);
     res.status(500).json({ error: 'Internal server error' });
@@ -181,10 +195,17 @@ app.post('/friend/accept', async (req, res) => {
     const a = reqRow.from_uuid;
     const b = reqRow.to_uuid;
 
-    // Insert mutual friendship rows
-    const rows = [ { uuid: a, friend_uuid: b, created_at: new Date().toISOString() }, { uuid: b, friend_uuid: a, created_at: new Date().toISOString() } ];
-    const { error: frErr } = await supabase.from('friends').insert(rows);
-    if (frErr) throw frErr;
+    // If they're already friends, just remove the request and return success
+    const { data: f1, error: f1Err } = await supabase.from('friends').select('*').eq('uuid', a).eq('friend_uuid', b);
+    if (f1Err) throw f1Err;
+    const { data: f2, error: f2Err } = await supabase.from('friends').select('*').eq('uuid', b).eq('friend_uuid', a);
+    if (f2Err) throw f2Err;
+    if (!(f1 && f1.length > 0) && !(f2 && f2.length > 0)) {
+      // Insert mutual friendship rows
+      const rows = [ { uuid: a, friend_uuid: b, created_at: new Date().toISOString() }, { uuid: b, friend_uuid: a, created_at: new Date().toISOString() } ];
+      const { error: frErr } = await supabase.from('friends').insert(rows);
+      if (frErr) throw frErr;
+    }
 
     // mark request as accepted (or delete)
     const { error: delErr } = await supabase.from('friend_requests').delete().eq('id', requestId);
