@@ -5692,7 +5692,17 @@ body {
 body #ultratier-chat-app { padding-top:72px; }
 
 /* Chat app full-bleed container */
-.chat-app { height: calc(100vh - 72px); margin: 0 24px 24px 24px; }
+.chat-app { height: calc(100vh - 72px); margin: 0 24px 24px 24px; display:flex; gap:18px; }
+
+/* Sidebar and window layout for WhatsApp-like look */
+.chat-sidebar { width:320px; min-width:260px; max-width:34%; border-radius:12px; background: linear-gradient(180deg,#071821,#072022); }
+.chat-window { flex:1; display:flex; flex-direction:column; border-radius:12px; background: linear-gradient(180deg,#0b1b22,#0f2430); overflow:hidden; }
+.chat-body { flex:1; overflow:auto; padding:22px; }
+
+/* Message bubble layout */
+.msg { display:inline-block; max-width:64%; margin:8px 0; }
+.msg.me { margin-left: auto; text-align:right; }
+.msg.them { margin-right: auto; text-align:left; }
 
 /* Sidebar refinements */
 .chat-sidebar { padding:14px; }

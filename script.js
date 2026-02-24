@@ -1975,13 +1975,18 @@ function renderChatPage() {
                 btn.addEventListener('click', () => { location.hash = '#ultratierlist'; });
             }
 
-            // wire up login prompt in cloned header
+            // remove or disable profile actions on the chat page (no logout/edit here)
             const loginPrompt = headerClone.querySelector('#login-prompt');
-            if (loginPrompt) loginPrompt.addEventListener('click', openLoginModal);
+            if (loginPrompt) loginPrompt.remove();
             const profileEdit = headerClone.querySelector('#profile-edit-btn');
-            if (profileEdit) profileEdit.addEventListener('click', openEditModal);
+            if (profileEdit) profileEdit.remove();
             const logoutBtn = headerClone.querySelector('#profile-logout-btn');
-            if (logoutBtn) logoutBtn.addEventListener('click', handleLogout);
+            if (logoutBtn) logoutBtn.remove();
+            // prevent profile-area clicks
+            const profileSection = headerClone.querySelector('#profile-section');
+            if (profileSection) {
+                profileSection.style.pointerEvents = 'none';
+            }
 
             // insert header clone at top of body
             document.body.appendChild(headerClone);
