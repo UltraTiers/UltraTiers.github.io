@@ -37,6 +37,13 @@ function handleHash() {
         return;
     }
     if (h === '#ultratierchatting') {
+        // If user is not logged in, don't allow access to chat — redirect to tierlist and open login
+        if (!user) {
+            location.hash = '#ultratierlist';
+            setTimeout(() => { try { openLoginModal(); } catch (e) {} }, 150);
+            return;
+        }
+
         // hide main site UI and render chat
         if (mainContainer) mainContainer.style.display = 'none';
         try {
@@ -530,13 +537,14 @@ function initSearchSystem() {
 // Initialize
 document.addEventListener('DOMContentLoaded', async function () {
     setupHashRouting();
-    // If user requested the chat page, the router will render it; otherwise continue app init
-    if (location.hash === '#ultratierchatting') return;
+    const loadingChat = location.hash === '#ultratierchatting';
+    // Always initialize app state (players + auth) so chat works on refresh,
+    // but avoid rendering the default tierlist tab when user explicitly requested chat.
     await fetchAndOrganizePlayers();
     initLoginSystem();
     initSearchSystem();
     setupTabHandlers();
-    renderDefaultTab();
+    if (!loadingChat) renderDefaultTab();
 });
 
 // --- Peak tooltip (delegated) ---
@@ -1975,18 +1983,23 @@ function renderChatPage() {
                 btn.addEventListener('click', () => { location.hash = '#ultratierlist'; });
             }
 
-            // remove or disable profile actions on the chat page (no logout/edit here)
+            // keep header appearance but disable profile actions on chat page
             const loginPrompt = headerClone.querySelector('#login-prompt');
-            if (loginPrompt) loginPrompt.remove();
-            const profileEdit = headerClone.querySelector('#profile-edit-btn');
-            if (profileEdit) profileEdit.remove();
-            const logoutBtn = headerClone.querySelector('#profile-logout-btn');
-            if (logoutBtn) logoutBtn.remove();
-            // prevent profile-area clicks
-            const profileSection = headerClone.querySelector('#profile-section');
-            if (profileSection) {
-                profileSection.style.pointerEvents = 'none';
+            if (loginPrompt) {
+                // keep visible but disable clicks
+                loginPrompt.style.pointerEvents = 'none';
             }
+            const profileEdit = headerClone.querySelector('#profile-edit-btn');
+            if (profileEdit) {
+                profileEdit.style.display = 'none';
+            }
+            const logoutBtn = headerClone.querySelector('#profile-logout-btn');
+            if (logoutBtn) {
+                logoutBtn.style.display = 'none';
+            }
+            // ensure profile area doesn't accept interactions
+            const profileSection = headerClone.querySelector('#profile-section');
+            if (profileSection) profileSection.style.pointerEvents = 'none';
 
             // insert header clone at top of body
             document.body.appendChild(headerClone);

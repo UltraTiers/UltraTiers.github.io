@@ -5674,8 +5674,9 @@ body {
     left: 0;
     right: 0;
     z-index: 9999;
-    background: linear-gradient(90deg, rgba(7,94,84,0.98), rgba(18,140,126,0.98));
-    color: #fff;
+    /* don't force a green background here — keep the original header appearance */
+    background: transparent;
+    color: inherit;
     box-shadow: 0 6px 20px rgba(2,6,23,0.6);
     padding: 10px 20px;
     display: flex;
