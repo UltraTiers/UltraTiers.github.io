@@ -1998,6 +1998,13 @@ function renderChatPage() {
 
     document.body.appendChild(app);
 
+    // Global click handler: close any open dropdown menus when clicking outside
+    document.addEventListener('click', (e) => {
+        if (!e.target.closest('.dropdown-menu') && !e.target.closest('.three-dots-btn')) {
+            document.querySelectorAll('.dropdown-menu').forEach(d => d.style.display = 'none');
+        }
+    });
+
     // friend name lookup set for quick client-side checks
     let friendNameSet = new Set();
 
@@ -2233,7 +2240,7 @@ function renderChatPage() {
             left.appendChild(meta);
             // clicking the left area opens the conversation
             left.style.cursor = 'pointer';
-            left.addEventListener('click', () => selectFriend(f));
+            // left area no longer needs its own listener; whole row will be clickable
 
             const actions = document.createElement('div');
             actions.style.position = 'relative';
@@ -2272,13 +2279,21 @@ function renderChatPage() {
                 dropdown.style.display = dropdown.style.display === 'none' ? 'block' : 'none';
             });
 
-            document.addEventListener('click', () => { if (dropdown) dropdown.style.display = 'none'; });
+            // prevent clicks inside dropdown from bubbling to document
+            dropdown.addEventListener('click', (e) => { e.stopPropagation(); });
 
             actions.appendChild(menuBtn);
             actions.appendChild(dropdown);
 
             el.appendChild(left);
             el.appendChild(actions);
+
+            // clicking the entire row opens the chat (but ignore clicks on the menu or dropdown)
+            el.addEventListener('click', (e) => {
+                if (e.target.closest('.three-dots-btn') || e.target.closest('.dropdown-menu')) return;
+                selectFriend(f);
+            });
+
             container.appendChild(el);
         });
 

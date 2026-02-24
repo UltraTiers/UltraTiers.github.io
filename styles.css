@@ -5706,7 +5706,7 @@ body {
 .friend-add .add-btn { font-size:20px; }
 .friends-list-items div, .incoming-list div { padding:10px; background:transparent; border-radius:10px; }
 .friends-list-items div .avatar, .incoming-list div .avatar { width:36px; height:36px; border-radius:50%; background:#0b2730; flex-shrink:0; }
-.friends-list-items div .meta { display:flex; flex-direction:column; justify-content: center; }
+.friends-list-items div .meta { display:flex; flex-direction:row; align-items:center; gap:8px; }
 .friends-list-items div .meta .name { color:#e9f6f0; font-weight:700; }
 .friends-list-items div .meta .sub { color:#98a6ad; font-size:12px; }
 
@@ -5744,7 +5744,7 @@ body {
 .friend-add .add-btn { width:36px; height:36px; border-radius:8px; background: var(--accent); color:#000; border:none; cursor:pointer; }
 
 .friends-list-items .friend-row, .incoming-list .incoming-row { display:flex; align-items:center; gap:12px; padding:8px 6px; border-radius:8px; cursor:pointer; }
-.friends-list-items .friend-row:hover, .incoming-list .incoming-row:hover { background: rgba(255,255,255,0.02); }
+.friends-list-items .friend-row:hover, .incoming-list .incoming-row:hover, .outgoing-list .outgoing-row:hover { background: transparent; }
 .friends-list-items .friend-row .avatar { width:40px; height:40px; border-radius:50%; }
 .friends-list-items .friend-row .meta .name { font-size:14px; }
 
