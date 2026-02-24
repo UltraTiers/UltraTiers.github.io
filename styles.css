@@ -5791,6 +5791,15 @@ body {
 .incoming-list .incoming-row .meta .name,
 .outgoing-list .outgoing-row .meta .name { font-size:14px; }
 
+/* Hide the secondary sub-label for outgoing requests (we only show the name) */
+.outgoing-list .sub { display: none; }
+
+/* Explicitly ensure outgoing rows have same padding as friends */
+.outgoing-list .outgoing-row { padding: 4px 6px; }
+
+/* Add bottom padding to section headings in the chat sidebar */
+.chat-sidebar .sidebar-section h4 { padding-bottom: 8px; margin: 0 0 6px 0; }
+
 /* make sidebar lists scrollable when content exceeds available space */
 .incoming-list, .outgoing-list, .friends-list-items {
     overflow:auto;

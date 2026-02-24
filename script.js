@@ -50,6 +50,8 @@ function handleHash() {
             try { initLoginSystem(); } catch (e) { /* ignore if not present */ }
             // refresh player data so lists and UI update without a full reload
             try { fetchAndOrganizePlayers(); } catch (e) { /* ignore */ }
+            // re-initialize search system (re-attaches dropdown listeners after header was replaced)
+            try { initSearchSystem(); } catch (e) { /* ignore */ }
         } catch (e) {}
         return;
     }
