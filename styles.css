@@ -5834,7 +5834,6 @@ body {
 .incoming-list, .outgoing-list, .friends-list-items {
     overflow:auto;
     max-height: 220px;
-    padding-right: 6px;
 }
 
 .no-convo { text-align:center; color:rgba(255,255,255,0.5); font-size:16px; margin-top:32px; }
