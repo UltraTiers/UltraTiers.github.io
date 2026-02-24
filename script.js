@@ -24,10 +24,13 @@ function handleHash() {
         return;
     }
     const mainContainer = document.querySelector('.container');
+    const user = getCurrentUser();
     if (h === '#ultratierlist') {
-        // show main site UI and remove chat UI if present
+        // show main site UI and remove chat UI + cloned header if present
         const app = document.getElementById('ultratier-chat-app');
         if (app) app.remove();
+        const cloneHeader = document.getElementById('chat-header-clone');
+        if (cloneHeader) cloneHeader.remove();
         if (mainContainer) mainContainer.style.display = '';
         // ensure main content is rendered
         try { renderDefaultTab(); } catch (e) {}
@@ -36,22 +39,65 @@ function handleHash() {
     if (h === '#ultratierchatting') {
         // hide main site UI and render chat
         if (mainContainer) mainContainer.style.display = 'none';
-        renderChatPage();
+        try {
+            const mainHeader = document.querySelector('.header');
+            if (mainHeader) {
+                const headerClone = mainHeader.cloneNode(true);
+                headerClone.id = 'chat-header-clone';
+                // remove searchbar from the cloned header
+                const searchRow = headerClone.querySelector('.searchbar-row');
+                if (searchRow) searchRow.remove();
+
+                // adjust the testers/friends button to act as 'back to list'
+                const btn = headerClone.querySelector('#testers-icon-btn, #friends-link-btn');
+                if (btn) {
+                    btn.id = 'chat-back-btn';
+                    btn.title = 'Back to Tierlist';
+                    btn.innerHTML = '<i class="fas fa-list"></i>';
+                    btn.addEventListener('click', () => { location.hash = '#ultratierlist'; });
+                }
+
+                // wire up login prompt in cloned header
+                const loginPrompt = headerClone.querySelector('#login-prompt');
+                if (loginPrompt) loginPrompt.addEventListener('click', openLoginModal);
+                const profileEdit = headerClone.querySelector('#profile-edit-btn');
+                if (profileEdit) profileEdit.addEventListener('click', openEditModal);
+                const logoutBtn = headerClone.querySelector('#profile-logout-btn');
+                if (logoutBtn) logoutBtn.addEventListener('click', handleLogout);
+
+                // add user's avatar to cloned header profile area
+                try {
+                    const profileSection = headerClone.querySelector('#profile-section');
+                    if (profileSection) {
+                        const userAvatar = document.createElement('img');
+                        userAvatar.className = 'chat-user-avatar';
+                        const u = user && user.uuid ? user.uuid : (window.currentUser && window.currentUser.uuid);
+                        userAvatar.src = u ? `https://mc-heads.net/avatar/${u}/64` : 'UltraLogo.png';
+                        userAvatar.style.width = '36px';
+                        userAvatar.style.height = '36px';
+                        userAvatar.style.borderRadius = '8px';
+                        userAvatar.style.objectFit = 'cover';
+                        profileSection.insertBefore(userAvatar, profileSection.firstChild);
+                    }
+                } catch (err) { /* non-critical */ }
+
+                // insert header clone at top of body
+                document.body.appendChild(headerClone);
+            }
+        } catch (e) {
+            console.warn('Header clone failed', e);
+        }
+        
     }
 }
-// Point system mapping
-const tierPointsMap = { 
-    'HT1': 60, 'LT1': 45,
-    'HT2': 30, 'LT2': 20,
-    'HT3': 10, 'LT3': 6,
-    'HT4': 4, 'LT4': 3,
-    'HT5': 2, 'LT5': 1
-};
 
-// Combat tag order from best to worst
-const combatTags = ['Combat Grandmaster', 'Combat Master', 'Combat Ace', 'Combat Specialist', 'Combat Cadet', 'Combat Novice', 'Combat Rookie'];
+// Tier points mapping (client-side copy)
+const tierPointsMap = { LT5:1, HT5:2, LT4:4, HT4:6, LT3:9, HT3:12, LT2:16, HT2:20, LT1:25, HT1:30 };
 
-// Fixed combat tag thresholds (points) per category
+// Combat tags ordered from highest to lowest
+const combatTags = ['Combat Grandmaster','Combat Master','Combat Ace','Combat Specialist','Combat Cadet','Combat Novice','Combat Rookie'];
+
+// Combat tag thresholds per category
 const combatTagThresholds = {
     main: {
         'Combat Grandmaster': 384,
@@ -1910,6 +1956,40 @@ function renderChatPage() {
         </div>
     `;
 
+    // Clone the main header so the chat page shows the same navbar (without search)
+    try {
+        const mainHeader = document.querySelector('.header');
+        if (mainHeader) {
+            const headerClone = mainHeader.cloneNode(true);
+            headerClone.id = 'chat-header-clone';
+            // remove searchbar from the cloned header
+            const searchRow = headerClone.querySelector('.searchbar-row');
+            if (searchRow) searchRow.remove();
+
+            // adjust the testers/friends button to act as 'back to list'
+            const btn = headerClone.querySelector('#testers-icon-btn, #friends-link-btn');
+            if (btn) {
+                btn.id = 'chat-back-btn';
+                btn.title = 'Back to Tierlist';
+                btn.innerHTML = '<i class="fas fa-list"></i>';
+                btn.addEventListener('click', () => { location.hash = '#ultratierlist'; });
+            }
+
+            // wire up login prompt in cloned header
+            const loginPrompt = headerClone.querySelector('#login-prompt');
+            if (loginPrompt) loginPrompt.addEventListener('click', openLoginModal);
+            const profileEdit = headerClone.querySelector('#profile-edit-btn');
+            if (profileEdit) profileEdit.addEventListener('click', openEditModal);
+            const logoutBtn = headerClone.querySelector('#profile-logout-btn');
+            if (logoutBtn) logoutBtn.addEventListener('click', handleLogout);
+
+            // insert header clone at top of body
+            document.body.appendChild(headerClone);
+        }
+    } catch (e) {
+        console.warn('Header clone failed', e);
+    }
+
     document.body.appendChild(app);
 
     document.getElementById('send-request-btn').addEventListener('click', async () => {
@@ -1927,8 +2007,20 @@ function renderChatPage() {
         container.innerHTML = '';
         (inc || []).forEach(req => {
             const el = document.createElement('div');
-            el.style.marginBottom = '6px';
-            el.innerHTML = `<strong>${req.from_name || req.from_uuid}</strong> <button data-id="${req.id}" class="accept-req">Accept</button>`;
+            el.className = 'incoming-row';
+            const avatar = document.createElement('img');
+            avatar.className = 'avatar';
+            avatar.src = req.from_uuid ? `https://mc-heads.net/avatar/${req.from_uuid}/64` : 'UltraLogo.png';
+            const nameWrap = document.createElement('div');
+            nameWrap.style.flex = '1';
+            nameWrap.innerHTML = `<strong>${req.from_name || req.from_uuid}</strong>`;
+            const btn = document.createElement('button');
+            btn.className = 'accept-req';
+            btn.dataset.id = req.id;
+            btn.textContent = 'Accept';
+            el.appendChild(avatar);
+            el.appendChild(nameWrap);
+            el.appendChild(btn);
             container.appendChild(el);
         });
         container.querySelectorAll('.accept-req').forEach(btn => btn.addEventListener('click', async (e) => {
@@ -1944,9 +2036,24 @@ function renderChatPage() {
         container.innerHTML = '';
         (friends || []).forEach(f => {
             const el = document.createElement('div');
+            el.className = 'friend-row';
             el.style.cursor = 'pointer';
-            el.style.padding = '6px 4px';
-            el.textContent = f.name || f.friend_uuid;
+            const avatar = document.createElement('img');
+            avatar.className = 'avatar';
+            avatar.src = f.friend_uuid ? `https://mc-heads.net/avatar/${f.friend_uuid}/64` : 'UltraLogo.png';
+            avatar.alt = f.name || f.friend_uuid;
+            const meta = document.createElement('div');
+            meta.className = 'meta';
+            const nameEl = document.createElement('span');
+            nameEl.className = 'name';
+            nameEl.textContent = f.name || f.friend_uuid;
+            const sub = document.createElement('span');
+            sub.className = 'sub';
+            sub.textContent = '';
+            meta.appendChild(nameEl);
+            meta.appendChild(sub);
+            el.appendChild(avatar);
+            el.appendChild(meta);
             el.addEventListener('click', () => selectFriend(f));
             container.appendChild(el);
         });
@@ -1989,6 +2096,29 @@ function renderChatPage() {
         document.getElementById('chat-input').value = '';
         await loadHistory();
     });
+
+    // Enter to send (without Shift)
+    const chatInput = document.getElementById('chat-input');
+    chatInput.addEventListener('keydown', async (e) => {
+        if (e.key === 'Enter' && !e.shiftKey) {
+            e.preventDefault();
+            document.getElementById('send-chat-btn').click();
+        }
+    });
+
+    // Floating send icon behavior: show active when input has content
+    const sendBtn = document.getElementById('send-chat-btn');
+    function updateSendBtn() {
+        if (!chatInput) return;
+        const has = chatInput.value.trim().length > 0;
+        if (has) {
+            sendBtn.classList.add('active');
+        } else {
+            sendBtn.classList.remove('active');
+        }
+    }
+    chatInput.addEventListener('input', updateSendBtn);
+    updateSendBtn();
 
     loadInbox();
     loadFriends();

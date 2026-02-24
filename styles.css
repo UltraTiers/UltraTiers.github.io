@@ -5635,3 +5635,99 @@ body {
     .chat-body { padding:12px; }
     .msg { max-width:85%; }
 }
+
+/* floating send icon styles */
+.chat-input-area { position: relative; }
+.chat-input-area input { padding-right: 64px; }
+.chat-input-area .send-btn {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    width:44px;
+    height:44px;
+    border-radius:50%;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:16px;
+    border:none;
+    opacity: 0.6;
+    transition: transform 0.12s ease, opacity 0.12s ease, background 0.12s ease;
+}
+.chat-input-area .send-btn i { color:#fff; }
+.chat-input-area .send-btn.active { opacity: 1; transform: translateY(-50%) scale(1.02); box-shadow: 0 6px 18px rgba(18,140,126,0.22); }
+
+/* avatars in lists/header */
+.chat-user-avatar { border-radius:8px; margin-right:10px; }
+.avatar { width:36px; height:36px; border-radius:8px; object-fit:cover; margin-right:10px; }
+.friend-row, .incoming-row { display:flex; align-items:center; gap:10px; padding:8px; }
+
+
+/* ============================= */
+/* Polished WhatsApp-like/chat final styles */
+/* ============================= */
+/* Clone header on chat page */
+#chat-header-clone {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 9999;
+    background: linear-gradient(90deg, rgba(7,94,84,0.98), rgba(18,140,126,0.98));
+    color: #fff;
+    box-shadow: 0 6px 20px rgba(2,6,23,0.6);
+    padding: 10px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+#chat-header-clone .header-content { width:100%; display:flex; align-items:center; gap:12px; }
+#chat-header-clone .logo-section { display:flex; align-items:center; gap:10px; }
+#chat-header-clone .logo { width:36px; height:36px; }
+#chat-header-clone .profile-section { margin-left:auto; }
+#chat-header-clone .searchbar-row { display:none; }
+
+/* Push body content under fixed header */
+body #ultratier-chat-app { padding-top:72px; }
+
+/* Chat app full-bleed container */
+.chat-app { height: calc(100vh - 72px); margin: 0 24px 24px 24px; }
+
+/* Sidebar refinements */
+.chat-sidebar { padding:14px; }
+.friend-add input { background:linear-gradient(180deg,#072226,#071f23); border:1px solid rgba(255,255,255,0.04); }
+.friend-add .add-btn { font-size:20px; }
+.friends-list-items div, .incoming-list div { padding:10px; background:transparent; border-radius:10px; }
+.friends-list-items div .avatar, .incoming-list div .avatar { width:36px; height:36px; border-radius:50%; background:#0b2730; flex-shrink:0; }
+.friends-list-items div .meta { display:flex; flex-direction:column; }
+.friends-list-items div .meta .name { color:#e9f6f0; font-weight:700; }
+.friends-list-items div .meta .sub { color:#98a6ad; font-size:12px; }
+
+/* Chat window refinements */
+.chat-header { display:flex; align-items:center; gap:12px; padding:12px 16px; }
+.chat-header .back-btn { background:transparent; border:none; color:#fff; font-size:20px; cursor:pointer; }
+.chat-body { background-image: url(''); background-size:cover; background-repeat:no-repeat; padding:22px; }
+
+/* Message bubble improvements */
+.msg { padding:10px 12px; border-radius:16px; box-shadow: 0 4px 12px rgba(2,6,23,0.08); }
+.msg.me { background: linear-gradient(180deg,#dcf8c6,#c7f0b1); color:#042; }
+.msg.them { background: linear-gradient(180deg,#ffffff,#f3f3f3); color:#111; }
+.msg small { color: rgba(0,0,0,0.45); font-size:11px; display:block; margin-top:6px; }
+
+/* Tail cleanup for small screens */
+.msg.me::after, .msg.them::after { display:none; }
+
+/* Sticky input area */
+.chat-input-area { background: linear-gradient(180deg,#f7fbfa,#eef8f5); border-top:1px solid rgba(0,0,0,0.04); padding:14px; }
+.chat-input-area input { background: #fff; box-shadow: inset 0 1px 0 rgba(0,0,0,0.02); }
+
+/* pleasant scrollbar for chat body */
+.chat-body::-webkit-scrollbar { width:10px; }
+.chat-body::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.12); border-radius:10px; }
+
+@media (max-width: 900px) {
+    #chat-header-clone { padding:8px 12px; }
+    body #ultratier-chat-app { padding-top:64px; }
+    .chat-app { margin: 0 8px 8px 8px; }
+}
