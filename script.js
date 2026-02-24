@@ -308,6 +308,49 @@ function getPlayerAvatarElement(player) {
     return avatar;
 }
 
+// Ensure `loadingChat` default exists (some pages reference it)
+if (typeof loadingChat === 'undefined') var loadingChat = false;
+
+// Fetch players and organize globals used by the tierlist renderer.
+async function fetchAndOrganizePlayers() {
+    try {
+        const res = await fetch(API_URL, { cache: 'no-cache' });
+        const data = await res.json();
+
+        let players = [];
+        if (Array.isArray(data)) players = data;
+        else if (data.players && Array.isArray(data.players)) players = data.players;
+        else if (data.allPlayers && Array.isArray(data.allPlayers)) players = data.allPlayers;
+
+        window.allPlayers = players || [];
+        window.playerMap = window.playerMap || {};
+        window.allPlayers.forEach(p => {
+            if (!p) return;
+            if (p.name) window.playerMap[p.name] = p;
+            if (p.uuid) window.playerMap[p.uuid] = p;
+        });
+
+        if (data.tierData) window.tierData = data.tierData;
+        return window.allPlayers;
+    } catch (err) {
+        try {
+            const fallback = await fetch('players.json');
+            const arr = await fallback.json();
+            if (Array.isArray(arr)) {
+                window.allPlayers = arr;
+                window.playerMap = {};
+                window.allPlayers.forEach(p => { if (p && p.name) window.playerMap[p.name] = p; });
+                return window.allPlayers;
+            }
+        } catch (e) {
+            // ignore
+        }
+        window.allPlayers = window.allPlayers || [];
+        window.playerMap = window.playerMap || {};
+        return window.allPlayers;
+    }
+}
+
 // Run initialization after DOM is ready
 document.addEventListener('DOMContentLoaded', async () => {
         const regionTabs = document.getElementById('region-tabs');
