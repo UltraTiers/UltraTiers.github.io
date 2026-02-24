@@ -638,6 +638,161 @@ function setupModeTabsForCategory(categoryName) {
 }
 
 // Setup All Modes tab with region buttons
+function setupAllModesTab() {
+    const tab = document.getElementById('all-modes-tab');
+    if (!tab) return;
+
+    // region-tabs may live inside the tab or globally; prefer inside tab
+    let regionTabs = tab.querySelector('#region-tabs');
+    if (!regionTabs) regionTabs = document.getElementById('region-tabs');
+    if (!regionTabs) return;
+
+    const regions = getAllRegions();
+    regionTabs.innerHTML = '';
+
+    const overallBtn = document.createElement('button');
+    overallBtn.className = 'mode-tab-btn active';
+    overallBtn.dataset.region = 'overall';
+    overallBtn.textContent = 'Overall';
+    overallBtn.addEventListener('click', function() {
+        renderAllModesOverall();
+        document.querySelectorAll('#region-tabs .mode-tab-btn').forEach(b => b.classList.remove('active'));
+        this.classList.add('active');
+    });
+    regionTabs.appendChild(overallBtn);
+
+    regions.forEach(region => {
+        const btn = document.createElement('button');
+        btn.className = 'mode-tab-btn';
+        btn.dataset.region = region;
+        btn.textContent = region;
+        btn.addEventListener('click', function() {
+            renderAllModesRegion(region);
+            document.querySelectorAll('#region-tabs .mode-tab-btn').forEach(b => b.classList.remove('active'));
+            this.classList.add('active');
+        });
+        regionTabs.appendChild(btn);
+    });
+
+    // Default to overall view
+    try { overallBtn.click(); } catch (e) { /* ignore */ }
+}
+
+function renderAllModesOverall() {
+    const container = document.getElementById('all-modes-rankings');
+    if (!container) return;
+    container.classList.remove('rankings-grid');
+    container.classList.add('overall-container');
+    container.innerHTML = '';
+
+    if (!window.allPlayers || window.allPlayers.length === 0) {
+        container.innerHTML = '<div style="text-align: center; padding: 40px; color: rgba(255,255,255,0.6);">No players found</div>';
+        return;
+    }
+
+    // Use same rendering as region but include all players
+    const playersWithPoints = window.allPlayers.map(player => ({ ...player, totalPoints: calculatePlayerPoints(player) })).sort((a,b)=>b.totalPoints-a.totalPoints);
+    const allPoints = playersWithPoints.map(p => p.totalPoints);
+
+    playersWithPoints.slice(0,100).forEach((player, rank) => {
+        const row = document.createElement('div');
+        row.className = 'category-player-row';
+
+        const rankPlayerSection = document.createElement('div');
+        rankPlayerSection.className = 'rank-player-section';
+
+        const medal = getMedalRank(rank + 1);
+        const rankBadge = document.createElement('div');
+        rankBadge.className = `rank-badge ${medal}`;
+        rankBadge.textContent = `#${rank + 1}`;
+        rankPlayerSection.appendChild(rankBadge);
+
+        const avatar = getPlayerAvatarElement(player);
+        avatar.style.width = '80px';
+        avatar.style.height = '80px';
+        avatar.className = 'rank-avatar';
+        rankPlayerSection.appendChild(avatar);
+
+        const playerInfo = document.createElement('div');
+        playerInfo.className = 'player-info-section';
+        const nameDiv = document.createElement('div');
+        nameDiv.className = `player-name${player.nitro ? ' nitro' : ''}`;
+        nameDiv.textContent = player.name;
+
+        const regionRank = getCategoryRank(player.totalPoints, allPoints);
+        const rankColor = getRankColor(regionRank);
+        const regionCombatTag = getCombatTag(player.totalPoints, 'all');
+        const titleDiv = document.createElement('div');
+        titleDiv.className = 'player-title';
+        titleDiv.innerHTML = `<span style="color: ${rankColor}; font-weight: bold;">${regionCombatTag}</span> • ${player.totalPoints} points`;
+
+        playerInfo.appendChild(nameDiv);
+        playerInfo.appendChild(titleDiv);
+
+        const regionSection = document.createElement('div');
+        regionSection.className = 'region-section';
+        regionSection.textContent = getFullRegionName(player.region) || 'Unknown';
+
+        const playerIdentitySection = document.createElement('div');
+        playerIdentitySection.className = 'player-identity-section';
+        playerIdentitySection.appendChild(playerInfo);
+        playerIdentitySection.appendChild(regionSection);
+
+        const modesSection = document.createElement('div');
+        modesSection.className = 'modes-section';
+
+        const allModes = [];
+        if (Array.isArray(player.tiers)) {
+            player.tiers.forEach(tierInfo => {
+                const gamemode = tierInfo.gamemode;
+                const tierValue = tierInfo.tier;
+                const isRetired = Array.isArray(player.retired_modes) && player.retired_modes.includes(gamemode);
+                let tierNumber = 0;
+                if (typeof tierValue === 'string') {
+                    const match = tierValue.match(/\d+/);
+                    tierNumber = match ? parseInt(match[0]) : 0;
+                }
+                const peakValue = tierInfo ? (tierInfo.peak || tierInfo.tier) : 'Unknown';
+                allModes.push({ gamemode, tierValue, tierNumber, isRetired, peak: peakValue });
+            });
+        }
+
+        allModes.sort((a, b) => {
+            if (a.isRetired && !b.isRetired) return 1;
+            if (!a.isRetired && b.isRetired) return -1;
+            if (a.tierNumber === 0) return 1;
+            if (b.tierNumber === 0) return -1;
+            if (a.tierNumber !== b.tierNumber) return a.tierNumber - b.tierNumber;
+            const aIsHT = typeof a.tierValue === 'string' && a.tierValue.startsWith('HT');
+            const bIsHT = typeof b.tierValue === 'string' && b.tierValue.startsWith('HT');
+            if (aIsHT && !bIsHT) return -1;
+            if (!aIsHT && bIsHT) return 1;
+            return 0;
+        });
+
+        allModes.forEach(({ gamemode, tierValue, tierNumber, isRetired, peak }) => {
+            const modeItem = document.createElement('div');
+            modeItem.className = `mode-item${isRetired ? ' retired-tier' : ''}`;
+            const icon = document.createElement('img');
+            icon.className = 'mode-icon';
+            icon.src = gamemodeIcons[gamemode] || 'gamemodes/Vanilla.png';
+            icon.alt = gamemode;
+            icon.title = gamemode;
+            icon.dataset.peak = peak || 'Unknown';
+            const tierBadge = document.createElement('div');
+            tierBadge.className = `tier-badge-rounded ${isRetired ? 'tier-retired' : (tierNumber > 0 ? tierColors[tierNumber] : 'tier-unknown')}`;
+            tierBadge.textContent = tierValue !== 'Unknown' ? tierValue : '?';
+            modeItem.appendChild(icon);
+            modeItem.appendChild(tierBadge);
+            modesSection.appendChild(modeItem);
+        });
+
+        row.appendChild(rankPlayerSection);
+        row.appendChild(playerIdentitySection);
+        row.appendChild(modesSection);
+        container.appendChild(row);
+    });
+}
 
 
 // Render All Modes for a specific region
