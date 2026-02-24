@@ -5920,6 +5920,7 @@ body {
     color: var(--text-primary);
     padding: 8px 12px;
     border-radius: 8px;
+    cursor: pointer;
 }
 .modal-remove-btn {
     background: linear-gradient(90deg,#ff7b7b,#ff4d4d);
@@ -5927,6 +5928,7 @@ body {
     border: none;
     padding: 8px 12px;
     border-radius: 8px;
+    cursor: pointer;
 }
 
 /* Outgoing list tweaks */
