@@ -7,75 +7,104 @@ function openChatPage() {
 function setupHashRouting() {
     window.addEventListener('hashchange', handleHash);
     handleHash();
-}
-
-function getCurrentUser() {
-    try {
-        const ls = localStorage.getItem('ultratiers_user') || localStorage.getItem('ultra_user');
-        if (ls) return JSON.parse(ls);
-    } catch (e) {}
-    return window.currentUser || null;
-}
-
-function handleHash() {
-    const h = location.hash;
-    if (!h || (h !== '#ultratierlist' && h !== '#ultratierchatting')) {
-        document.body.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100vh;background:#0f172a;color:#fff;font-family: Arial, sans-serif;"><h1>The Website Is Getting Worked On</h1></div>';
-        return;
-    }
-    const mainContainer = document.querySelector('.container');
-    const user = getCurrentUser();
-    if (h === '#ultratierlist') {
-        // show main site UI and remove chat UI + cloned header if present
-        const app = document.getElementById('ultratier-chat-app');
-        if (app) app.remove();
-        const cloneHeader = document.getElementById('chat-header-clone');
-        if (cloneHeader) cloneHeader.remove();
-        // restore original header markup if we modified it for chat
-        const mainHeader = document.querySelector('.header');
-        if (mainHeader && mainHeader.dataset && mainHeader.dataset.savedInner) {
-            try {
-                mainHeader.innerHTML = mainHeader.dataset.savedInner;
-                delete mainHeader.dataset.savedInner;
-                mainHeader.style.position = '';
-                mainHeader.style.top = '';
-                mainHeader.style.zIndex = '';
-            } catch (e) { /* ignore */ }
-        }
-        if (mainContainer) mainContainer.style.display = '';
-        // ensure main content is rendered and login/UI state is re-initialized
-        try {
-            renderDefaultTab();
-            // re-run login/UI initialization so header shows the current user immediately
-            try { initLoginSystem(); } catch (e) { /* ignore if not present */ }
-            // refresh player data so lists and UI update without a full reload
-            try { fetchAndOrganizePlayers(); } catch (e) { /* ignore */ }
-        } catch (e) {}
-        return;
-    }
-    if (h === '#ultratierchatting') {
-        // If user is not logged in, don't allow access to chat — redirect to tierlist and open login
-        if (!user) {
-            location.hash = '#ultratierlist';
-            setTimeout(() => { try { openLoginModal(); } catch (e) {} }, 150);
+        const inc = await getIncomingRequestsAPI(user.uuid);
+        const container = document.getElementById('incoming-list');
+        container.innerHTML = '';
+        const valid = (inc || []).filter(req => req && (req.from_uuid || req.from_name));
+        if (!valid || valid.length === 0) {
+            container.innerHTML = '<div class="no-requests">No friend requests pending</div>';
             return;
         }
 
-        // hide main site UI and render chat
-        if (mainContainer) mainContainer.style.display = 'none';
-        try {
-            // Render the chat page (renderChatPage handles cloning the header)
-            renderChatPage();
-        } catch (e) {
-            console.warn('renderChatPage failed', e);
+        // helper to resolve name by uuid when name is missing
+        function resolveName(uuid) {
+            if (!uuid) return '';
+            if (window.playerMap) {
+                // try to find in allPlayers
+                const list = Array.isArray(window.allPlayers) ? window.allPlayers : [];
+                const p = list.find(pp => pp.uuid === uuid || pp.player_uuid === uuid);
+                if (p && p.name) return p.name;
+            }
+            return uuid;
         }
-        
-    }
-}
 
-// Tier points mapping (client-side copy)
-const tierPointsMap = { LT5:1, HT5:2, LT4:4, HT4:6, LT3:9, HT3:12, LT2:16, HT2:20, LT1:25, HT1:30 };
+        valid.forEach(req => {
+            const el = document.createElement('div');
+            el.className = 'friend-row incoming-row';
 
+            const left = document.createElement('div');
+            left.style.display = 'flex';
+            left.style.alignItems = 'center';
+            left.style.gap = '10px';
+
+            const meta = document.createElement('div');
+            meta.className = 'meta';
+            meta.style.display = 'flex';
+            meta.style.alignItems = 'center';
+            meta.style.gap = '8px';
+
+            const avatar = document.createElement('img');
+            avatar.className = 'avatar';
+            avatar.src = req.from_uuid ? `https://mc-heads.net/avatar/${req.from_uuid}/64` : 'UltraLogo.png';
+            avatar.alt = req.from_name || req.from_uuid || '';
+            avatar.style.width = '40px';
+            avatar.style.height = '40px';
+            avatar.style.borderRadius = '50%';
+
+            const textWrap = document.createElement('div');
+            textWrap.style.display = 'flex';
+            textWrap.style.flexDirection = 'column';
+
+            const nameEl = document.createElement('span');
+            nameEl.className = 'name';
+            nameEl.textContent = req.from_name || resolveName(req.from_uuid) || req.from_uuid;
+
+            const sub = document.createElement('span');
+            sub.className = 'sub';
+            sub.textContent = '';
+
+            textWrap.appendChild(nameEl);
+            textWrap.appendChild(sub);
+
+            meta.appendChild(avatar);
+            meta.appendChild(textWrap);
+            left.appendChild(meta);
+
+            const actions = document.createElement('div');
+            actions.style.display = 'flex';
+            actions.style.gap = '8px';
+
+            const acceptBtn = document.createElement('button');
+            acceptBtn.className = 'accept-icon';
+            acceptBtn.title = 'Accept';
+            acceptBtn.dataset.id = req.id;
+            acceptBtn.innerHTML = '✔';
+
+            const declineBtn = document.createElement('button');
+            declineBtn.className = 'decline-icon';
+            declineBtn.title = 'Decline';
+            declineBtn.dataset.id = req.id;
+            declineBtn.innerHTML = '✖';
+
+            actions.appendChild(acceptBtn);
+            actions.appendChild(declineBtn);
+
+            el.appendChild(left);
+            el.appendChild(actions);
+            container.appendChild(el);
+
+            acceptBtn.addEventListener('click', async (e) => {
+                const id = e.currentTarget.dataset.id;
+                const res = await acceptFriendAPI(id);
+                if (res?.success) { loadFriends(); loadInbox(); loadOutgoing(); }
+            });
+
+            declineBtn.addEventListener('click', async (e) => {
+                const id = e.currentTarget.dataset.id;
+                const res = await declineFriendAPI(id);
+                if (res?.success) { loadInbox(); }
+            });
+        });
 // Combat tags ordered from highest to lowest
 const combatTags = ['Combat Grandmaster','Combat Master','Combat Ace','Combat Specialist','Combat Cadet','Combat Novice','Combat Rookie'];
 
@@ -2164,9 +2193,29 @@ function renderChatPage() {
             container.innerHTML = '<div class="no-requests">No friend requests send</div>';
             return;
         }
+
+        function resolveName(uuid) {
+            if (!uuid) return '';
+            const list = Array.isArray(window.allPlayers) ? window.allPlayers : [];
+            const p = list.find(pp => pp.uuid === uuid || pp.player_uuid === uuid);
+            if (p && p.name) return p.name;
+            return uuid;
+        }
+
         out.forEach(r => {
             const el = document.createElement('div');
-            el.className = 'outgoing-player-row outgoing-row';
+            el.className = 'friend-row outgoing-row';
+
+            const left = document.createElement('div');
+            left.style.display = 'flex';
+            left.style.alignItems = 'center';
+            left.style.gap = '10px';
+
+            const meta = document.createElement('div');
+            meta.className = 'meta';
+            meta.style.display = 'flex';
+            meta.style.alignItems = 'center';
+            meta.style.gap = '8px';
 
             const avatar = document.createElement('img');
             avatar.className = 'avatar';
@@ -2175,22 +2224,40 @@ function renderChatPage() {
             avatar.style.width = '40px';
             avatar.style.height = '40px';
             avatar.style.borderRadius = '50%';
-            avatar.style.flexShrink = '0';
 
-            const nameEl = document.createElement('div');
-            nameEl.className = 'player-name';
-            nameEl.textContent = r.to_name || r.to_uuid;
+            const textWrap = document.createElement('div');
+            textWrap.style.display = 'flex';
+            textWrap.style.flexDirection = 'column';
+
+            const nameEl = document.createElement('span');
+            nameEl.className = 'name';
+            nameEl.textContent = r.to_name || resolveName(r.to_uuid) || r.to_uuid;
+
+            const sub = document.createElement('span');
+            sub.className = 'sub';
+            sub.textContent = 'Outgoing request';
+
+            textWrap.appendChild(nameEl);
+            textWrap.appendChild(sub);
+
+            meta.appendChild(avatar);
+            meta.appendChild(textWrap);
+            left.appendChild(meta);
+
+            const actions = document.createElement('div');
+            actions.style.display = 'flex';
+            actions.style.gap = '8px';
 
             const cancelBtn = document.createElement('button');
             cancelBtn.className = 'cancel-icon';
             cancelBtn.title = 'Cancel request';
             cancelBtn.dataset.id = r.id;
             cancelBtn.innerHTML = '✖';
-            cancelBtn.style.marginLeft = 'auto';
 
-            el.appendChild(avatar);
-            el.appendChild(nameEl);
-            el.appendChild(cancelBtn);
+            actions.appendChild(cancelBtn);
+
+            el.appendChild(left);
+            el.appendChild(actions);
             container.appendChild(el);
 
             cancelBtn.addEventListener('click', async (e) => {
