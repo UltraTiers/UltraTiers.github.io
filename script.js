@@ -31,11 +31,16 @@ function handleHash() {
         if (app) app.remove();
         const cloneHeader = document.getElementById('chat-header-clone');
         if (cloneHeader) cloneHeader.remove();
-        // restore original header visibility if it was hidden
+        // restore original header markup if we modified it for chat
         const mainHeader = document.querySelector('.header');
-        if (mainHeader) {
-            mainHeader.style.visibility = '';
-            mainHeader.style.display = '';
+        if (mainHeader && mainHeader.dataset && mainHeader.dataset.savedInner) {
+            try {
+                mainHeader.innerHTML = mainHeader.dataset.savedInner;
+                delete mainHeader.dataset.savedInner;
+                mainHeader.style.position = '';
+                mainHeader.style.top = '';
+                mainHeader.style.zIndex = '';
+            } catch (e) { /* ignore */ }
         }
         if (mainContainer) mainContainer.style.display = '';
         // ensure main content is rendered
@@ -1932,20 +1937,23 @@ function renderChatPage() {
         </div>
     `;
 
-    // Clone the main header so the chat page shows the same navbar (without search)
+    // Re-use the original header but adjust it for chat mode (remove search/profile, add back button)
     try {
         const mainHeader = document.querySelector('.header');
         if (mainHeader) {
-            // hide the original header while chat is active so the clone is the visible navbar
-            mainHeader.style.visibility = 'hidden';
-            const headerClone = mainHeader.cloneNode(true);
-            headerClone.id = 'chat-header-clone';
-            // remove searchbar from the cloned header
-            const searchRow = headerClone.querySelector('.searchbar-row');
+            // save original header markup so we can restore it when leaving chat
+            if (!mainHeader.dataset.savedInner) mainHeader.dataset.savedInner = mainHeader.innerHTML;
+
+            // remove searchbar if present
+            const searchRow = mainHeader.querySelector('.searchbar-row');
             if (searchRow) searchRow.remove();
 
-            // adjust the testers/friends button to act as 'back to list'
-            const btn = headerClone.querySelector('#testers-icon-btn, #friends-link-btn');
+            // remove profile area from header in chat mode
+            const profileSection = mainHeader.querySelector('#profile-section');
+            if (profileSection) profileSection.remove();
+
+            // adjust testers/friends button to act as 'back to list'
+            const btn = mainHeader.querySelector('#testers-icon-btn, #friends-link-btn');
             if (btn) {
                 btn.id = 'chat-back-btn';
                 btn.title = 'Back to Tierlist';
@@ -1953,21 +1961,13 @@ function renderChatPage() {
                 btn.addEventListener('click', () => { location.hash = '#ultratierlist'; });
             }
 
-            // remove profile area from the cloned header entirely (no profile/edit/logout on chat)
-            const profileSection = headerClone.querySelector('#profile-section');
-            if (profileSection) profileSection.remove();
-
-            // insert header clone right before the chat app so it flows normally
-            document.body.insertBefore(headerClone, app);
-            // make the clone sticky so it remains visible when scrolling
-            try {
-                headerClone.style.position = 'sticky';
-                headerClone.style.top = '0';
-                headerClone.style.zIndex = '9999';
-            } catch (err) {}
+            // ensure header stays visible and doesn't overlap content (sticky)
+            mainHeader.style.position = 'sticky';
+            mainHeader.style.top = '0';
+            mainHeader.style.zIndex = '9999';
         }
     } catch (e) {
-        console.warn('Header clone failed', e);
+        console.warn('Header adjust failed', e);
     }
 
     document.body.appendChild(app);
@@ -1997,12 +1997,19 @@ function renderChatPage() {
         const inc = await getIncomingRequestsAPI(user.uuid);
         const container = document.getElementById('incoming-list');
         container.innerHTML = '';
-        (inc || []).forEach(req => {
+        const valid = (inc || []).filter(req => req && (req.from_uuid || req.from_name));
+        if (!valid || valid.length === 0) {
+            container.innerHTML = '<div class="no-requests">No friend requests pending</div>';
+            return;
+        }
+
+        valid.forEach(req => {
             const el = document.createElement('div');
             el.className = 'incoming-row';
             const avatar = document.createElement('img');
             avatar.className = 'avatar';
             avatar.src = req.from_uuid ? `https://mc-heads.net/avatar/${req.from_uuid}/64` : 'UltraLogo.png';
+            avatar.alt = req.from_name || req.from_uuid || '';
             const nameWrap = document.createElement('div');
             nameWrap.style.flex = '1';
             nameWrap.innerHTML = `<strong>${req.from_name || req.from_uuid}</strong>`;
@@ -2015,6 +2022,7 @@ function renderChatPage() {
             el.appendChild(btn);
             container.appendChild(el);
         });
+
         container.querySelectorAll('.accept-req').forEach(btn => btn.addEventListener('click', async (e) => {
             const id = e.currentTarget.dataset.id;
             const res = await acceptFriendAPI(id);
@@ -2059,6 +2067,9 @@ function renderChatPage() {
 
             left.appendChild(avatar);
             left.appendChild(meta);
+            // clicking the left area opens the conversation
+            left.style.cursor = 'pointer';
+            left.addEventListener('click', () => selectFriend(f));
 
             const actions = document.createElement('div');
             actions.style.display = 'flex';
