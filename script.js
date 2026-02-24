@@ -3,30 +3,74 @@ function openChatPage() {
     location.hash = '#ultratierchatting';
 }
 
-// Basic hash router used by the app
-function handleHash() {
-    const h = (location.hash || '').toLowerCase();
-    if (h === '#ultratierchatting') {
-        try { renderChatPage(); } catch (e) { console.error('renderChatPage error', e); }
-        return;
-    }
-
-    // Remove chat app if present and show main list
-    const chatApp = document.getElementById('ultratier-chat-app');
-    if (chatApp) chatApp.remove();
-    const mainContainer = document.querySelector('.container');
-    if (mainContainer) mainContainer.style.display = '';
-
-    // Default to tierlist tab when hash is #ultratierlist or unknown
-    if (typeof renderDefaultTab === 'function') {
-        try { renderDefaultTab(); } catch (e) { console.error('renderDefaultTab error', e); }
-    }
-}
-
 // Show maintenance page for root or unknown hashes
 function setupHashRouting() {
     window.addEventListener('hashchange', handleHash);
     handleHash();
+}
+
+function getCurrentUser() {
+    try {
+        const ls = localStorage.getItem('ultratiers_user') || localStorage.getItem('ultra_user');
+        if (ls) return JSON.parse(ls);
+    } catch (e) {}
+    return window.currentUser || null;
+}
+
+function handleHash() {
+    const h = location.hash;
+    if (!h || (h !== '#ultratierlist' && h !== '#ultratierchatting')) {
+        document.body.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100vh;background:#0f172a;color:#fff;font-family: Arial, sans-serif;"><h1>The Website Is Getting Worked On</h1></div>';
+        return;
+    }
+    const mainContainer = document.querySelector('.container');
+    const user = getCurrentUser();
+    if (h === '#ultratierlist') {
+        // show main site UI and remove chat UI + cloned header if present
+        const app = document.getElementById('ultratier-chat-app');
+        if (app) app.remove();
+        const cloneHeader = document.getElementById('chat-header-clone');
+        if (cloneHeader) cloneHeader.remove();
+        // restore original header markup if we modified it for chat
+        const mainHeader = document.querySelector('.header');
+        if (mainHeader && mainHeader.dataset && mainHeader.dataset.savedInner) {
+            try {
+                mainHeader.innerHTML = mainHeader.dataset.savedInner;
+                delete mainHeader.dataset.savedInner;
+                mainHeader.style.position = '';
+                mainHeader.style.top = '';
+                mainHeader.style.zIndex = '';
+            } catch (e) { /* ignore */ }
+        }
+        if (mainContainer) mainContainer.style.display = '';
+        // ensure main content is rendered and login/UI state is re-initialized
+        try {
+            renderDefaultTab();
+            // re-run login/UI initialization so header shows the current user immediately
+            try { initLoginSystem(); } catch (e) { /* ignore if not present */ }
+            // refresh player data so lists and UI update without a full reload
+            try { fetchAndOrganizePlayers(); } catch (e) { /* ignore */ }
+        } catch (e) {}
+        return;
+    }
+    if (h === '#ultratierchatting') {
+        // If user is not logged in, don't allow access to chat — redirect to tierlist and open login
+        if (!user) {
+            location.hash = '#ultratierlist';
+            setTimeout(() => { try { openLoginModal(); } catch (e) {} }, 150);
+            return;
+        }
+
+        // hide main site UI and render chat
+        if (mainContainer) mainContainer.style.display = 'none';
+        try {
+            // Render the chat page (renderChatPage handles cloning the header)
+            renderChatPage();
+        } catch (e) {
+            console.warn('renderChatPage failed', e);
+        }
+        
+    }
 }
 // Combat tags ordered from highest to lowest
 const combatTags = ['Combat Grandmaster','Combat Master','Combat Ace','Combat Specialist','Combat Cadet','Combat Novice','Combat Rookie'];
