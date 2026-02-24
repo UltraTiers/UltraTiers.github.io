@@ -5635,7 +5635,7 @@ body {
 .msg.them { background: rgba(255,255,255,0.02); color: var(--text-primary); }
 
 .chat-input-area { align-items:center; }
-.chat-input-area input { background: rgba(255,255,255,0.03); color: var(--text-primary); border:1px solid var(--border-color); }
+.chat-input-area input, .chat-input-area textarea { background: rgba(255,255,255,0.03); color: var(--text-primary); border:1px solid var(--border-color); }
 .chat-input-area .send-btn { background: var(--accent); color:#000; box-shadow: 0 6px 12px rgba(14,165,233,0.12); }
 .chat-input-area .send-btn:active { transform:translateY(1px); }
 
@@ -5649,7 +5649,7 @@ body {
 
 /* floating send icon styles */
 .chat-input-area { position: relative; display:flex; align-items:center; gap:12px; padding:12px 18px; }
-.chat-input-area input { flex:1; width:100%; padding:12px 52px 12px 14px; border-radius:8px; border:1px solid rgba(0,0,0,0.06); box-sizing:border-box; }
+.chat-input-area input, .chat-input-area textarea { flex:1; width:100%; padding:12px 110px 12px 14px; border-radius:8px; border:1px solid rgba(0,0,0,0.06); box-sizing:border-box; resize:none; }
 .chat-input-area .send-btn {
     position: absolute;
     right: 24px;
@@ -5773,7 +5773,7 @@ body {
 
 /* Sticky input area */
 .chat-input-area { background: transparent; border-top:1px solid var(--border-color); padding:14px; }
-.chat-input-area input { background: rgba(255,255,255,0.02); color: var(--text-primary); box-shadow: none; }
+.chat-input-area input, .chat-input-area textarea { background: rgba(255,255,255,0.02); color: var(--text-primary); box-shadow: none; }
 
 /* pleasant scrollbar for chat body */
 .chat-body::-webkit-scrollbar { width:10px; }
@@ -5892,6 +5892,24 @@ body {
     transform: none !important;
 }
 
+/* Allow the text column to shrink so long names can truncate with ellipsis */
+.friends-list-items .friend-row .meta > div,
+.incoming-list .incoming-row .meta > div,
+.outgoing-list .outgoing-row .meta > div {
+    min-width: 0;
+}
+
+/* Truncate long names with an ellipsis in the left sidebar cards */
+.friends-list-items .friend-row .meta .name,
+.incoming-list .incoming-row .meta .name,
+.outgoing-list .outgoing-row .meta .name {
+    display: block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 180px; /* adjust as needed for layout */
+}
+
 /* Confirm modal (used for friend remove) */
 .confirm-modal-overlay {
     position: fixed;
@@ -5937,7 +5955,7 @@ body {
 .outgoing-list .outgoing-row .cancel-icon { margin-left:8px; }
 
 .chat-input-area { position: relative; display:flex; align-items:center; gap:12px; padding:12px 18px; }
-.chat-input-area input { flex:1; width:100%; padding:12px 14px; border-radius:8px; border:1px solid rgba(0,0,0,0.06); box-sizing:border-box; }
+.chat-input-area input, .chat-input-area textarea { flex:1; width:100%; padding:12px 110px 12px 14px; border-radius:8px; border:1px solid rgba(0,0,0,0.06); box-sizing:border-box; resize:none; }
 .chat-input-area .send-btn { margin-left:8px; min-width:86px; height:40px; border-radius:20px; display:flex; align-items:center; justify-content:center; font-size:14px; border:none; background: var(--accent); color:#000; cursor:pointer; }
 .chat-input-area .send-btn:disabled { opacity:0.5; cursor:default; }
 

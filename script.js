@@ -1973,7 +1973,7 @@ function renderChatPage() {
                 <header class="chat-header" id="chat-with">No conversation selected</header>
                 <div class="chat-body" id="chat-messages"></div>
                 <div class="chat-input-area">
-                    <input id="chat-input" placeholder="Type a message" />
+                    <textarea id="chat-input" placeholder="Type a message" rows="2" maxlength="1000"></textarea>
                     <button id="send-chat-btn" class="send-btn">Send</button>
                 </div>
             </section>
@@ -2057,6 +2057,9 @@ function renderChatPage() {
     }
 
     showNoConversation();
+
+    // simple 1s cooldown to prevent spamming messages
+    let sendCooldown = false;
 
     // Generic confirmation modal that returns a Promise<boolean>
     function showConfirmModal({ title = 'Confirm', body = '', confirmText = 'OK', cancelText = 'Cancel' } = {}) {
@@ -2596,11 +2599,29 @@ function renderChatPage() {
     }
 
     document.getElementById('send-chat-btn').addEventListener('click', async () => {
-        const txt = document.getElementById('chat-input').value.trim();
+        if (sendCooldown) return; // ignore rapid clicks
+        const txtEl = document.getElementById('chat-input');
+        const txt = txtEl ? txtEl.value.trim() : '';
         if (!txt || !activeFriend) return alert('Select friend and type a message');
-        await sendMessageAPI(user.uuid, activeFriend.friend_uuid || activeFriend.uuid, txt);
-        document.getElementById('chat-input').value = '';
-        await loadHistory();
+
+        // engage cooldown and disable the send button briefly
+        sendCooldown = true;
+        const sendBtnEl = document.getElementById('send-chat-btn');
+        if (sendBtnEl) sendBtnEl.disabled = true;
+
+        try {
+            await sendMessageAPI(user.uuid, activeFriend.friend_uuid || activeFriend.uuid, txt);
+            if (txtEl) txtEl.value = '';
+            await loadHistory();
+        } catch (err) {
+            console.warn('send message failed', err);
+        } finally {
+            // release cooldown after 1 second
+            setTimeout(() => {
+                sendCooldown = false;
+                if (sendBtnEl) sendBtnEl.disabled = false;
+            }, 1000);
+        }
     });
 
     // Enter to send (without Shift)
@@ -2608,6 +2629,8 @@ function renderChatPage() {
     chatInput.addEventListener('keydown', async (e) => {
         if (e.key === 'Enter' && !e.shiftKey) {
             e.preventDefault();
+            // respect the send cooldown when pressing Enter
+            if (sendCooldown) return;
             document.getElementById('send-chat-btn').click();
         }
     });
