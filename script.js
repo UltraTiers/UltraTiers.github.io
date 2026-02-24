@@ -1847,18 +1847,36 @@ async function getChatHistoryAPI(user, friend) {
 // Small chat UI renderer is called from handleHash() when hash is #ultratierchatting
 function renderChatPage() {
     const user = getCurrentUser();
-    const root = document.querySelector('main.content') || document.body;
+    const mainContainer = document.querySelector('.container');
+    // remove previous app if present
     const existing = document.getElementById('ultratier-chat-app');
     if (existing) existing.remove();
 
+    // ensure main container is hidden
+    if (mainContainer) mainContainer.style.display = 'none';
+
     const app = document.createElement('div');
     app.id = 'ultratier-chat-app';
-    app.style.padding = '16px';
+    app.style.padding = '0';
     app.style.color = '#fff';
+    app.style.minHeight = '100vh';
+    app.style.boxSizing = 'border-box';
 
     if (!user) {
-        app.innerHTML = '<div style="color:#fff;font-family:Arial, sans-serif;">You must be signed in to use chat. Use the sign in button in the header.</div>';
-        root.parentNode.appendChild(app);
+        // show prominent sign-in CTA when not logged in
+        app.innerHTML = `
+            <div style="display:flex;align-items:center;justify-content:center;height:100vh;background:#0f172a;color:#fff;font-family:Arial, sans-serif;">
+                <div style="text-align:center;max-width:420px;">
+                    <h2 style="margin-bottom:12px;">Sign in to use UltraTiers Chat</h2>
+                    <p style="color:#bcd; margin-bottom:18px;">You need an account to send friend requests and chat.</p>
+                    <button id="open-login-from-chat" style="background:#128C7E;color:#fff;border:none;padding:10px 18px;border-radius:8px;cursor:pointer;">Sign In</button>
+                    <div style="margin-top:12px;color:#889">Or go back to the site: <a href="#ultratierlist" style="color:#25d366">UltraTiers List</a></div>
+                </div>
+            </div>
+        `;
+        document.body.appendChild(app);
+        const btn = document.getElementById('open-login-from-chat');
+        if (btn) btn.addEventListener('click', () => { openLoginModal(); });
         return;
     }
 
@@ -1892,7 +1910,7 @@ function renderChatPage() {
         </div>
     `;
 
-    root.parentNode.appendChild(app);
+    document.body.appendChild(app);
 
     document.getElementById('send-request-btn').addEventListener('click', async () => {
         const target = document.getElementById('friend-name-input').value.trim();
