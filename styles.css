@@ -5740,9 +5740,15 @@ body {
 .friend-add .add-btn { font-size:20px; }
 .friends-list-items div, .incoming-list div { padding:6px; background:transparent; border-radius:10px; }
 .friends-list-items div .avatar, .incoming-list div .avatar { width:36px; height:36px; border-radius:50%; background:#0b2730; flex-shrink:0; }
-.friends-list-items div .meta { display:flex; flex-direction:row; align-items:center; gap:8px; }
-.friends-list-items div .meta .name { color:#e9f6f0; font-weight:700; }
-.friends-list-items div .meta .sub { color:#98a6ad; font-size:12px; }
+.friends-list-items div .meta,
+.incoming-list div .meta,
+.outgoing-list div .meta { display:flex; flex-direction:row; align-items:center; gap:8px; }
+.friends-list-items div .meta .name,
+.incoming-list div .meta .name,
+.outgoing-list div .meta .name { color:#e9f6f0; font-weight:700; }
+.friends-list-items div .meta .sub,
+.incoming-list div .meta .sub,
+.outgoing-list div .meta .sub { color:#98a6ad; font-size:12px; }
 
 /* Chat window refinements */
 .chat-header { display:flex; align-items:center; gap:12px; padding:12px 16px; }
@@ -5808,6 +5814,11 @@ body {
 }
 
 .no-convo { text-align:center; color:rgba(255,255,255,0.5); font-size:16px; margin-top:32px; }
+
+/* When chat body is in no-conversation mode, hide existing messages visually */
+.chat-body.no-convo-active > .msg { display: none !important; }
+.chat-body.no-convo-active { position: relative; }
+.chat-body.no-convo-active .no-convo { display: block; }
 
 /* Incoming requests placeholder */
 .no-requests { text-align:left; color:rgba(255,255,255,0.55); font-size:13px; padding:6px 4px; }

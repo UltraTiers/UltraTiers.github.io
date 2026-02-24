@@ -2034,10 +2034,25 @@ function renderChatPage() {
     // show placeholder when no conversation selected and disable input
     const msgEl = document.getElementById('chat-messages');
     function showNoConversation() {
-        msgEl.innerHTML = '<div class="no-convo">Select a friend on the left to start chatting</div>';
+        if (!msgEl) return;
+        // hide existing messages visually
+        msgEl.classList.add('no-convo-active');
+
+        // ensure placeholder exists and is visible
+        let placeholder = msgEl.querySelector('.no-convo');
+        if (!placeholder) {
+            placeholder = document.createElement('div');
+            placeholder.className = 'no-convo';
+            placeholder.textContent = 'Select a friend on the left to start chatting';
+            msgEl.appendChild(placeholder);
+        } else {
+            placeholder.style.display = '';
+            placeholder.textContent = 'Select a friend on the left to start chatting';
+        }
+
         const chatInputEl = document.getElementById('chat-input');
         const sendBtnEl = document.getElementById('send-chat-btn');
-        if (chatInputEl) { chatInputEl.disabled = true; chatInputEl.value = ''; }
+        if (chatInputEl) { chatInputEl.disabled = true; /* keep value */ }
         if (sendBtnEl) { sendBtnEl.disabled = true; sendBtnEl.classList.remove('active'); }
     }
 
@@ -2458,6 +2473,15 @@ function renderChatPage() {
         const sendBtnEl = document.getElementById('send-chat-btn');
         if (chatInputEl) chatInputEl.disabled = false;
         if (sendBtnEl) sendBtnEl.disabled = false;
+        // reveal chat area and hide the placeholder immediately
+        try {
+            if (msgEl) {
+                msgEl.classList.remove('no-convo-active');
+                const placeholder = msgEl.querySelector('.no-convo');
+                if (placeholder) placeholder.style.display = 'none';
+            }
+        } catch (e) {}
+
         await loadHistory();
     }
 
