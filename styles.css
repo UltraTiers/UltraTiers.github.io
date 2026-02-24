@@ -5630,7 +5630,7 @@ body {
 
 /* Message bubbles use subtle cards and tierlist colors */
 .msg { position:relative; }
-.msg .bubble-text { white-space:pre-wrap; word-wrap:break-word; color:var(--text-primary); overflow-wrap:anywhere; word-break:break-word; }
+.msg .bubble-text { display:block; width:100%; white-space:pre-wrap; word-wrap:break-word; color:var(--text-primary); overflow-wrap:anywhere; word-break:break-all; }
 .msg.me { background: rgba(14,165,233,0.06); color: #000; }
 .msg.them { background: rgba(255,255,255,0.02); color: var(--text-primary); }
 
@@ -5737,7 +5737,7 @@ body {
 .chat-body { flex:1; overflow:auto; padding:22px; }
 
 /* Message bubble layout */
-.msg { display:inline-block; max-width:64%; margin:8px 0; }
+.msg { display:block; max-width:64%; margin:8px 0; word-break: break-all; overflow-wrap: anywhere; }
 .msg.me { margin-left: auto; text-align:right; }
 .msg.them { margin-right: auto; text-align:left; }
 
@@ -5904,6 +5904,7 @@ body {
 .incoming-list .incoming-row .meta > div,
 .outgoing-list .outgoing-row .meta > div {
     min-width: 0;
+    flex: 1 1 0;
 }
 
 /* Truncate long names with an ellipsis in the left sidebar cards */
@@ -5914,7 +5915,7 @@ body {
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
-    max-width: 180px; /* adjust as needed for layout */
+    width: 100%;
 }
 
 /* Confirm modal (used for friend remove) */
