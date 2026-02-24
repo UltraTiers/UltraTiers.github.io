@@ -1975,6 +1975,9 @@ function renderChatPage() {
 
     document.body.appendChild(app);
 
+    // friend name lookup set for quick client-side checks
+    let friendNameSet = new Set();
+
     // make navbar logo/title navigate back to the tierlist
     try {
         const chatLogo = document.querySelector('.chat-navbar .chat-logo');
@@ -1995,12 +1998,42 @@ function renderChatPage() {
 
     document.getElementById('send-request-btn').addEventListener('click', async () => {
         const target = document.getElementById('friend-name-input').value.trim();
+        const btn = document.getElementById('send-request-btn');
         if (!target) return alert('Enter a name');
+        if (btn && btn.disabled) return alert('Cannot send request to this user');
         const res = await sendFriendRequestAPI(user.uuid, target);
         if (res?.error) return alert(res.error || 'Failed');
         alert('Request sent');
+        document.getElementById('friend-name-input').value = '';
         loadInbox();
     });
+
+    // Add a small hint area and live-input check to prevent sending requests to existing friends
+    try {
+        const friendAdd = document.querySelector('.friend-add');
+        if (friendAdd) {
+            const hint = document.createElement('div');
+            hint.id = 'friend-add-hint';
+            hint.style.fontSize = '12px';
+            hint.style.color = 'var(--text-secondary)';
+            hint.style.marginTop = '6px';
+            friendAdd.appendChild(hint);
+
+            const friendInput = document.getElementById('friend-name-input');
+            function checkFriendTarget() {
+                const target = friendInput ? friendInput.value.trim().toLowerCase() : '';
+                const btn = document.getElementById('send-request-btn');
+                const hintEl = document.getElementById('friend-add-hint');
+                if (!btn || !hintEl) return;
+                if (!target) { btn.disabled = false; hintEl.textContent = ''; return; }
+                if (user && (user.name || '').toLowerCase() === target) { btn.disabled = true; hintEl.textContent = 'You cannot friend yourself.'; return; }
+                if (friendNameSet.has(target)) { btn.disabled = true; hintEl.textContent = 'Already in your friends list.'; return; }
+                btn.disabled = false; hintEl.textContent = '';
+            }
+
+            friendInput.addEventListener('input', checkFriendTarget);
+        }
+    } catch (e) { /* ignore */ }
 
     async function loadInbox() {
         const inc = await getIncomingRequestsAPI(user.uuid);
@@ -2059,7 +2092,10 @@ function renderChatPage() {
         const friends = await getFriendsAPI(user.uuid);
         const container = document.getElementById('friends-list-items');
         container.innerHTML = '';
+        // update client-side lookup set
+        try { friendNameSet.clear(); } catch (e) { friendNameSet = new Set(); }
         (friends || []).forEach(f => {
+            try { if (f && f.name) friendNameSet.add((f.name || '').toLowerCase()); } catch(e) {}
             const el = document.createElement('div');
             el.className = 'friend-row';
             el.style.display = 'flex';

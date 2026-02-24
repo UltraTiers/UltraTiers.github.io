@@ -138,6 +138,11 @@ app.post('/friend/request', async (req, res) => {
     if (tErr) throw tErr;
     if (!target) return res.status(404).json({ error: 'Target not found' });
 
+    // try to load sender's display name to store with the request
+    const { data: sender, error: sErr } = await supabase.from('ultratiers').select('name').eq('uuid', from_uuid).maybeSingle();
+    if (sErr) throw sErr;
+    const from_name = sender ? sender.name : null;
+
     // Prevent duplicate requests
     const { data: existing, error: exErr } = await supabase.from('friend_requests').select('*').eq('from_uuid', from_uuid).eq('to_uuid', target.uuid);
     if (exErr) throw exErr;
@@ -151,7 +156,7 @@ app.post('/friend/request', async (req, res) => {
     if (f2Err) throw f2Err;
     if (f2 && f2.length > 0) return res.status(400).json({ error: 'Users are already friends' });
 
-    const { error: insertErr } = await supabase.from('friend_requests').insert([{ from_uuid, to_uuid: target.uuid, from_name: null, created_at: new Date().toISOString(), status: 'pending' }]);
+    const { error: insertErr } = await supabase.from('friend_requests').insert([{ from_uuid, to_uuid: target.uuid, from_name, created_at: new Date().toISOString(), status: 'pending' }]);
     if (insertErr) throw insertErr;
 
     res.json({ success: true });
