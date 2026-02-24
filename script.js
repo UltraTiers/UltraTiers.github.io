@@ -2058,6 +2058,65 @@ function renderChatPage() {
 
     showNoConversation();
 
+    // Generic confirmation modal that returns a Promise<boolean>
+    function showConfirmModal({ title = 'Confirm', body = '', confirmText = 'OK', cancelText = 'Cancel' } = {}) {
+        return new Promise((resolve) => {
+            const overlay = document.createElement('div');
+            overlay.className = 'confirm-modal-overlay';
+
+            const dialog = document.createElement('div');
+            dialog.className = 'confirm-modal';
+
+            const h = document.createElement('h3');
+            h.textContent = title;
+            h.style.margin = '0 0 8px 0';
+            h.style.color = 'var(--accent)';
+
+            const p = document.createElement('div');
+            p.textContent = body;
+            p.style.marginBottom = '12px';
+
+            const btnRow = document.createElement('div');
+            btnRow.style.display = 'flex';
+            btnRow.style.justifyContent = 'flex-end';
+            btnRow.style.gap = '8px';
+
+            const cancelBtn = document.createElement('button');
+            cancelBtn.className = 'modal-cancel-btn';
+            cancelBtn.textContent = cancelText;
+
+            const okBtn = document.createElement('button');
+            okBtn.className = 'modal-remove-btn';
+            okBtn.textContent = confirmText;
+
+            btnRow.appendChild(cancelBtn);
+            btnRow.appendChild(okBtn);
+
+            dialog.appendChild(h);
+            dialog.appendChild(p);
+            dialog.appendChild(btnRow);
+            overlay.appendChild(dialog);
+            document.body.appendChild(overlay);
+
+            // Prevent clicks inside dialog closing it
+            dialog.addEventListener('click', (ev) => ev.stopPropagation());
+            overlay.addEventListener('click', () => {
+                overlay.remove();
+                resolve(false);
+            });
+
+            cancelBtn.addEventListener('click', () => {
+                overlay.remove();
+                resolve(false);
+            });
+
+            okBtn.addEventListener('click', () => {
+                overlay.remove();
+                resolve(true);
+            });
+        });
+    }
+
     // Observe changes to the chat header and clear messages when no conversation is selected
     try {
         const chatWithEl = document.getElementById('chat-with');
@@ -2205,12 +2264,28 @@ function renderChatPage() {
 
             acceptBtn.addEventListener('click', async (e) => {
                 const id = e.currentTarget.dataset.id;
+                const who = req.from_name || req.from_uuid || 'this user';
+                const ok = await showConfirmModal({
+                    title: 'Accept Friend Request',
+                    body: `Accept friend request from ${who}?`,
+                    confirmText: 'Accept',
+                    cancelText: 'Cancel'
+                });
+                if (!ok) return;
                 const res = await acceptFriendAPI(id);
                 if (res?.success) { loadFriends(); loadInbox(); loadOutgoing(); }
             });
 
             declineBtn.addEventListener('click', async (e) => {
                 const id = e.currentTarget.dataset.id;
+                const who = req.from_name || req.from_uuid || 'this user';
+                const ok = await showConfirmModal({
+                    title: 'Decline Friend Request',
+                    body: `Decline friend request from ${who}?`,
+                    confirmText: 'Decline',
+                    cancelText: 'Cancel'
+                });
+                if (!ok) return;
                 const res = await declineFriendAPI(id);
                 if (res?.success) { loadInbox(); }
             });
@@ -2307,7 +2382,14 @@ function renderChatPage() {
 
             cancelBtn.addEventListener('click', async (e) => {
                 const id = e.currentTarget.dataset.id;
-                if (!confirm('Cancel friend request?')) return;
+                const who = r.to_name || r.to_uuid || 'this request';
+                const ok = await showConfirmModal({
+                    title: 'Cancel Friend Request',
+                    body: `Cancel outgoing request to ${who}?`,
+                    confirmText: 'Cancel Request',
+                    cancelText: 'Keep'
+                });
+                if (!ok) return;
                 const res = await cancelRequestAPI(id);
                 if (res?.success) loadOutgoing();
             });
@@ -2541,9 +2623,42 @@ function renderChatPage() {
     chatInput.addEventListener('input', updateSendBtn);
     updateSendBtn();
 
-    loadInbox();
-    loadFriends();
-    loadOutgoing();
+    // Show loading indicator under the navbar until inbox / friends / outgoing finish loading
+    try {
+        const chatAppEl = app.querySelector('.chat-app');
+        const loadingDiv = document.createElement('div');
+        loadingDiv.id = 'chat-loading';
+        loadingDiv.style.display = 'flex';
+        loadingDiv.style.alignItems = 'center';
+        loadingDiv.style.justifyContent = 'center';
+        loadingDiv.style.padding = '12px 20px';
+        loadingDiv.style.gap = '10px';
+        loadingDiv.style.background = 'transparent';
+        loadingDiv.style.color = 'var(--text-primary)';
+        loadingDiv.innerHTML = '<div style="width:20px;height:20px;border:4px solid rgba(255,255,255,0.06);border-top:4px solid var(--accent);border-radius:50%;animation:spin 1s linear infinite"></div><div style="font-size:14px;color:var(--text-primary);">Loading chat...</div>';
+        if (chatAppEl) {
+            app.insertBefore(loadingDiv, chatAppEl);
+            chatAppEl.style.display = 'none';
+        }
+
+        // Load all three lists in parallel, then remove loading and reveal the UI
+        Promise.all([loadInbox(), loadFriends(), loadOutgoing()]).then(() => {
+            try {
+                if (loadingDiv && loadingDiv.parentNode) loadingDiv.parentNode.removeChild(loadingDiv);
+                if (chatAppEl) chatAppEl.style.display = '';
+            } catch (e) {}
+        }).catch(() => {
+            if (loadingDiv && loadingDiv.parentNode) loadingDiv.parentNode.removeChild(loadingDiv);
+            if (chatAppEl) chatAppEl.style.display = '';
+        });
+    } catch (e) {
+        // fallback: load lists individually
+        loadInbox();
+        loadFriends();
+        loadOutgoing();
+    }
+
+    // Periodic refresh of inbox/friends/outgoing/history
     setInterval(() => { if (document.getElementById('ultratier-chat-app')) { loadInbox(); loadFriends(); loadOutgoing(); if (activeFriend) loadHistory(); } }, 5000);
 }
 

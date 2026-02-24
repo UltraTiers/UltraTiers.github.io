@@ -133,8 +133,8 @@ app.post('/friend/request', async (req, res) => {
     const { from_uuid, to_name } = req.body;
     if (!from_uuid || !to_name) return res.status(400).json({ error: 'Missing fields' });
 
-    // find target
-    const { data: target, error: tErr } = await supabase.from('ultratiers').select('*').eq('name', to_name).maybeSingle();
+    // find target (case-insensitive name match)
+    const { data: target, error: tErr } = await supabase.from('ultratiers').select('*').ilike('name', to_name).maybeSingle();
     if (tErr) throw tErr;
     if (!target) return res.status(404).json({ error: 'Target not found' });
 
@@ -745,7 +745,7 @@ app.post("/auth/login", async (req, res) => {
   const { data: player, error } = await supabase
     .from("ultratiers")
     .select("*")
-    .eq("name", ign)
+    .ilike("name", ign)
     .maybeSingle();
 
   if (error) return res.status(500).json({ error: "Database error" });

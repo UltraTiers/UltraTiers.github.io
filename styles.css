@@ -5619,10 +5619,10 @@ body {
 
 .chat-app { background: transparent; }
 .chat-sidebar { border: 1px solid var(--border-color); background: var(--bg-card); }
-.friends-list-items div, .incoming-list div { background: rgba(255,255,255,0.02); }
-.friends-list-items div:hover, .incoming-list div:hover { background: transparent; }
-.friends-list-items div { display:flex; align-items:center; gap:10px; }
-.friends-list-items div span { font-weight:600; color:var(--text-primary); }
+.friends-list-items div, .incoming-list div, .outgoing-list div { background: rgba(255,255,255,0.02); }
+.friends-list-items div:hover, .incoming-list div:hover, .outgoing-list div:hover { background: transparent; }
+.friends-list-items div, .incoming-list div, .outgoing-list div { display:flex; align-items:center; gap:10px; }
+.friends-list-items div span, .incoming-list div span, .outgoing-list div span { font-weight:600; color:var(--text-primary); }
 
 .chat-window { position:relative; }
 .chat-header { position:sticky; top:0; z-index:5; display:flex; align-items:center; gap:12px; padding:12px 16px; background: transparent; border-bottom:1px solid var(--border-color); }
@@ -5749,6 +5749,13 @@ body {
 .friends-list-items div .meta .sub,
 .incoming-list div .meta .sub,
 .outgoing-list div .meta .sub { color:#98a6ad; font-size:12px; }
+
+/* Ensure the textual stack (name + sub) inside meta is vertically centered */
+.friends-list-items div .meta > div,
+.incoming-list div .meta > div,
+.outgoing-list div .meta > div {
+    align-items: center;
+}
 
 /* Chat window refinements */
 .chat-header { display:flex; align-items:center; gap:12px; padding:12px 16px; }
