@@ -20,7 +20,8 @@ function getCurrentUser() {
 function handleHash() {
     const h = location.hash;
     if (!h || (h !== '#ultratierlist' && h !== '#ultratierchatting')) {
-        document.body.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100vh;background:#0f172a;color:#fff;font-family: Arial, sans-serif;"><h1>The Website Is Getting Worked On</h1></div>';
+        // redirect unknown or empty hash to the main tierlist
+        location.hash = '#ultratierlist';
         return;
     }
     const mainContainer = document.querySelector('.container');
