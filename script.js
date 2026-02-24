@@ -2117,6 +2117,15 @@ function renderChatPage() {
         });
     }
 
+    // Resolve a UUID to a display name using loaded player data (falls back to the uuid)
+    function resolveName(uuid) {
+        if (!uuid) return '';
+        const list = Array.isArray(window.allPlayers) ? window.allPlayers : [];
+        const p = list.find(pp => pp.uuid === uuid || pp.player_uuid === uuid || (pp.name && pp.name.toLowerCase() === String(uuid).toLowerCase()));
+        if (p && p.name) return p.name;
+        return uuid;
+    }
+
     // Observe changes to the chat header and clear messages when no conversation is selected
     try {
         const chatWithEl = document.getElementById('chat-with');
@@ -2264,7 +2273,7 @@ function renderChatPage() {
 
             acceptBtn.addEventListener('click', async (e) => {
                 const id = e.currentTarget.dataset.id;
-                const who = req.from_name || req.from_uuid || 'this user';
+                const who = req.from_name || resolveName(req.from_uuid) || req.from_uuid || 'this user';
                 const ok = await showConfirmModal({
                     title: 'Accept Friend Request',
                     body: `Accept friend request from ${who}?`,
@@ -2278,7 +2287,7 @@ function renderChatPage() {
 
             declineBtn.addEventListener('click', async (e) => {
                 const id = e.currentTarget.dataset.id;
-                const who = req.from_name || req.from_uuid || 'this user';
+                const who = req.from_name || resolveName(req.from_uuid) || req.from_uuid || 'this user';
                 const ok = await showConfirmModal({
                     title: 'Decline Friend Request',
                     body: `Decline friend request from ${who}?`,
@@ -2310,13 +2319,7 @@ function renderChatPage() {
             try { await fetchAndOrganizePlayers(); } catch (e) { /* ignore fetch errors */ }
         }
 
-        function resolveName(uuid) {
-            if (!uuid) return '';
-            const list = Array.isArray(window.allPlayers) ? window.allPlayers : [];
-            const p = list.find(pp => pp.uuid === uuid || pp.player_uuid === uuid);
-            if (p && p.name) return p.name;
-            return uuid;
-        }
+        
 
         out.forEach(r => {
             const el = document.createElement('div');
@@ -2382,7 +2385,7 @@ function renderChatPage() {
 
             cancelBtn.addEventListener('click', async (e) => {
                 const id = e.currentTarget.dataset.id;
-                const who = r.to_name || r.to_uuid || 'this request';
+                const who = r.to_name || resolveName(r.to_uuid) || r.to_uuid || 'this request';
                 const ok = await showConfirmModal({
                     title: 'Cancel Friend Request',
                     body: `Cancel outgoing request to ${who}?`,
