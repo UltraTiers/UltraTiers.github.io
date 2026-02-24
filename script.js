@@ -304,54 +304,138 @@ function getPlayerAvatarElement(player) {
             avatar.style.fontWeight = '700';
         };
         avatar.appendChild(img);
+    } else {
+        avatar.textContent = player.name.charAt(0).toUpperCase();
+        avatar.style.background = 'linear-gradient(135deg, #fbbf24, #f59e0b)';
+        avatar.style.display = 'flex';
+        avatar.style.alignItems = 'center';
+        avatar.style.justifyContent = 'center';
+        avatar.style.color = '#000';
+        avatar.style.fontWeight = '700';
     }
+    
     return avatar;
 }
 
-// Ensure `loadingChat` default exists (some pages reference it)
-if (typeof loadingChat === 'undefined') var loadingChat = false;
+const tierIcons = {
+    1: '🥇',
+    2: '🥈',
+    3: '🥉',
+    4: '⭐',
+    5: '⭐',
+    'Unknown': '❓',
+};
 
-// Fetch players and organize globals used by the tierlist renderer.
+const tierColors = {
+    1: 'tier-1',
+    2: 'tier-2',
+    3: 'tier-3',
+    4: 'tier-4',
+    5: 'tier-5',
+    'Unknown': 'tier-unknown',
+};
+
+// Map of player names to full player objects for quick lookup
+window.playerMap = {};
+
+// Initialize tierData object to store game rankings
+const tierData = {
+    main: {},
+    sub: {},
+    extra: {},
+    bonus: {}
+};
+
+// Fetch players from Supabase and organize them by tier
 async function fetchAndOrganizePlayers() {
     try {
-        const res = await fetch(API_URL, { cache: 'no-cache' });
-        const data = await res.json();
+        const response = await fetch(API_URL);
+        if (!response.ok) {
+            throw new Error(`Failed to fetch players: ${response.statusText}`);
+        }
 
-        let players = [];
-        if (Array.isArray(data)) players = data;
-        else if (data.players && Array.isArray(data.players)) players = data.players;
-        else if (data.allPlayers && Array.isArray(data.allPlayers)) players = data.allPlayers;
+        const players = await response.json();
+        console.log('Raw players from API:', players);
 
-        window.allPlayers = players || [];
-        window.playerMap = window.playerMap || {};
-        window.allPlayers.forEach(p => {
-            if (!p) return;
-            if (p.name) window.playerMap[p.name] = p;
-            if (p.uuid) window.playerMap[p.uuid] = p;
+        // Store all players for the overall view
+        window.allPlayers = players;
+
+        // Create lookup map from player names to full player objects
+        window.playerMap = {};
+        players.forEach(player => {
+            window.playerMap[player.name] = player;
         });
 
-        if (data.tierData) window.tierData = data.tierData;
-        return window.allPlayers;
-    } catch (err) {
-        try {
-            const fallback = await fetch('players.json');
-            const arr = await fallback.json();
-            if (Array.isArray(arr)) {
-                window.allPlayers = arr;
-                window.playerMap = {};
-                window.allPlayers.forEach(p => { if (p && p.name) window.playerMap[p.name] = p; });
-                return window.allPlayers;
+        // Initialize category structures with server gamemode names
+        Object.keys(categoryMappings).forEach(category => {
+            tierData[category] = {};
+            categoryMappings[category].forEach(mode => {
+                tierData[category][mode] = [
+                    { tier: 1, players: [] },
+                    { tier: 2, players: [] },
+                    { tier: 3, players: [] },
+                    { tier: 4, players: [] },
+                    { tier: 5, players: [] },
+                    { tier: 'Unknown', players: [] },
+                ];
+            });
+        });
+
+        // Organize players by category, gamemode, and tier
+        players.forEach(player => {
+            if (Array.isArray(player.tiers)) {
+                player.tiers.forEach(tierInfo => {
+                    const gamemode = tierInfo.gamemode;
+                    let tierValue = tierInfo.tier;
+
+                    // Parse tier format: "HT1" -> 1, "LT2" -> 2, or if already a number use it
+                    if (typeof tierValue === 'string') {
+                        const tierMatch = tierValue.match(/\d+/);
+                        tierValue = tierMatch ? parseInt(tierMatch[0]) : null;
+                    } else {
+                        tierValue = parseInt(tierValue);
+                    }
+
+                    if (tierValue === null || tierValue === undefined) {
+                        tierValue = 'Unknown'; // Mark unknown tiers
+                    } else if (tierValue < 1 || tierValue > 5) {
+                        tierValue = 'Unknown'; // Mark out-of-range tiers as unknown
+                    }
+
+                    // Find which category this gamemode belongs to
+                    for (const [category, modes] of Object.entries(categoryMappings)) {
+                        if (modes.includes(gamemode)) {
+                            if (tierData[category][gamemode]) {
+                                // Find the tier array and add the player
+                                const tierArray = tierData[category][gamemode].find(t => t.tier === tierValue);
+                                if (tierArray) {
+                                    // Determine HT/LT prefix from tierInfo.tier
+                                    let prefixedName = player.name;
+                                    if (typeof tierInfo.tier === 'string') {
+                                        if (tierInfo.tier.startsWith('HT')) {
+                                            prefixedName = 'HT' + player.name;
+                                        } else if (tierInfo.tier.startsWith('LT')) {
+                                            prefixedName = 'LT' + player.name;
+                                        }
+                                    }
+                                    tierArray.players.push(prefixedName);
+                                }
+                            }
+                            break;
+                        }
+                    }
+                });
             }
-        } catch (e) {
-            // ignore
-        }
-        window.allPlayers = window.allPlayers || [];
-        window.playerMap = window.playerMap || {};
-        return window.allPlayers;
+        });
+
+        console.log('✓ Players loaded and organized:', tierData);
+    } catch (error) {
+        console.error('Error fetching players:', error);
+        // Continue with empty data if fetch fails
     }
 }
 
-// Search System Functions (kept small and resilient)
+// Search System Functions
 function initSearchSystem() {
     const searchInput = document.getElementById('player-search-input');
     const searchDropdown = document.getElementById('search-results-dropdown');
@@ -363,16 +447,15 @@ function initSearchSystem() {
         const query = this.value.trim().toLowerCase();
         
         if (query.length === 0) {
-            if (searchDropdown) searchDropdown.style.display = 'none';
+            searchDropdown.style.display = 'none';
             return;
         }
         
         // Filter players based on search query
-        const results = (window.allPlayers || []).filter(player => 
-            player && player.name && player.name.toLowerCase().includes(query)
+        const results = window.allPlayers.filter(player => 
+            player.name.toLowerCase().includes(query)
         ).slice(0, 8); // Limit to 8 players
         
-        if (!searchDropdown) return;
         if (results.length === 0) {
             searchDropdown.innerHTML = '<div class="search-no-results">No players found</div>';
             searchDropdown.style.display = 'block';
@@ -399,10 +482,10 @@ function initSearchSystem() {
         document.querySelectorAll('.search-result-item').forEach(item => {
             item.addEventListener('click', function() {
                 const playerName = this.getAttribute('data-player-name');
-                const player = window.playerMap && window.playerMap[playerName];
+                const player = window.playerMap[playerName];
                 if (player) {
                     // Show the all-modes modal
-                    try { showAllModesModal(player); } catch (e) { /* ignore */ }
+                    showAllModesModal(player);
                     searchInput.value = '';
                     searchDropdown.style.display = 'none';
                 }
@@ -412,53 +495,27 @@ function initSearchSystem() {
     
     // Close dropdown when clicking outside
     document.addEventListener('click', function(e) {
-        if (!e.target.closest || !e.target.closest('.search-container')) {
-            if (searchDropdown) searchDropdown.style.display = 'none';
+        if (!e.target.closest('.search-container')) {
+            searchDropdown.style.display = 'none';
         }
     });
     
     // Close dropdown on escape key
     document.addEventListener('keydown', function(e) {
         if (e.key === 'Escape') {
-            if (searchDropdown) searchDropdown.style.display = 'none';
+            searchDropdown.style.display = 'none';
             searchInput.value = '';
         }
     });
 }
 
-// Run initialization after DOM is ready
-document.addEventListener('DOMContentLoaded', async () => {
-        const regionTabs = document.getElementById('region-tabs');
-        const regions = getAllRegions();
-
-        regionTabs.innerHTML = '';
-
-        // Add "Overall" button
-        const overallBtn = document.createElement('button');
-        overallBtn.className = 'mode-tab-btn active';
-        overallBtn.dataset.region = 'overall';
-        overallBtn.textContent = 'Overall';
-        overallBtn.addEventListener('click', function() {
-            renderAllModesOverall();
-            document.querySelectorAll('#region-tabs .mode-tab-btn').forEach(b => b.classList.remove('active'));
-            this.classList.add('active');
-        });
-        regionTabs.appendChild(overallBtn);
-
-        // Add region buttons
-        regions.forEach(region => {
-            const btn = document.createElement('button');
-            btn.className = 'mode-tab-btn';
-            btn.dataset.region = region;
-            btn.textContent = region;
-            btn.addEventListener('click', function() {
-                renderAllModesRegion(region);
-                document.querySelectorAll('#region-tabs .mode-tab-btn').forEach(b => b.classList.remove('active'));
-                this.classList.add('active');
-            });
-            regionTabs.appendChild(btn);
-            });
-        await fetchAndOrganizePlayers();
+// Initialize
+document.addEventListener('DOMContentLoaded', async function () {
+    setupHashRouting();
+    const loadingChat = location.hash === '#ultratierchatting';
+    // Always initialize app state (players + auth) so chat works on refresh,
+    // but avoid rendering the default tierlist tab when user explicitly requested chat.
+    await fetchAndOrganizePlayers();
     initLoginSystem();
     initSearchSystem();
     setupTabHandlers();
@@ -714,17 +771,12 @@ function setupModeTabsForCategory(categoryName) {
 
 // Setup All Modes tab with region buttons
 function setupAllModesTab() {
-    const tab = document.getElementById('all-modes-tab');
-    if (!tab) return;
-
-    // region-tabs may live inside the tab or globally; prefer inside tab
-    let regionTabs = tab.querySelector('#region-tabs');
-    if (!regionTabs) regionTabs = document.getElementById('region-tabs');
-    if (!regionTabs) return;
-
+    const regionTabs = document.getElementById('region-tabs');
     const regions = getAllRegions();
+    
     regionTabs.innerHTML = '';
-
+    
+    // Add "Overall" button
     const overallBtn = document.createElement('button');
     overallBtn.className = 'mode-tab-btn active';
     overallBtn.dataset.region = 'overall';
@@ -735,12 +787,13 @@ function setupAllModesTab() {
         this.classList.add('active');
     });
     regionTabs.appendChild(overallBtn);
-
+    
+    // Add region buttons
     regions.forEach(region => {
         const btn = document.createElement('button');
         btn.className = 'mode-tab-btn';
         btn.dataset.region = region;
-        btn.textContent = region;
+        btn.textContent = getFullRegionName(region);
         btn.addEventListener('click', function() {
             renderAllModesRegion(region);
             document.querySelectorAll('#region-tabs .mode-tab-btn').forEach(b => b.classList.remove('active'));
@@ -748,14 +801,14 @@ function setupAllModesTab() {
         });
         regionTabs.appendChild(btn);
     });
-
-    // Default to overall view
-    try { overallBtn.click(); } catch (e) { /* ignore */ }
+    
+    // Click the Overall button to render it
+    overallBtn.click();
 }
 
+// Render All Modes overall (all modes, all regions)
 function renderAllModesOverall() {
     const container = document.getElementById('all-modes-rankings');
-    if (!container) return;
     container.classList.remove('rankings-grid');
     container.classList.add('overall-container');
     container.innerHTML = '';
@@ -765,110 +818,141 @@ function renderAllModesOverall() {
         return;
     }
 
-    // Use same rendering as region but include all players
-    const playersWithPoints = window.allPlayers.map(player => ({ ...player, totalPoints: calculatePlayerPoints(player) })).sort((a,b)=>b.totalPoints-a.totalPoints);
+    // Calculate total points for all players across all modes
+    const playersWithPoints = window.allPlayers.map(player => ({
+        ...player,
+        totalPoints: calculatePlayerPoints(player)
+    })).sort((a, b) => b.totalPoints - a.totalPoints);
+
+    // Get all points for rank calculation
     const allPoints = playersWithPoints.map(p => p.totalPoints);
 
-    playersWithPoints.slice(0,100).forEach((player, rank) => {
+    // Render each player as a row (capped at top 100)
+    playersWithPoints.slice(0, 100).forEach((player, rank) => {
         const row = document.createElement('div');
         row.className = 'category-player-row';
-
+        
+        // Combined rank + avatar section
         const rankPlayerSection = document.createElement('div');
         rankPlayerSection.className = 'rank-player-section';
-
+        
         const medal = getMedalRank(rank + 1);
+        
+        // Rank badge background
         const rankBadge = document.createElement('div');
         rankBadge.className = `rank-badge ${medal}`;
         rankBadge.textContent = `#${rank + 1}`;
         rankPlayerSection.appendChild(rankBadge);
-
+        
+        // Avatar
         const avatar = getPlayerAvatarElement(player);
         avatar.style.width = '80px';
         avatar.style.height = '80px';
         avatar.className = 'rank-avatar';
         rankPlayerSection.appendChild(avatar);
-
+        
+        // Player info section
         const playerInfo = document.createElement('div');
         playerInfo.className = 'player-info-section';
+        
         const nameDiv = document.createElement('div');
         nameDiv.className = `player-name${player.nitro ? ' nitro' : ''}`;
         nameDiv.textContent = player.name;
+        
+        // Calculate overall rank
+        const overallRank = getCategoryRank(player.totalPoints, allPoints);
+        const rankColor = getRankColor(overallRank);
 
-        const regionRank = getCategoryRank(player.totalPoints, allPoints);
-        const rankColor = getRankColor(regionRank);
-        const regionCombatTag = getCombatTag(player.totalPoints, 'all');
+        const overallCombatTag = getCombatTag(player.totalPoints, 'all');
         const titleDiv = document.createElement('div');
         titleDiv.className = 'player-title';
-        titleDiv.innerHTML = `<span style="color: ${rankColor}; font-weight: bold;">${regionCombatTag}</span> • ${player.totalPoints} points`;
-
+        titleDiv.innerHTML = `<span style="color: ${rankColor}; font-weight: bold;">${overallCombatTag}</span> • ${player.totalPoints} points`;
+        
         playerInfo.appendChild(nameDiv);
         playerInfo.appendChild(titleDiv);
-
+        
+        // Region section
         const regionSection = document.createElement('div');
         regionSection.className = 'region-section';
         regionSection.textContent = getFullRegionName(player.region) || 'Unknown';
-
+        
+        // Combine name/title and region
         const playerIdentitySection = document.createElement('div');
         playerIdentitySection.className = 'player-identity-section';
         playerIdentitySection.appendChild(playerInfo);
         playerIdentitySection.appendChild(regionSection);
-
+        
+        // Modes section - show all modes with tiers
         const modesSection = document.createElement('div');
         modesSection.className = 'modes-section';
-
-        const allModes = [];
-        if (Array.isArray(player.tiers)) {
-            player.tiers.forEach(tierInfo => {
-                const gamemode = tierInfo.gamemode;
-                const tierValue = tierInfo.tier;
+        
+        // Collect all modes grouped by category
+        const modesByCategory = {};
+        Object.keys(categoryMappings).forEach(category => {
+            modesByCategory[category] = [];
+            categoryMappings[category].forEach(gamemode => {
+                const tierInfo = player.tiers.find(t => t.gamemode === gamemode);
+                const tierValue = tierInfo ? tierInfo.tier : 'Unknown';
                 const isRetired = Array.isArray(player.retired_modes) && player.retired_modes.includes(gamemode);
+                
                 let tierNumber = 0;
                 if (typeof tierValue === 'string') {
                     const match = tierValue.match(/\d+/);
                     tierNumber = match ? parseInt(match[0]) : 0;
                 }
+                
                 const peakValue = tierInfo ? (tierInfo.peak || tierInfo.tier) : 'Unknown';
-                allModes.push({ gamemode, tierValue, tierNumber, isRetired, peak: peakValue });
+                modesByCategory[category].push({ gamemode, tierValue, tierNumber, isRetired, peak: peakValue });
             });
-        }
-
+        });
+        
+        // Flatten and sort by tier
+        const allModes = [];
+        Object.values(modesByCategory).forEach(modes => allModes.push(...modes));
+        
         allModes.sort((a, b) => {
             if (a.isRetired && !b.isRetired) return 1;
             if (!a.isRetired && b.isRetired) return -1;
             if (a.tierNumber === 0) return 1;
             if (b.tierNumber === 0) return -1;
             if (a.tierNumber !== b.tierNumber) return a.tierNumber - b.tierNumber;
+            
             const aIsHT = typeof a.tierValue === 'string' && a.tierValue.startsWith('HT');
             const bIsHT = typeof b.tierValue === 'string' && b.tierValue.startsWith('HT');
             if (aIsHT && !bIsHT) return -1;
             if (!aIsHT && bIsHT) return 1;
             return 0;
         });
-
+        
+        // Render all modes
         allModes.forEach(({ gamemode, tierValue, tierNumber, isRetired, peak }) => {
             const modeItem = document.createElement('div');
             modeItem.className = `mode-item${isRetired ? ' retired-tier' : ''}`;
+            
             const icon = document.createElement('img');
             icon.className = 'mode-icon';
             icon.src = gamemodeIcons[gamemode] || 'gamemodes/Vanilla.png';
             icon.alt = gamemode;
             icon.title = gamemode;
             icon.dataset.peak = peak || 'Unknown';
+            
             const tierBadge = document.createElement('div');
             tierBadge.className = `tier-badge-rounded ${isRetired ? 'tier-retired' : (tierNumber > 0 ? tierColors[tierNumber] : 'tier-unknown')}`;
             tierBadge.textContent = tierValue !== 'Unknown' ? tierValue : '?';
+            
             modeItem.appendChild(icon);
             modeItem.appendChild(tierBadge);
             modesSection.appendChild(modeItem);
         });
-
+        
+        // Assemble the row
         row.appendChild(rankPlayerSection);
         row.appendChild(playerIdentitySection);
         row.appendChild(modesSection);
+        
         container.appendChild(row);
     });
 }
-
 
 // Render All Modes for a specific region
 function renderAllModesRegion(region) {
@@ -1914,7 +1998,12 @@ function renderChatPage() {
 
     document.body.appendChild(app);
 
-    // (removed old dropdown global handler) -- modal overlays handle their own clicks
+    // Global click handler: close any open dropdown menus when clicking outside
+    document.addEventListener('click', (e) => {
+        if (!e.target.closest('.dropdown-menu') && !e.target.closest('.three-dots-btn')) {
+            document.querySelectorAll('.dropdown-menu').forEach(d => d.style.display = 'none');
+        }
+    });
 
     // friend name lookup set for quick client-side checks
     let friendNameSet = new Set();
@@ -2161,76 +2250,47 @@ function renderChatPage() {
             menuBtn.textContent = '⋯';
             menuBtn.title = 'Actions';
 
-            // clicking the three-dots opens a confirm modal (match site modal style)
+            const dropdown = document.createElement('div');
+            dropdown.className = 'dropdown-menu';
+            dropdown.style.display = 'none';
+            const rem = document.createElement('div');
+            rem.className = 'dropdown-item';
+            rem.textContent = 'Remove';
+            rem.style.cursor = 'pointer';
+            rem.addEventListener('click', async (e) => {
+                e.stopPropagation();
+                if (!confirm('Remove friend ' + (f.name || f.friend_uuid) + '?')) return;
+                const res = await removeFriendAPI(user.uuid, f.friend_uuid);
+                if (res?.success) {
+                    loadFriends();
+                    if (activeFriend && (activeFriend.friend_uuid === f.friend_uuid || activeFriend.uuid === f.friend_uuid)) {
+                        activeFriend = null;
+                        showNoConversation();
+                    }
+                } else {
+                    alert(res?.error || 'Failed to remove');
+                }
+                dropdown.style.display = 'none';
+            });
+            dropdown.appendChild(rem);
+
             menuBtn.addEventListener('click', (e) => {
                 e.stopPropagation();
-                const overlay = document.createElement('div');
-                overlay.className = 'confirm-modal-overlay';
-
-                const dialog = document.createElement('div');
-                dialog.className = 'confirm-modal';
-
-                const title = document.createElement('h3');
-                title.textContent = 'Actions';
-                title.style.margin = '0 0 8px 0';
-                title.style.color = 'var(--accent)';
-
-                const body = document.createElement('div');
-                body.textContent = 'Manage friend ' + (f.name || f.friend_uuid);
-                body.style.marginBottom = '12px';
-
-                const btnRow = document.createElement('div');
-                btnRow.style.display = 'flex';
-                btnRow.style.justifyContent = 'flex-end';
-                btnRow.style.gap = '8px';
-
-                const cancelBtn = document.createElement('button');
-                cancelBtn.className = 'modal-cancel-btn';
-                cancelBtn.textContent = 'Cancel';
-
-                const removeBtn = document.createElement('button');
-                removeBtn.className = 'modal-remove-btn';
-                removeBtn.textContent = 'Remove';
-
-                btnRow.appendChild(cancelBtn);
-                btnRow.appendChild(removeBtn);
-
-                dialog.appendChild(title);
-                dialog.appendChild(body);
-                dialog.appendChild(btnRow);
-                overlay.appendChild(dialog);
-                document.body.appendChild(overlay);
-
-                // stop dialog clicks from closing
-                dialog.addEventListener('click', (ev) => ev.stopPropagation());
-                overlay.addEventListener('click', () => overlay.remove());
-                cancelBtn.addEventListener('click', () => overlay.remove());
-
-                removeBtn.addEventListener('click', async (ev) => {
-                    ev.stopPropagation();
-                    if (!confirm('Remove friend ' + (f.name || f.friend_uuid) + '?')) return;
-                    const res = await removeFriendAPI(user.uuid, f.friend_uuid);
-                    if (res?.success) {
-                        overlay.remove();
-                        loadFriends();
-                        if (activeFriend && (activeFriend.friend_uuid === f.friend_uuid || activeFriend.uuid === f.friend_uuid)) {
-                            activeFriend = null;
-                            showNoConversation();
-                        }
-                    } else {
-                        alert(res?.error || 'Failed to remove');
-                    }
-                });
+                dropdown.style.display = dropdown.style.display === 'none' ? 'block' : 'none';
             });
 
+            // prevent clicks inside dropdown from bubbling to document
+            dropdown.addEventListener('click', (e) => { e.stopPropagation(); });
+
             actions.appendChild(menuBtn);
+            actions.appendChild(dropdown);
 
             el.appendChild(left);
             el.appendChild(actions);
 
             // clicking the entire row opens the chat (but ignore clicks on the menu or dropdown)
             el.addEventListener('click', (e) => {
-                if (e.target.closest('.three-dots-btn')) return;
+                if (e.target.closest('.three-dots-btn') || e.target.closest('.dropdown-menu')) return;
                 selectFriend(f);
             });
 
