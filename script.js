@@ -351,6 +351,81 @@ async function fetchAndOrganizePlayers() {
     }
 }
 
+// Search System Functions (kept small and resilient)
+function initSearchSystem() {
+    const searchInput = document.getElementById('player-search-input');
+    const searchDropdown = document.getElementById('search-results-dropdown');
+    
+    if (!searchInput) return;
+    
+    // Handle input and filtering
+    searchInput.addEventListener('input', function() {
+        const query = this.value.trim().toLowerCase();
+        
+        if (query.length === 0) {
+            if (searchDropdown) searchDropdown.style.display = 'none';
+            return;
+        }
+        
+        // Filter players based on search query
+        const results = (window.allPlayers || []).filter(player => 
+            player && player.name && player.name.toLowerCase().includes(query)
+        ).slice(0, 8); // Limit to 8 players
+        
+        if (!searchDropdown) return;
+        if (results.length === 0) {
+            searchDropdown.innerHTML = '<div class="search-no-results">No players found</div>';
+            searchDropdown.style.display = 'block';
+            return;
+        }
+        
+        // Create only all-modes results for each player
+        const resultsHTML = results.map(player => {
+            return `
+                <div class="search-result-item" data-player-name="${player.name}" data-category="all-modes">
+                    <img src="https://mc-heads.net/avatar/${player.uuid}/32" alt="${player.name}" class="search-result-avatar">
+                    <div class="search-result-info">
+                        <div class="search-result-name">${player.name}</div>
+                        <div class="search-result-category">${getFullRegionName(player.region) || 'Unknown'} • Overall</div>
+                    </div>
+                </div>
+            `;
+        }).join('');
+        
+        searchDropdown.innerHTML = resultsHTML;
+        searchDropdown.style.display = 'block';
+        
+        // Add click handlers to result items
+        document.querySelectorAll('.search-result-item').forEach(item => {
+            item.addEventListener('click', function() {
+                const playerName = this.getAttribute('data-player-name');
+                const player = window.playerMap && window.playerMap[playerName];
+                if (player) {
+                    // Show the all-modes modal
+                    try { showAllModesModal(player); } catch (e) { /* ignore */ }
+                    searchInput.value = '';
+                    searchDropdown.style.display = 'none';
+                }
+            });
+        });
+    });
+    
+    // Close dropdown when clicking outside
+    document.addEventListener('click', function(e) {
+        if (!e.target.closest || !e.target.closest('.search-container')) {
+            if (searchDropdown) searchDropdown.style.display = 'none';
+        }
+    });
+    
+    // Close dropdown on escape key
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            if (searchDropdown) searchDropdown.style.display = 'none';
+            searchInput.value = '';
+        }
+    });
+}
+
 // Run initialization after DOM is ready
 document.addEventListener('DOMContentLoaded', async () => {
         const regionTabs = document.getElementById('region-tabs');
