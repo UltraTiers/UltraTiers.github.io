@@ -5779,7 +5779,7 @@ body {
 
 .friends-list-items .friend-row,
 .incoming-list .incoming-row,
-.outgoing-list .outgoing-row { display:flex; align-items:center; gap:12px; padding:4px 6px; border-radius:8px; cursor:pointer; border: 2px solid rgba(14,165,233,0.06); background: linear-gradient(180deg, rgba(26, 40, 71, 0.7) 0%, rgba(15, 23, 42, 0.85) 100%); }
+.outgoing-list .outgoing-row { display:flex; align-items:center; gap:12px; padding:4px 6px; border-radius:8px; cursor:pointer; border: 2px solid rgba(14,165,233,0.06); background: linear-gradient(180deg, rgba(26, 40, 71, 0.7) 0%, rgba(15, 23, 42, 0.85) 100%); min-height:56px; }
 /* remove hover animation / visual change inside lists */
 .friends-list-items .friend-row:hover,
 .incoming-list .incoming-row:hover,
@@ -5798,7 +5798,7 @@ body {
 .outgoing-list .outgoing-row { padding: 4px 6px; }
 
 /* Add bottom padding to section headings in the chat sidebar */
-.chat-sidebar .sidebar-section h4 { padding-bottom: 8px; margin: 0 0 6px 0; }
+.chat-sidebar .sidebar-section h4 { padding-bottom: 8px; margin: 8px 0 6px 0; }
 
 /* make sidebar lists scrollable when content exceeds available space */
 .incoming-list, .outgoing-list, .friends-list-items {

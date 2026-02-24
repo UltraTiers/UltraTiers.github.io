@@ -2200,6 +2200,13 @@ function renderChatPage() {
             return;
         }
 
+        // If any outgoing requests lack a display name and we don't have player data yet,
+        // fetch players so we can resolve uuids -> names immediately.
+        const needResolve = (out || []).some(r => (!r.to_name || r.to_name.trim() === '') && r.to_uuid);
+        if (needResolve && (!Array.isArray(window.allPlayers) || window.allPlayers.length === 0)) {
+            try { await fetchAndOrganizePlayers(); } catch (e) { /* ignore fetch errors */ }
+        }
+
         function resolveName(uuid) {
             if (!uuid) return '';
             const list = Array.isArray(window.allPlayers) ? window.allPlayers : [];
