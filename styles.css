@@ -5930,7 +5930,7 @@ body {
 }
 
 /* Outgoing list tweaks */
-.outgoing-list .outgoing-row, .incoming-list .incoming-row { display:flex; align-items:center; gap:10px; padding:8px; border-radius:8px; }
+.outgoing-list .outgoing-row, .incoming-list .incoming-row { display:flex; align-items:center; gap:10px; border-radius:8px; }
 .outgoing-list .outgoing-row .avatar { width:36px; height:36px; border-radius:50%; }
 .outgoing-list .outgoing-row .cancel-icon { margin-left:8px; }
 
