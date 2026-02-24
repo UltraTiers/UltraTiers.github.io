@@ -5752,7 +5752,7 @@ body {
 .outgoing-list div .meta { display:flex; flex-direction:row; align-items:center; gap:8px; }
 .friends-list-items div .meta .name,
 .incoming-list div .meta .name,
-.outgoing-list div .meta .name { color:#e9f6f0; font-weight:700; }
+.outgoing-list div .meta .name { color:#e9f6f0; font-weight:400; }
 .friends-list-items div .meta .sub,
 .incoming-list div .meta .sub,
 .outgoing-list div .meta .sub { color:#98a6ad; font-size:12px; }
@@ -5810,6 +5810,19 @@ body {
 .friends-list-items .friend-row .meta .name,
 .incoming-list .incoming-row .meta .name,
 .outgoing-list .outgoing-row .meta .name { font-size:14px; }
+
+/* Ensure any inner <strong> doesn't force bold and can be truncated */
+.friends-list-items .friend-row .meta .name strong,
+.incoming-list .incoming-row .meta .name strong,
+.outgoing-list .outgoing-row .meta .name strong {
+    font-weight: inherit;
+    display: inline-block;
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    vertical-align: middle;
+}
 
 /* Hide the secondary sub-label for outgoing requests (we only show the name) */
 .outgoing-list .sub { display: none; }
@@ -5915,7 +5928,7 @@ body {
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
-    width: 100%;
+    max-width: 12ch; /* show ... after ~12 characters */
 }
 
 /* Confirm modal (used for friend remove) */
