@@ -5637,26 +5637,27 @@ body {
 }
 
 /* floating send icon styles */
-.chat-input-area { position: relative; }
-.chat-input-area input { padding-right: 64px; }
+.chat-input-area { position: relative; display:flex; align-items:center; gap:12px; padding:12px 18px; }
+.chat-input-area input { flex:1; width:100%; padding:12px 52px 12px 14px; border-radius:8px; border:1px solid rgba(0,0,0,0.06); box-sizing:border-box; }
 .chat-input-area .send-btn {
     position: absolute;
-    right: 12px;
+    right: 24px;
     top: 50%;
     transform: translateY(-50%);
-    width:44px;
-    height:44px;
+    width:40px;
+    height:40px;
     border-radius:50%;
     display:flex;
     align-items:center;
     justify-content:center;
-    font-size:16px;
+    font-size:14px;
     border:none;
-    opacity: 0.6;
+    opacity: 0.9;
+    background: linear-gradient(90deg,#25D366,#128C7E);
+    color: #fff;
     transition: transform 0.12s ease, opacity 0.12s ease, background 0.12s ease;
 }
-.chat-input-area .send-btn i { color:#fff; }
-.chat-input-area .send-btn.active { opacity: 1; transform: translateY(-50%) scale(1.02); box-shadow: 0 6px 18px rgba(18,140,126,0.22); }
+.chat-input-area .send-btn.active { transform: translateY(-50%) scale(1.03); box-shadow: 0 6px 18px rgba(18,140,126,0.22); }
 
 /* avatars in lists/header */
 .chat-user-avatar { border-radius:8px; margin-right:10px; }
@@ -5669,7 +5670,7 @@ body {
 /* ============================= */
 /* Clone header on chat page */
 #chat-header-clone {
-    position: fixed;
+    position: sticky;
     top: 0;
     left: 0;
     right: 0;
@@ -5689,11 +5690,10 @@ body {
 #chat-header-clone .profile-section { margin-left:auto; }
 #chat-header-clone .searchbar-row { display:none; }
 
-/* Push body content under fixed header */
-body #ultratier-chat-app { padding-top:72px; }
+/* cloned header is sticky and flows above the chat app */
 
 /* Chat app full-bleed container */
-.chat-app { height: calc(100vh - 72px); margin: 0 24px 24px 24px; display:flex; gap:18px; }
+.chat-app { margin: 0 24px 24px 24px; display:flex; gap:18px; }
 
 /* Sidebar and window layout for WhatsApp-like look */
 .chat-sidebar { width:320px; min-width:260px; max-width:34%; border-radius:12px; background: linear-gradient(180deg,#071821,#072022); }
@@ -5742,3 +5742,25 @@ body #ultratier-chat-app { padding-top:72px; }
     body #ultratier-chat-app { padding-top:64px; }
     .chat-app { margin: 0 8px 8px 8px; }
 }
+
+/* Overrides and improvements for chat layout */
+.friend-add { display:flex; gap:8px; align-items:center; margin-bottom:14px; }
+.friend-add input { flex:1; padding:10px 12px; border-radius:8px; color:#eaf6f2; border:1px solid rgba(255,255,255,0.03); background:rgba(255,255,255,0.02); }
+.friend-add .add-btn { width:36px; height:36px; border-radius:8px; background:linear-gradient(90deg,#25D366,#128C7E); color:#fff; border:none; cursor:pointer; }
+
+.friends-list-items .friend-row, .incoming-list .incoming-row { display:flex; align-items:center; gap:12px; padding:8px 6px; border-radius:8px; cursor:pointer; }
+.friends-list-items .friend-row:hover, .incoming-list .incoming-row:hover { background: rgba(255,255,255,0.02); }
+.friends-list-items .friend-row .avatar { width:40px; height:40px; border-radius:50%; }
+.friends-list-items .friend-row .meta .name { font-size:14px; }
+
+.no-convo { text-align:center; color:rgba(255,255,255,0.5); font-size:16px; margin-top:32px; }
+
+.chat-input-area { position: relative; display:flex; align-items:center; gap:12px; padding:12px 18px; }
+.chat-input-area input { flex:1; width:100%; padding:12px 14px; border-radius:8px; border:1px solid rgba(0,0,0,0.06); box-sizing:border-box; }
+.chat-input-area .send-btn { margin-left:8px; min-width:86px; height:40px; border-radius:20px; display:flex; align-items:center; justify-content:center; font-size:14px; border:none; background: linear-gradient(90deg,#25D366,#128C7E); color:#fff; cursor:pointer; }
+.chat-input-area .send-btn:disabled { opacity:0.5; cursor:default; }
+
+/* make sure chat messages area has comfortable padding and anchors to top */
+.chat-body { padding:20px 28px; display:flex; flex-direction:column; }
+.chat-body .msg { margin-bottom:12px; }
+

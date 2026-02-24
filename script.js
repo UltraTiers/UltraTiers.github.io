@@ -31,6 +31,12 @@ function handleHash() {
         if (app) app.remove();
         const cloneHeader = document.getElementById('chat-header-clone');
         if (cloneHeader) cloneHeader.remove();
+        // restore original header visibility if it was hidden
+        const mainHeader = document.querySelector('.header');
+        if (mainHeader) {
+            mainHeader.style.visibility = '';
+            mainHeader.style.display = '';
+        }
         if (mainContainer) mainContainer.style.display = '';
         // ensure main content is rendered
         try { renderDefaultTab(); } catch (e) {}
@@ -1848,6 +1854,10 @@ async function getFriendsAPI(uuid) {
     return fetch('/friends/' + encodeURIComponent(uuid)).then(r=>r.json());
 }
 
+async function removeFriendAPI(uuid, friend_uuid) {
+    return fetch('/friend/remove', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({ uuid, friend_uuid }) }).then(r=>r.json());
+}
+
 async function sendMessageAPI(from_uuid, to_uuid, message) {
     return fetch('/chat/send', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ from_uuid, to_uuid, message }) }).then(r=>r.json());
 }
@@ -1926,6 +1936,8 @@ function renderChatPage() {
     try {
         const mainHeader = document.querySelector('.header');
         if (mainHeader) {
+            // hide the original header while chat is active so the clone is the visible navbar
+            mainHeader.style.visibility = 'hidden';
             const headerClone = mainHeader.cloneNode(true);
             headerClone.id = 'chat-header-clone';
             // remove searchbar from the cloned header
@@ -1945,14 +1957,32 @@ function renderChatPage() {
             const profileSection = headerClone.querySelector('#profile-section');
             if (profileSection) profileSection.remove();
 
-            // insert header clone at top of body
-            document.body.appendChild(headerClone);
+            // insert header clone right before the chat app so it flows normally
+            document.body.insertBefore(headerClone, app);
+            // make the clone sticky so it remains visible when scrolling
+            try {
+                headerClone.style.position = 'sticky';
+                headerClone.style.top = '0';
+                headerClone.style.zIndex = '9999';
+            } catch (err) {}
         }
     } catch (e) {
         console.warn('Header clone failed', e);
     }
 
     document.body.appendChild(app);
+
+    // show placeholder when no conversation selected and disable input
+    const msgEl = document.getElementById('chat-messages');
+    function showNoConversation() {
+        msgEl.innerHTML = '<div class="no-convo">Select a friend on the left to start chatting</div>';
+        const chatInputEl = document.getElementById('chat-input');
+        const sendBtnEl = document.getElementById('send-chat-btn');
+        if (chatInputEl) { chatInputEl.disabled = true; chatInputEl.value = ''; }
+        if (sendBtnEl) { sendBtnEl.disabled = true; sendBtnEl.classList.remove('active'); }
+    }
+
+    showNoConversation();
 
     document.getElementById('send-request-btn').addEventListener('click', async () => {
         const target = document.getElementById('friend-name-input').value.trim();
@@ -1999,11 +2029,23 @@ function renderChatPage() {
         (friends || []).forEach(f => {
             const el = document.createElement('div');
             el.className = 'friend-row';
-            el.style.cursor = 'pointer';
+            el.style.display = 'flex';
+            el.style.alignItems = 'center';
+            el.style.justifyContent = 'space-between';
+
+            const left = document.createElement('div');
+            left.style.display = 'flex';
+            left.style.alignItems = 'center';
+            left.style.gap = '10px';
+
             const avatar = document.createElement('img');
             avatar.className = 'avatar';
             avatar.src = f.friend_uuid ? `https://mc-heads.net/avatar/${f.friend_uuid}/64` : 'UltraLogo.png';
             avatar.alt = f.name || f.friend_uuid;
+            avatar.style.width = '40px';
+            avatar.style.height = '40px';
+            avatar.style.borderRadius = '50%';
+
             const meta = document.createElement('div');
             meta.className = 'meta';
             const nameEl = document.createElement('span');
@@ -2014,9 +2056,43 @@ function renderChatPage() {
             sub.textContent = '';
             meta.appendChild(nameEl);
             meta.appendChild(sub);
-            el.appendChild(avatar);
-            el.appendChild(meta);
-            el.addEventListener('click', () => selectFriend(f));
+
+            left.appendChild(avatar);
+            left.appendChild(meta);
+
+            const actions = document.createElement('div');
+            actions.style.display = 'flex';
+            actions.style.gap = '8px';
+
+            const openBtn = document.createElement('button');
+            openBtn.className = 'chat-open-btn';
+            openBtn.textContent = 'Open';
+            openBtn.addEventListener('click', () => selectFriend(f));
+
+            const removeBtn = document.createElement('button');
+            removeBtn.className = 'chat-remove-btn';
+            removeBtn.textContent = 'Remove';
+            removeBtn.addEventListener('click', async (e) => {
+                e.stopPropagation();
+                if (!confirm('Remove friend ' + (f.name || f.friend_uuid) + '?')) return;
+                const res = await removeFriendAPI(user.uuid, f.friend_uuid);
+                if (res?.success) {
+                    loadFriends();
+                    // if removed friend is active, clear convo
+                    if (activeFriend && (activeFriend.friend_uuid === f.friend_uuid || activeFriend.uuid === f.friend_uuid)) {
+                        activeFriend = null;
+                        showNoConversation();
+                    }
+                } else {
+                    alert(res?.error || 'Failed to remove');
+                }
+            });
+
+            actions.appendChild(openBtn);
+            actions.appendChild(removeBtn);
+
+            el.appendChild(left);
+            el.appendChild(actions);
             container.appendChild(el);
         });
     }
@@ -2025,6 +2101,11 @@ function renderChatPage() {
     async function selectFriend(f) {
         activeFriend = f;
         document.getElementById('chat-with').textContent = 'Chat with ' + (f.name || f.friend_uuid);
+        // enable input when a friend is selected
+        const chatInputEl = document.getElementById('chat-input');
+        const sendBtnEl = document.getElementById('send-chat-btn');
+        if (chatInputEl) chatInputEl.disabled = false;
+        if (sendBtnEl) sendBtnEl.disabled = false;
         await loadHistory();
     }
 

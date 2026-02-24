@@ -216,6 +216,26 @@ app.get('/friends/:uuid', async (req, res) => {
   }
 });
 
+// Remove friendship (delete both directional rows)
+app.post('/friend/remove', async (req, res) => {
+  try {
+    if (!supabaseConfigured) return res.status(503).json({ error: 'Supabase not configured' });
+    const { uuid, friend_uuid } = req.body;
+    if (!uuid || !friend_uuid) return res.status(400).json({ error: 'Missing fields' });
+
+    // Delete both directions
+    const { error: d1 } = await supabase.from('friends').delete().eq('uuid', uuid).eq('friend_uuid', friend_uuid);
+    const { error: d2 } = await supabase.from('friends').delete().eq('uuid', friend_uuid).eq('friend_uuid', uuid);
+    if (d1 || d2) {
+      console.warn('/friend/remove partial error', d1, d2);
+    }
+    res.json({ success: true });
+  } catch (err) {
+    console.error('/friend/remove error', err);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
 // Send chat message
 app.post('/chat/send', async (req, res) => {
   try {
@@ -248,8 +268,9 @@ app.get('/chat/history', async (req, res) => {
 
     const last = new Date(msgs[msgs.length - 1].created_at);
     const ageMs = Date.now() - last.getTime();
-    const dayMs = 24 * 60 * 60 * 1000;
-    if (ageMs > dayMs) {
+    // expire conversations after 12 hours of inactivity
+    const twelveHoursMs = 12 * 60 * 60 * 1000;
+    if (ageMs > twelveHoursMs) {
       // clear conversation
       const { error: delErr } = await supabase.from('messages').delete().eq('conversation_id', convo);
       if (delErr) console.warn('Failed to delete old conversation', delErr);
