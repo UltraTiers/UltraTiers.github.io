@@ -186,6 +186,50 @@ app.get('/friend/requests/:uuid', async (req, res) => {
   }
 });
 
+// Get outgoing friend requests (requests the user has sent)
+app.get('/friend/requests/outgoing/:uuid', async (req, res) => {
+  try {
+    if (!supabaseConfigured) return res.json([]);
+    const { uuid } = req.params;
+    const { data, error } = await supabase.from('friend_requests').select('*').eq('from_uuid', uuid).eq('status', 'pending');
+    if (error) throw error;
+    res.json(data || []);
+  } catch (err) {
+    console.error('/friend/requests/outgoing error', err);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// Decline an incoming friend request (delete request row)
+app.post('/friend/decline', async (req, res) => {
+  try {
+    if (!supabaseConfigured) return res.status(503).json({ error: 'Supabase not configured' });
+    const { requestId } = req.body;
+    if (!requestId) return res.status(400).json({ error: 'Missing requestId' });
+    const { error } = await supabase.from('friend_requests').delete().eq('id', requestId);
+    if (error) throw error;
+    res.json({ success: true });
+  } catch (err) {
+    console.error('/friend/decline error', err);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// Cancel an outgoing friend request (delete request row)
+app.post('/friend/cancel', async (req, res) => {
+  try {
+    if (!supabaseConfigured) return res.status(503).json({ error: 'Supabase not configured' });
+    const { requestId } = req.body;
+    if (!requestId) return res.status(400).json({ error: 'Missing requestId' });
+    const { error } = await supabase.from('friend_requests').delete().eq('id', requestId);
+    if (error) throw error;
+    res.json({ success: true });
+  } catch (err) {
+    console.error('/friend/cancel error', err);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
 // Accept a friend request (by request id)
 app.post('/friend/accept', async (req, res) => {
   try {

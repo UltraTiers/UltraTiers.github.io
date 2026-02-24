@@ -43,8 +43,14 @@ function handleHash() {
             } catch (e) { /* ignore */ }
         }
         if (mainContainer) mainContainer.style.display = '';
-        // ensure main content is rendered
-        try { renderDefaultTab(); } catch (e) {}
+        // ensure main content is rendered and login/UI state is re-initialized
+        try {
+            renderDefaultTab();
+            // re-run login/UI initialization so header shows the current user immediately
+            try { initLoginSystem(); } catch (e) { /* ignore if not present */ }
+            // refresh player data so lists and UI update without a full reload
+            try { fetchAndOrganizePlayers(); } catch (e) { /* ignore */ }
+        } catch (e) {}
         return;
     }
     if (h === '#ultratierchatting') {
@@ -1871,6 +1877,19 @@ async function getChatHistoryAPI(user, friend) {
     return fetch('/chat/history?user=' + encodeURIComponent(user) + '&friend=' + encodeURIComponent(friend)).then(r=>r.json());
 }
 
+// Outgoing / decline / cancel helpers
+async function getOutgoingRequestsAPI(uuid) {
+    return fetch('/friend/requests/outgoing/' + encodeURIComponent(uuid)).then(r => r.json());
+}
+
+async function declineFriendAPI(requestId) {
+    return fetch('/friend/decline', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ requestId }) }).then(r=>r.json());
+}
+
+async function cancelRequestAPI(requestId) {
+    return fetch('/friend/cancel', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ requestId }) }).then(r=>r.json());
+}
+
 // Small chat UI renderer is called from handleHash() when hash is #ultratierchatting
 function renderChatPage() {
     const user = getCurrentUser();
@@ -1911,7 +1930,7 @@ function renderChatPage() {
         <div class="chat-navbar">
             <div class="logo-section chat-logo">
                 <img class="logo" src="UltraLogo.png" alt="UltraTiers" />
-                <h1>UltraTiers</h1>
+                <h1>ULTRATIERS</h1>
             </div>
         </div>
         <div class="chat-app">
@@ -1923,6 +1942,10 @@ function renderChatPage() {
                 <div class="sidebar-section">
                     <h4>Incoming</h4>
                     <div id="incoming-list" class="incoming-list"></div>
+                </div>
+                <div class="sidebar-section">
+                    <h4>Outgoing</h4>
+                    <div id="outgoing-list" class="outgoing-list"></div>
                 </div>
                 <div class="sidebar-section">
                     <h4>Friends</h4>
@@ -2049,7 +2072,6 @@ function renderChatPage() {
             const el = document.createElement('div');
             el.className = 'incoming-row';
 
-            // meta contains avatar + name for cleaner single-profile rendering
             const meta = document.createElement('div');
             meta.className = 'meta incoming-meta';
             meta.style.display = 'flex';
@@ -2068,24 +2090,93 @@ function renderChatPage() {
             nameWrap.style.flex = '1';
             nameWrap.innerHTML = `<strong>${req.from_name || req.from_uuid}</strong>`;
 
+            const actions = document.createElement('div');
+            actions.style.display = 'flex';
+            actions.style.gap = '8px';
+
+            const acceptBtn = document.createElement('button');
+            acceptBtn.className = 'accept-icon';
+            acceptBtn.title = 'Accept';
+            acceptBtn.dataset.id = req.id;
+            acceptBtn.innerHTML = '✔';
+
+            const declineBtn = document.createElement('button');
+            declineBtn.className = 'decline-icon';
+            declineBtn.title = 'Decline';
+            declineBtn.dataset.id = req.id;
+            declineBtn.innerHTML = '✖';
+
             meta.appendChild(avatar);
             meta.appendChild(nameWrap);
 
-            const btn = document.createElement('button');
-            btn.className = 'accept-req';
-            btn.dataset.id = req.id;
-            btn.textContent = 'Accept';
+            actions.appendChild(acceptBtn);
+            actions.appendChild(declineBtn);
 
             el.appendChild(meta);
-            el.appendChild(btn);
+            el.appendChild(actions);
             container.appendChild(el);
-        });
 
-        container.querySelectorAll('.accept-req').forEach(btn => btn.addEventListener('click', async (e) => {
-            const id = e.currentTarget.dataset.id;
-            const res = await acceptFriendAPI(id);
-            if (res?.success) { loadFriends(); loadInbox(); }
-        }));
+            acceptBtn.addEventListener('click', async (e) => {
+                const id = e.currentTarget.dataset.id;
+                const res = await acceptFriendAPI(id);
+                if (res?.success) { loadFriends(); loadInbox(); loadOutgoing(); }
+            });
+
+            declineBtn.addEventListener('click', async (e) => {
+                const id = e.currentTarget.dataset.id;
+                const res = await declineFriendAPI(id);
+                if (res?.success) { loadInbox(); }
+            });
+        });
+    }
+
+    async function loadOutgoing() {
+        const out = await getOutgoingRequestsAPI(user.uuid);
+        const container = document.getElementById('outgoing-list');
+        container.innerHTML = '';
+        if (!out || out.length === 0) {
+            container.innerHTML = '<div class="no-requests">No friend requests send</div>';
+            return;
+        }
+        out.forEach(r => {
+            const el = document.createElement('div');
+            el.className = 'outgoing-row';
+            const meta = document.createElement('div');
+            meta.className = 'meta outgoing-meta';
+            meta.style.display = 'flex';
+            meta.style.alignItems = 'center';
+            meta.style.gap = '10px';
+
+            const avatar = document.createElement('img');
+            avatar.className = 'avatar';
+            avatar.src = r.to_uuid ? `https://mc-heads.net/avatar/${r.to_uuid}/64` : 'UltraLogo.png';
+            avatar.style.width = '40px';
+            avatar.style.height = '40px';
+            avatar.style.borderRadius = '50%';
+
+            const nameWrap = document.createElement('div');
+            nameWrap.style.flex = '1';
+            nameWrap.innerHTML = `<strong>${r.to_name || r.to_uuid}</strong>`;
+
+            const cancelBtn = document.createElement('button');
+            cancelBtn.className = 'cancel-icon';
+            cancelBtn.title = 'Cancel request';
+            cancelBtn.dataset.id = r.id;
+            cancelBtn.innerHTML = '✖';
+
+            meta.appendChild(avatar);
+            meta.appendChild(nameWrap);
+            el.appendChild(meta);
+            el.appendChild(cancelBtn);
+            container.appendChild(el);
+
+            cancelBtn.addEventListener('click', async (e) => {
+                const id = e.currentTarget.dataset.id;
+                if (!confirm('Cancel friend request?')) return;
+                const res = await cancelRequestAPI(id);
+                if (res?.success) loadOutgoing();
+            });
+        });
     }
 
     async function loadFriends() {
@@ -2145,24 +2236,26 @@ function renderChatPage() {
             left.addEventListener('click', () => selectFriend(f));
 
             const actions = document.createElement('div');
-            actions.style.display = 'flex';
-            actions.style.gap = '8px';
+            actions.style.position = 'relative';
 
-            const openBtn = document.createElement('button');
-            openBtn.className = 'chat-open-btn';
-            openBtn.textContent = 'Open';
-            openBtn.addEventListener('click', () => selectFriend(f));
+            const menuBtn = document.createElement('button');
+            menuBtn.className = 'three-dots-btn';
+            menuBtn.textContent = '⋯';
+            menuBtn.title = 'Actions';
 
-            const removeBtn = document.createElement('button');
-            removeBtn.className = 'chat-remove-btn';
-            removeBtn.textContent = 'Remove';
-            removeBtn.addEventListener('click', async (e) => {
+            const dropdown = document.createElement('div');
+            dropdown.className = 'dropdown-menu';
+            dropdown.style.display = 'none';
+            const rem = document.createElement('div');
+            rem.className = 'dropdown-item';
+            rem.textContent = 'Remove';
+            rem.style.cursor = 'pointer';
+            rem.addEventListener('click', async (e) => {
                 e.stopPropagation();
                 if (!confirm('Remove friend ' + (f.name || f.friend_uuid) + '?')) return;
                 const res = await removeFriendAPI(user.uuid, f.friend_uuid);
                 if (res?.success) {
                     loadFriends();
-                    // if removed friend is active, clear convo
                     if (activeFriend && (activeFriend.friend_uuid === f.friend_uuid || activeFriend.uuid === f.friend_uuid)) {
                         activeFriend = null;
                         showNoConversation();
@@ -2170,10 +2263,19 @@ function renderChatPage() {
                 } else {
                     alert(res?.error || 'Failed to remove');
                 }
+                dropdown.style.display = 'none';
+            });
+            dropdown.appendChild(rem);
+
+            menuBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                dropdown.style.display = dropdown.style.display === 'none' ? 'block' : 'none';
             });
 
-            actions.appendChild(openBtn);
-            actions.appendChild(removeBtn);
+            document.addEventListener('click', () => { if (dropdown) dropdown.style.display = 'none'; });
+
+            actions.appendChild(menuBtn);
+            actions.appendChild(dropdown);
 
             el.appendChild(left);
             el.appendChild(actions);
@@ -2254,7 +2356,8 @@ function renderChatPage() {
 
     loadInbox();
     loadFriends();
-    setInterval(() => { if (document.getElementById('ultratier-chat-app')) { loadInbox(); loadFriends(); if (activeFriend) loadHistory(); } }, 5000);
+    loadOutgoing();
+    setInterval(() => { if (document.getElementById('ultratier-chat-app')) { loadInbox(); loadFriends(); loadOutgoing(); if (activeFriend) loadHistory(); } }, 5000);
 }
 
 function initLoginSystem() {
