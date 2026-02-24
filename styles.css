@@ -5833,7 +5833,7 @@ body {
 /* make sidebar lists scrollable when content exceeds available space */
 .incoming-list, .outgoing-list, .friends-list-items {
     overflow:auto;
-    max-height: 220px;
+    max-height: 300px;
 }
 
 .no-convo { text-align:center; color:rgba(255,255,255,0.5); font-size:16px; margin-top:32px; }
@@ -5995,4 +5995,29 @@ body {
 /* make sure chat messages area has comfortable padding and anchors to top */
 .chat-body { padding:20px 28px; display:flex; flex-direction:column; }
 .chat-body .msg { margin-bottom:12px; }
+
+/* Mobile: stack chat sidebar above the chat window and make input layout friendly */
+@media (max-width: 768px) {
+    .chat-app { flex-direction: column; margin: 12px; gap: 12px; }
+    .chat-sidebar, .chat-window { width: 100%; max-width: none; min-width: 0; height: auto; }
+    .chat-sidebar { order: 0; }
+    .chat-window { order: 1; }
+    .chat-window, .chat-sidebar { border-radius: 12px; }
+    .chat-body { padding: 12px; height: 50vh; overflow:auto; }
+
+    /* Input: make send button inline and avoid absolute positioning */
+    .chat-input-area { padding: 10px; }
+    .chat-input-area .send-btn { position: static; right: auto; top: auto; transform: none; width: auto; height:40px; border-radius:8px; margin-left:8px; }
+    .chat-input-area input, .chat-input-area textarea { padding: 10px 14px; }
+    .chat-input-area textarea { min-height:48px; max-height:140px; resize:vertical; overflow:auto; }
+
+    /* Sidebar compacting */
+    .chat-sidebar { padding: 10px; }
+    .friends-list-items .friend-row,
+    .incoming-list .incoming-row,
+    .outgoing-list .outgoing-row { padding: 8px; min-height:48px; }
+
+    /* Ensure message bubbles take full width on mobile */
+    .msg { max-width: 100%; }
+}
 
