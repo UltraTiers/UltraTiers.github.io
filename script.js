@@ -2043,6 +2043,19 @@ function renderChatPage() {
 
     showNoConversation();
 
+    // Observe changes to the chat header and clear messages when no conversation is selected
+    try {
+        const chatWithEl = document.getElementById('chat-with');
+        if (chatWithEl) {
+            const headerObserver = new MutationObserver(() => {
+                if ((chatWithEl.textContent || '').trim() === 'No conversation selected') {
+                    try { showNoConversation(); } catch (e) { /* ignore */ }
+                }
+            });
+            headerObserver.observe(chatWithEl, { characterData: true, childList: true, subtree: true });
+        }
+    } catch (e) { /* ignore */ }
+
     document.getElementById('send-request-btn').addEventListener('click', async () => {
         const target = document.getElementById('friend-name-input').value.trim();
         const btn = document.getElementById('send-request-btn');
