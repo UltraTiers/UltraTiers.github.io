@@ -5630,7 +5630,7 @@ body {
 
 /* Message bubbles use subtle cards and tierlist colors */
 .msg { position:relative; }
-.msg .bubble-text { white-space:pre-wrap; word-wrap:break-word; color:var(--text-primary); }
+.msg .bubble-text { white-space:pre-wrap; word-wrap:break-word; color:var(--text-primary); overflow-wrap:anywhere; word-break:break-word; }
 .msg.me { background: rgba(14,165,233,0.06); color: #000; }
 .msg.them { background: rgba(255,255,255,0.02); color: var(--text-primary); }
 
@@ -5650,6 +5650,7 @@ body {
 /* floating send icon styles */
 .chat-input-area { position: relative; display:flex; align-items:center; gap:12px; padding:12px 18px; }
 .chat-input-area input, .chat-input-area textarea { flex:1; width:100%; padding:12px 110px 12px 14px; border-radius:8px; border:1px solid rgba(0,0,0,0.06); box-sizing:border-box; resize:none; }
+.chat-input-area textarea { min-width: 0; overflow-wrap: anywhere; word-break: break-word; }
 .chat-input-area .send-btn {
     position: absolute;
     right: 24px;
@@ -5705,6 +5706,12 @@ body {
 
 /* Chat app full-bleed container */
 .chat-app { margin: 24px; display:flex; gap:18px; }
+
+/* Prevent chat layout from growing horizontally due to long unbroken text */
+.chat-app, .chat-window, .chat-body {
+    overflow-x: hidden;
+    min-width: 0;
+}
 
 /* Sidebar and window layout for WhatsApp-like look */
 .chat-sidebar {
