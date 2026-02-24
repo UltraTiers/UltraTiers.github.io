@@ -3,6 +3,26 @@ function openChatPage() {
     location.hash = '#ultratierchatting';
 }
 
+// Basic hash router used by the app
+function handleHash() {
+    const h = (location.hash || '').toLowerCase();
+    if (h === '#ultratierchatting') {
+        try { renderChatPage(); } catch (e) { console.error('renderChatPage error', e); }
+        return;
+    }
+
+    // Remove chat app if present and show main list
+    const chatApp = document.getElementById('ultratier-chat-app');
+    if (chatApp) chatApp.remove();
+    const mainContainer = document.querySelector('.container');
+    if (mainContainer) mainContainer.style.display = '';
+
+    // Default to tierlist tab when hash is #ultratierlist or unknown
+    if (typeof renderDefaultTab === 'function') {
+        try { renderDefaultTab(); } catch (e) { console.error('renderDefaultTab error', e); }
+    }
+}
+
 // Show maintenance page for root or unknown hashes
 function setupHashRouting() {
     window.addEventListener('hashchange', handleHash);
