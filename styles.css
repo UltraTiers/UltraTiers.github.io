@@ -5738,8 +5738,8 @@ body {
 .chat-sidebar { padding:14px; }
 .friend-add input { background: transparent; border:1px solid var(--border-color); color: var(--text-primary); }
 .friend-add .add-btn { font-size:20px; }
-.friends-list-items div, .incoming-list div { padding:6px; background:transparent; border-radius:10px; }
-.friends-list-items div .avatar, .incoming-list div .avatar { width:36px; height:36px; border-radius:50%; background:#0b2730; flex-shrink:0; }
+.friends-list-items div, .incoming-list div, .outgoing-list div { padding:6px; background:transparent; border-radius:10px; }
+.friends-list-items div .avatar, .incoming-list div .avatar, .outgoing-list div .avatar { width:36px; height:36px; border-radius:50%; background:#0b2730; flex-shrink:0; }
 .friends-list-items div .meta,
 .incoming-list div .meta,
 .outgoing-list div .meta { display:flex; flex-direction:row; align-items:center; gap:8px; }
