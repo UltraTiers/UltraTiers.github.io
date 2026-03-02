@@ -1,0 +1,45 @@
+<!-- BrawlTiers: Orange themed clone of UltraTiers site (raw file, not in folder) -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BrawlTiers</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        :root {
+            --main-color: orange;
+            --accent-color: #ff9800;
+            --background-color: #fff8e1;
+        }
+        body {
+            background: var(--background-color);
+        }
+        .header, .main-tab-btn.active, .mode-tab-btn.active {
+            background: var(--main-color) !important;
+            color: #fff !important;
+        }
+        .main-tab-btn, .mode-tab-btn {
+            border-color: var(--accent-color) !important;
+        }
+        .tier-card {
+            border-color: var(--accent-color) !important;
+        }
+        .main-tabs, .mode-tabs {
+            background: var(--main-color) !important;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="logo-section">
+            <span class="logo">🟧</span>
+            <h1>BrawlTiers</h1>
+        </div>
+    </div>
+    <div class="container">
+        <!-- Content will be rendered by JS -->
+    </div>
+    <script src="brawltiers.js"></script>
+</body>
+</html>
