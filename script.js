@@ -1,10 +1,13 @@
-﻿// --- Routing / Client helpers ---
+﻿// --- Friends & Chat Routing / Client helpers ---
+function openChatPage() {
+    location.hash = '#ultratierchatting';
+}
 
 // Show maintenance page for root or unknown hashes
 function setupHashRouting() {
     window.addEventListener('hashchange', handleHash);
     handleHash();
-// removed extra closing brace
+}
 
 function getCurrentUser() {
     try {
@@ -14,22 +17,62 @@ function getCurrentUser() {
     return window.currentUser || null;
 }
 
+function handleHash() {
     const h = location.hash;
-    if (!h || h !== '#ultratierlist') {
+    if (!h || (h !== '#ultratierlist' && h !== '#ultratierchatting')) {
         // redirect unknown or empty hash to the main tierlist
         location.hash = '#ultratierlist';
         return;
     }
     const mainContainer = document.querySelector('.container');
+    const user = getCurrentUser();
     if (h === '#ultratierlist') {
+        // show main site UI and remove chat UI + cloned header if present
+        const app = document.getElementById('ultratier-chat-app');
+        if (app) app.remove();
+        const cloneHeader = document.getElementById('chat-header-clone');
+        if (cloneHeader) cloneHeader.remove();
+        // restore original header markup if we modified it for chat
+        const mainHeader = document.querySelector('.header');
+        if (mainHeader && mainHeader.dataset && mainHeader.dataset.savedInner) {
+            try {
+                mainHeader.innerHTML = mainHeader.dataset.savedInner;
+                delete mainHeader.dataset.savedInner;
+                mainHeader.style.position = '';
+                mainHeader.style.top = '';
+                mainHeader.style.zIndex = '';
+            } catch (e) { /* ignore */ }
+        }
         if (mainContainer) mainContainer.style.display = '';
+        // ensure main content is rendered and login/UI state is re-initialized
         try {
             renderDefaultTab();
+            // re-run login/UI initialization so header shows the current user immediately
             try { initLoginSystem(); } catch (e) { /* ignore if not present */ }
+            // refresh player data so lists and UI update without a full reload
             try { fetchAndOrganizePlayers(); } catch (e) { /* ignore */ }
+            // re-initialize search system (re-attaches dropdown listeners after header was replaced)
             try { initSearchSystem(); } catch (e) { /* ignore */ }
         } catch (e) {}
         return;
+    }
+    if (h === '#ultratierchatting') {
+        // If user is not logged in, don't allow access to chat — redirect to tierlist and open login
+        if (!user) {
+            location.hash = '#ultratierlist';
+            setTimeout(() => { try { openLoginModal(); } catch (e) {} }, 150);
+            return;
+        }
+
+        // hide main site UI and render chat
+        if (mainContainer) mainContainer.style.display = 'none';
+        try {
+            // Render the chat page (renderChatPage handles cloning the header)
+            renderChatPage();
+        } catch (e) {
+            console.warn('renderChatPage failed', e);
+        }
+        
     }
 }
 
@@ -585,31 +628,14 @@ document.addEventListener('DOMContentLoaded', async function () {
 })();
 
 function setupTabHandlers() {
-    // Only show All Modes and Rankings tabs
-    const container = document.querySelector('.container');
-    container.innerHTML = `
-        <div class="main-tabs">
-            <button class="main-tab-btn active" id="all-modes-tab">All Modes</button>
-            <button class="main-tab-btn" id="rankings-tab">Rankings</button>
-        </div>
-        <div class="tab-content active" id="all-modes-content"></div>
-        <div class="tab-content" id="rankings-content"></div>
-    `;
-    document.getElementById('all-modes-tab').onclick = () => switchMainTab('all-modes');
-    document.getElementById('rankings-tab').onclick = () => switchMainTab('rankings');
-    switchMainTab('all-modes');
-}
-
-function switchMainTab(tab) {
-    document.getElementById('all-modes-content').classList.toggle('active', tab === 'all-modes');
-    document.getElementById('rankings-content').classList.toggle('active', tab === 'rankings');
-    document.getElementById('all-modes-tab').classList.toggle('active', tab === 'all-modes');
-    document.getElementById('rankings-tab').classList.toggle('active', tab === 'rankings');
-    if (tab === 'all-modes') {
-        renderAllModesOverall();
-    } else {
-        renderRankings();
-    }
+    // Main tab handlers
+    const mainTabs = document.querySelectorAll('.main-tab-btn');
+    mainTabs.forEach(btn => {
+        btn.addEventListener('click', function () {
+            const tabName = this.getAttribute('data-tab');
+            switchMainTab(tabName);
+        });
+    });
 }
 
 // Get unique regions from all players
