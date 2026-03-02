@@ -1,3 +1,53 @@
+// -------------------
+// BRAWLTIERS API
+// -------------------
+// Load BrawlTiers players
+app.get("/brawltiers", async (req, res) => {
+  if (!supabaseConfigured) return res.json([]);
+  try {
+    const { data, error } = await supabase.from("brawltiers").select("*");
+    if (error) throw error;
+    res.json(data);
+  } catch (err) {
+    console.error("Error loading brawltiers players:", err);
+    res.json([]);
+  }
+});
+
+// Add or update BrawlTiers player
+app.post("/brawltiers", async (req, res) => {
+  if (!supabaseConfigured) return res.status(500).json({ error: "Supabase not configured" });
+  try {
+    const { uuid, name, mode, region } = req.body;
+    if (!uuid || !name || !mode || !region) return res.status(400).json({ error: "Missing fields" });
+    // Fetch existing player
+    const { data: existing, error: fetchError } = await supabase
+      .from("brawltiers")
+      .select("*")
+      .eq("uuid", uuid)
+      .maybeSingle();
+    if (fetchError) throw fetchError;
+    const newModes = Array.isArray(mode) ? mode : [mode];
+    if (existing) {
+      // Update
+      const { error: updateError } = await supabase
+        .from("brawltiers")
+        .update({ name, mode: newModes, region })
+        .eq("uuid", uuid);
+      if (updateError) throw updateError;
+    } else {
+      // Insert
+      const { error: insertError } = await supabase
+        .from("brawltiers")
+        .insert([{ uuid, name, mode: newModes, region }]);
+      if (insertError) throw insertError;
+    }
+    res.json({ success: true });
+  } catch (err) {
+    console.error("Error adding/updating brawltiers player:", err);
+    res.status(500).json({ error: "Failed to add/update brawltiers player" });
+  }
+});
 import express from "express";
 import cors from "cors";
 import path from "path";
