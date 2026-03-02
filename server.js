@@ -48,6 +48,7 @@ app.post("/brawltiers", async (req, res) => {
     res.status(500).json({ error: "Failed to add/update brawltiers player" });
   }
 });
+
 import express from "express";
 import cors from "cors";
 import path from "path";
