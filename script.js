@@ -1,6 +1,40 @@
-﻿// --- Friends & Chat Routing / Client helpers ---
-function openChatPage() {
-    location.hash = '#ultratierchatting';
+﻿// --- Friends & League Routing / Client helpers ---
+function openLeaguePage() {
+    location.hash = '#ultratierleague';
+}
+
+function setHeaderToLeagueMode() {
+    const btn = document.getElementById('friends-link-btn');
+    const searchContainer = document.querySelector('.search-container');
+    const searchInputWrapper = document.querySelector('.search-input-wrapper');
+    if (btn) {
+        btn.title = 'Go to league';
+        btn.innerHTML = '<i class="fas fa-trophy"></i>';
+        btn.onclick = openLeaguePage;
+    }
+    if (searchContainer) {
+        searchContainer.style.display = 'flex';
+    }
+    if (searchInputWrapper) {
+        searchInputWrapper.style.display = 'flex';
+    }
+}
+
+function setHeaderToTierlistMode() {
+    const btn = document.getElementById('friends-link-btn');
+    const searchContainer = document.querySelector('.search-container');
+    const searchInputWrapper = document.querySelector('.search-input-wrapper');
+    if (btn) {
+        btn.title = 'Back to tierlist';
+        btn.innerHTML = '<i class="fas fa-arrow-left"></i>';
+        btn.onclick = () => { location.hash = '#ultratierlist'; };
+    }
+    if (searchContainer) {
+        searchContainer.style.display = 'flex';
+    }
+    if (searchInputWrapper) {
+        searchInputWrapper.style.display = 'none';
+    }
 }
 
 // Show maintenance page for root or unknown hashes
@@ -19,7 +53,7 @@ function getCurrentUser() {
 
 function handleHash() {
     const h = location.hash;
-    if (!h || (h !== '#ultratierlist' && h !== '#ultratierchatting')) {
+    if (!h || (h !== '#ultratierlist' && h !== '#ultratierleague')) {
         // redirect unknown or empty hash to the main tierlist
         location.hash = '#ultratierlist';
         return;
@@ -27,52 +61,34 @@ function handleHash() {
     const mainContainer = document.querySelector('.container');
     const user = getCurrentUser();
     if (h === '#ultratierlist') {
-        // show main site UI and remove chat UI + cloned header if present
-        const app = document.getElementById('ultratier-chat-app');
+        const app = document.getElementById('ultratier-league-app');
         if (app) app.remove();
-        const cloneHeader = document.getElementById('chat-header-clone');
-        if (cloneHeader) cloneHeader.remove();
-        // restore original header markup if we modified it for chat
-        const mainHeader = document.querySelector('.header');
-        if (mainHeader && mainHeader.dataset && mainHeader.dataset.savedInner) {
-            try {
-                mainHeader.innerHTML = mainHeader.dataset.savedInner;
-                delete mainHeader.dataset.savedInner;
-                mainHeader.style.position = '';
-                mainHeader.style.top = '';
-                mainHeader.style.zIndex = '';
-            } catch (e) { /* ignore */ }
-        }
+        const mainTabs = document.querySelector('.main-tabs');
+        const content = document.querySelector('main.content');
+        if (mainTabs) mainTabs.style.display = '';
+        if (content) content.style.display = '';
         if (mainContainer) mainContainer.style.display = '';
-        // ensure main content is rendered and login/UI state is re-initialized
+        setHeaderToLeagueMode();
         try {
             renderDefaultTab();
-            // re-run login/UI initialization so header shows the current user immediately
             try { initLoginSystem(); } catch (e) { /* ignore if not present */ }
-            // refresh player data so lists and UI update without a full reload
             try { fetchAndOrganizePlayers(); } catch (e) { /* ignore */ }
-            // re-initialize search system (re-attaches dropdown listeners after header was replaced)
             try { initSearchSystem(); } catch (e) { /* ignore */ }
         } catch (e) {}
         return;
     }
-    if (h === '#ultratierchatting') {
-        // If user is not logged in, don't allow access to chat — redirect to tierlist and open login
-        if (!user) {
-            location.hash = '#ultratierlist';
-            setTimeout(() => { try { openLoginModal(); } catch (e) {} }, 150);
-            return;
-        }
-
-        // hide main site UI and render chat
-        if (mainContainer) mainContainer.style.display = 'none';
+    if (h === '#ultratierleague') {
+        const mainTabs = document.querySelector('.main-tabs');
+        const content = document.querySelector('main.content');
+        if (mainTabs) mainTabs.style.display = 'none';
+        if (content) content.style.display = 'none';
+        if (mainContainer) mainContainer.style.display = '';
+        setHeaderToTierlistMode();
         try {
-            // Render the chat page (renderChatPage handles cloning the header)
-            renderChatPage();
+            renderLeaguePage();
         } catch (e) {
-            console.warn('renderChatPage failed', e);
+            console.warn('renderLeaguePage failed', e);
         }
-        
     }
 }
 
@@ -530,14 +546,14 @@ function initSearchSystem() {
 // Initialize
 document.addEventListener('DOMContentLoaded', async function () {
     setupHashRouting();
-    const loadingChat = location.hash === '#ultratierchatting';
-    // Always initialize app state (players + auth) so chat works on refresh,
-    // but avoid rendering the default tierlist tab when user explicitly requested chat.
+    const loadingLeague = location.hash === '#ultratierleague';
+    // Always initialize app state so the league page works on refresh,
+    // but avoid rendering the default tierlist tab when user explicitly requested the league page.
     await fetchAndOrganizePlayers();
     initLoginSystem();
     initSearchSystem();
     setupTabHandlers();
-    if (!loadingChat) renderDefaultTab();
+    if (!loadingLeague) renderDefaultTab();
 });
 
 // --- Peak tooltip (delegated) ---
@@ -2687,6 +2703,129 @@ function renderChatPage() {
 
     // Periodic refresh of inbox/friends/outgoing/history
     setInterval(() => { if (document.getElementById('ultratier-chat-app')) { loadInbox(); loadFriends(); loadOutgoing(); if (activeFriend) loadHistory(); } }, 5000);
+}
+
+function renderLeaguePage() {
+    const teamLogos = {
+        "E.V.V. '58": "https://secretpepper.github.io/Ultra-League/teams/EVV58.png",
+        "PND": "https://secretpepper.github.io/Ultra-League/teams/PND.png",
+        "La Familia": "https://secretpepper.github.io/Ultra-League/teams/La%20Famillia.png",
+        "The Cocos": "https://secretpepper.github.io/Ultra-League/teams/The%20Cocos.png",
+        "Ultra Team": "https://secretpepper.github.io/Ultra-League/teams/Ultra%20Team.png",
+        "TBot Warriors": "https://secretpepper.github.io/Ultra-League/teams/TBot%20Warriors.png",
+        "The Boiz": "https://secretpepper.github.io/Ultra-League/teams/The%20Boiz.png",
+        "IV": "https://secretpepper.github.io/Ultra-League/teams/IV.png",
+        "Wemmbu_Aura+++": "https://secretpepper.github.io/Ultra-League/teams/Wemmbu_Aura.png",
+        "Sanctuary": "https://secretpepper.github.io/Ultra-League/teams/Sanctuary.png"
+    };
+
+    const leagueData = {
+        diamond: [
+            { rank: 1, team: "E.V.V. '58", pl: 0, w: 0, l: 0, diff: '0-0', rd: 0, pts: 0, form: ['?', '?', '?', '?', '?'] },
+            { rank: 2, team: 'PND', pl: 0, w: 0, l: 0, diff: '0-0', rd: 0, pts: 0, form: ['?', '?', '?', '?', '?'] },
+            { rank: 3, team: 'La Familia', pl: 0, w: 0, l: 0, diff: '0-0', rd: 0, pts: 0, form: ['?', '?', '?', '?', '?'] },
+            { rank: 4, team: 'The Cocos', pl: 0, w: 0, l: 0, diff: '0-0', rd: 0, pts: 0, form: ['?', '?', '?', '?', '?'] },
+            { rank: 5, team: 'Ultra Team', pl: 0, w: 0, l: 0, diff: '0-0', rd: 0, pts: 0, form: ['?', '?', '?', '?', '?'] },
+            { rank: 6, team: 'TBot Warriors', pl: 0, w: 0, l: 0, diff: '0-0', rd: 0, pts: 0, form: ['?', '?', '?', '?', '?'] },
+            { rank: 7, team: 'The Boiz', pl: 0, w: 0, l: 0, diff: '0-0', rd: 0, pts: 0, form: ['?', '?', '?', '?', '?'] },
+            { rank: 8, team: 'IV', pl: 0, w: 0, l: 0, diff: '0-0', rd: 0, pts: 0, form: ['?', '?', '?', '?', '?'] },
+            { rank: 9, team: 'Wemmbu_Aura+++', pl: 0, w: 0, l: 0, diff: '0-0', rd: 0, pts: 0, form: ['?', '?', '?', '?', '?'] },
+            { rank: 10, team: 'Sanctuary', pl: 0, w: 0, l: 0, diff: '0-0', rd: 0, pts: 0, form: ['?', '?', '?', '?', '?'] }
+        ],
+        gold: [],
+        iron: [],
+        wood: []
+    };
+
+    const mainContainer = document.querySelector('.container');
+    const contentParent = document.querySelector('main.content');
+    const existing = document.getElementById('ultratier-league-app');
+    if (existing) existing.remove();
+
+    const app = document.createElement('div');
+    app.id = 'ultratier-league-app';
+    app.className = 'league-app-wrapper';
+    app.innerHTML = `
+        <div class="league-page">
+            <div class="league-topbar">
+                <div class="league-tabs">
+                    <button class="league-tab active" data-league="diamond">Diamond League</button>
+                    <button class="league-tab" data-league="gold">Gold League</button>
+                    <button class="league-tab" data-league="iron">Iron League</button>
+                    <button class="league-tab" data-league="wood">Wood League</button>
+                </div>
+            </div>
+            <div class="table-container">
+                <table class="league-table">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Team</th>
+                            <th>PL</th>
+                            <th>W</th>
+                            <th>L</th>
+                            <th>±</th>
+                            <th>RD</th>
+                            <th>PTS</th>
+                            <th>FORM</th>
+                        </tr>
+                    </thead>
+                    <tbody id="league-table-body"></tbody>
+                </table>
+            </div>
+        </div>
+    `;
+
+    if (contentParent && contentParent.parentNode) {
+        contentParent.parentNode.appendChild(app);
+    } else if (mainContainer) {
+        mainContainer.appendChild(app);
+    } else {
+        document.body.appendChild(app);
+    }
+
+    setHeaderToTierlistMode();
+
+    function populateLeague(leagueKey) {
+        const tbody = document.getElementById('league-table-body');
+        tbody.innerHTML = '';
+        const rows = leagueData[leagueKey] || [];
+        if (!rows.length) {
+            const emptyRow = document.createElement('tr');
+            emptyRow.innerHTML = '<td colspan="9" class="league-empty">No standings available for this league yet.</td>';
+            tbody.appendChild(emptyRow);
+            return;
+        }
+        rows.forEach(row => {
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td>${row.rank}</td>
+                <td class="team-cell"><img src="${teamLogos[row.team] || 'UltraLogo.png'}" alt="" class="team-logo"> ${row.team}</td>
+                <td>${row.pl}</td>
+                <td>${row.w}</td>
+                <td>${row.l}</td>
+                <td>${row.diff}</td>
+                <td>${row.rd}</td>
+                <td>${row.pts}</td>
+                <td class="league-form">${row.form.map(s => `<span data-result="${s}">${s}</span>`).join('')}</td>
+            `;
+            tbody.appendChild(tr);
+        });
+    }
+
+    function setActiveLeagueButton(button) {
+        const buttons = app.querySelectorAll('.league-tab');
+        buttons.forEach(btn => btn.classList.toggle('active', btn === button));
+    }
+
+    app.querySelectorAll('.league-tab').forEach(btn => {
+        btn.addEventListener('click', () => {
+            setActiveLeagueButton(btn);
+            populateLeague(btn.dataset.league);
+        });
+    });
+
+    populateLeague('diamond');
 }
 
 function initLoginSystem() {
