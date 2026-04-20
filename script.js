@@ -1407,28 +1407,41 @@ function createTierCard(tierNumber, players, category = 'main', mode = null) {
     const card = document.createElement('div');
     card.className = `tier-card ${tierColors[tierNumber]}`;
     
-    // Filter players based on retirement status and show setting
-    let filteredPlayers = [...players];
-    if (mode && !window.showRetiredPlayers) {
-        filteredPlayers = filteredPlayers.filter(playerName => {
+    // Separate active and retired players, then optionally hide retired players
+    let activePlayers = [];
+    let retiredPlayers = [];
+    
+    if (mode) {
+        players.forEach(playerName => {
             let cleanName = playerName;
             if (playerName.startsWith('HT') || playerName.startsWith('LT')) {
                 cleanName = playerName.substring(2);
             }
             const playerObj = window.playerMap[cleanName];
             const isRetired = playerObj && Array.isArray(playerObj.retired_modes) && playerObj.retired_modes.includes(mode);
-            return !isRetired;
+            if (isRetired) {
+                retiredPlayers.push(playerName);
+            } else {
+                activePlayers.push(playerName);
+            }
         });
+    } else {
+        activePlayers = [...players];
     }
-    
-    // Sort players: HT first (higher tier prefixes), then LT
-    const sortedPlayers = [...filteredPlayers].sort((a, b) => {
-        const aIsHT = a.startsWith('HT');
-        const bIsHT = b.startsWith('HT');
-        if (aIsHT && !bIsHT) return -1;  // HT comes first
-        if (!aIsHT && bIsHT) return 1;   // LT comes second
-        return 0;
-    });
+
+    const sortPlayerOrder = (list) => {
+        return [...list].sort((a, b) => {
+            const aIsHT = a.startsWith('HT');
+            const bIsHT = b.startsWith('HT');
+            if (aIsHT && !bIsHT) return -1;
+            if (!aIsHT && bIsHT) return 1;
+            return 0;
+        });
+    };
+
+    const sortedActivePlayers = sortPlayerOrder(activePlayers);
+    const sortedRetiredPlayers = sortPlayerOrder(retiredPlayers);
+    const finalPlayers = window.showRetiredPlayers ? [...sortedActivePlayers, ...sortedRetiredPlayers] : sortedActivePlayers;
     
     const header = document.createElement('div');
     header.className = 'tier-header';
@@ -1436,12 +1449,12 @@ function createTierCard(tierNumber, players, category = 'main', mode = null) {
     header.innerHTML = `
         <span class="tier-icon">${tierIcons[tierNumber]}</span>
         <span class="tier-title">Tier ${tierNumber}</span>
-        <span class="tier-number">${filteredPlayers.length} players</span>
+        <span class="tier-number">${finalPlayers.length} players</span>
     `;
     
     card.appendChild(header);
     
-    if (filteredPlayers.length === 0) {
+    if (finalPlayers.length === 0) {
         const empty = document.createElement('div');
         empty.className = 'empty-state';
         empty.innerHTML = '<div class="empty-state-text">No players yet</div>';
