@@ -1463,7 +1463,7 @@ function createTierCard(tierNumber, players, category = 'main', mode = null) {
         const list = document.createElement('div');
         list.className = 'players-list';
         
-        sortedPlayers.forEach((playerName, index) => {
+        finalPlayers.forEach((playerName, index) => {
             const item = document.createElement('div');
             
             // Determine tier prefix and indicator
