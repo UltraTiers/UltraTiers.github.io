@@ -1,4 +1,7 @@
-﻿// --- Friends & League Routing / Client helpers ---
+﻿// Initialize global settings
+window.showRetiredPlayers = false;
+
+// --- Friends & League Routing / Client helpers ---
 function openLeaguePage() {
     location.hash = '#ultratierleague';
 }
@@ -49,6 +52,66 @@ function getCurrentUser() {
         if (ls) return JSON.parse(ls);
     } catch (e) {}
     return window.currentUser || null;
+}
+
+// --- Settings Management ---
+function getShowRetiredPlayers() {
+    const stored = localStorage.getItem('ultratiers_show_retired');
+    return stored === 'true';
+}
+
+function setShowRetiredPlayers(value) {
+    localStorage.setItem('ultratiers_show_retired', value ? 'true' : 'false');
+    window.showRetiredPlayers = value;
+}
+
+function initSettingsModal() {
+    const settingsBtn = document.getElementById('settings-btn');
+    const settingsModal = document.getElementById('settings-modal');
+    const closeSettingsBtn = document.getElementById('close-settings-modal');
+    const showRetiredToggle = document.getElementById('show-retired-toggle');
+
+    if (!settingsBtn || !settingsModal || !showRetiredToggle) return;
+
+    // Load saved settings
+    window.showRetiredPlayers = getShowRetiredPlayers();
+    showRetiredToggle.checked = window.showRetiredPlayers;
+
+    // Open settings modal
+    settingsBtn.addEventListener('click', () => {
+        settingsModal.style.display = 'flex';
+    });
+
+    // Close settings modal
+    closeSettingsBtn.addEventListener('click', () => {
+        settingsModal.style.display = 'none';
+    });
+
+    // Close modal when clicking outside
+    settingsModal.addEventListener('click', (e) => {
+        if (e.target === settingsModal) {
+            settingsModal.style.display = 'none';
+        }
+    });
+
+    // Handle toggle change
+    showRetiredToggle.addEventListener('change', (e) => {
+        setShowRetiredPlayers(e.target.checked);
+        // Re-render current rankings with new setting
+        rerenderCurrentView();
+    });
+}
+
+function rerenderCurrentView() {
+    // Get the currently active tab
+    const activeTab = document.querySelector('.main-tab-btn.active');
+    if (activeTab) {
+        const tabName = activeTab.getAttribute('data-tab');
+        const activeModeBtn = document.querySelector(`#${tabName}-tab .mode-tab-btn.active`);
+        if (activeModeBtn) {
+            activeModeBtn.click();
+        }
+    }
 }
 
 function handleHash() {
@@ -552,6 +615,7 @@ document.addEventListener('DOMContentLoaded', async function () {
     await fetchAndOrganizePlayers();
     initLoginSystem();
     initSearchSystem();
+    initSettingsModal();
     setupTabHandlers();
     if (!loadingLeague) renderDefaultTab();
 });
@@ -1334,17 +1398,31 @@ function renderRankings(category, mode) {
 
     // Render sorted tiers (unknown tier skipped)
     sortedData.forEach(tierInfo => {
-        const card = createTierCard(tierInfo.tier, tierInfo.players, category);
+        const card = createTierCard(tierInfo.tier, tierInfo.players, category, serverModeName);
         container.appendChild(card);
     });
 }
 
-function createTierCard(tierNumber, players, category = 'main') {
+function createTierCard(tierNumber, players, category = 'main', mode = null) {
     const card = document.createElement('div');
     card.className = `tier-card ${tierColors[tierNumber]}`;
     
+    // Filter players based on retirement status and show setting
+    let filteredPlayers = [...players];
+    if (mode && !window.showRetiredPlayers) {
+        filteredPlayers = filteredPlayers.filter(playerName => {
+            let cleanName = playerName;
+            if (playerName.startsWith('HT') || playerName.startsWith('LT')) {
+                cleanName = playerName.substring(2);
+            }
+            const playerObj = window.playerMap[cleanName];
+            const isRetired = playerObj && Array.isArray(playerObj.retired_modes) && playerObj.retired_modes.includes(mode);
+            return !isRetired;
+        });
+    }
+    
     // Sort players: HT first (higher tier prefixes), then LT
-    const sortedPlayers = [...players].sort((a, b) => {
+    const sortedPlayers = [...filteredPlayers].sort((a, b) => {
         const aIsHT = a.startsWith('HT');
         const bIsHT = b.startsWith('HT');
         if (aIsHT && !bIsHT) return -1;  // HT comes first
@@ -1358,12 +1436,12 @@ function createTierCard(tierNumber, players, category = 'main') {
     header.innerHTML = `
         <span class="tier-icon">${tierIcons[tierNumber]}</span>
         <span class="tier-title">Tier ${tierNumber}</span>
-        <span class="tier-number">${players.length} players</span>
+        <span class="tier-number">${filteredPlayers.length} players</span>
     `;
     
     card.appendChild(header);
     
-    if (players.length === 0) {
+    if (filteredPlayers.length === 0) {
         const empty = document.createElement('div');
         empty.className = 'empty-state';
         empty.innerHTML = '<div class="empty-state-text">No players yet</div>';
@@ -1374,7 +1452,6 @@ function createTierCard(tierNumber, players, category = 'main') {
         
         sortedPlayers.forEach((playerName, index) => {
             const item = document.createElement('div');
-            item.className = 'player-item';
             
             // Determine tier prefix and indicator
             let tierPrefix = '';
@@ -1389,6 +1466,12 @@ function createTierCard(tierNumber, players, category = 'main') {
                 cleanName = playerName.substring(2); // Remove LT prefix
             }
             
+            // Get player object for MC skin using clean name
+            const playerObj = window.playerMap[cleanName] || { name: cleanName };
+            const isRetired = playerObj && mode && Array.isArray(playerObj.retired_modes) && playerObj.retired_modes.includes(mode);
+            
+            item.className = `player-item${isRetired ? ' player-retired' : ''}`;
+            
             const rank = document.createElement('div');
             rank.className = 'player-rank';
             let icon = '';
@@ -1399,8 +1482,6 @@ function createTierCard(tierNumber, players, category = 'main') {
             }
             rank.innerHTML = `<div>${icon}</div>`;
             
-            // Get player object for MC skin using clean name
-            const playerObj = window.playerMap[cleanName] || { name: cleanName };
             const avatar = getPlayerAvatarElement(playerObj);
             avatar.style.width = '32px';
             avatar.style.height = '32px';
