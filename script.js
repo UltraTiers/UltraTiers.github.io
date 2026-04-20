@@ -100,6 +100,8 @@ function initSettingsModal() {
         // Re-render current rankings with new setting
         rerenderCurrentView();
     });
+
+    updateTestedPlayersCount();
 }
 
 function rerenderCurrentView() {
@@ -112,6 +114,13 @@ function rerenderCurrentView() {
             activeModeBtn.click();
         }
     }
+}
+
+function updateTestedPlayersCount() {
+    const countEl = document.getElementById('tested-players-count');
+    if (!countEl) return;
+    const count = Array.isArray(window.allPlayers) ? window.allPlayers.length : 0;
+    countEl.textContent = `Tested players: ${count}`;
 }
 
 function handleHash() {
@@ -441,6 +450,8 @@ async function fetchAndOrganizePlayers() {
 
         // Store all players for the overall view
         window.allPlayers = players;
+
+        updateTestedPlayersCount();
 
         // Create lookup map from player names to full player objects
         window.playerMap = {};

@@ -533,3 +533,15 @@
 .toggle-switch input:checked + .toggle-slider::after {
     left: 25px;
 }
+
+.settings-footer {
+    padding: 12px 16px 0;
+    margin-top: 12px;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.settings-footer-text {
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 13px;
+    line-height: 1.4;
+}
