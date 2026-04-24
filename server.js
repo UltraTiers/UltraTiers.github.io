@@ -37,10 +37,33 @@ async function loadPlayers() {
     return [];
   }
   try {
-    // Fetch all players without limit (Supabase default is 1000)
-    const { data, error } = await supabase.from("ultratiers").select("*").limit(10000);
-    if (error) throw error;
-    return data;
+    // Fetch ALL players by paginating through all available rows
+    // Supabase default limit is 1000, so we must use range() for pagination
+    const pageSize = 1000;
+    let allPlayers = [];
+    let start = 0;
+    let hasMore = true;
+    
+    while (hasMore) {
+      const { data, error, count } = await supabase
+        .from("ultratiers")
+        .select("*", { count: 'exact' })
+        .range(start, start + pageSize - 1);
+      
+      if (error) throw error;
+      
+      if (data && data.length > 0) {
+        allPlayers = allPlayers.concat(data);
+        start += pageSize;
+        // Check if we've fetched all rows (if count is available)
+        hasMore = count ? allPlayers.length < count : data.length === pageSize;
+      } else {
+        hasMore = false;
+      }
+    }
+    
+    console.log(`Loaded ${allPlayers.length} players from Supabase`);
+    return allPlayers;
   } catch (err) {
     console.error("Error loading players:", err);
     return [];
