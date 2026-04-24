@@ -37,7 +37,8 @@ async function loadPlayers() {
     return [];
   }
   try {
-    const { data, error } = await supabase.from("ultratiers").select("*");
+    // Fetch all players without limit (Supabase default is 1000)
+    const { data, error } = await supabase.from("ultratiers").select("*").limit(10000);
     if (error) throw error;
     return data;
   } catch (err) {

@@ -296,37 +296,59 @@ function renderPaginationControls(containerId, currentPage, totalPages, viewKey,
     
     const paginationDiv = document.createElement('div');
     paginationDiv.className = 'pagination-controls';
-    paginationDiv.style.cssText = 'display: flex; justify-content: center; align-items: center; gap: 8px; padding: 20px; background: rgba(30, 41, 59, 0.8); border-radius: 8px; margin-top: 16px; flex-wrap: wrap;';
+    paginationDiv.style.cssText = 'display: flex; justify-content: center; align-items: center; gap: 12px; padding: 24px; background: linear-gradient(180deg, rgba(30, 41, 59, 0.9) 0%, rgba(15, 23, 42, 0.9) 100%); border-radius: 12px; margin-top: 20px; flex-wrap: wrap; border: 1px solid rgba(251, 191, 36, 0.2);';
     
     // Previous button
     const prevBtn = document.createElement('button');
-    prevBtn.textContent = '← Prev';
+    prevBtn.textContent = '← Previous';
     prevBtn.disabled = currentPage <= 1;
-    prevBtn.style.cssText = 'padding: 8px 16px; background: rgba(100, 116, 139, 0.3); border: none; border-radius: 4px; color: white; cursor: pointer; opacity: ' + (currentPage <= 1 ? '0.5' : '1') + ';';
+    prevBtn.style.cssText = 'padding: 10px 20px; background: ' + (currentPage <= 1 ? 'rgba(100, 116, 139, 0.2)' : 'linear-gradient(135deg, #fbbf24, #f59e0b)') + '; border: none; border-radius: 8px; color: ' + (currentPage <= 1 ? 'rgba(255, 255, 255, 0.4)' : '#000') + '; cursor: ' + (currentPage <= 1 ? 'not-allowed' : 'pointer') + '; font-weight: 600; font-size: 14px; transition: all 0.2s ease;';
     prevBtn.onclick = () => {
         if (currentPage > 1) {
             window.paginationState[viewKey] = currentPage - 1;
             onPageChange();
         }
     };
+    prevBtn.onmouseenter = () => {
+        if (currentPage > 1) {
+            prevBtn.style.transform = 'translateY(-2px)';
+            prevBtn.style.boxShadow = '0 4px 12px rgba(251, 191, 36, 0.3)';
+        }
+    };
+    prevBtn.onmouseleave = () => {
+        prevBtn.style.transform = 'translateY(0)';
+        prevBtn.style.boxShadow = 'none';
+    };
     paginationDiv.appendChild(prevBtn);
     
-    // Page info
+    // Page info with player count
+    const startRecord = (currentPage - 1) * 100 + 1;
+    const endRecord = Math.min(currentPage * 100, totalPages * 100);
     const pageInfo = document.createElement('span');
     pageInfo.textContent = `Page ${currentPage} of ${totalPages}`;
-    pageInfo.style.cssText = 'color: rgba(255, 255, 255, 0.7); font-size: 14px;';
+    pageInfo.style.cssText = 'color: rgba(255, 255, 255, 0.9); font-size: 15px; font-weight: 500; padding: 0 16px;';
     paginationDiv.appendChild(pageInfo);
     
     // Next button
     const nextBtn = document.createElement('button');
     nextBtn.textContent = 'Next →';
     nextBtn.disabled = currentPage >= totalPages;
-    nextBtn.style.cssText = 'padding: 8px 16px; background: rgba(100, 116, 139, 0.3); border: none; border-radius: 4px; color: white; cursor: pointer; opacity: ' + (currentPage >= totalPages ? '0.5' : '1') + ';';
+    nextBtn.style.cssText = 'padding: 10px 20px; background: ' + (currentPage >= totalPages ? 'rgba(100, 116, 139, 0.2)' : 'linear-gradient(135deg, #fbbf24, #f59e0b)') + '; border: none; border-radius: 8px; color: ' + (currentPage >= totalPages ? 'rgba(255, 255, 255, 0.4)' : '#000') + '; cursor: ' + (currentPage >= totalPages ? 'not-allowed' : 'pointer') + '; font-weight: 600; font-size: 14px; transition: all 0.2s ease;';
     nextBtn.onclick = () => {
         if (currentPage < totalPages) {
             window.paginationState[viewKey] = currentPage + 1;
             onPageChange();
         }
+    };
+    nextBtn.onmouseenter = () => {
+        if (currentPage < totalPages) {
+            nextBtn.style.transform = 'translateY(-2px)';
+            nextBtn.style.boxShadow = '0 4px 12px rgba(251, 191, 36, 0.3)';
+        }
+    };
+    nextBtn.onmouseleave = () => {
+        nextBtn.style.transform = 'translateY(0)';
+        nextBtn.style.boxShadow = 'none';
     };
     paginationDiv.appendChild(nextBtn);
     
