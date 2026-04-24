@@ -278,6 +278,62 @@ function getRankColor(rank) {
     }
 }
 
+// Pagination state storage
+window.paginationState = window.paginationState || {};
+
+// Render pagination controls
+function renderPaginationControls(containerId, currentPage, totalPages, viewKey, onPageChange) {
+    const container = document.getElementById(containerId);
+    if (!container) return;
+    
+    // Remove existing pagination if any
+    const existingPagination = container.querySelector('.pagination-controls');
+    if (existingPagination) {
+        existingPagination.remove();
+    }
+    
+    if (totalPages <= 1) return;
+    
+    const paginationDiv = document.createElement('div');
+    paginationDiv.className = 'pagination-controls';
+    paginationDiv.style.cssText = 'display: flex; justify-content: center; align-items: center; gap: 8px; padding: 20px; background: rgba(30, 41, 59, 0.8); border-radius: 8px; margin-top: 16px; flex-wrap: wrap;';
+    
+    // Previous button
+    const prevBtn = document.createElement('button');
+    prevBtn.textContent = '← Prev';
+    prevBtn.disabled = currentPage <= 1;
+    prevBtn.style.cssText = 'padding: 8px 16px; background: rgba(100, 116, 139, 0.3); border: none; border-radius: 4px; color: white; cursor: pointer; opacity: ' + (currentPage <= 1 ? '0.5' : '1') + ';';
+    prevBtn.onclick = () => {
+        if (currentPage > 1) {
+            window.paginationState[viewKey] = currentPage - 1;
+            onPageChange();
+        }
+    };
+    paginationDiv.appendChild(prevBtn);
+    
+    // Page info
+    const pageInfo = document.createElement('span');
+    pageInfo.textContent = `Page ${currentPage} of ${totalPages}`;
+    pageInfo.style.cssText = 'color: rgba(255, 255, 255, 0.7); font-size: 14px;';
+    paginationDiv.appendChild(pageInfo);
+    
+    // Next button
+    const nextBtn = document.createElement('button');
+    nextBtn.textContent = 'Next →';
+    nextBtn.disabled = currentPage >= totalPages;
+    nextBtn.style.cssText = 'padding: 8px 16px; background: rgba(100, 116, 139, 0.3); border: none; border-radius: 4px; color: white; cursor: pointer; opacity: ' + (currentPage >= totalPages ? '0.5' : '1') + ';';
+    nextBtn.onclick = () => {
+        if (currentPage < totalPages) {
+            window.paginationState[viewKey] = currentPage + 1;
+            onPageChange();
+        }
+    };
+    paginationDiv.appendChild(nextBtn);
+    
+    // Insert after the container content
+    container.appendChild(paginationDiv);
+}
+
 // Category mappings for gamemodes (match server.js capitalization)
 const categoryMappings = {
     main: ['Sword', 'Axe', 'Vanilla', 'Pot', 'NethOP', 'UHC', 'SMP', 'Mace'],
@@ -936,8 +992,16 @@ function renderAllModesOverall() {
     // Get all points for rank calculation
     const allPoints = playersWithPoints.map(p => p.totalPoints);
 
-    // Render each player as a row (capped at top 100)
-    playersWithPoints.slice(0, 100).forEach((player, rank) => {
+    // Pagination state for this view
+    const pageSize = 100;
+    const currentPage = window.paginationState['all-modes-overall'] || 1;
+    const startIndex = (currentPage - 1) * pageSize;
+    const endIndex = startIndex + pageSize;
+    const totalPages = Math.ceil(playersWithPoints.length / pageSize);
+    const paginatedPlayers = playersWithPoints.slice(startIndex, endIndex);
+
+    // Render each player as a row with pagination
+    paginatedPlayers.forEach((player, rank) => {
         const row = document.createElement('div');
         row.className = 'category-player-row';
         
@@ -945,12 +1009,12 @@ function renderAllModesOverall() {
         const rankPlayerSection = document.createElement('div');
         rankPlayerSection.className = 'rank-player-section';
         
-        const medal = getMedalRank(rank + 1);
+        const medal = getMedalRank(startIndex + rank + 1);
         
         // Rank badge background
         const rankBadge = document.createElement('div');
         rankBadge.className = `rank-badge ${medal}`;
-        rankBadge.textContent = `#${rank + 1}`;
+        rankBadge.textContent = `#${startIndex + rank + 1}`;
         rankPlayerSection.appendChild(rankBadge);
         
         // Avatar
@@ -1061,6 +1125,9 @@ function renderAllModesOverall() {
         
         container.appendChild(row);
     });
+    
+    // Render pagination controls
+    renderPaginationControls('all-modes-rankings', currentPage, totalPages, 'all-modes-overall', renderAllModesOverall);
 }
 
 // Render All Modes for a specific region
@@ -1092,8 +1159,17 @@ function renderAllModesRegion(region) {
     // Get all points for rank calculation
     const allPoints = playersWithPoints.map(p => p.totalPoints);
 
-    // Render each player as a row (capped at top 100)
-    playersWithPoints.slice(0, 100).forEach((player, rank) => {
+    // Pagination state for this view
+    const pageSize = 100;
+    const viewKey = 'all-modes-region-' + region;
+    const currentPage = window.paginationState[viewKey] || 1;
+    const startIndex = (currentPage - 1) * pageSize;
+    const endIndex = startIndex + pageSize;
+    const totalPages = Math.ceil(playersWithPoints.length / pageSize);
+    const paginatedPlayers = playersWithPoints.slice(startIndex, endIndex);
+
+    // Render each player as a row with pagination
+    paginatedPlayers.forEach((player, rank) => {
         const row = document.createElement('div');
         row.className = 'category-player-row';
         
@@ -1101,12 +1177,12 @@ function renderAllModesRegion(region) {
         const rankPlayerSection = document.createElement('div');
         rankPlayerSection.className = 'rank-player-section';
         
-        const medal = getMedalRank(rank + 1);
+        const medal = getMedalRank(startIndex + rank + 1);
         
         // Rank badge background
         const rankBadge = document.createElement('div');
         rankBadge.className = `rank-badge ${medal}`;
-        rankBadge.textContent = `#${rank + 1}`;
+        rankBadge.textContent = `#${startIndex + rank + 1}`;
         rankPlayerSection.appendChild(rankBadge);
         
         // Avatar
@@ -1213,6 +1289,9 @@ function renderAllModesRegion(region) {
         
         container.appendChild(row);
     });
+    
+    // Render pagination controls
+    renderPaginationControls('all-modes-rankings', currentPage, totalPages, viewKey, () => renderAllModesRegion(region));
 }
 
 // Render category ranking with player details and mode icons
@@ -1253,8 +1332,17 @@ function renderCategoryOverall(category) {
     // Get all category points for rank calculation
     const allCategoryPoints = playersWithCategoryPoints.map(p => p.categoryPoints);
 
-    // Render each player as a row (capped at top 100)
-    playersWithCategoryPoints.slice(0, 100).forEach((player, rank) => {
+    // Pagination state for this view
+    const pageSize = 100;
+    const viewKey = 'category-overall-' + category;
+    const currentPage = window.paginationState[viewKey] || 1;
+    const startIndex = (currentPage - 1) * pageSize;
+    const endIndex = startIndex + pageSize;
+    const totalPages = Math.ceil(playersWithCategoryPoints.length / pageSize);
+    const paginatedPlayers = playersWithCategoryPoints.slice(startIndex, endIndex);
+
+    // Render each player as a row with pagination
+    paginatedPlayers.forEach((player, rank) => {
         const row = document.createElement('div');
         row.className = 'category-player-row';
         
@@ -1262,12 +1350,12 @@ function renderCategoryOverall(category) {
         const rankPlayerSection = document.createElement('div');
         rankPlayerSection.className = 'rank-player-section';
         
-        const medal = getMedalRank(rank + 1);
+        const medal = getMedalRank(startIndex + rank + 1);
         
         // Rank badge background
         const rankBadge = document.createElement('div');
         rankBadge.className = `rank-badge ${medal}`;
-        rankBadge.textContent = `#${rank + 1}`;
+        rankBadge.textContent = `#${startIndex + rank + 1}`;
         rankPlayerSection.appendChild(rankBadge);
         
         // Avatar over the rank badge
