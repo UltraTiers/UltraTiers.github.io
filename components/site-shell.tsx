@@ -1,7 +1,7 @@
 "use client";
 
-import { useDeferredValue, useEffect, useMemo, useRef, useState } from "react";
-import { ChevronUp, ChevronsUp, ExternalLink, Loader2, Search, ShoppingBag, Trophy, X } from "lucide-react";
+import { lazy, Suspense, useDeferredValue, useEffect, useMemo, useRef, useState } from "react";
+import { ChevronUp, ChevronsUp, Loader2, Search, ShoppingBag, Trophy, X } from "lucide-react";
 import { fetchPlayers, type Player, type PlayerTier } from "@/lib/api";
 import { groupLabels, modeGroups, type ModeGroupKey, tierScores } from "@/lib/modes";
 import styles from "./site-shell.module.css";
@@ -30,6 +30,8 @@ const tierPalette: Record<string, string> = {
   LT5: styles.tierLt5,
   Unknown: styles.tierUnknown,
 };
+
+const PlayerModal = lazy(() => import("./player-modal"));
 
 function getTierClass(tier: string) {
   return tierPalette[tier] ?? tierPalette.Unknown;
@@ -158,6 +160,47 @@ function getScopedTiers(player: Player, group: ModeGroupKey, mode: ModeFilter) {
   );
 }
 
+type PlayerIndexes = {
+  tierByPlayer: Map<string, Map<string, PlayerTier>>;
+  groupPointsByPlayer: Map<string, Record<ModeGroupKey, number>>;
+  scopedTiersByPlayer: Map<string, Record<ModeGroupKey, PlayerTier[]>>;
+};
+
+function buildPlayerIndexes(players: Player[]): PlayerIndexes {
+  const tierByPlayer = new Map<string, Map<string, PlayerTier>>();
+  const groupPointsByPlayer = new Map<string, Record<ModeGroupKey, number>>();
+  const scopedTiersByPlayer = new Map<string, Record<ModeGroupKey, PlayerTier[]>>();
+  const groups = Object.keys(modeGroups) as ModeGroupKey[];
+
+  players.forEach((player) => {
+    const tierMap = new Map(player.tiers.map((entry) => [entry.gamemode, entry]));
+    const groupPoints = {} as Record<ModeGroupKey, number>;
+    const groupTiers = {} as Record<ModeGroupKey, PlayerTier[]>;
+
+    groups.forEach((group) => {
+      const modes = modeGroups[group] as readonly string[];
+      const tiers = player.tiers.filter((entry) => modes.includes(entry.gamemode));
+
+      groupPoints[group] = tiers.reduce((sum, entry) => sum + (tierScores[entry.tier] ?? 0), 0);
+      groupTiers[group] = sortTiers(tiers.filter((entry) => entry.tier !== "Unknown"));
+    });
+
+    tierByPlayer.set(player.uuid, tierMap);
+    groupPointsByPlayer.set(player.uuid, groupPoints);
+    scopedTiersByPlayer.set(player.uuid, groupTiers);
+  });
+
+  return { tierByPlayer, groupPointsByPlayer, scopedTiersByPlayer };
+}
+
+function getIndexedPlayerTier(indexes: PlayerIndexes, player: Player, mode: string) {
+  return indexes.tierByPlayer.get(player.uuid)?.get(mode) ?? {
+    gamemode: mode,
+    tier: "Unknown",
+    peak: "Unknown",
+  };
+}
+
 const rowBatchSize = 15;
 const globalPlayerLimit = 100;
 const maxGlobalTierBadges = 8;
@@ -199,6 +242,7 @@ export function SiteShell({ initialPlayers = [] }: SiteShellProps) {
   const debouncedQuery = useDebouncedValue(query, 180);
   const deferredQuery = useDeferredValue(debouncedQuery);
   const showInitialLoading = isLoading && players.length === 0;
+  const playerIndexes = useMemo(() => buildPlayerIndexes(players), [players]);
 
   const currentModes = useMemo(() => modeGroups[pendingGroup], [pendingGroup]);
   const visibleModes = useMemo(() => ["all", ...currentModes], [currentModes]);
@@ -252,6 +296,10 @@ export function SiteShell({ initialPlayers = [] }: SiteShellProps) {
   };
 
   useEffect(() => {
+    if (initialPlayers.length > 0) {
+      return;
+    }
+
     let isCurrent = true;
 
     setIsLoading(true);
@@ -281,7 +329,7 @@ export function SiteShell({ initialPlayers = [] }: SiteShellProps) {
     return () => {
       isCurrent = false;
     };
-  }, []);
+  }, [initialPlayers.length]);
 
   useEffect(() => {
     return () => {
@@ -316,13 +364,16 @@ export function SiteShell({ initialPlayers = [] }: SiteShellProps) {
       .map((player) => {
         const scopedPoints =
           activeMode === "all"
-            ? getScopedPoints(player, activeGroup)
-            : tierScores[getPlayerTier(player, activeMode).tier] ?? 0;
+            ? playerIndexes.groupPointsByPlayer.get(player.uuid)?.[activeGroup] ?? 0
+            : tierScores[getIndexedPlayerTier(playerIndexes, player, activeMode).tier] ?? 0;
 
         return {
           ...player,
           scopedPoints,
-          scopedTiers: getScopedTiers(player, activeGroup, activeMode),
+          scopedTiers:
+            activeMode === "all"
+              ? playerIndexes.scopedTiersByPlayer.get(player.uuid)?.[activeGroup] ?? []
+              : [getIndexedPlayerTier(playerIndexes, player, activeMode)],
         };
       })
       .filter((player) => player.scopedPoints > 0 || player.scopedTiers.length > 0)
@@ -334,7 +385,7 @@ export function SiteShell({ initialPlayers = [] }: SiteShellProps) {
 
         return left.name.localeCompare(right.name);
       });
-  }, [activeGroup, activeMode, players]);
+  }, [activeGroup, activeMode, playerIndexes, players]);
 
   const isSingleMode = activeMode !== "all";
   const displayPlayers = useMemo(() => {
@@ -531,7 +582,12 @@ export function SiteShell({ initialPlayers = [] }: SiteShellProps) {
         {!showInitialLoading ? (
           <div className={`${styles.boardContent} ${isRevealing ? styles.boardContentReveal : ""}`}>
             {isSingleMode ? (
-              <TierColumns players={rankedPlayers} mode={activeMode} onSelectPlayer={setSelectedPlayer} />
+              <TierColumns
+                players={rankedPlayers}
+                mode={activeMode}
+                playerIndexes={playerIndexes}
+                onSelectPlayer={setSelectedPlayer}
+              />
             ) : (
               <>
             <div className={styles.tableHeader}>
@@ -632,11 +688,13 @@ export function SiteShell({ initialPlayers = [] }: SiteShellProps) {
       </section>
 
       {selectedPlayer ? (
-        <PlayerModal
-          player={selectedPlayer}
-          rank={rankedPlayers.findIndex((player) => player.uuid === selectedPlayer.uuid) + 1}
-          onClose={() => setSelectedPlayer(null)}
-        />
+        <Suspense fallback={null}>
+          <PlayerModal
+            player={selectedPlayer}
+            rank={rankedPlayers.findIndex((player) => player.uuid === selectedPlayer.uuid) + 1}
+            onClose={() => setSelectedPlayer(null)}
+          />
+        </Suspense>
       ) : null}
     </main>
   );
@@ -653,10 +711,12 @@ function ModeTabIcon({ mode }: { mode: string }) {
 function TierColumns({
   players,
   mode,
+  playerIndexes,
   onSelectPlayer,
 }: {
   players: RankedPlayer[];
   mode: string;
+  playerIndexes: PlayerIndexes;
   onSelectPlayer: (player: Player) => void;
 }) {
   const columns = useMemo(() => {
@@ -664,7 +724,7 @@ function TierColumns({
       const entries = players
         .map((player) => ({
           player,
-          tier: getPlayerTier(player, mode).tier,
+          tier: getIndexedPlayerTier(playerIndexes, player, mode).tier,
         }))
         .filter(({ tier }) => getTierNumber(tier) === tierNumber.toString())
         .sort((left, right) => {
@@ -679,7 +739,7 @@ function TierColumns({
 
       return { tierNumber, entries };
     });
-  }, [mode, players]);
+  }, [mode, playerIndexes, players]);
 
   return (
     <div className={styles.tierColumns}>
@@ -740,7 +800,8 @@ function TierBadge({ entry, retired = false }: { entry: PlayerTier; retired?: bo
   );
 }
 
-function PlayerModal({
+/*
+function LegacyPlayerModal({
   player,
   rank,
   onClose,
@@ -814,3 +875,4 @@ function PlayerModal({
     </div>
   );
 }
+*/
