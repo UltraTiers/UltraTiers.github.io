@@ -18,7 +18,7 @@ export type Player = {
   tiers: PlayerTier[];
 };
 
-const API_URL = "https://ultratiers.onrender.com/players";
+const API_URL = "/api/players";
 
 const fallbackPlayers: Player[] = [];
 
