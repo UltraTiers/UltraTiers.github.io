@@ -3002,21 +3002,9 @@ function handleLogout() {
 
 // --- Splash Screen ---
 function initSplashScreen() {
-    const splashScreen = document.getElementById('splash-screen');
-    if (!splashScreen) return;
-    
-    // Check if splash was already shown in this session
-    if (sessionStorage.getItem('splashShown')) {
-        splashScreen.style.display = 'none';
-        return;
-    }
-    
-    // Hide splash screen on click
-    splashScreen.addEventListener('click', function() {
-        sessionStorage.setItem('splashShown', 'true');
-        splashScreen.style.display = 'none';
-    });
+    // Splash screen is now a direct link, no JS needed
+    // User clicks to navigate to https://ultratiers.com/
 }
 
 // Initialize splash screen when DOM is ready
-document.addEventListener('DOMContentLoaded', initSplashScreen);
+// Splash screen is now a simple link, no initialization needed
