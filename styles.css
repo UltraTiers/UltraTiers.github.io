@@ -5927,3 +5927,49 @@ body {
     text-decoration: line-through;
 }
 
+/* Splash Screen */
+.splash-screen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 50%, #0d0d0d 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+    cursor: pointer;
+}
+
+.splash-link {
+    text-decoration: none;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+}
+
+.splash-subtext {
+    font-family: 'Press Start 2P', cursive;
+    font-size: 18px;
+    color: #64748b;
+    letter-spacing: 2px;
+    text-transform: lowercase;
+}
+
+.splash-text {
+    font-family: 'Press Start 2P', cursive;
+    font-size: 48px;
+    font-weight: 700;
+    color: #3b82f6;
+    text-shadow: 0 0 30px rgba(59, 130, 246, 0.6), 0 0 60px rgba(59, 130, 246, 0.4);
+    letter-spacing: 4px;
+    transition: transform 0.3s ease, text-shadow 0.3s ease;
+}
+
+.splash-text:hover {
+    transform: scale(1.05);
+    text-shadow: 0 0 40px rgba(59, 130, 246, 0.8), 0 0 80px rgba(59, 130, 246, 0.5);
+}
+
