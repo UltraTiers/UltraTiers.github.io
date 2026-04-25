@@ -34,12 +34,6 @@ function setHeaderToTierlistMode() {
     }
 }
 
-// Show maintenance page for root or unknown hashes
-function setupHashRouting() {
-    window.addEventListener('hashchange', handleHash);
-    handleHash();
-}
-
 function getCurrentUser() {
     try {
         const ls = localStorage.getItem('ultratiers_user') || localStorage.getItem('ultra_user');
@@ -572,8 +566,6 @@ function initSearchSystem() {
 
 // Initialize
 document.addEventListener('DOMContentLoaded', async function () {
-    setupHashRouting();
-    const loadingLeague = location.hash === '#ultratierleague';
     // Always initialize app state so the league page works on refresh,
     // but avoid rendering the default tierlist tab when user explicitly requested the league page.
     await fetchAndOrganizePlayers();
@@ -2014,7 +2006,6 @@ async function cancelRequestAPI(requestId) {
     return fetch('/friend/cancel', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ requestId }) }).then(r=>r.json());
 }
 
-// Small chat UI renderer is called from handleHash() when hash is #ultratierchatting
 function renderChatPage() {
     const user = getCurrentUser();
     const mainContainer = document.querySelector('.container');
