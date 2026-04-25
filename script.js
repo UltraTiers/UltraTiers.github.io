@@ -1,23 +1,6 @@
 ﻿// Initialize global settings
 window.showRetiredPlayers = false;
 
-function setHeaderToLeagueMode() {
-    const btn = document.getElementById('friends-link-btn');
-    const searchContainer = document.querySelector('.search-container');
-    const searchInputWrapper = document.querySelector('.search-input-wrapper');
-    if (btn) {
-        btn.title = 'Go to league';
-        btn.innerHTML = '<i class="fas fa-trophy"></i>';
-        btn.onclick = openLeaguePage;
-    }
-    if (searchContainer) {
-        searchContainer.style.display = 'flex';
-    }
-    if (searchInputWrapper) {
-        searchInputWrapper.style.display = 'flex';
-    }
-}
-
 function setHeaderToTierlistMode() {
     const btn = document.getElementById('friends-link-btn');
     const searchContainer = document.querySelector('.search-container');
@@ -566,14 +549,11 @@ function initSearchSystem() {
 
 // Initialize
 document.addEventListener('DOMContentLoaded', async function () {
-    // Always initialize app state so the league page works on refresh,
-    // but avoid rendering the default tierlist tab when user explicitly requested the league page.
     await fetchAndOrganizePlayers();
     initLoginSystem();
     initSearchSystem();
     initSettingsModal();
     setupTabHandlers();
-    if (!loadingLeague) renderDefaultTab();
 });
 
 // --- Peak tooltip (delegated) ---
@@ -2782,129 +2762,6 @@ function renderChatPage() {
 
     // Periodic refresh of inbox/friends/outgoing/history
     setInterval(() => { if (document.getElementById('ultratier-chat-app')) { loadInbox(); loadFriends(); loadOutgoing(); if (activeFriend) loadHistory(); } }, 5000);
-}
-
-function renderLeaguePage() {
-    const teamLogos = {
-        "E.V.V. '58": "https://secretpepper.github.io/Ultra-League/teams/EVV58.png",
-        "PND": "https://secretpepper.github.io/Ultra-League/teams/PND.png",
-        "La Familia": "https://secretpepper.github.io/Ultra-League/teams/La%20Famillia.png",
-        "The Cocos": "https://secretpepper.github.io/Ultra-League/teams/The%20Cocos.png",
-        "Ultra Team": "https://secretpepper.github.io/Ultra-League/teams/Ultra%20Team.png",
-        "TBot Warriors": "https://secretpepper.github.io/Ultra-League/teams/TBot%20Warriors.png",
-        "The Boiz": "https://secretpepper.github.io/Ultra-League/teams/The%20Boiz.png",
-        "IV": "https://secretpepper.github.io/Ultra-League/teams/IV.png",
-        "Wemmbu_Aura+++": "https://secretpepper.github.io/Ultra-League/teams/Wemmbu_Aura.png",
-        "Sanctuary": "https://secretpepper.github.io/Ultra-League/teams/Sanctuary.png"
-    };
-
-    const leagueData = {
-        diamond: [
-            { rank: 1, team: "E.V.V. '58", pl: 0, w: 0, l: 0, diff: '0-0', rd: 0, pts: 0, form: ['?', '?', '?', '?', '?'] },
-            { rank: 2, team: 'PND', pl: 0, w: 0, l: 0, diff: '0-0', rd: 0, pts: 0, form: ['?', '?', '?', '?', '?'] },
-            { rank: 3, team: 'La Familia', pl: 0, w: 0, l: 0, diff: '0-0', rd: 0, pts: 0, form: ['?', '?', '?', '?', '?'] },
-            { rank: 4, team: 'The Cocos', pl: 0, w: 0, l: 0, diff: '0-0', rd: 0, pts: 0, form: ['?', '?', '?', '?', '?'] },
-            { rank: 5, team: 'Ultra Team', pl: 0, w: 0, l: 0, diff: '0-0', rd: 0, pts: 0, form: ['?', '?', '?', '?', '?'] },
-            { rank: 6, team: 'TBot Warriors', pl: 0, w: 0, l: 0, diff: '0-0', rd: 0, pts: 0, form: ['?', '?', '?', '?', '?'] },
-            { rank: 7, team: 'The Boiz', pl: 0, w: 0, l: 0, diff: '0-0', rd: 0, pts: 0, form: ['?', '?', '?', '?', '?'] },
-            { rank: 8, team: 'IV', pl: 0, w: 0, l: 0, diff: '0-0', rd: 0, pts: 0, form: ['?', '?', '?', '?', '?'] },
-            { rank: 9, team: 'Wemmbu_Aura+++', pl: 0, w: 0, l: 0, diff: '0-0', rd: 0, pts: 0, form: ['?', '?', '?', '?', '?'] },
-            { rank: 10, team: 'Sanctuary', pl: 0, w: 0, l: 0, diff: '0-0', rd: 0, pts: 0, form: ['?', '?', '?', '?', '?'] }
-        ],
-        gold: [],
-        iron: [],
-        wood: []
-    };
-
-    const mainContainer = document.querySelector('.container');
-    const contentParent = document.querySelector('main.content');
-    const existing = document.getElementById('ultratier-league-app');
-    if (existing) existing.remove();
-
-    const app = document.createElement('div');
-    app.id = 'ultratier-league-app';
-    app.className = 'league-app-wrapper';
-    app.innerHTML = `
-        <div class="league-page">
-            <div class="league-topbar">
-                <div class="league-tabs">
-                    <button class="league-tab active" data-league="diamond">Diamond League</button>
-                    <button class="league-tab" data-league="gold">Gold League</button>
-                    <button class="league-tab" data-league="iron">Iron League</button>
-                    <button class="league-tab" data-league="wood">Wood League</button>
-                </div>
-            </div>
-            <div class="table-container">
-                <table class="league-table">
-                    <thead>
-                        <tr>
-                            <th>#</th>
-                            <th>Team</th>
-                            <th>PL</th>
-                            <th>W</th>
-                            <th>L</th>
-                            <th>±</th>
-                            <th>RD</th>
-                            <th>PTS</th>
-                            <th>FORM</th>
-                        </tr>
-                    </thead>
-                    <tbody id="league-table-body"></tbody>
-                </table>
-            </div>
-        </div>
-    `;
-
-    if (contentParent && contentParent.parentNode) {
-        contentParent.parentNode.appendChild(app);
-    } else if (mainContainer) {
-        mainContainer.appendChild(app);
-    } else {
-        document.body.appendChild(app);
-    }
-
-    setHeaderToTierlistMode();
-
-    function populateLeague(leagueKey) {
-        const tbody = document.getElementById('league-table-body');
-        tbody.innerHTML = '';
-        const rows = leagueData[leagueKey] || [];
-        if (!rows.length) {
-            const emptyRow = document.createElement('tr');
-            emptyRow.innerHTML = '<td colspan="9" class="league-empty">No standings available for this league yet.</td>';
-            tbody.appendChild(emptyRow);
-            return;
-        }
-        rows.forEach(row => {
-            const tr = document.createElement('tr');
-            tr.innerHTML = `
-                <td>${row.rank}</td>
-                <td class="team-cell"><img src="${teamLogos[row.team] || 'UltraLogo.png'}" alt="" class="team-logo"> ${row.team}</td>
-                <td>${row.pl}</td>
-                <td>${row.w}</td>
-                <td>${row.l}</td>
-                <td>${row.diff}</td>
-                <td>${row.rd}</td>
-                <td>${row.pts}</td>
-                <td class="league-form">${row.form.map(s => `<span data-result="${s}">${s}</span>`).join('')}</td>
-            `;
-            tbody.appendChild(tr);
-        });
-    }
-
-    function setActiveLeagueButton(button) {
-        const buttons = app.querySelectorAll('.league-tab');
-        buttons.forEach(btn => btn.classList.toggle('active', btn === button));
-    }
-
-    app.querySelectorAll('.league-tab').forEach(btn => {
-        btn.addEventListener('click', () => {
-            setActiveLeagueButton(btn);
-            populateLeague(btn.dataset.league);
-        });
-    });
-
-    populateLeague('diamond');
 }
 
 function initLoginSystem() {
