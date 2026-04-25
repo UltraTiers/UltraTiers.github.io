@@ -861,16 +861,7 @@ function renderAllModesOverall() {
     // Get all points for rank calculation
     const allPoints = playersWithPoints.map(p => p.totalPoints);
 
-    // Pagination state for this view
-    const pageSize = 100;
-    const currentPage = window.paginationState['all-modes-overall'] || 1;
-    const startIndex = (currentPage - 1) * pageSize;
-    const endIndex = startIndex + pageSize;
-    const totalPages = Math.ceil(playersWithPoints.length / pageSize);
-    const paginatedPlayers = playersWithPoints.slice(startIndex, endIndex);
-
-    // Render each player as a row with pagination
-    paginatedPlayers.forEach((player, rank) => {
+    playersWithPoints.forEach((player, rank) => {
         const row = document.createElement('div');
         row.className = 'category-player-row';
         
@@ -995,8 +986,6 @@ function renderAllModesOverall() {
         container.appendChild(row);
     });
     
-    // Render pagination controls
-    renderPaginationControls('all-modes-rankings', currentPage, totalPages, 'all-modes-overall', renderAllModesOverall);
 }
 
 // Render All Modes for a specific region
@@ -1028,17 +1017,7 @@ function renderAllModesRegion(region) {
     // Get all points for rank calculation
     const allPoints = playersWithPoints.map(p => p.totalPoints);
 
-    // Pagination state for this view
-    const pageSize = 100;
-    const viewKey = 'all-modes-region-' + region;
-    const currentPage = window.paginationState[viewKey] || 1;
-    const startIndex = (currentPage - 1) * pageSize;
-    const endIndex = startIndex + pageSize;
-    const totalPages = Math.ceil(playersWithPoints.length / pageSize);
-    const paginatedPlayers = playersWithPoints.slice(startIndex, endIndex);
-
-    // Render each player as a row with pagination
-    paginatedPlayers.forEach((player, rank) => {
+    playersWithPoints.forEach((player, rank) => {
         const row = document.createElement('div');
         row.className = 'category-player-row';
         
@@ -1158,9 +1137,6 @@ function renderAllModesRegion(region) {
         
         container.appendChild(row);
     });
-    
-    // Render pagination controls
-    renderPaginationControls('all-modes-rankings', currentPage, totalPages, viewKey, () => renderAllModesRegion(region));
 }
 
 // Render category ranking with player details and mode icons
@@ -1201,17 +1177,7 @@ function renderCategoryOverall(category) {
     // Get all category points for rank calculation
     const allCategoryPoints = playersWithCategoryPoints.map(p => p.categoryPoints);
 
-    // Pagination state for this view
-    const pageSize = 100;
-    const viewKey = 'category-overall-' + category;
-    const currentPage = window.paginationState[viewKey] || 1;
-    const startIndex = (currentPage - 1) * pageSize;
-    const endIndex = startIndex + pageSize;
-    const totalPages = Math.ceil(playersWithCategoryPoints.length / pageSize);
-    const paginatedPlayers = playersWithCategoryPoints.slice(startIndex, endIndex);
-
-    // Render each player as a row with pagination
-    paginatedPlayers.forEach((player, rank) => {
+    playersWithCategoryPoints.forEach((player, rank) => {
         const row = document.createElement('div');
         row.className = 'category-player-row';
         
