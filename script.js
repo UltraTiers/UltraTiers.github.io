@@ -554,6 +554,8 @@ document.addEventListener('DOMContentLoaded', async function () {
     initSearchSystem();
     initSettingsModal();
     setupTabHandlers();
+    // Render the default tab immediately so players show on page load
+    renderDefaultTab();
 });
 
 // --- Peak tooltip (delegated) ---
@@ -1178,7 +1180,7 @@ function renderCategoryOverall(category) {
     }).sort((a, b) => {
         // Sort by category points descending (highest first)
         return b.categoryPoints - a.categoryPoints;
-    });
+    }).slice(0, 100);
 
     // Get all category points for rank calculation
     const allCategoryPoints = playersWithCategoryPoints.map(p => p.categoryPoints);
