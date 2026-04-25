@@ -869,12 +869,12 @@ function renderAllModesOverall() {
         const rankPlayerSection = document.createElement('div');
         rankPlayerSection.className = 'rank-player-section';
         
-        const medal = getMedalRank(startIndex + rank + 1);
+        const medal = getMedalRank(rank + 1);
         
         // Rank badge background
         const rankBadge = document.createElement('div');
         rankBadge.className = `rank-badge ${medal}`;
-        rankBadge.textContent = `#${startIndex + rank + 1}`;
+        rankBadge.textContent = `#${rank + 1}`;
         rankPlayerSection.appendChild(rankBadge);
         
         // Avatar
@@ -1025,12 +1025,12 @@ function renderAllModesRegion(region) {
         const rankPlayerSection = document.createElement('div');
         rankPlayerSection.className = 'rank-player-section';
         
-        const medal = getMedalRank(startIndex + rank + 1);
+        const medal = getMedalRank(rank + 1);
         
         // Rank badge background
         const rankBadge = document.createElement('div');
         rankBadge.className = `rank-badge ${medal}`;
-        rankBadge.textContent = `#${startIndex + rank + 1}`;
+        rankBadge.textContent = `#${rank + 1}`;
         rankPlayerSection.appendChild(rankBadge);
         
         // Avatar
@@ -1185,12 +1185,12 @@ function renderCategoryOverall(category) {
         const rankPlayerSection = document.createElement('div');
         rankPlayerSection.className = 'rank-player-section';
         
-        const medal = getMedalRank(startIndex + rank + 1);
+        const medal = getMedalRank(rank + 1);
         
         // Rank badge background
         const rankBadge = document.createElement('div');
         rankBadge.className = `rank-badge ${medal}`;
-        rankBadge.textContent = `#${startIndex + rank + 1}`;
+        rankBadge.textContent = `#${rank + 1}`;
         rankPlayerSection.appendChild(rankBadge);
         
         // Avatar over the rank badge
