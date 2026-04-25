@@ -1,11 +1,6 @@
 ﻿// Initialize global settings
 window.showRetiredPlayers = false;
 
-// --- Friends & League Routing / Client helpers ---
-function openLeaguePage() {
-    location.hash = '#ultratierleague';
-}
-
 function setHeaderToLeagueMode() {
     const btn = document.getElementById('friends-link-btn');
     const searchContainer = document.querySelector('.search-container');
@@ -30,7 +25,6 @@ function setHeaderToTierlistMode() {
     if (btn) {
         btn.title = 'Back to tierlist';
         btn.innerHTML = '<i class="fas fa-arrow-left"></i>';
-        btn.onclick = () => { location.hash = '#ultratierlist'; };
     }
     if (searchContainer) {
         searchContainer.style.display = 'flex';
@@ -121,47 +115,6 @@ function updateTestedPlayersCount() {
     if (!countEl) return;
     const count = Array.isArray(window.allPlayers) ? window.allPlayers.length : 0;
     countEl.textContent = `Tested players: ${count}`;
-}
-
-function handleHash() {
-    const h = location.hash;
-    if (!h || (h !== '#ultratierlist' && h !== '#ultratierleague')) {
-        // redirect unknown or empty hash to the main tierlist
-        location.hash = '#ultratierlist';
-        return;
-    }
-    const mainContainer = document.querySelector('.container');
-    const user = getCurrentUser();
-    if (h === '#ultratierlist') {
-        const app = document.getElementById('ultratier-league-app');
-        if (app) app.remove();
-        const mainTabs = document.querySelector('.main-tabs');
-        const content = document.querySelector('main.content');
-        if (mainTabs) mainTabs.style.display = '';
-        if (content) content.style.display = '';
-        if (mainContainer) mainContainer.style.display = '';
-        setHeaderToLeagueMode();
-        try {
-            renderDefaultTab();
-            try { initLoginSystem(); } catch (e) { /* ignore if not present */ }
-            try { fetchAndOrganizePlayers(); } catch (e) { /* ignore */ }
-            try { initSearchSystem(); } catch (e) { /* ignore */ }
-        } catch (e) {}
-        return;
-    }
-    if (h === '#ultratierleague') {
-        const mainTabs = document.querySelector('.main-tabs');
-        const content = document.querySelector('main.content');
-        if (mainTabs) mainTabs.style.display = 'none';
-        if (content) content.style.display = 'none';
-        if (mainContainer) mainContainer.style.display = '';
-        setHeaderToTierlistMode();
-        try {
-            renderLeaguePage();
-        } catch (e) {
-            console.warn('renderLeaguePage failed', e);
-        }
-    }
 }
 
 
@@ -276,82 +229,6 @@ function getRankColor(rank) {
         case 'Rookie': return '#fbbf24'; // Green
         default: return '#fbbf24'; // Gray
     }
-}
-
-// Pagination state storage
-window.paginationState = window.paginationState || {};
-
-// Render pagination controls
-function renderPaginationControls(containerId, currentPage, totalPages, viewKey, onPageChange) {
-    const container = document.getElementById(containerId);
-    if (!container) return;
-    
-    // Remove existing pagination if any
-    const existingPagination = container.querySelector('.pagination-controls');
-    if (existingPagination) {
-        existingPagination.remove();
-    }
-    
-    if (totalPages <= 1) return;
-    
-    const paginationDiv = document.createElement('div');
-    paginationDiv.className = 'pagination-controls';
-    paginationDiv.style.cssText = 'display: flex; justify-content: center; align-items: center; gap: 12px; padding: 24px; background: linear-gradient(180deg, rgba(30, 58, 138, 0.9) 0%, rgba(15, 23, 42, 0.9) 100%); border-radius: 12px; margin-top: 20px; flex-wrap: wrap; border: 1px solid rgba(59, 130, 246, 0.3);';
-    
-    // Previous button
-    const prevBtn = document.createElement('button');
-    prevBtn.textContent = '← Previous';
-    prevBtn.disabled = currentPage <= 1;
-    prevBtn.style.cssText = 'padding: 10px 20px; background: ' + (currentPage <= 1 ? 'rgba(100, 116, 139, 0.2)' : 'linear-gradient(135deg, #3b82f6, #1d4ed8)') + '; border: none; border-radius: 8px; color: ' + (currentPage <= 1 ? 'rgba(255, 255, 255, 0.4)' : '#fff') + '; cursor: ' + (currentPage <= 1 ? 'not-allowed' : 'pointer') + '; font-weight: 600; font-size: 14px; transition: all 0.2s ease;';
-    prevBtn.onclick = () => {
-        if (currentPage > 1) {
-            window.paginationState[viewKey] = currentPage - 1;
-            onPageChange();
-        }
-    };
-    prevBtn.onmouseenter = () => {
-        if (currentPage > 1) {
-            prevBtn.style.transform = 'translateY(-2px)';
-            prevBtn.style.boxShadow = '0 4px 12px rgba(59, 130, 246, 0.4)';
-        }
-    };
-    prevBtn.onmouseleave = () => {
-        prevBtn.style.transform = 'translateY(0)';
-        prevBtn.style.boxShadow = 'none';
-    };
-    paginationDiv.appendChild(prevBtn);
-    
-    // Page info with player count
-    const pageInfo = document.createElement('span');
-    pageInfo.textContent = `Page ${currentPage} of ${totalPages}`;
-    pageInfo.style.cssText = 'color: rgba(255, 255, 255, 0.9); font-size: 15px; font-weight: 500; padding: 0 16px;';
-    paginationDiv.appendChild(pageInfo);
-    
-    // Next button
-    const nextBtn = document.createElement('button');
-    nextBtn.textContent = 'Next →';
-    nextBtn.disabled = currentPage >= totalPages;
-    nextBtn.style.cssText = 'padding: 10px 20px; background: ' + (currentPage >= totalPages ? 'rgba(100, 116, 139, 0.2)' : 'linear-gradient(135deg, #3b82f6, #1d4ed8)') + '; border: none; border-radius: 8px; color: ' + (currentPage >= totalPages ? 'rgba(255, 255, 255, 0.4)' : '#fff') + '; cursor: ' + (currentPage >= totalPages ? 'not-allowed' : 'pointer') + '; font-weight: 600; font-size: 14px; transition: all 0.2s ease;';
-    nextBtn.onclick = () => {
-        if (currentPage < totalPages) {
-            window.paginationState[viewKey] = currentPage + 1;
-            onPageChange();
-        }
-    };
-    nextBtn.onmouseenter = () => {
-        if (currentPage < totalPages) {
-            nextBtn.style.transform = 'translateY(-2px)';
-            nextBtn.style.boxShadow = '0 4px 12px rgba(59, 130, 246, 0.4)';
-        }
-    };
-    nextBtn.onmouseleave = () => {
-        nextBtn.style.transform = 'translateY(0)';
-        nextBtn.style.boxShadow = 'none';
-    };
-    paginationDiv.appendChild(nextBtn);
-    
-    // Insert after the container content
-    container.appendChild(paginationDiv);
 }
 
 // Category mappings for gamemodes (match server.js capitalization)
@@ -2163,7 +2040,7 @@ function renderChatPage() {
                     <h2 style="margin-bottom:12px;">Sign in to use UltraTiers Chat</h2>
                     <p style="color:#bcd; margin-bottom:18px;">You need an account to send friend requests and chat.</p>
                     <button id="open-login-from-chat" style="background:#128C7E;color:#fff;border:none;padding:10px 18px;border-radius:8px;cursor:pointer;">Sign In</button>
-                    <div style="margin-top:12px;color:#889">Or go back to the site: <a href="#ultratierlist" style="color:#25d366">UltraTiers List</a></div>
+                    <div style="margin-top:12px;color:#889">Or go back to the site: <a style="color:#25d366">UltraTiers List</a></div>
                 </div>
             </div>
         `;
@@ -2231,7 +2108,6 @@ function renderChatPage() {
                 btn.id = 'chat-back-btn';
                 btn.title = 'Back to Tierlist';
                 btn.innerHTML = '<i class="fas fa-list"></i>';
-                btn.addEventListener('click', () => { location.hash = '#ultratierlist'; });
             }
 
             // ensure header stays visible and doesn't overlap content (sticky)
@@ -2258,7 +2134,6 @@ function renderChatPage() {
     // make navbar logo/title navigate back to the tierlist
     try {
         const chatLogo = document.querySelector('.chat-navbar .chat-logo');
-        if (chatLogo) chatLogo.addEventListener('click', () => { location.hash = '#ultratierlist'; });
     } catch (e) { /* ignore */ }
 
     // show placeholder when no conversation selected and disable input
