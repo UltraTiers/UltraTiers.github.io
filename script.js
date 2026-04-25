@@ -853,10 +853,13 @@ function renderAllModesOverall() {
     }
 
     // Calculate total points for all players across all modes
-    const playersWithPoints = window.allPlayers.map(player => ({
+const playersWithPoints = window.allPlayers
+    .map(player => ({
         ...player,
         totalPoints: calculatePlayerPoints(player)
-    })).sort((a, b) => b.totalPoints - a.totalPoints);
+    }))
+    .sort((a, b) => b.totalPoints - a.totalPoints)
+    .slice(0, 100);
 
     // Get all points for rank calculation
     const allPoints = playersWithPoints.map(p => p.totalPoints);
@@ -1009,10 +1012,13 @@ function renderAllModesRegion(region) {
     }
 
     // Calculate total points for players in this region
-    const playersWithPoints = regionPlayers.map(player => ({
+const playersWithPoints = regionPlayers
+    .map(player => ({
         ...player,
         totalPoints: calculatePlayerPoints(player)
-    })).sort((a, b) => b.totalPoints - a.totalPoints);
+    }))
+    .sort((a, b) => b.totalPoints - a.totalPoints)
+    .slice(0, 100);
 
     // Get all points for rank calculation
     const allPoints = playersWithPoints.map(p => p.totalPoints);
